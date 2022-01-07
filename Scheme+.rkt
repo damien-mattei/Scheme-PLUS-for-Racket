@@ -1,4 +1,4 @@
-#lang racket
+;;#lang racket
 
 ;; Scheme+.rkt
 
@@ -29,18 +29,26 @@
 
 
 ;; use :
+;; (require Scheme-PLUS-for-Racket/Scheme+)
+;; or :
 ;; (require "Scheme+.rkt")
 
 
-(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠)
+(module Scheme+ racket
 
 
-(include "def.scm")
-(include "array.scm")
-(require "apply-square-brackets.rkt")
-(require "assignment.rkt")
-(include "declare.scm")
-(include "condx.scm")
-(include "block.scm")
-(include "not-equal.scm")
+	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠)
 
+
+	(include "included-files/def.scm")
+	(include "included-files/array.scm")
+
+	(require "required-files/apply-square-brackets.rkt")
+	(require "required-files/assignment.rkt")
+
+	(include "included-files/declare.scm")
+	(include "included-files/condx.scm")
+	(include "included-files/block.scm")
+	(include "included-files/not-equal.scm")
+
+	) ;; end module
