@@ -19,8 +19,9 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(require srfi/69) ;; Basic hash tables 
-(require math/array) ;; warning: construction primitive is different than SRFI 47 and Guile
+(require srfi/69) ;; Basic hash tables
+(require srfi/25) ;; Multi-dimensional Array Primitives
+;;(require math/array) ;; warning: construction primitive is different than SRFI 47 and Guile
 ;; accessors have same syntax for arrays
 
 

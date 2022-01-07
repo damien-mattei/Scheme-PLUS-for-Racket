@@ -54,8 +54,9 @@
 ;; scheme@(guile-user)> {a[1 3]}
 ;; $20 = 7
 
-(require srfi/69) ;; Basic hash tables 
-(require math/array) ;; warning: construction primitive is different than SRFI 47 and Guile
+(require srfi/69) ;; Basic hash tables
+(require srfi/25) ;; Multi-dimensional Array Primitives
+;;(require math/array) ;; warning: construction primitive is different than SRFI 47 and Guile
 ;; accessors have same syntax for arrays
 
 (provide $bracket-apply$)
