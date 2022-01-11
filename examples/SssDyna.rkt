@@ -231,7 +231,7 @@
   ;; dyna[ls t] means 0: unknown solution, 1: solution found, 2: no solution
 
   (cond [(not (zero? dyn)) (one? dyn)]
-	[(null? L) (array-set! dyna 2 ls t) #f] ;; return #f
+	[(null? L) (array-set! dyna ls t 2) #f] ;; return #f
 	
 	[else (let [(c (first L))]
 		
@@ -248,8 +248,8 @@
 			    
 			  (let [(s (ssigma-proto R t))]
 			    (array-set! dyna
-					(one-two s)
-					ls t)
+					ls t
+					(one-two s))
 			      
 			    s) ;; return s
 			
@@ -258,8 +258,9 @@
 			  ;; c is part of the solution or his approximation
 			  ;; or c is not part of solution
 			  (let [(s {(ssigma-proto R {t - c}) or (ssigma-proto R t)})]
-			    (array-set! dyna (one-two s)
-					ls t)
+			    (array-set! dyna 
+					ls t
+					(one-two s))
 			    s)))))
 	      ] ))
 
