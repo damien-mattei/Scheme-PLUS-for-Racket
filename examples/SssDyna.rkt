@@ -3,6 +3,8 @@
 (require "../Scheme+.rkt")
 ;;(require Scheme-PLUS-for-Racket/Scheme+)
 
+(require srfi/25) ;; Multi-dimensional Array Primitives
+
 ;; Sub Set Sum problem
 ;; Dynamic solution
 ;; Guile compatible
@@ -23,40 +25,9 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-;;  for curly infix notation  put in your .guile:
-;; (read-enable 'curly-infix)
-
-;; ne marche pas:
-;; export GUILE_AUTO_COMPILE=0
-
-;; touch file.scm works if you change included files but not source file.scm
-
-
-;; (load "SssDyna.scm")
-
-
-;;(use-modules (guile growable-vector))
-
 ;; files below can be retrieved here: https://github.com/damien-mattei/library-FunctProg
-
-;;(include "pair.scm") ;; useless,but definitions reused in some not used functions in number.scm 
-(include "number.scm")
-;;(include "first-and-rest.scm")
-
-(include "rest.scm")
-
-(use-modules (srfi srfi-1)) ;; for 'first' procedure
-
-(use-modules (Scheme+))
-
-
-;;(define L-init '(1 3 4 16 17 64 256 275 723 889 1040 1041 1093 1111 1284 1344 1520 2027 2734 3000 4285 5027))
-;;(define t-init 19836)
-
-;; (define L-init '(1 3 4 16 17 24 45 64 197 256 275 323 540 723 889 915 1040 1041 1093 1099 1111 1284 1344 1520 2027 2500 2734 3000 3267 3610 4285 5027))
-;; (define t-init 35267)
-;; (define ls (length L-init))
-;; (define dyna (make-array 0 {ls + 1} {t-init + 1}))
+(include "../library/pair.scm") ;; useless,but definitions reused in some not used functions in number.scm 
+(include "../library/number.scm")
 
 ;; {L-init <+ '(1 3 4 16 17 24 45 64 197 256 275 323 540 723 889 915 1040 1041 1093 1099 1111 1284 1344 1520 2027 2500 2734 3000 3267 3610 4285 5027)}
 ;; {t-init <+ 35267}
@@ -68,8 +39,12 @@
 
 {L-init <- '(1 3 4 16 17 24 45 64 197 256 275 323 540 723 889 915 1040 1041 1093 1099 1111 1284 1344 1520 2027 2500 2734 3000 3267 3610 4285 5027)}
 {t-init <- 35267}
+;;{t-init <- 21}
+
 {ls <- (length L-init)}
-{dyna <- (make-array 0 {ls + 1} {t-init + 1})}
+{dyna <- (make-array (shape 0 {ls + 1}
+			    0 {t-init + 1})
+		     0)}
 
 (define (one-two b)
   (if b 1 2))
@@ -159,11 +134,18 @@
   ;;(def dyn {dyna[ls t]})
 
   {ls <+ (length L)}
+
+  ;;(display "ls=") (display ls) (display " ") (display "t=") (display t) (newline)
+  
   {dyn <+ {dyna[ls t]}}
+
+  ;;(display "dyn=") (display dyn) (newline)
   
   (def c)
   (def R)
 
+ 
+  
   ;; TODO: write this code simplier
   ;; dyna[ls t] means 0: unknown solution, 1: solution found, 2: no solution
   (one?
@@ -172,10 +154,13 @@
 	dyn
 	
 	;; set the array but return the variable
+	($
+	 ;;(display "/ ls=") (display ls) (display " ") (display "t=") (display t) (newline)
 	{ dyna[ls t] <- (one-two
 			  (if (null? L)
 			      #f
-			      ($ ;;(display "assignment") (newline)
+			      ($
+			       ;;(display "assignment") (newline)
 				{c <- (first L)}
 				{R <- (rest L)}
 				(cond [ {c = t} #t ] ;; c is the solution
@@ -183,7 +168,7 @@
 				      ;; c < t at this point
 				      ;; c is part of the solution or his approximation
 				      ;; or c is not part of solution or his approximation
-				      [ else {(ssigma-dyna-define-anywhere R {t - c}) or (ssigma-dyna-define-anywhere R t)} ] )))) } )))
+				      [ else {(ssigma-dyna-define-anywhere R {t - c}) or (ssigma-dyna-define-anywhere R t)} ] )))) }) )))
 
 
 
@@ -335,8 +320,9 @@
 
   ;; dyna[ls t] means : 0: unknown solution, 1: solution found, 2: no solution
 
-  (if {dyn <> 0} ;; IF or WHEN : it is the same thing here (only one statement)
-      (return (one? dyn)))
+  ;;(if {dyn <> 0} ;; IF or WHEN : it is the same thing here (only one statement) Warning: Racket incompatibility
+  (when {dyn <> 0}
+    (return (one? dyn)))
 
   (when (null? L)
     {dyna[ls t] <- 2}
@@ -371,7 +357,8 @@
 
   ;; dyna[ls t] means : 0: unknown solution, 1: solution found, 2: no solution
 
-  (if {dyn <> 0} ;; IF or WHEN : it is the same thing here (only one statement)
+  ;;(if {dyn <> 0} ;; IF or WHEN : it is the same thing here (only one statement)  Warning: Racket incompatibility
+  (when {dyn <> 0}
       (return (one? dyn)))
 
   (when (null? L)

@@ -27,6 +27,7 @@
 
 (provide <- ← -> →)
 
+(include "../included-files/array.scm")
 
 ;; scheme@(guile-user)> {a[2 4] <- 7}
 ;; $1 = 7
@@ -86,7 +87,7 @@
        ;;(display "<- : vector or array set! or hash-table set!") (newline)
        (cond ((vector? container) (vector-set! container index value))
 	     ((hash-table? container) (hash-table-set! container index value))
-	     (else (array-set! container value index)));)
+	     (else (array-set! container index value)));)
        
        ;; rare case  (to prevent any error)
        ;; (let ((var (funct-or-macro container index))) ;; MUST be in a variable , otherwise:
@@ -110,7 +111,7 @@
        ;;(display "<- : multidimensional vector or array set!") (newline)
        (if (vector? array)
 	   (array-n-dim-set! array value index1 index2 ...)
-	   (array-set! array value index1 index2 ...));)
+	   (array-set! array index1 index2 ... value));)
 						     
 	 ;; rare case (to prevent any error)
 	 ;; (let ((var (funct-or-macro array index ...))) ;; MUST be in a variable

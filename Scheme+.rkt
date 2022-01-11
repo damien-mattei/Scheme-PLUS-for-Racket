@@ -37,7 +37,7 @@
 (module Scheme+ racket
 
 
-	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠)
+	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ **)
 
 
 	(include "included-files/def.scm")
@@ -50,5 +50,6 @@
 	(include "included-files/condx.scm")
 	(include "included-files/block.scm")
 	(include "included-files/not-equal.scm")
+	(include "library/exponential.scm")
 
 	) ;; end module

@@ -61,6 +61,8 @@
 
 (provide $bracket-apply$)
 
+(include "../included-files/array.scm")
+
 (define-syntax $bracket-apply$
   (syntax-rules ()
     
