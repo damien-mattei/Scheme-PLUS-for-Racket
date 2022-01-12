@@ -18,8 +18,13 @@
       n
       {(fib {n - 1}) + (fib {n - 2})} ))
 
+
+
 ;; (expo-complex 3+4i 1-3i)
 ;; -58.560423283588165+55.59488089854708i
+
+;; https://mathworld.wolfram.com/ComplexExponentiation.html
+
 (define (expo-complex z1 z2)
 
   ;;{a <+ (real-part z1)}
