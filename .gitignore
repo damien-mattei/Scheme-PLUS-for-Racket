@@ -9,3 +9,6 @@
 *.rkt~
 *.rkt#*
 .#*.rkt
+
+*compiled*
+
