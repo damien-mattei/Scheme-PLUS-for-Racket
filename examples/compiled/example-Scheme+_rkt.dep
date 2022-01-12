@@ -1,1 +1,0 @@
-("8.2" tarm64osx ("8004ffbe01cd59de87eb6d982046319a88232d07" . "63405d7c497b0684a539019240eb636ab957c87d") (collects #"Scheme-PLUS-for-Racket" #"SRFI" #"SRFI-105.rkt") (collects #"Scheme-PLUS-for-Racket" #"Scheme+.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"reader" #"lang" #"reader.rkt"))
