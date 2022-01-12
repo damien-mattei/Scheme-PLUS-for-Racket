@@ -1,1 +1,0 @@
-("8.2" tarm64osx ("d0a5d4ee74185a020ec10a05fdacef66b5094c5b" . "9f6a18f234b4ffe8b9b34bf88b9f79bde97c8a4f") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"syntax" #"strip-context.rkt"))
