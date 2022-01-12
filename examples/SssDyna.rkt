@@ -156,7 +156,7 @@
 	;; set the array but return the variable
 	($
 	 ;;(display "/ ls=") (display ls) (display " ") (display "t=") (display t) (newline)
-	{ dyna[ls t] <- (one-two
+	 { dyna[ls t] <- (one-two
 			  (if (null? L)
 			      #f
 			      ($
