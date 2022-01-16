@@ -32,7 +32,7 @@
 ;; {L-init <+ '(1 3 4 16 17 24 45 64 197 256 275 323 540 723 889 915 1040 1041 1093 1099 1111 1284 1344 1520 2027 2500 2734 3000 3267 3610 4285 5027)}
 ;; {t-init <+ 35267}
 ;; {ls <+ (length L-init)}
-;; {dyna <+ (make-array 0 {ls + 1} {t-init + 1})}
+;; {dyna <+ (make-array 0 {ls + 1} {t-init + 1})} ;; Guile compatible !
 ;; {cpt <+ 0} ;;(define cpt 0)
 
 (declare L-init t-init ls dyna cpt)

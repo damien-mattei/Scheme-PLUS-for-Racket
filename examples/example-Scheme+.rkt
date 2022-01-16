@@ -6,7 +6,6 @@
 
 (include "../library/increment.scm")
 (include "../library/for-next-step.scm")
-(include "../library/exponential.scm")
 
 {2 + 3}
 
