@@ -35,7 +35,8 @@
 
 
 (module Scheme+ racket
-
+	
+	(module test racket/base) ;; dummy
 
 	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ **)
 
@@ -53,3 +54,5 @@
 	(include "library/exponential.scm")
 
 	) ;; end module
+
+
