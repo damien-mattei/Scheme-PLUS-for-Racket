@@ -36,7 +36,7 @@
 
 (module Scheme+ racket
 	
-	;;(module test racket/base) ;; dummy
+	(module test racket/base) ;; dummy
 
 	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ **)
 
