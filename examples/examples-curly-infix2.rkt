@@ -1,4 +1,4 @@
-#lang reader "SRFI-105.rkt"
+#lang reader "../SRFI/SRFI-105.rkt"
 
 (provide fib)
 
