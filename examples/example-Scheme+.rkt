@@ -1,7 +1,12 @@
 #lang reader "../SRFI/SRFI-105.rkt"
 
-(require "../Scheme+.rkt")
+
+(require SchemePLUS/Scheme+)
+
+;;(require "../Scheme+.rkt")
 ;;(require Scheme-PLUS-for-Racket/Scheme+)
+
+
 
 
 (include "../library/increment.scm")
