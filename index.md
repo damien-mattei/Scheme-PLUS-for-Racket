@@ -262,7 +262,7 @@ you want)<br>
   <br>
   Those weirds Markdown and tags should not be displayed and are not part of Scheme+ examples.
   <a
-    href="https://damien-mattei.github.io/Scheme-PLUS-for-Guile/Scheme+.html"
+    href="https://damien-mattei.github.io/Scheme-PLUS-for-Racket/Scheme+.html"
     target="_blank">for a better view click here (or do not care of
   highlighting tag and triple backquotes when code is displayed!)</a><br>
     </p>
@@ -270,68 +270,13 @@ you want)<br>
 <br>
 <br>
 
-  <p>Another example with Guile Scheme in the REPL (Read Eval Print Loop):</p>
+  <p>Another example with Racket Scheme in the REPL (Read Eval Print Loop):</p>
     <p> </p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">mattei@MBP-Touch-Bar ~ % cd
-        Dropbox/git/Scheme-PLUS-for-Guile</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">mattei@MBP-Touch-Bar
-        Scheme-PLUS-for-Guile % guile</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">GNU Guile 3.0.7</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">Copyright (C) 1995-2021 Free
-        Software Foundation, Inc.</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">scheme@(guile-user)&gt;
-        (use-modules (Scheme+))</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">;;; note: source file
-        ./Scheme+.scm</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">;;; <span class="Apple-converted-space">&nbsp;
-          &nbsp; &nbsp; </span>newer than compiled<span class="Apple-converted-space">
-          <br>
-        </span></font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">;;; compiling ./Scheme+.scm</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">;;; compiled<span class="Apple-converted-space">&nbsp;</span></font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">scheme@(guile-user)&gt;
-        (declare L)</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">scheme@(guile-user)&gt; {L
-        &lt;- '(1 2 3 4)}</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">$1 = (1 2 3 4)</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">scheme@(guile-user)&gt; L</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">$2 = (1 2 3 4)</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">scheme@(guile-user)&gt; {L
-        &lt;- (list 1 2 3 4 5)}</font></p>
-    <p style="margin: 0.0px 0.0px 0.0px 0.0px; background-color:
-      #990033"><font style="font: 18.0px Menlo; font-variant-ligatures:
-        no-common-ligatures" size="5" face="Menlo">$3 = (1 2 3 4 5)</font></p>
-    <br>
+<img moz-do-not-send="true" src="img/racket-example.png"
+alt="example Racket scheme+ complex exponential" width="1300"
+height="867"><br>
+<p> </p> 
+<br>
 <p>Hash Tables support :</p>
     <pre>(use-modules (Scheme+))
 (use-modules (srfi srfi-69))  ;; support for SRFI 69 <meta http-equiv="content-type"
