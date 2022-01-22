@@ -183,8 +183,9 @@ you want)<br>
 
 {% highlight scheme %}
 ```scheme
+#lang reader "SRFI-105.rkt"
 
-(use-modules (Scheme+))
+(require Scheme-PLUS-for-Racket/Scheme+)
 
 
 (declare L-init t-init ls dyna cpt)
