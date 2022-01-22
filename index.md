@@ -273,8 +273,8 @@ you want)<br>
   <p>Another example with Racket Scheme in the REPL (Read Eval Print Loop):</p>
     <p> </p>
 <img moz-do-not-send="true" src="img/racket-example.png"
-alt="example Racket scheme+ complex exponential" width="1300"
-height="867"><br>
+alt="example Racket scheme+ complex exponential" width="1100"
+height="722"><br>
 <p> </p> 
 <br>
 <p>Hash Tables support :</p>
