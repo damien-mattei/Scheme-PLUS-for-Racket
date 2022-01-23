@@ -294,36 +294,37 @@ content="text/html; charset=utf-8">Basic hash tables
     <p>for the rest read below and the documentation.</p>
     <br>
     <h2>2.<u>Download Scheme+:</u></h2>
-    <p>The source code of the <b>Scheme+ module</b>, currently only for <a href="https://www.gnu.org/software/guile/"
-        target="_blank">Guile implementation of Scheme</a> can be retrieved
+    <p>The source code of the <b>Scheme+ module</b>, only for <a href="https://racket-lang.org/"
+        target="_blank">Racket implementation of Scheme</a> can be retrieved
       here: </p>
     <p><br>
     </p>
-<h3 style="    text-align: center;">&gt;&gt;&gt;&nbsp;&nbsp; <a href="https://github.com/damien-mattei/Scheme-PLUS-for-Guile/zipball/main"
+<h3 style="    text-align: center;">&gt;&gt;&gt;&nbsp;&nbsp; <a href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/zipball/main"
         target="_blank">Download Scheme+ as .zip</a>&nbsp;&nbsp; &lt;&lt;&lt;<br>
 			</h3>
 <p><br>
-<h3 style="    text-align: center;">&gt;&gt;&gt;&nbsp;&nbsp; <a href="https://github.com/damien-mattei/Scheme-PLUS-for-Guile/tarball/main"
+<h3 style="    text-align: center;">&gt;&gt;&gt;&nbsp;&nbsp; <a href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
         target="_blank">Download Scheme+ as .tar.gz</a>&nbsp;&nbsp; &lt;&lt;&lt;<br>
 		</h3>
 <p><br>
     </p>
-    <h3 style="    text-align: center;">&gt;&gt;&gt;&nbsp;&nbsp; <a href="https://github.com/damien-mattei/Scheme-PLUS-for-Guile"
-        target="_blank">https://github.com/damien-mattei/Scheme-PLUS-for-Guile
+    <h3 style="    text-align: center;">&gt;&gt;&gt;&nbsp;&nbsp; <a href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket"
+        target="_blank">https://github.com/damien-mattei/Scheme-PLUS-for-Racket
         --&gt; Code --&gt; Download ZIP</a>&nbsp;&nbsp; &lt;&lt;&lt;<br>
     </h3>
     <p><br>
     </p>
-    <p>Including : (but not mandatory to use Scheme+)</p>
-    <p style="margin-left: 40px;">The growable vector module class in the file
-      growable-vector.scm.</p>
-    <div style="margin-left: 40px;"> </div>
-    <p style="margin-left: 40px;">The enhanced set of LET special forms in the
-      file let.scm.</p>
-    <div style="margin-left: 40px;"> </div>
-    <p style="margin-left: 40px;">Many of the examples of this web page are in
-      the source file SssDyna.scm. </p>
-    <p style="margin-left: 40px;">The .guile configuration file i use with Scheme+.</p>
+	<p>Including : <br>
+</p>
+<div style="margin-left: 40px;"> </div>
+<p style="margin-left: 40px;">An implementation of the SRFI-105
+"Curly Infix" with a REPL (Read Eval Print Loop for Racket)<br>
+</p>
+<p style="margin-left: 40px;">The enhanced set of LET special forms
+in the file let.scm.</p>
+<div style="margin-left: 40px;"> </div>
+<p style="margin-left: 40px;">Many of the examples of this web page
+are in the source file SssDyna.scm.</p>
     <h2><br>
     </h2>
     <h2>3<u>.Requirements:</u><br>
