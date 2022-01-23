@@ -278,8 +278,9 @@ height="722"><br>
 <p> </p> 
 <br>
 <p>Hash Tables support :</p>
-    <pre>(use-modules (Scheme+))
-(use-modules (srfi srfi-69))  ;; support for SRFI 69 <meta http-equiv="content-type"
+    <pre>(require Scheme-PLUS-for-Racket/Scheme+)
+
+(require srfi/69)   ;; support for SRFI 69 <meta http-equiv="content-type"
 content="text/html; charset=utf-8">Basic hash tables
 
 {my-hash-tbl &lt;+ (make-hash-table)} ;; add an object in the current environment, here a hash table
