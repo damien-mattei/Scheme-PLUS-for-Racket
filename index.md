@@ -294,7 +294,7 @@ content="text/html; charset=utf-8">Basic hash tables
     <p>for the rest read below and the documentation.</p>
     <br>
     <h2>2.<u>Download Scheme+:</u></h2>
-    <p>The source code of the <b>Scheme+ module</b>, only for <a href="https://racket-lang.org/"
+    <p>The source code of the <b>Scheme+ module</b> for <a href="https://racket-lang.org/"
         target="_blank">Racket implementation of Scheme</a> can be retrieved
       here: </p>
     <p><br>
@@ -318,7 +318,7 @@ content="text/html; charset=utf-8">Basic hash tables
 </p>
 <div style="margin-left: 40px;"> </div>
 <p style="margin-left: 40px;">An implementation of the SRFI-105
-"Curly Infix" with a REPL (Read Eval Print Loop for Racket)<br>
+"Curly Infix" with a REPL (Read Eval Print Loop) for Racket. (file SRFI-105.rkt)<br>
 </p>
 <p style="margin-left: 40px;">The enhanced set of LET special forms
 in the file let.scm.</p>
