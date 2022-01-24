@@ -428,8 +428,7 @@ of Scheme+ (in the subdirectory <b>SRFI</b>)<br>
       <li>Assignment operator : <b>&lt;-</b> (can be used in infix syntax and
         from left to right and right to left)</li>
       <li>Square Bracket operator<b> []</b> working with Scheme <b>Vectors,
-          Arrays,Multidimentional Arrays</b>,Dynamic Arrays (my growable vector
-        class),<b>Hash Tables</b>...</li>
+          Arrays,Multidimentional Arrays,Hash Tables</b>...</li>
       <li>combination of Assignment operator &lt;- with [] operator for
         Vectors,Arrays,....</li>
       <li>RETURN : <b>return</b> keyword used in any procedure to return from
