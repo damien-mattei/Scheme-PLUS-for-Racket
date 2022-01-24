@@ -365,7 +365,7 @@ target="_blank" moz-do-not-send="true">Github issues system</a>.<br>
 	<p><br>
 The easiest way to install Scheme+ for Racket is via the official
 packet manager of Racket&nbsp; : <b>File -&gt; Packet Manager</b>
-and got to tab '<b>Available from catalog</b>' and filter for '<b>Scheme+</b>'
+and go to tab '<b>Available from catalog</b>' and filter for '<b>Scheme+</b>'
 key word.<br>
 </p>
 <p>Other way is also from Packet manager to install the dowloaded
