@@ -561,7 +561,7 @@ another method can be to 'require' the file : <b>(require
       of <b>Scheme+</b> is that it will work like the classic <b>set! </b>of
       Scheme on variables but also will work on more <b>complex object such as
         element of vectors,multidimensional arrays (as defined in
-        SRFIs),growable vectors (my class),... and much more in the next
+        SRFIs),... and much more in the next
         versions of Scheme+</b>. (we will see another more complex example with
       multidimentional array later)</p>
     <p>So <b>{x &lt;- 7} </b>simply assign 7 to the variable x but <b>{m[3]
