@@ -363,22 +363,6 @@ target="_blank" moz-do-not-send="true">Github issues system</a>.<br>
 </p>
     <h2><br>
     </h2>
-    <h2>4.<u>Author and license:</u></h2>
-    <p><b>Damien Mattei </b>; <b>Scheme+</b> : Copyright 2021 <b>Damien
-        Mattei </b>under <a href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU GENERAL PUBLIC LICENSE Version 3</a></p>
-    <p>Nice - France (commune de Carros) </p>
-    <p> contact : <a href="https://annuaire.univ-cotedazur.fr/" target="_blank">directory
-        e-mail<br>
-      </a></p>
-    <p>Guagno - Island of Corsica
-    </p>
-    <br>
-    <p>To subit an issue, a bug or something else related with the Scheme+ code
-      use the <a href="https://github.com/damien-mattei/Scheme-PLUS-for-Guile/issues"
-        target="_blank">Github issues system</a>.<br>
-    </p>
-    <p><br>
-    </p>
     <h2>5.<u>Installation:</u></h2>
 	<p><br>
 The easiest way to install Scheme+ for Racket is via the official
