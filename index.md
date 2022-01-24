@@ -380,50 +380,26 @@ target="_blank" moz-do-not-send="true">Github issues system</a>.<br>
     <p><br>
     </p>
     <h2>5.<u>Installation:</u></h2>
-    <p>Of course you can use Scheme+ module directly from the directory where
-      the downloaded and expanded Scheme files of Scheme+ are but Scheme Guile
-      have rules to install module sites.</p>
-    <p>Those rules are documented here: <a href="https://www.gnu.org/software/guile/manual/html_node/Installing-Site-Packages.html"
-        target="_blank">https://www.gnu.org/software/guile/manual/html_node/Installing-Site-Packages.html</a></p>
-    <p>For your convenience here is how you can install Scheme+ in a Guile
-      Scheme distribution:</p>
-    <p style="margin-left: 40px;">Launch guile and find the directory of the
-      site modules: <br>
-    </p>
-    <p style="margin-left: 40px;"><code>scheme@(guile-user)&gt; (%site-dir)</code><br>
-      <code>"/usr/share/guile/site/3.0"</code></p>
-    <p style="margin-left: 40px;"><br>
-    </p>
-    <p style="margin-left: 40px;">Create the directory (recursively) if it does
-      not already exist: </p>
-    <p style="margin-left: 40px;"><code>sudo mkdir -p /usr/share/guile/site/3.0</code><br>
-    </p>
-    <p style="margin-left: 40px;"><br>
-    </p>
-    <p style="margin-left: 40px;">Copy the files:</p>
-    <p style="margin-left: 40px;"><code>sudo cp *.scm /usr/share/guile/site/3.0</code></p>
-    <p style="margin-left: 40px;"><br>
-    </p>
-    <p style="margin-left: 40px;">Then you can use Scheme+ from
-      every directory you want as it is site installed:</p>
-    <p style="margin-left: 40px;"><code>(base) mattei@pc-mattei:~/Dropbox/git$
-        guile</code><br>
-        <code>GNU Guile 3.0.1</code><br>
-        <code>Copyright (C) 1995-2020 Free Software Foundation, Inc.</code><br>
-        <br>
-	<code>scheme@(guile-user)&gt; (use-modules (Scheme+))</code><br>
-        <code>;;; note: auto-compilation is enabled, set GUILE_AUTO_COMPILE=0</code><br>
-        <code>;;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; or pass the --no-auto-compile
-        argument to disable.</code><br>
-        <code>;;; compiling /usr/share/guile/site/3.0/Scheme+.scm</code><br>
-        <code>;;; compiling /usr/share/guile/site/3.0/growable-vector.scm</code><br>
-        <code>;;; compiled /home/mattei/.cache/guile/ccache/3.0-LE-8-4.2/usr/share/guile/site/3.0/growable-vector.scm.go</code><br>
-	<code>;;; compiled /home/mattei/.cache/guile/ccache/3.0-LE-8-4.2/usr/share/guile/site/3.0/Scheme+.scm.go</code><br><code>scheme@(guile-user)&gt;
-	{x &lt;+ 7}</code><br>
-        <code>scheme@(guile-user)&gt; x</code><br>
-        <code>7</code></p>
-		<br>
-		<br>
+	<p><br>
+The easiest way to install Scheme+ for Racket is via the official
+packet manager of Racket&nbsp; : <b>File -&gt; Packet Manager</b>
+and got to tab '<b>Available from catalog</b>' and filter for '<b>Scheme+</b>'
+key word.<br>
+</p>
+<p>Other way is also from Packet manager to install the dowloaded
+package via th tab '<b>Do what i mean' -&gt; Browse -&gt;
+Directory</b> and select the directory downloaded and
+uncompressed in the section 2 of this page.<br>
+</p>
+You also need the <b>SRFI-105 Curly Infix language</b> for Racket
+and its REPL (Read Eval Print Loop) that will allow you to use infix
+notation and Scheme+.<br>
+<br>
+This is <b>mandatory</b>.<br>
+<br>
+You can find the <b>SRFI-105.rkt</b> file in the downloaded package
+of Scheme+ (in the subdirectory <b>SRFI</b>)<br>
+<br>
 <h2><u>6. Idea and rationale:</u></h2>
     <p>The core language of <a href="https://en.wikipedia.org/wiki/Scheme_%28programming_language%29"
         target="_blank">Scheme</a> and <a href="https://en.wikipedia.org/wiki/Lisp_%28programming_language%29"
