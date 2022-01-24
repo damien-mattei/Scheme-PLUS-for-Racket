@@ -361,8 +361,6 @@ target="_blank" moz-do-not-send="true">Github issues system</a>.<br>
 </p>
 <p><br>
 </p>
-    <h2><br>
-    </h2>
     <h2>5.<u>Installation:</u></h2>
 	<p><br>
 The easiest way to install Scheme+ for Racket is via the official
