@@ -522,19 +522,23 @@ of Scheme+ (in the subdirectory <b>SRFI</b>)<br>
       special form to create a local variable to return the value computed and
       already stored in array,even if i have not used a local variable i then
       must have to access the result in array to return it...</p>
-    <p>Scheme+ allow to write code more readable and simpler than normal Scheme.</p>
-    <p>Prior to use <b>Scheme+</b> for the implementation of Scheme named
-      Guile, the <b>module </b>must be loaded,this is done by inserting the
-      statement <b>(use-modules (Scheme+))</b> at the beginning of the Scheme
-      source file.</p>
-      <p>Below is the version of the above code written in Scheme+ :</p>
-<p>
+    <p>Scheme+ allow to write code more readable and simpler than
+    normal Scheme.</p>
+	<p>Prior to use <b>Scheme+</b> for DrRacket Scheme, you must add a
+<b>#lang reader "SRFI-105.rkt" </b>directive in the first line of
+your program and the <b>module </b>must be loaded,this is done
+by inserting the statement <b>(require
+Scheme-PLUS-for-Racket/Scheme+)</b> in your program, however
+another method can be to 'require' the file : <b>(require
+"Scheme+.rkt") </b>if you have downloaded the source code.</p>
+<p>Below is the version of the above code written in Scheme+ :</p>
 
+    
 {% highlight scheme %}
 ```scheme
 
-
-(use-modules (Scheme+))
+#lang reader "SRFI-105.rkt"
+(require Scheme-PLUS-for-Racket/Scheme+)
 
 {size <+ 10000}
 {memo <+ (make-vector size 0)} 
@@ -584,8 +588,8 @@ of Scheme+ (in the subdirectory <b>SRFI</b>)<br>
 {% highlight scheme %}
 ```scheme
 
-
-(use-modules (Scheme+))
+#lang reader "SRFI-105.rkt"
+(require Scheme-PLUS-for-Racket/Scheme+)
 
 (declare size1 memo1)
 
