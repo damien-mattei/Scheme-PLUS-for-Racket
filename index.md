@@ -329,73 +329,38 @@ are in the source file SssDyna.scm.</p>
     </h2>
     <h2>3<u>.Requirements:</u><br>
     </h2>
-    <p><br>
-    </p>
-    <p>Scheme+ needs a Scheme interpreter and will be adapted and released for
-      many Scheme (Guile,Racket,...), download Scheme Guile:<br>
-    </p>
-    <a href="https://www.gnu.org/software/guile/"  target="_blank"><img moz-do-not-send="true" src="img/guile-logo.png"
-        title="Guile Scheme" alt="Guile Scheme web site" width="156" height="76"
-        border="0"></a><br>
-    <br>
-    <p>This version needs Guile Scheme version 3. It has been developed with
-      Guile 3.0.7 on <b>Mac</b><font color="#9999ff"><b> </b><b>OS</b></font>
-      and Guile 3.0.1 under <b>Linux</b>.<br>
-      <br>
-      <br>
-    </p>
-    <p>Guile offers infix notation that can be activated this way: for curly
-      infix notation put in your <b>.guile </b>file :<b> (read-enable
-        'curly-infix)</b><br>
-    </p>
-    Also you need to activate in Guile the <b>OOP option (Object Oriented
-      Programming)</b><br>
-    <br>
-    Also Guile can be more easy to use with history on command line, completion,
-    as example here is my <b>.guile </b>init file:<br>
-    <br>
-    <!-- HTML generated using hilite.me -->
-    <div style="background: #111111;
-      overflow:auto;width:auto;border:solid gray;border-width:.1em .1em      .1em .8em;padding:.2em .6em;">
-      <pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-style: italic; background-color: #0f140f">;; Guile config file</span>
-
-<span style="color: #008800; font-style: italic; background-color: #0f140f">;; history</span>
-<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">use-modules</span> <span
-style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">ice-9</span> <span
-style="color: #fb660a">readline</span><span style="color: #ffffff">)</span>
-         <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">ice-9</span> <span
-style="color: #fb660a">history</span><span style="color: #ffffff">)</span>
-         <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">srfi</span> <span
-style="color: #fb660a">srfi-43</span><span style="color: #ffffff">)</span> <span
-style="color: #008800; font-style: italic; background-color: #0f140f">;; vector</span>
-         <span style="color: #008800; font-style: italic; background-color: #0f140f">;; guile object oriented programming system</span>
-         <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">oop</span> <span
-style="color: #fb660a">goops</span><span style="color: #ffffff">)</span>
-         <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">oop</span> <span
-style="color: #fb660a">goops</span> <span style="color: #fb660a">describe</span><span
-style="color: #ffffff">))</span>
-        
-<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">activate-readline</span><span
-style="color: #ffffff">)</span>
-<span style="color: #008800; font-style: italic; background-color: #0f140f">;;(disable-value-history!)</span>
-
-<span style="color: #008800; font-style: italic; background-color: #0f140f">;; curly infix as in srfi-105</span>
-<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">read-enable</span> <span
-style="color: #0086d2">'curly-infix</span><span style="color: #ffffff">)</span>
-
-<span style="color: #008800; font-style: italic; background-color: #0f140f">;; set current path in load path</span>
-<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">set! </span><span
-style="color: #fb660a">%load-path</span> <span style="color: #ffffff">(reverse (cons </span><span
-style="color: #0086d2">"."</span> <span style="color: #ffffff">(reverse </span><span
-style="color: #fb660a">%load-path</span><span style="color: #ffffff">))))</span>
-<span style="color: #008800; font-style: italic; background-color: #0f140f">;; other solution is to put this in shell:</span>
-<span style="color: #008800; font-style: italic; background-color: #0f140f">;; export GUILE_LOAD_PATH="...:."</span>
-</pre> </div>
-    <p> </p>
-    <br>
-    <p>This .guile file is included in the Scheme+ repository.</p>
-    <p><br>
-    </p>
+    <p>Scheme+ needs a Scheme interpreter and will be adapted and
+released for many Scheme (Guile,Racket,...), download Racket
+Scheme:<br>
+</p>
+<a href="https://racket-lang.org/" target="_blank"><img
+moz-do-not-send="true" src="img/logo-and-text-1-2.png"
+title="Racket Scheme" alt="Racket Scheme web site" width="396"
+border="0" height="120"></a><br>
+<br>
+<p>It has been developed with Racket 8.2 on <b>Mac</b><font
+color="#9999ff"><b> </b><b>OS</b></font> and Racket under <b>Linux</b>.<br>
+<br>
+<br>
+<br>
+</p>
+<h2>4.<u>Author and license:</u></h2>
+<p><b>Damien Mattei </b>; <b>Scheme+</b> : Copyright 2021-2022
+    <b>Damien Mattei </b>under <a
+href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU GENERAL PUBLIC LICENSE Version 3</a></p>
+<p>Nice - France (commune de Carros) </p>
+<p> contact : <a href="https://annuaire.univ-cotedazur.fr/"
+target="_blank">directory e-mail<br>
+</a></p>
+<p>Guagno - Island of Corsica </p>
+<br>
+<p>To subit an issue, a bug or something else related with the
+Scheme+ code use the <a
+href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/issues"
+target="_blank" moz-do-not-send="true">Github issues system</a>.<br>
+</p>
+<p><br>
+</p>
     <h2><br>
     </h2>
     <h2>4.<u>Author and license:</u></h2>
