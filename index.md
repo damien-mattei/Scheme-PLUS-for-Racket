@@ -608,8 +608,7 @@ another method can be to 'require' the file : <b>(require
 <h2><br>
     </h2>
     <h2><u>9.Short documentation</u></h2>
-    <p>Square bracket operator <b>[] </b>is used for vectors,arrays,growable
-      vectors,hash tables,etc.</p>
+    <p>Square bracket operator <b>[] </b>is used for vectors,arrays,hash tables,etc.</p>
     <p>example: <b>{T[k]} </b>return value of vector or array T indexed by k.</p>
     <p><br>
     </p>
@@ -666,7 +665,10 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```scheme
 
 
-(use-modules (Scheme+))
+#lang reader "../SRFI/SRFI-105.rkt"
+
+(require "../Scheme+.rkt")
+;;(require Scheme-PLUS-for-Racket/Scheme+)
 
 {L-init <+ '(1 3 4 16 17 24 45 64 197 256 275 323 540 723 889 915 1040 1041 1093 1099 1111 1284 1344 1520 2027 2500 2734 3000 3267 3610 4285 5027)}
 {t-init <+ 35267}
@@ -709,7 +711,7 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 
 <p> </p>
     <br>
-    <p><b>scheme@(guile-user)&gt; (subset-sum-guile&nbsp; L-init t-init)</b></p>
+    <p><b>(subset-sum-guile&nbsp; L-init t-init)</b></p>
     <p><b>#t</b><br>
       <br>
     </p>
@@ -807,7 +809,10 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```scheme
 
 
-(use-modules (Scheme+))
+#lang reader "../SRFI/SRFI-105.rkt"
+;;(require "../Scheme+.rkt")
+(require Scheme-PLUS-for-Racket/Scheme+)
+
 
 (declare L-init t-init ls dyna cpt)
 
@@ -870,7 +875,9 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```scheme
 
 
-(use-modules (Scheme+))
+#lang reader "../SRFI/SRFI-105.rkt"
+;;(require "../Scheme+.rkt")
+(require Scheme-PLUS-for-Racket/Scheme+)
 
 (def (subset-sum-dyna L t)
 
