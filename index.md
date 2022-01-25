@@ -1078,8 +1078,7 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
     <p><br>
     </p>
     <h2><u>16.Extra features:</u> </h2>
-    
-    <p>Other features include a part of my personal functional library when
+<p>Other features include a part of my personal functional library when
       functions are not existing already in some <a href="https://srfi.schemers.org/"
         target="_blank">SRFI (Scheme Request For Implementations)</a>.</p>
     <p><br>
