@@ -10,10 +10,10 @@
 (include "../library/increment.scm")
 (include "../library/for-next-step.scm")
 
-{2 + 3}
-
-(declare x)
-{x <- 7}
+;{2 + 3}
+;
+;(declare x)
+;{x <- 7}
 
 (define (fib n)
   (if {n < 2}
