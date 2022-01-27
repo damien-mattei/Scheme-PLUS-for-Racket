@@ -338,8 +338,8 @@ moz-do-not-send="true" src="img/logo-and-text-1-2.png"
 title="Racket Scheme" alt="Racket Scheme web site" width="396"
 border="0" height="120"></a><br>
 <br>
-<p>It has been developed with Racket 8.2 on <b>Mac</b><font
-color="#9999ff"><b> </b><b>OS</b></font> and Racket under <b>Linux</b>.<br>
+<p>It has been developed with Racket v8.2 on <b>Mac</b><font
+color="#9999ff"><b> </b><b>OS</b></font> and Racket v7.7 under <b>Linux</b>.<br>
 <br>
 <br>
 <br>
