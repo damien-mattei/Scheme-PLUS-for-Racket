@@ -1204,7 +1204,7 @@ moz-do-not-send="true">then type in u + unicode and hit Enter to
 get it</a>. And in Emacs you can insert an unicode char with the sequence:
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <code>‘C-x 8 RET’</code> followed with unicode of the character
-you want)<br></p>
+you want.<br></p>
     <ul>
       <li>&lt;- : ← , unicode 2190 (this doesn't looks like but it is an
         hexadecimal number !) This operator assignment was used in <a href="https://en.wikipedia.org/wiki/APL_%28programming_language%29"
