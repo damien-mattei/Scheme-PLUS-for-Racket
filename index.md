@@ -349,9 +349,7 @@ color="#9999ff"><b> </b><b>OS</b></font> and Racket v7.7 under <b>Linux</b>.<br>
     <b>Damien Mattei </b>under <a
 href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU GENERAL PUBLIC LICENSE Version 3</a></p>
 <p>Nice - France (commune de Carros) </p>
-<p> contact : <a href="https://annuaire.univ-cotedazur.fr/"
-target="_blank">directory e-mail<br>
-</a></p>
+<p> contact : firstname Dot lastname At Google Mail</p>
 <p>Guagno - Island of Corsica </p>
 <br>
 <p>To subit an issue, a bug or something else related with the
