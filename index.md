@@ -1110,42 +1110,6 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```
 {% endhighlight %}
 
-<p> </p>
-    <p>and here is the source code of this <b>recursive macro</b> defined with
-      an <b>accumulator</b>:</p>
-    <p><!-- HTML generated using hilite.me --></p>
-
-
-{% highlight scheme %}
-```scheme
-
-
-(define-syntax let<-rec*
-
-  (syntax-rules (<-)
-
-    ((_ () expr ...) (begin expr ...)) ;;  case empty let
-    ((_ (var1 <- val1) expr  ...) (letrec* ((var1 val1)) expr ...)) ;; case single binding
-    ((_ (var1 <- val1 ;; multiple binding
-	 var2 <- val2 ...)
-	expr ...)
-     (%parse-letrec-bindings-and-evaluate-expressions ((var1 val1))  (var2 <- val2 ...) expr ...))))
-
-;; recursive macro with accumulator
-(define-syntax %parse-letrec-bindings-and-evaluate-expressions
-
-  (syntax-rules (<-)
-
-    ((_ (bindings ...) (var1 <- val1) expr ...)  (letrec* (bindings ... (var1 val1)) ;; last binding
-							  expr ...)) ;; we evaluate expressions
-    ((_ (bindings ...) (var1 <- val1 ;; multiple binding
-			var2 <- val2 ...) expr ...)
-     ;; store (var1 val1) binding in accumulator and continue parsing
-       (%parse-letrec-bindings-and-evaluate-expressions (bindings ... (var1 val1)) (var2 <- val2 ...) expr ...))))
-
-
-```
-{% endhighlight %}
 
 <p> </p>
     <br>
