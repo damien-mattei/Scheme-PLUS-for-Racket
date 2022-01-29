@@ -127,7 +127,7 @@ you want)<br>
       <b><b>{</b>T</b><b>[m n] ← </b><b><b>T</b><b>[m {n +
   1}]</b>}</b></p>
   <p style="margin-left: 40px;"><b>(declare fact)<br>
-{fact &lt;- (lambda (n) (if {n &lt;&gt; 0} {n * (fact {n - 1})}
+{fact &lt;- (λ (n) (if {n &lt;&gt; 0} {n * (fact {n - 1})}
 1))}<br>
 </b></p>
 <p style="margin-left: 40px;"><b>or just:<br>
@@ -991,12 +991,12 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 
 (define foo (begin (define x 1)
                    (define y 2)
-                   (lambda (t) (+ x y t))))
+                   (λ (t) (+ x y t))))
 
 (define bar (let ()
               (define x 1)
               (define y 2)
-              (lambda (t) (+ x y t))))
+              (λ (t) (+ x y t))))
 
 
 ```
@@ -1036,7 +1036,7 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 (def bar (& (declare x y)
             {x <- 1} 
             {y <- 2}
-            (lambda (t) (+ x y t))))
+            (λ (t) (+ x y t))))
 
 (bar 7)
 10
@@ -1153,7 +1153,7 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```scheme
 
 
-(letrec-arrow* [ fact ← (lambda (n)
+(letrec-arrow* [ fact ← (λ (n)
  			  (if  {n = 1}
  			       1
                                {n * (fact {n - 1})} )) ]
@@ -1322,7 +1322,7 @@ scheme@(guile-user)&gt; v
 				  (dv and-terms)) ;; dv:display value
 				{debug-mode  ← debug-mode-save}
 				(apply append
-				       (map (lambda (min-term)
+				       (map (λ (min-term)
 					      (expand-minterm var-list min-term))
 					    and-terms)))}
 
@@ -1368,8 +1368,8 @@ scheme@(guile-user)&gt; v
 ;; sos set of sets
 (define (put-elements-of-set-of-sets-in-minterms-ht sos)
   (map ;; deal with sets of the 'set of sets'
-   (lambda (s) (map ;; deal with elements of a set
-		(lambda (e) {minterms-ht[e] <- #f})
+   (λ (s) (map ;; deal with elements of a set
+		(λ (e) {minterms-ht[e] <- #f})
 		s))
    sos))
 
@@ -1401,7 +1401,7 @@ scheme@(guile-user)&gt; v
 (define (init-hash-table-with-set-and-value ht s val)
   (display "init-hash-table-with-set-and-value") (newline)
   {ht ← (make-hash-table)}
-  (map (lambda (e) {ht[e] <- val}) s)
+  (map (λ (e) {ht[e] <- val}) s)
   (display "end of init-hash-table-with-set-and-value") (newline))
 
 
