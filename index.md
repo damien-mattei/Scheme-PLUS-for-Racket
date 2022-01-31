@@ -371,6 +371,11 @@ package via th tab '<b>Do what i mean' -&gt; Browse -&gt;
 Directory</b> and select the directory downloaded and
 uncompressed in the section 2 of this page.<br>
 </p>
+<p>Anyway you can find the Scheme+ for Racket package here: <a
+        href="https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket" title="Scheme+ package for Racket"
+        target="_blank">https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket</a>
+      .<br>
+    </p>
 You also need the <b>SRFI-105 Curly Infix language</b> for Racket
 and its REPL (Read Eval Print Loop) that will allow you to use infix
 notation and Scheme+.<br>
