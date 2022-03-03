@@ -1,9 +1,9 @@
 #lang reader "../SRFI/SRFI-105.rkt"
 
 
-;;(require "../Scheme+.rkt")
+(require "../Scheme+.rkt")
 
-(require Scheme-PLUS-for-Racket/Scheme+)
+;;(require Scheme-PLUS-for-Racket/Scheme+)
 
 
 

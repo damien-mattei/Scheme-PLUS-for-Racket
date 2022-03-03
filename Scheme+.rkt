@@ -2,7 +2,7 @@
 
 ;; Scheme+.rkt
 
-;; version 1.0
+;; version 1.2
 
 ;; author: Damien MATTEI
 
@@ -10,7 +10,7 @@
 
 ;; date: 2022
 
-;; Guile Scheme version
+;; Racket Scheme version
 
 ;; Copyright 2021 Damien MATTEI
 
@@ -38,7 +38,7 @@
 	
 	(module test racket/base) ;; dummy
 
-	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ **)
+	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v>)
 
 
 	(include "included-files/def.scm")
