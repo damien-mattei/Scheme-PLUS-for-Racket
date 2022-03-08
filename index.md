@@ -19,7 +19,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 1.0 for Racket Scheme<br>
+          style="color: #999999;"> <font size="+2">version 2.0 for Racket Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;">
 	Display options for viewing this documentation:<br><br>
@@ -150,23 +150,21 @@ you want)<br>
       &nbsp;(7 7 7 7)</p>
     <p style="margin-left: 40px;">Another example which build an
       identity matrix:</p>
-    <p style="margin-left: 40px;">&nbsp;(declare I)<br>
-      &nbsp;{I ← (make-array 0 4 4)}<br>
-      &nbsp; #2((0 0 0 0)<br>
-      &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; (0 0 0 0)<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (0 0 0 0)<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (0 0 0 0))<br>
-      &nbsp;&nbsp;&nbsp; <br>
-      &nbsp; {I[0 0] ← I[1 1] ← I[2 2] ← I[3 3] ← 1}<br>
-      &nbsp; 1<br>
-      &nbsp;&nbsp;&nbsp; <br>
-      &nbsp;&nbsp; I<br>
-      &nbsp;&nbsp; #2((1 0 0 0)<br>
-      &nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; (0 1 0 0)<br>
-      &nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; (0 0 1 0)<br>
-      &nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; (0 0 0 1))<br>
-      <br>
-      </p>
+<p style="margin-left: 40px;">(require srfi/25)<br>
+</p>
+<p style="margin-left: 40px;">&nbsp;(declare I)<br>
+&nbsp;{I ← (make-array (shape 0 4 0 4))}<br>
+&nbsp; <br>
+&nbsp;&nbsp;&nbsp; <br>
+&nbsp;{I[0 0] ← I[1 1] ← I[2 2] ← I[3 3] ← 1}<br>
+&nbsp;1<br>
+&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;I<br>
+&nbsp; #&lt;array:srfi-9-record-type-descriptor&gt;</p>
+<p style="margin-left: 40px;">&gt; {I[0 0]}<br>
+1<br>
+&gt; {I[0 1]}<br>
+0<br>
     <p style="margin-left: 40px;"><br>
       defining new functions with <b>def </b>instead of the classic define we
       can now use <b>return</b> to escape immediately :<br>
@@ -179,7 +177,45 @@ you want)<br>
     <div style="margin-left: 40px;"> <b>(return </b>v<b>)</b></div>
     <p style="text-align: left;"><b> <br>
       </b></p>
-    <p>Here is an example of the previous features:  </p>
+	  <p style="margin-left: 40px;">The &lt;+ operator works also for
+defining multiple values :<br>
+</p>
+<p style="margin-left: 40px;">{(a b c) &lt;+ (values 7 8 9)}<br>
+7<br>
+8<br>
+9<br>
+(list a b c)<br>
+'(7 8 9)<br>
+</p>
+<p style="margin-left: 40px;">{(x y z) &lt;+ (u v w) &lt;+ (a b
+c)&nbsp; &lt;+ (values 2 4 5)}<br>
+2<br>
+4<br>
+5<br>
+(list x y z u v w a b c)<br>
+'(2 4 5 2 4 5 2 4 5)<br>
+</p>
+<p style="margin-left: 40px;">We can also assign multiple values on
+the fly:<br>
+</p>
+<p style="margin-left: 40px;">(declare x y z)<br>
+{(x y z) &lt;v (values 2 4 5)}<br>
+2<br>
+4<br>
+5<br>
+(list x y z)<br>
+'(2 4 5)<br>
+(declare u v w)<br>
+{(x y z) &lt;v (u v w) &lt;v (values 2 4 5)}<br>
+2<br>
+4<br>
+5<br>
+(list x y z u v w)<br>
+'(2 4 5 2 4 5)<br>
+</p>
+<p style="margin-left: 40px;"><br>
+</p>
+<p>Here is an example of the previous features:  </p>
 
 {% highlight scheme %}
 ```scheme
