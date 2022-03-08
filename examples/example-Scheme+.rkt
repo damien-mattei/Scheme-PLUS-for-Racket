@@ -52,21 +52,25 @@
     ;;(newline)
     )
   r)
-  
+
+
+;; > (ζ 1.13+1.765i)
+;; 0.6089377313286828-0.4217761641044059i with n= 1000000000
+;; from Wolfram : 0.644488... - 0.435759... i
 (define (ζ z)
-  {nmax <+ 10}
+  {nmax <+ 1000000000}
   {r <+ 1.0}
   (for (n 2 nmax)
     {v <+ {1.0 / {n ** z}}}    
     {r <- {r + v}}
-    (display v)
-    (newline)
+    ;;(display v)
+    ;;(newline)
     )
   r)
 
 (define (ζ-expr z)
   
-  {nmax <+ 100000000}
+  {nmax <+ 100}
   {r <+ 1.0}
   {a <+ (real-part z)}
   {b <+ (imag-part z)}
