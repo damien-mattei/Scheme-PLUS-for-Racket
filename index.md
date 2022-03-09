@@ -215,7 +215,8 @@ the fly:<br>
 </p>
 <p style="margin-left: 40px;"><br>
 </p>
-<p>Here is an example of the previous features:  </p>
+<p>Here is an example of the previous features about a <a href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dynamic_programming_solutions"
+        target="_blank">dynamic solution of the subset sum problem</a>:  </p>
 
 {% highlight scheme %}
 ```scheme
