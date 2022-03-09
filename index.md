@@ -307,7 +307,7 @@ the fly:<br>
 <br>
 <br>
 
-  <p>Another example with Racket Scheme in the REPL (Read Eval Print Loop):</p>
+  <p>Another example with DrRacket Scheme in the REPL (Read Eval Print Loop):</p>
     <p> </p>
 <img moz-do-not-send="true" src="img/racket-example.png"
 alt="example Racket scheme+ complex exponential" width="1100"
@@ -1111,8 +1111,6 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
     </p>
     <h2>15.<u>Future:</u></h2>
     <p>Scheme+ will continue to be implemented for other Scheme implementations.</p>
-    <p>Next version will integrate more features, concerning <b>multiple values</b>
-      return for example.</p>
     <p><br>
     </p>
     <p><br>
