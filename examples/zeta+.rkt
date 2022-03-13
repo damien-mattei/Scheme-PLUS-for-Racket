@@ -1,0 +1,283 @@
+#lang reader "../SRFI/SRFI-105.rkt"
+
+;;(require Scheme-PLUS-for-Racket/Scheme+)
+
+(require "../Scheme+.rkt")
+
+(include "../library/increment.scm")
+(include "../library/for-next-step.scm")
+(include "../library/repeat-until.scm")
+
+(require racket/gui/base)
+
+(define animation-mode #f)
+
+{xws ⥆ 1000} ;; X window size
+{yws ⥆ 800} ;; Y window size
+
+{ywsp ⥆ {yws - 200}} ;; Y window size for plot
+
+; Make a frame by instantiating the frame% class
+{frame0 ⥆ (new frame% [label "Example"]
+	       [width xws]
+	       [height yws])}
+
+
+; Make a static text message in the frame
+{msg ⥆ (new message% [parent frame0]
+	    [label "No events so far..."])}
+ 
+;; Make a button in the frame
+(new button% [parent frame0]
+             [label "Exit"]
+             ; Callback procedure for a button click:
+             [callback (lambda (button event)
+                         (send msg set-label "Button click")
+			 (exit))])
+
+(define no-pen (new pen% [style 'transparent]))
+(define no-brush (new brush% [style 'transparent]))
+(define blue-brush (new brush% [color "blue"]))
+(define yellow-brush (new brush% [color "yellow"]))
+
+
+(define (draw-z-point dc)
+  (send dc set-pen no-pen)
+  (send dc set-brush blue-brush)
+  {ga ⥆ 8}
+  {pa ⥆ 8}
+  {(x y) ⥆ (to-screen-multi-values z)}
+  {x ← {x - (quotient ga 2)}}
+  {y ← {y - (quotient pa 2)}}
+  (send dc draw-ellipse x y ga pa))
+
+;; convert to screen coords
+(define (to-screen z0)
+  {re ⥆ (real-part z0)}
+  {im ⥆ (imag-part z0)}
+  {xs ⥆ {re * unit}}
+  {ys ⥆ {im * unit}}
+  (make-rectangular (round {xo + xs})
+		    (round {yo - ys})))
+
+(define (to-screen-multi-values z0)
+  {re ⥆ (real-part z0)}
+  {im ⥆ (imag-part z0)}
+  {xs ⥆ {re * unit}}
+  {ys ⥆ {im * unit}}
+  (values (round {xo + xs})
+	  (round {yo - ys})))
+
+
+
+;;{z ⥆ 0}
+;;{z ⥆ 2+1i}
+{z ⥆ 1.13+1.765i}
+
+
+(define (draw-zeta dc)
+  
+  {zi ⥆ 0}
+  {nmax ⥆ 10000000}
+  
+  {flag-color ⥆ #t}
+  ;;(newline)
+  (for (n 1 nmax)
+       (if flag-color
+	   (send dc set-pen "blue" 1 'solid)
+	   (send dc set-pen "green" 1 'solid))
+       {flag-color ← (not flag-color)}
+       ;;(display "draw-zeta : n =") (display n) (newline)
+       {zp ⥆ {1.0 / {n ** z}}}
+       ;; (display "draw-zeta : z =") (display z) (newline)
+       ;; (display "draw-zeta : zp =") (display zp) (newline)
+       ;; (display "draw-zeta : zi =") (display zi) (newline)
+       {zxtrm  ⥆ {zi + zp}}
+       ;;(display "draw-zeta : zxtrm =") (display zxtrm) (newline)
+       {zie ⥆ (to-screen zi)}
+       ;;(display "draw-zeta : zie =") (display zie) (newline)
+       {zxtrme ⥆ (to-screen zxtrm)}
+       ;;(display "draw-zeta : zxtrme =") (display zxtrme) (newline)
+       {x0 ⥆  (real-part zie)}
+       {y0 ⥆  (imag-part zie)}
+       {x1 ⥆  (real-part zxtrme)}
+       {y1 ⥆  (imag-part zxtrme)}
+       (when {{x0 >= 0} and {x0 <= xws} and  {x1 >= 0} and {x1 <= xws}
+	      and {y0 >= 0} and {y0 <= ywsp} and  {y1 >= 0} and {y1 <= ywsp}}
+	     (send dc draw-line
+		   x0 y0
+		   x1 y1))
+       {zi ← zxtrm}))
+
+
+(define (draw-zeta-multi-values dc)
+  
+  {zi ⥆ 0}
+  {flag-color ⥆ #t}
+  {dmin ⥆ 2} ;; minimal length  in pixel to draw line
+  {n ⥆ 1}
+  (newline)
+  
+  (repeat
+   
+       (if flag-color
+	   (send dc set-pen "blue" 1 'solid)
+	   (send dc set-pen "green" 1 'solid))
+       {flag-color ← (not flag-color)}
+       ;;(display "draw-zeta-multi-values : n =") (display n) (newline)
+       {zp ⥆ {1.0 / {n ** z}}}
+       {zxtrm  ⥆ {zi + zp}}
+       ;;(display "draw-zeta-multi-values : zxtrm =") (display zxtrm) (newline)
+ 
+       {(x0 y0) ⥆ (to-screen-multi-values zi)} 
+       {(x1 y1) ⥆ (to-screen-multi-values zxtrm)}
+ 
+       (when {{x0 >= 0} and {x0 <= xws} and  {x1 >= 0} and {x1 <= xws}
+	      and {y0 >= 0} and {y0 <= ywsp} and  {y1 >= 0} and {y1 <= ywsp}}
+	     (send dc draw-line
+		   x0 y0
+		   x1 y1))
+
+       {len-line ⥆ (line-length x0 y0 x1 y1)}
+       {zi ← zxtrm}
+       {n ← {n + 1}}
+       
+       until {len-line < dmin})
+
+  (display "draw-zeta-multi-values : z =") (display z) (newline)
+  (display "draw-zeta-multi-values : Riemann Zeta(z) = zi =") (display zi) (newline)
+
+  )
+
+
+
+(define (line-length x0 y0 x1 y1)
+  (sqrt {{{x1 - x0} ** 2} + {{y1 - y0} ** 2}}))
+
+
+;; (new button% [parent frame0]
+;;              [label "Pause"]
+;;              [callback (λ (button event) (sleep 5))])
+
+
+;; {panel ⥆ (new horizontal-panel% [parent frame0])}
+
+;; (new button% [parent panel]
+;;              [label "Left"]
+;;              [callback (λ (button event)
+;;                          (send msg set-label "Left click"))])
+;; (new button% [parent panel]
+;;              [label "Right"]
+;;              [callback (λ (button event)
+;;                          (send msg set-label "Right click"))])
+
+{z-old ⥆ z}
+
+; Derive a new canvas (a drawing window) class to handle events
+{my-canvas% ⥆
+  (class canvas% ; The base class is canvas%
+    ; Define overriding method to handle mouse events
+    (define/override (on-event event)
+     
+      {window-x ⥆ (send event get-x)}
+      {window-y ⥆ (send event get-y)}
+      (when animation-mode
+	{z ← (ret-z window-x window-y)})
+      
+      ;;{str ⥆ (string-append "(" (number->string window-x) " , " (number->string window-y) ")")}
+      (when {z ≠ z-old}
+	    {z-old ← z}
+	    {str ⥆ (number->string z)} 
+	    (send msg set-label str)
+	    (send cv refresh))
+      
+      )
+    
+    ; Define overriding method to handle keyboard events
+    (define/override (on-char event)
+      (send msg set-label "Canvas keyboard"))
+    ; Call the superclass init, passing on all init args
+    (super-new))}
+
+
+{cv ⥆ (new my-canvas% [parent frame0]
+	   [paint-callback
+	    (λ (canvas dc) ;; dc: Drawing Context
+	      ;; cf. https://docs.racket-lang.org/draw/overview.html#%28tech._drawing._context%29
+	      
+	      ;; (send dc draw-rectangle
+	      ;; 	    (random 10) 10   ; Top-left at (0, 10), 10 pixels down from top-left
+	      ;; 	    30 10) ; 30 pixels wide and 10 pixels high
+	      ;; (send dc draw-line
+	      ;; 	    (random 10) 0    ; Start at (0, 0), the top-left corner
+	      ;; 	    30 30) ; and draw to (30, 30), the bottom-right corner
+
+	      (send dc erase)
+	      (send dc set-pen "black" 1 'solid)
+	      (draw-axes dc)
+	      (draw-units dc)
+	      (draw-z-point dc)
+
+	      (if animation-mode
+		  (draw-zeta-multi-values dc)
+		  (draw-zeta dc))
+	      
+	      ;; (send dc set-scale 3 3)
+	      ;; (send dc set-text-foreground "blue")
+	      ;; (send dc draw-text "Don't Panic!" 0 0)
+	      )])}
+
+
+
+
+(define (center-coords)
+  (values (quotient xws 2)
+	  (quotient ywsp 2)))
+
+{(xo yo) ⥆ (center-coords)}
+
+{unit ⥆ 200}
+
+(define (draw-axes dc)
+  (send dc draw-line ;; Ox
+	0 yo xws yo)
+  (send dc draw-line ;; Oy
+	xo 0 xo ywsp))
+
+(define (draw-units dc)
+  ;;X
+  {nun ⥆ (quotient xo unit)}
+  (for (n 1 nun)
+       {xu ⥆ {xo + {n * unit}}}
+       (send dc draw-line
+	     xu {yo - 3}
+	     xu {yo + 3})
+       {xum ⥆ {xo - {n * unit}}}
+       (send dc draw-line
+	     xum {yo - 3}
+	     xum {yo + 3}))
+
+  ;; Y
+  {nuny ⥆ (quotient yo unit)}
+  (for (n 1 nuny)
+       {yu ⥆ {yo - {n * unit}}}
+       (send dc draw-line
+	     {xo - 3} yu
+	     {xo + 3} yu)
+       {yum ⥆ {yo + {n * unit}}}
+       (send dc draw-line
+	     {xo - 3} yum
+	     {xo + 3} yum)))
+
+(send frame0 show #t)
+
+;; return the z complex from canvas plane where is the mouse pointer
+(define (ret-z x y)
+  {i ⥆ 0+1i} ;; imaginaire pur
+  {re ⥆ {x - xo}}
+  {re ← {re / unit}}
+  {im ⥆ (- {y - yo})}
+  {im ← {im / unit}}
+  (exact->inexact {re + {i * im}}))
+
+

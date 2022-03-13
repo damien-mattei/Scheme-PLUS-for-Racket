@@ -129,8 +129,9 @@
           (read-char port)
           '())
         ((or (eq? c #\)) (eq? c #\]) (eq? c #\}))
-          (read-char port)
-          (read-error "Bad closing character"))
+	 (display "Error on char:") (display c) (newline)
+	 (read-char port)
+	 (read-error "Bad closing character"))
         (#t
           (let ((datum (my-read port)))
             (cond

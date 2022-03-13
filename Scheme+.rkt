@@ -38,8 +38,12 @@
 	
 	(module test racket/base) ;; dummy
 
-	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v>)
-
+	;;(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v>)
+	
+	;; use this line below with with Racket graphics that use 'function contract':
+	;; https://docs.racket-lang.org/reference/function-contracts.html#%28form._%28%28lib._racket%2Fcontract%2Fbase..rkt%29._-~3e%29%29
+	(provide def $bracket-apply$ <- ← #;-> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v>)
+	
 
 	(include "included-files/def.scm")
 	(include "included-files/array.scm")
