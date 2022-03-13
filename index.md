@@ -1700,7 +1700,7 @@ scheme@(guile-user)&gt; v
        {y0 ⥆  (imag-part zie)}
        {x1 ⥆  (real-part zxtrme)}
        {y1 ⥆  (imag-part zxtrme)}
-       (when {{x0 >= 0} and {x0 <= xws} and  {x1 >= 0} and {x1 <= xws}
+       (when { {x0 >= 0} and {x0 <= xws} and  {x1 >= 0} and {x1 <= xws}
 	      and {y0 >= 0} and {y0 <= ywsp} and  {y1 >= 0} and {y1 <= ywsp}}
 	     (send dc draw-line
 		   x0 y0
