@@ -238,7 +238,7 @@
           (my-read port))
         ((char=? c #\] )
           (read-char port)
-          (read-error "Closing bracket without opening")
+          (read-error "Closing bracket without opening") ;; a closing char with no opening one will simply be skipped (no fail of parsing)
           (my-read port))
         ((char=? c #\} )
           (read-char port)
