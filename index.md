@@ -1750,7 +1750,7 @@ scheme@(guile-user)&gt; v
 
 
 (define (line-length x0 y0 x1 y1)
-  (sqrt { {{x1 - x0} ** 2} + {{y1 - y0} ** 2}}))
+  (sqrt { { {x1 - x0} ** 2} + { {y1 - y0} ** 2}}))
 
 
 ;; (new button% [parent frame0]
