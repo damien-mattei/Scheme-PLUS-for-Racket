@@ -1886,7 +1886,7 @@ scheme@(guile-user)&gt; v
     <p align="center"><br>
     </p>
     <div align="center"><img
-src="file:///Users/mattei/Dropbox/git/Scheme-PLUS-for-Racket/gh-pages/Scheme-PLUS-for-Racket/img/zeta-DrRacket.png"
+src="img/zeta-DrRacket.png"
         moz-do-not-send="true" alt="zeta riemann" width="1200"
         border="3" height="750"><br>
     </div>
