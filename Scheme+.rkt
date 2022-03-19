@@ -12,7 +12,7 @@
 
 ;; Racket Scheme version
 
-;; Copyright 2021 Damien MATTEI
+;; Copyright 2021-2022 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
