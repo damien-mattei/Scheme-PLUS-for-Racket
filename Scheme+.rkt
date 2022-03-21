@@ -2,13 +2,11 @@
 
 ;; Scheme+.rkt
 
-;; version 1.2
+;; version 2.0
 
 ;; author: Damien MATTEI
 
 ;; location: France
-
-;; date: 2022
 
 ;; Racket Scheme version
 
