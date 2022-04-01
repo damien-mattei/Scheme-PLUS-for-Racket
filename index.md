@@ -5,7 +5,7 @@
   <div align="center">
     <br>
   </div>
-  <div align="center"><img moz-do-not-send="true" src="img/Scheme+.png" title="by Damien MATTEI"
+  <div align="center"><img moz-do-not-send="true" src="Scheme+io_fichiers/Scheme+.png" title="by Damien MATTEI"
         alt="Scheme+" width="290" height="65"></div>
     <h2 style="text-align: center;"><span style="color: #00cccc;"><i>Enhancing
           Scheme (and Lisp-like) language. </i></span></h2>
@@ -306,7 +306,7 @@ the fly:<br>
 
   <p>Another example with DrRacket Scheme in the REPL (Read Eval Print Loop):</p>
     <p> </p>
-<img moz-do-not-send="true" src="img/racket-example.png"
+<img moz-do-not-send="true" src="Scheme+io_fichiers/racket-example.png"
 alt="example Racket scheme+ complex exponential" width="1100"
 height="722"><br>
 <p> </p> 
@@ -368,7 +368,7 @@ released for many Scheme (Guile,Racket,...), download Racket
 Scheme:<br>
 </p>
 <a href="https://racket-lang.org/" target="_blank"><img
-moz-do-not-send="true" src="img/logo-and-text-1-2.png"
+moz-do-not-send="true" src="Scheme+io_fichiers/logo-and-text-1-2.png"
 title="Racket Scheme" alt="Racket Scheme web site" width="396"
 border="0" height="120"></a><br>
 <br>
@@ -1579,7 +1579,7 @@ scheme@(guile-user)&gt; v
     </p>
     <p align="center"><br>
     </p>
-    <div align="center"><img src="img/zeta-DrRacket.png"
+    <div align="center"><img src="Scheme+io_fichiers/zeta-DrRacket.png"
         moz-do-not-send="true" alt="zeta riemann" width="700" border="3"
         height="438"><br>
     </div>
@@ -1883,7 +1883,7 @@ scheme@(guile-user)&gt; v
     <p align="center"><br>
     </p>
     <div align="center"><img
-src="img/zeta-DrRacket.png"
+src="Scheme+io_fichiers/zeta-DrRacket.png"
         moz-do-not-send="true" alt="zeta riemann" width="1200"
         border="3" height="750"><br>
     </div>
