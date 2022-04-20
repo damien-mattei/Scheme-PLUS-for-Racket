@@ -10,7 +10,7 @@
 
 (require racket/gui/base)
 
-(define animation-mode #f)
+(define animation-mode #t)
 
 {xws ⥆ 1000} ;; X window size
 {yws ⥆ 800} ;; Y window size
