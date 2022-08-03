@@ -84,6 +84,7 @@
        ;;(display "<- : vector or array set! or hash-table set!") (newline)
        (cond ((vector? container) (vector-set! container index value))
 	     ((hash-table? container) (hash-table-set! container index value))
+	     ((string? container) (string-set! container index value))
 	     (else (array-set! container index value)));)
         
        value))

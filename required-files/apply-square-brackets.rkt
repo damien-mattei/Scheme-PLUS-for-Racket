@@ -70,6 +70,7 @@
      ;(begin ;;(display "$bracket-apply$") (newline)
      (cond ((vector? container) (vector-ref container index))
 	   ((hash-table? container) (hash-table-ref container index))
+	   ((string? container) (string-ref container index))
 	   (else (array-ref container index))));)
     
     ((_ array index1 index2 ...)
