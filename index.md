@@ -19,7 +19,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 2.0 for Racket Scheme<br>
+          style="color: #999999;"> <font size="+2">version 3.0 for Racket Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;">
 	Display options for viewing this documentation:<br>
@@ -123,6 +123,26 @@ you want)<br>
     <p style="margin-left: 40px;"><br>
       <b><b>{</b>T</b><b>[m n] ← </b><b><b>T</b><b>[m {n +
   1}]</b>}</b></p>
+  <p style="margin-left: 40px;"><b>compatible with strings:</b></p>
+    <p style="margin-left: 40px;"><b>{str &lt;+ (string-copy "hello")}<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>"hello"<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>{str[4]}<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>#\o<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>{str[4] &lt;- #\a}<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>#\a<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>str<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>"hella"</b></p>
+    <p style="margin-left: 40px;"><b><br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>with function definition:<br>
+      </b></p>
   <p style="margin-left: 40px;"><b>(declare fact)<br>
 {fact &lt;- (λ (n) (if {n &lt;&gt; 0} {n * (fact {n - 1})}
 1))}<br>
@@ -465,7 +485,7 @@ of Scheme+ (in the subdirectory <b>SRFI</b>)<br>
       <li>Assignment operator : <b>&lt;-</b> (can be used in infix syntax and
         from left to right and right to left)</li>
       <li>Square Bracket operator<b> []</b> working with Scheme <b>Vectors,
-          Arrays,Multidimentional Arrays,Hash Tables</b>...</li>
+          Arrays,Multidimentional Arrays,Hash Tables,Strings</b>...</li>
       <li>combination of Assignment operator &lt;- with [] operator for
         Vectors,Arrays,....</li>
       <li>RETURN : <b>return</b> keyword used in any procedure to return from

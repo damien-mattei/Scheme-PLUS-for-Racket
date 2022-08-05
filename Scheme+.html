@@ -10,9 +10,13 @@
     <div align="center"><br>
     </div>
     <div align="center"><img moz-do-not-send="true"
-        src="img/Scheme+.png" title="by Damien MATTEI" alt="Scheme+"
-        width="290" height="65"></div>
+        src="Scheme+io_fichiers/Scheme+.png" title="by Damien MATTEI"
+        alt="Scheme+" width="290" height="65"></div>
     <h2 style="text-align: center;"><span style="color: #00cccc;"><i>Enhancing
+
+
+
+
 
 
 
@@ -28,7 +32,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 2.0 for
+          style="color: #999999;"> <font size="+2">version 3.0 for
             Racket Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;"> </p>
@@ -44,7 +48,15 @@
 
 
 
+
+
+
+
         infix </b><b>(works also in prefix) </b><b>notation </b><b>with
+
+
+
+
 
 
         a few new operators&nbsp;</b><b> </b><b><b><b>← (or&nbsp;</b></b>
@@ -57,6 +69,10 @@
         enhanced.</b><br>
     </p>
     <p>The <b>idea</b> of <b>Scheme+</b> is came from this : <b><i>"Why
+
+
+
+
 
 
           is it so boring to define variables in Scheme with the
@@ -111,6 +127,10 @@ href="https://apple.stackexchange.com/questions/183045/how-can-i-type-unicode-ch
 
 
 
+
+
+
+
         8 RET’</code> followed with unicode of the character you want)</p>
     <p style="margin-left: 40px;"><b>{T[k]} </b>return value of vector
       or array T indexed by k.</p>
@@ -121,8 +141,16 @@ href="https://apple.stackexchange.com/questions/183045/how-can-i-type-unicode-ch
     <p style="margin-left: 40px;"><b>{T</b><b>[k] &lt;- </b><b><b>T</b><b>[{k
 
 
+
+
+
+
           + 1}]</b>} </b>in infix or the same with a little part of
       classic prefix Scheme:&nbsp; <b>{T</b><b>[k] &lt;- </b><b><b>T</b><b>[(+
+
+
+
+
 
 
           k 1)]</b>} <br>
@@ -150,9 +178,33 @@ href="https://apple.stackexchange.com/questions/183045/how-can-i-type-unicode-ch
 
 
 
+
+
+
+
           {n + 1}]</b>}</b></p>
     <p style="margin-left: 40px;"><br>
       <b><b>{</b>T</b><b>[m n] ← </b><b><b>T</b><b>[m {n + 1}]</b>}<br>
+        <br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>compatible with strings:</b></p>
+    <p style="margin-left: 40px;"><b>{str &lt;+ (string-copy "hello")}<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>"hello"<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>{str[4]}<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>#\o<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>{str[4] &lt;- #\a}<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>#\a<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>str<br>
+      </b></p>
+    <p style="margin-left: 40px;"><b>"hella"</b></p>
+    <br>
+    <p style="margin-left: 40px;"><b>with function definition:<br>
       </b></p>
     <p style="margin-left: 40px;"><b>(declare fact)<br>
         {fact &lt;- (λ (n) (if {n &lt;&gt; 0} {n * (fact {n - 1})} 1))}<br>
@@ -166,6 +218,10 @@ href="https://apple.stackexchange.com/questions/183045/how-can-i-type-unicode-ch
       </b></p>
     <div style="margin-left: 40px;"> </div>
     <p style="margin-left: 40px;"> no more need of <strike>LET,LET*,LETREC,LET-VALUES</strike>,...
+
+
+
+
 
 
 
@@ -329,9 +385,9 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
     <p>Another example with DrRacket Scheme in the REPL (Read Eval Print
       Loop):</p>
     <p> </p>
-    <img moz-do-not-send="true" src="Scheme+io_fichiers/racket-example.png"
-      alt="example Racket scheme+ complex exponential" width="1100"
-      height="722"><br>
+    <img moz-do-not-send="true"
+      src="Scheme+io_fichiers/racket-example.png" alt="example Racket
+      scheme+ complex exponential" width="1100" height="722"><br>
     <p> </p>
     <br>
     <p>Hash Tables support :</p>
@@ -373,6 +429,10 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
 
 
 
+
+
+
+
         --&gt; Code --&gt; Download ZIP</a>&nbsp;&nbsp; &lt;&lt;&lt;<br>
     </h3>
     <p><br>
@@ -398,9 +458,10 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
       Scheme:<br>
     </p>
     <a href="https://racket-lang.org/" target="_blank"><img
-        moz-do-not-send="true" src="Scheme+io_fichiers/logo-and-text-1-2.png"
-        title="Racket Scheme" alt="Racket Scheme web site" width="396"
-        border="0" height="120"></a><br>
+        moz-do-not-send="true"
+        src="Scheme+io_fichiers/logo-and-text-1-2.png" title="Racket
+        Scheme" alt="Racket Scheme web site" width="396" border="0"
+        height="120"></a><br>
     <br>
     <p>It has been developed with Racket v8.2 on <b>Mac</b><font
         color="#9999ff"><b> </b><b>OS</b></font> and Racket v7.7 under
@@ -414,8 +475,16 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
 
 
 
+
+
+
+
         Mattei </b>under <a
         href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU
+
+
+
+
 
 
 
@@ -518,6 +587,10 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
       form, no more need of <strike>LET,LET*,LETREC,LET-VALUES</strike>,...
 
 
+
+
+
+
       and will use an unique infix (or not) assignment operator : &lt;-.
       (also LET are enhanced - the project historically by improving and
       simplifying LET, i simplified it so much that i remove it now! -
@@ -539,7 +612,11 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
 
 
 
-          Arrays,Multidimentional Arrays</b>,<b>Hash Tables</b>...</li>
+
+
+
+
+          Arrays,Multidimentional Arrays</b>,<b>Hash Tables,Strings</b>...</li>
       <li>combination of Assignment operator &lt;- with [] operator for
         Vectors,Arrays,....</li>
       <li>RETURN : <b>return</b> keyword used in any procedure to
@@ -643,6 +720,10 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
         </b>(</span><span style="color: #ff0086; font-weight: bold">require
 
 
+
+
+
+
       </span><span style="color: #ffffff"></span><span style="color:
         #ff0086; font-weight: bold"><b>Scheme-PLUS-for-Racket/</b>Scheme+</span><span
         style="color: #ffffff">)<br>
@@ -671,6 +752,10 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
       (we will see another more complex example with multidimentional
       array later)</p>
     <p>So <b>{x &lt;- 7} </b>simply assign 7 to the variable x but <b>{m[3]
+
+
+
+
 
 
 
@@ -762,6 +847,10 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
 
 
 
+
+
+
+
         (all-defined-out))</b> to export all bindings:</p>
     <pre>(require "logiki+.rkt")<br><br>(infix-symb-min-dnf '{{(not a) and (not b) and (not c) and (not d)} or {(not a) and (not b) and (not c) and d} or {(not a) and (not b) and c and (not d)} or {(not a) and b and (not c) and d} or {(not a) and b and c and (not d)} or {(not a) and b and c and d} or {a and (not b) and (not c) and (not d)} or {a and (not b) and (not c) and d} or {a and (not b) and c and (not d)} or {c and (not d)}} )
 disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and (not a) (not b) (not c) d) (and (not a) b (not c) d) (and (not a) b c d) (and a (not b) (not c) (not d)) (and a (not b) (not c) d))
@@ -844,9 +933,17 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
 
 
 
+
+
+
+
         statements </i>...]</p>
     <div style="margin-left: 40px;"> </div>
     <p style="text-align: left; margin-left: 40px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
 
 
 
@@ -924,9 +1021,17 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
 
 
 
+
+
+
+
       ...</p>
     <div style="margin-left: 40px;"> </div>
     <p style="text-align: left; margin-left: 40px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
 
 
 
@@ -1206,6 +1311,10 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
 
 
 
+
+
+
+
       [<b>exec</b><i> statements ... </i>]</p>
     <p style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
@@ -1245,8 +1354,16 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
 
 
 
+
+
+
+
       ...</p>
     <p style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
 
 
 
@@ -1330,6 +1447,10 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
 
 
 
+
+
+
+
       of the classic define we can now use <b>return</b> to escape
       immediately returning the value v:</p>
     <p style="text-align: left;"><b>(return </b>v<b>) </b><b> </b></p>
@@ -1340,6 +1461,10 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
       </b></p>
     <p style="text-align: left;">But <b>begin</b> is dual in Scheme, it
       expands differently in <i>expression </i>context and <i>definition
+
+
+
+
 
 
       </i>context. See this for more information:</p>
@@ -1372,6 +1497,10 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
       expression context in: (define x 1)<br>
     </p>
     <p style="text-align: left;">for this reason i provide a <b>&amp; </b>macro
+
+
+
+
 
 
 
@@ -1556,6 +1685,10 @@ href="https://lists.gnu.org/archive/html/guile-devel/2021-09/msg00031.html"
     <p> <img
         src="https://upload.wikimedia.org/wikipedia/commons/9/9f/APL-keybd2.svg"
         alt="IBM 2741 keyboard layout" title="IBM 2741 keyboard layout">IBM
+
+
+
+
 
 
       2741 Terminal keyboard layout</p>
