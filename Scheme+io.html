@@ -326,8 +326,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
             target="_blank">dynamic solution of the subset sum problem</a>:
         </p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-<span class="o">#</span><span class="nv">lang</span> <span class="nv">reader</span> <span class="s">"SRFI-105.rkt"</span>
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span><span class="o">#</span><span class="nv">lang</span> <span class="nv">reader</span> <span class="s">"SRFI-105.rkt"</span>
 
 <span class="p">(</span><span class="nf">require</span> <span class="nv">Scheme-PLUS-for-Racket/Scheme+</span><span class="p">)</span>
 
@@ -378,7 +377,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
   <span class="nv">s</span><span class="p">)</span> <span class="c1">;; return boolean value</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <pre>(subset-sum-dynamic  L-init t-init)
 #t
@@ -627,8 +626,7 @@ href="https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket"
         <p style="margin-left: 40px;">Here is the definition in classic
           prefix Scheme:</p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">fibonacci</span> <span class="nv">n</span><span class="p">)</span>
   <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;</span> <span class="nv">n</span> <span class="mi">2</span><span class="p">)</span>
@@ -636,13 +634,12 @@ href="https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket"
     <span class="p">(</span><span class="nb">+</span> <span class="p">(</span><span class="nf">fibonacci</span> <span class="p">(</span><span class="nb">-</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">))</span> <span class="p">(</span><span class="nf">fibonacci</span> <span class="p">(</span><span class="nb">-</span> <span class="nv">n</span> <span class="mi">2</span><span class="p">)))))</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p style="margin-left: 40px;">And here is a definition using
           "Curly Infix" SRFI 105:</p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">fib</span> <span class="nv">n</span><span class="p">)</span>
   <span class="p">(</span><span class="k">if</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">&lt;</span> <span class="mi">2</span><span class="p">}</span>
@@ -650,7 +647,7 @@ href="https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket"
       <span class="p">{</span><span class="p">(</span><span class="nf">fib</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">-</span> <span class="mi">1</span><span class="p">}</span><span class="p">)</span> <span class="nv">+</span> <span class="p">(</span><span class="nf">fib</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">-</span> <span class="mi">2</span><span class="p">}</span><span class="p">)</span><span class="p">}</span> <span class="p">))</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p> </p>
         <br>
@@ -665,8 +662,7 @@ href="https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket"
           the results computed more than one time.</p>
         <p>Here is a solution in classic Scheme:</p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="k">define</span> <span class="nv">size0</span> <span class="mi">10000</span><span class="p">)</span>
 <span class="p">(</span><span class="k">define</span> <span class="nv">memo0</span> <span class="p">(</span><span class="nb">make-vector</span> <span class="nv">size0</span> <span class="mi">0</span><span class="p">))</span><span class="nv">return</span>
@@ -679,7 +675,7 @@ href="https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket"
 		<span class="nv">fibn</span><span class="p">))))</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p> </p>
         <br>
@@ -703,8 +699,7 @@ href="https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket"
             "Scheme+.rkt") </b>if you have downloaded the source code.</p>
         <p>Below is the version of the above code written in Scheme+ :</p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 <span class="o">#</span><span class="nv">lang</span> <span class="nv">reader</span> <span class="s">"SRFI-105.rkt"</span>
 <span class="p">(</span><span class="nf">require</span> <span class="nv">Scheme-PLUS-for-Racket/Scheme+</span><span class="p">)</span>
 
@@ -717,7 +712,7 @@ href="https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket"
          <span class="p">(</span><span class="k">else</span> <span class="p">{</span><span class="nv">memo</span><span class="p">[</span><span class="nf">n</span><span class="p">]</span> <span class="nv">&lt;-</span> <span class="p">{</span><span class="p">(</span><span class="nf">fibdyna</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">-</span> <span class="mi">1</span><span class="p">}</span><span class="p">)</span> <span class="nv">+</span> <span class="p">(</span><span class="nf">fibdyna</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">-</span> <span class="mi">2</span><span class="p">}</span><span class="p">)</span><span class="p">}}</span><span class="p">)</span> <span class="p">))</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p></p>
         <p> </p>
@@ -756,8 +751,7 @@ href="https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket"
         <h2><br>
         </h2>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 <span class="o">#</span><span class="nv">lang</span> <span class="nv">reader</span> <span class="s">"SRFI-105.rkt"</span>
 <span class="p">(</span><span class="nf">require</span> <span class="nv">Scheme-PLUS-for-Racket/Scheme+</span><span class="p">)</span>
 
@@ -772,7 +766,7 @@ href="https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket"
 	<span class="p">(</span><span class="k">else</span> <span class="p">{</span><span class="nv">memo1</span><span class="p">[</span><span class="nf">n</span><span class="p">]</span> <span class="nv">&lt;-</span> <span class="p">{</span><span class="p">(</span><span class="nf">fibdyna1</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">-</span> <span class="mi">1</span><span class="p">}</span><span class="p">)</span> <span class="nv">+</span> <span class="p">(</span><span class="nf">fibdyna1</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">-</span> <span class="mi">2</span><span class="p">}</span><span class="p">)</span><span class="p">}}</span><span class="p">)</span> <span class="p">))</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <h2><br>
         </h2>
@@ -836,8 +830,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
           <b>&lt;+</b> and <b>&lt;-</b> (due to the impossibility to
           have easily a single operator :-( ) :</p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="o">#</span><span class="nv">lang</span> <span class="nv">reader</span> <span class="s">"../SRFI/SRFI-105.rkt"</span>
 
@@ -880,7 +873,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
 	       <span class="nv">s</span><span class="p">]))</span> <span class="c1">;; return boolean value</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p> </p>
         <br>
@@ -892,8 +885,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
           is a macro that allow execution of arbitrary code between
           conditionals clauses,general syntax is:</p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="nf">condx</span> <span class="p">[</span><span class="nf">condition</span> <span class="nv">statements</span> <span class="o">...</span><span class="p">]</span>
 
@@ -904,7 +896,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
             <span class="p">[</span><span class="k">else</span> <span class="nv">statements</span> <span class="o">...</span><span class="p">])</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <div style="margin-left: 40px;"> </div>
         <p style="text-align: center;"><br>
@@ -912,8 +904,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
         <p style="text-align: left;">In classic Scheme the code would be
           like that which is longer than in Scheme+:</p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="k">define</span> <span class="nv">cpt</span> <span class="mi">0</span><span class="p">)</span>
 
@@ -960,7 +951,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
 	      <span class="p">]</span> <span class="p">))</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p style="text-align: left;"> <br>
         </p>
@@ -971,8 +962,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
           declarative programming style with the <b>declare </b>macro:</p>
         <p> </p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="o">#</span><span class="nv">lang</span> <span class="nv">reader</span> <span class="s">"../SRFI/SRFI-105.rkt"</span>
 <span class="c1">;;(require "../Scheme+.rkt")</span>
@@ -1022,7 +1012,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
 	       <span class="nv">s</span><span class="p">]))</span> <span class="c1">;; return boolean value</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p style="text-align: left;">It is also possible to use <b>return</b>
           keyword in function definition by <b>def </b>macro and have
@@ -1035,8 +1025,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
         <p style="text-align: left;"><br>
         </p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="o">#</span><span class="nv">lang</span> <span class="nv">reader</span> <span class="s">"../SRFI/SRFI-105.rkt"</span>
 <span class="c1">;;(require "../Scheme+.rkt")</span>
@@ -1076,7 +1065,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
   <span class="nv">s</span><span class="p">)</span> <span class="c1">;; return boolean value</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <h2><br>
         </h2>
@@ -1108,8 +1097,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
         <p><b>condx</b> is a macro that allow execution of arbitrary
           code between conditionals clauses,syntax is :</p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="nf">condx</span> <span class="p">[</span><span class="nf">condition</span> <span class="nv">statements</span> <span class="o">...</span><span class="p">]</span>
 
@@ -1120,7 +1108,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
             <span class="p">[</span><span class="k">else</span> <span class="nv">statements</span> <span class="o">...</span><span class="p">])</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p style="text-align: left;"><b>condx</b> is not a major feature
           of <b>Scheme+</b> but it can replace a lot of 'if then <b>elif'</b>,
@@ -1154,8 +1142,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
           definitions where the first - foo - is erroneous:<br>
         </p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="k">define</span> <span class="nv">foo</span> <span class="p">(</span><span class="k">begin</span> <span class="p">(</span><span class="k">define</span> <span class="nv">x</span> <span class="mi">1</span><span class="p">)</span>
                    <span class="p">(</span><span class="k">define</span> <span class="nv">y</span> <span class="mi">2</span><span class="p">)</span>
@@ -1167,7 +1154,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
               <span class="p">(</span><span class="p">λ</span> <span class="p">(</span><span class="nf">t</span><span class="p">)</span> <span class="p">(</span><span class="nb">+</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nv">t</span><span class="p">))))</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p style="text-align: left;">error: define: not allowed in an
           expression context in: (define x 1)<br>
@@ -1177,8 +1164,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
         </p>
         <p style="text-align: left;"> </p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="k">define-syntax</span> <span class="nv">&amp;</span>
   <span class="p">(</span><span class="k">syntax-rules</span> <span class="p">()</span>
@@ -1186,15 +1172,14 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
     <span class="p">((</span><span class="nf">_</span> <span class="nv">ev</span> <span class="o">...</span><span class="p">)</span> <span class="p">(</span><span class="k">let</span> <span class="p">()</span> <span class="nv">ev</span> <span class="o">...</span><span class="p">))))</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p>We can now define the previous bar function in Scheme+ like
           this:<br>
         </p>
         <p> </p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="nf">def</span> <span class="nv">bar</span> <span class="p">(</span><span class="nf">&amp;</span> <span class="p">(</span><span class="nf">declare</span> <span class="nv">x</span> <span class="nv">y</span><span class="p">)</span>
             <span class="p">{</span><span class="nv">x</span> <span class="nv">&lt;-</span> <span class="mi">1</span><span class="p">}</span> 
@@ -1205,7 +1190,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
 <span class="mi">10</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p style="text-align: left;"> </p>
         <h2 style=" text-align: left;">13.<u>Caveats:</u></h2>
@@ -1261,8 +1246,7 @@ href="https://lists.gnu.org/archive/html/guile-devel/2021-09/msg00031.html"
         <p>Examples:</p>
         <p><!-- HTML generated using hilite.me --></p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="nf">let&lt;-rec*</span> <span class="p">[</span><span class="nf">x</span> <span class="nv">&lt;-</span> <span class="mi">1</span>
             <span class="nv">y</span> <span class="nv">&lt;-</span> <span class="p">(</span><span class="nb">+</span> <span class="nv">x</span> <span class="mi">1</span><span class="p">)</span>
@@ -1271,7 +1255,7 @@ href="https://lists.gnu.org/archive/html/guile-devel/2021-09/msg00031.html"
 <span class="mi">4</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p> </p>
         <br>
@@ -1280,8 +1264,7 @@ href="https://lists.gnu.org/archive/html/guile-devel/2021-09/msg00031.html"
         <p>let-arrow* :</p>
         <p><!-- HTML generated using hilite.me --></p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="nf">let-arrow*</span> <span class="p">(</span><span class="nf">x</span> <span class="p">←</span> <span class="mi">1</span>
  	     <span class="nv">y</span> <span class="p">←</span> <span class="p">{</span><span class="nv">x</span> <span class="nv">+</span> <span class="mi">1</span><span class="p">}</span><span class="p">)</span>
@@ -1304,7 +1287,7 @@ href="https://lists.gnu.org/archive/html/guile-devel/2021-09/msg00031.html"
 
 <span class="mi">2</span>
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <p> </p>
         <p><br>
@@ -1312,8 +1295,7 @@ href="https://lists.gnu.org/archive/html/guile-devel/2021-09/msg00031.html"
         <p>letrec-arrow* , the same as let-arrow* but for recursive
           functions:</p>
         <figure class="highlight">
-          <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+          <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 
 <span class="p">(</span><span class="nf">letrec-arrow*</span> <span class="p">[</span> <span class="nv">fact</span> <span class="p">←</span> <span class="p">(</span><span class="p">λ</span> <span class="p">(</span><span class="nf">n</span><span class="p">)</span>
  			  <span class="p">(</span><span class="k">if</span>  <span class="p">{</span><span class="nv">n</span> <span class="nv">=</span> <span class="mi">1</span><span class="p">}</span>
@@ -1323,7 +1305,7 @@ href="https://lists.gnu.org/archive/html/guile-devel/2021-09/msg00031.html"
 
 <span class="mi">120</span>
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
         </figure>
         <br>
         <h2><br>
@@ -1408,8 +1390,7 @@ scheme@(guile-user)&gt; v
           <p><br>
           </p>
           <figure class="highlight">
-            <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+            <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 <span class="p">(</span><span class="nf">def</span> <span class="p">(</span><span class="nf">Petrick</span> <span class="nv">non-essential-prime-implicants</span> <span class="nv">var-list</span><span class="p">)</span>
 
   <span class="c1">;; create the conjunction of disjunction expression</span>
@@ -1474,7 +1455,7 @@ scheme@(guile-user)&gt; v
       
 <span class="p">)</span>
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
           </figure>
           <br>
           <br>
@@ -1484,8 +1465,7 @@ scheme@(guile-user)&gt; v
           <p><br>
           </p>
           <figure class="highlight">
-            <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+            <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 <span class="p">(</span><span class="nf">def</span> <span class="p">(</span><span class="nf">Quine-Mc-Cluskey</span> <span class="nv">disj-norm-form</span> <span class="nv">var-list</span><span class="p">)</span>
      
      <span class="p">(</span><span class="nf">display-nl</span> <span class="s">"Entering Quine-Mc-Cluskey"</span><span class="p">)</span>
@@ -1698,7 +1678,7 @@ scheme@(guile-user)&gt; v
   <span class="nv">essential-prime-implicants-list</span><span class="p">)</span>
 
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
           </figure>
           <br>
           <br>
@@ -1727,8 +1707,7 @@ scheme@(guile-user)&gt; v
           the Scheme+ package):<br>
           <br>
           <figure class="highlight">
-            <pre><code class="language-scheme" data-lang="scheme"><span class="o">```</span><span class="nv">scheme</span>
-
+            <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
 <span class="o">#</span><span class="nv">lang</span> <span class="nv">reader</span> <span class="s">"../SRFI/SRFI-105.rkt"</span>
 
 <span class="c1">;;(require Scheme-PLUS-for-Racket/Scheme+)</span>
@@ -2011,7 +1990,7 @@ scheme@(guile-user)&gt; v
   <span class="p">{</span><span class="nv">im</span> <span class="p">←</span> <span class="p">{</span><span class="nv">im</span> <span class="nv">/</span> <span class="nv">unit</span><span class="p">}}</span>
   <span class="p">(</span><span class="nb">exact-&gt;inexact</span> <span class="p">{</span><span class="nv">re</span> <span class="nv">+</span> <span class="p">{</span><span class="nv">i</span> <span class="nv">*</span> <span class="nv">im</span><span class="p">}}</span><span class="p">))</span>
 
-<span class="o">```</span></code></pre>
+<span class="o"></span></code></pre>
           </figure>
           <br>
           <br>
