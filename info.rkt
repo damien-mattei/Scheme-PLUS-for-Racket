@@ -8,3 +8,4 @@
 (define pkg-authors '(mattei))
 (define scribblings '(("scribblings/scheme-plus.scrbl" ())))
 (define build-deps '("scribble-lib" "racket-doc" "scribble-code-examples" "scribble-doc"))
+(define license 'LGPL-3.0-or-later)
