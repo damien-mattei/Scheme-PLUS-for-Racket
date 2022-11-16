@@ -67,42 +67,67 @@
 
 ;; scheme@(guile-user)> '{x <- y <- 7}
 ;; $1 = (<- x y 7)
+
+;; TODO : add a checking based on :
+;; (define-syntax test-it (syntax-rules () ((_ symb) (if (equal? (quote symb) 'bingo) "gagné!" (quote symb)))))
+;; > (test-it y)
+;; 'y
+;; > (test-it bingo)
+;; "gagné!"
+
 (define-syntax <-
   
   (syntax-rules ()
     ;;  special form like : (<- ($bracket-apply$ T 3) ($bracket-apply$ T 4))
     
     ;; one dimension array, example: {a[4] <- 7}
-    ;; $bracket-apply$ of SRFI 105 but it is just a macro pattern identificator here
-    ((_ ($bracket-apply$ container index) expr)
-     (let ((value expr)) ;; to avoid compute it twice
+    ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
+    ((_ (bracket-apply container index) expr)
+     
+     (begin
+
+       (unless (equal? (quote $bracket-apply$) (quote bracket-apply)) 
+	 (error "Bad <- form: the LHS of expression must be an identifier or of the form ($bracket-apply$ container index) , first argument "
+		(quote bracket-apply)
+		" is not $bracket-apply$."))
+		       
+       
+       (let ((value expr)) ;; to avoid compute it twice
 						  
-       ;; normal case
-       ;; {T[2] <- 4}
-       ;; {T[3] <- T[2]}
-       ;;(begin
-       ;;(display "<- : vector or array set! or hash-table set!") (newline)
-       (cond ((vector? container) (vector-set! container index value))
-	     ((hash-table? container) (hash-table-set! container index value))
-	     ((string? container) (string-set! container index value))
-	     (else (array-set! container index value)));)
-        
-       value))
+	 ;; normal case
+	 ;; {T[2] <- 4}
+	 ;; {T[3] <- T[2]}
+	 ;;(begin
+	 ;;(display "<- : vector or array set! or hash-table set!") (newline)
+	 (cond ((vector? container) (vector-set! container index value))
+	       ((hash-table? container) (hash-table-set! container index value))
+	       ((string? container) (string-set! container index value))
+	       (else (array-set! container index value)));)
+	 
+	 value)))
 
 
     ;; multi dimensions array :  {a[2 4] <- 7}
-    ;; $bracket-apply$ of SRFI 105
-    ((_ ($bracket-apply$ array index1 index2 ...) expr)
-     (let ((value expr)) ;; to avoid compute it twice
-  						 
-       ;; normal case
-       ;;(begin
-       ;;(display "<- : multidimensional vector or array set!") (newline)
-       (if (vector? array)
-	   (array-n-dim-set! array value index1 index2 ...)
-	   (array-set! array index1 index2 ... value));)
+    ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
+    ((_ (bracket-apply array index1 index2 ...) expr)
 
-	 value))
+     (begin
+
+       (unless (equal? (quote $bracket-apply$) (quote bracket-apply)) 
+	 (error "Bad <- form: the LHS of expression must be an identifier or of the form ($bracket-apply$ array index1 index2 ...) , first argument "
+		(quote bracket-apply)
+		" is not $bracket-apply$."))
+		       
+       (let ((value expr)) ;; to avoid compute it twice
+	 
+	 ;; normal case
+	 ;;(begin
+	 ;;(display "<- : multidimensional vector or array set!") (newline)
+	 (if (vector? array)
+	     (array-n-dim-set! array value index1 index2 ...)
+	     (array-set! array index1 index2 ... value));)
+
+	 value)))
 
     
     ;;(<- x 5)

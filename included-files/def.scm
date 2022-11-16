@@ -34,10 +34,25 @@
 	((_ (var1 ...)) #`(begin (define var1 '()) ...))
 	
 	;;  (def (foo) (when #t (return "hello") "bye"))
-        ((_ (<name> <arg> ...) <body> <body>* ...)
-         (let ((ret-id (datum->syntax stx 'return)))
-           #`(define (<name> <arg> ...)
-               (call/cc (lambda (#,ret-id) <body> <body>* ...)))))
+        ;; ((_ (<name> <arg> ...) <body> <body>* ...)
+        ;;  (let ((ret-id (datum->syntax stx 'return)))
+        ;;    #`(define (<name> <arg> ...)
+        ;;        (call/cc (lambda (#,ret-id) <body> <body>* ...)))))
+
+
+	((_ (<name> <arg> ...) <body> <body>* ...)
+	 
+         (let ((ret-id (datum->syntax stx 'return))
+	       (ret-rec-id (datum->syntax stx 'return-rec)))
+
+	   #`(define (<name> <arg> ...)
+
+	       (call/cc (lambda (#,ret-rec-id)
+			  
+			 (apply (rec <name> (lambda (<arg> ...)
+					      (call/cc (lambda (#,ret-id) <body> <body>* ...)))) (list <arg> ...)))))))
+
+	      
 
 	;; single definition without a value assigned
 	;; (def x)

@@ -129,14 +129,15 @@
           (read-char port)
           '())
         ((or (eq? c #\)) (eq? c #\]) (eq? c #\}))
-	 (display "Error on char:") (display c) (newline)
-	 (read-char port)
-	 (read-error "Bad closing character"))
+          (read-char port)
+          (read-error "Bad closing character"))
         (#t
           (let ((datum (my-read port)))
             (cond
-               ;;((eq? datum '.)
-               ((eq? datum 'period)
+	     ;; processing period . is important for functions with variable numbers of parameters: (fct arg1 . restargs)
+	     ((eq? datum (string->symbol (string #\.))) ;; only this one works with Racket Scheme
+               ;;((eq? datum '.) ;; do not works with Racket Scheme
+               ;;((eq? datum 'period) ;; this one annihilate the processing: datum will never be equal to 'period !
                  (let ((datum2 (my-read port)))
                    (consume-whitespace port)
                    (cond
@@ -238,7 +239,7 @@
           (my-read port))
         ((char=? c #\] )
           (read-char port)
-          (read-error "Closing bracket without opening") ;; a closing char with no opening one will simply be skipped (no fail of parsing)
+          (read-error "Closing bracket without opening")
           (my-read port))
         ((char=? c #\} )
           (read-char port)
@@ -449,9 +450,10 @@
             ; In a real reader, consider handling "#! whitespace" per SRFI-22,
             ; and consider "#!" followed by / or . as a comment until "!#".
             ((char=? c #\!) (my-read port) (my-read port))
-            (#t (read-error (string-append "SRFI-105 REPL :"
+	    ((char=? c #\;) (read-error "SRFI-105 REPL : Unsupported #; extension"))
+	    ((char=? c #\') (read-error "SRFI-105 REPL : Unsupported #' extension"))
+	    (#t (read-error (string-append "SRFI-105 REPL :"
 					   "Unsupported # extension"
-					   " (consider #; comment unsupported) " 
 					   " unsupported character causing this message is character:"
 					   (string c)))))))))
 
@@ -459,9 +461,10 @@
     ; We've peeked a period character.  Returns what it represents.
     (read-char port) ; Remove .
     (let ((c (peek-char port)))
-      (cond
-        ;((eof-object? c) '.) ; period eof; return period.
-        ((eof-object? c) 'period)
+      (cond ;; processing period . is important for functions with variable numbers of parameters: (fct arg1 . restargs)
+       ((eof-object? c) (string->symbol (string #\.)))  ;; only this one works with Racket Scheme
+        ;;((eof-object? c) '.) ; period eof; return period. ;; do not works with Racket Scheme
+       ;;((eof-object? c) 'period) ;; this one annihilate the processing using dummy 'period !
         ((ismember? c digits)
           (read-number port (list #\.)))  ; period digit - it's a number.
         (#t

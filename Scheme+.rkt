@@ -2,7 +2,7 @@
 
 ;; Scheme+.rkt
 
-;; version 2.0
+;; version 4.0
 
 ;; author: Damien MATTEI
 
@@ -41,7 +41,8 @@
 	;; use this line below with with Racket graphics that use 'function contract':
 	;; https://docs.racket-lang.org/reference/function-contracts.html#%28form._%28%28lib._racket%2Fcontract%2Fbase..rkt%29._-~3e%29%29
 	;;(provide def $bracket-apply$ <- ← #;-> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v>)
-	
+
+	(require srfi/31) ;; for 'rec in def.scm
 
 	(include "included-files/def.scm")
 	(include "included-files/array.scm")
