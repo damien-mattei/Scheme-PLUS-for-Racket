@@ -1,7 +1,7 @@
 # Scheme-PLUS-for-Racket
 Scheme+ for DrRacket by Damien Mattei.
 
-Version 3.0
+Version 4.0
 
 The documentation is here: https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/gh-pages/README.md
 
