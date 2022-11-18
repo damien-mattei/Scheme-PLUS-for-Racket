@@ -36,7 +36,7 @@
 	
 	(module test racket/base) ;; dummy
 
-	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v> ⇜ ⇝)
+	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v> ⇜ ⇝ if repeat do)
 	
 	;; use this line below with with Racket graphics that use 'function contract':
 	;; https://docs.racket-lang.org/reference/function-contracts.html#%28form._%28%28lib._racket%2Fcontract%2Fbase..rkt%29._-~3e%29%29
@@ -55,6 +55,10 @@
 	(include "included-files/block.scm")
 	(include "included-files/not-equal.scm")
 	(include "library/exponential.scm")
+
+	(require "required-files/if-module.rkt")
+	(include "included-files/while-do-when-unless.scm")
+	(include "library/repeat-until.scm")
 
 	) ;; end module
 

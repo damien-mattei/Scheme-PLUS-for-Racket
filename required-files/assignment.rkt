@@ -68,13 +68,6 @@
 ;; scheme@(guile-user)> '{x <- y <- 7}
 ;; $1 = (<- x y 7)
 
-;; TODO : add a checking based on :
-;; (define-syntax test-it (syntax-rules () ((_ symb) (if (equal? (quote symb) 'bingo) "gagné!" (quote symb)))))
-;; > (test-it y)
-;; 'y
-;; > (test-it bingo)
-;; "gagné!"
-
 (define-syntax <-
   
   (syntax-rules ()
@@ -86,6 +79,9 @@
      
      (begin
 
+       ;; add a checking 
+       ;; > (<- (aye x 3) 7)
+       ;; . . ../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/required-files/assignment.rkt:1:6: Bad <- form: the LHS of expression must be an identifier or of the form ($bracket-apply$ container index) , first argument  'aye " is not $bracket-apply$."
        (unless (equal? (quote $bracket-apply$) (quote bracket-apply)) 
 	 (error "Bad <- form: the LHS of expression must be an identifier or of the form ($bracket-apply$ container index) , first argument "
 		(quote bracket-apply)
