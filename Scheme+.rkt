@@ -36,7 +36,7 @@
 	
 	(module test racket/base) ;; dummy
 
-	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v> ⇜ ⇝ if repeat do)
+	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless)
 
 	;; conflict solving with -> and some Racket syntax:
 	;; use this line below with with Racket graphics that use 'function contract':
