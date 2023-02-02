@@ -2,7 +2,7 @@
 
 ;; Scheme+.rkt
 
-;; version 4.0
+;; version 5.0
 
 ;; author: Damien MATTEI
 
@@ -36,7 +36,7 @@
 	
 	(module test racket/base) ;; dummy
 
-	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless)
+	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless $nfx$)
 
 	;; conflict solving with -> and some Racket syntax:
 	;; use this line below with with Racket graphics that use 'function contract':
@@ -60,7 +60,9 @@
 	(require "required-files/if-module.rkt")
 	(include "included-files/while-do-when-unless.scm")
 	(include "library/repeat-until.scm")
+	(include "included-files/scheme-infix.rkt")
 
 	) ;; end module
+
 
 

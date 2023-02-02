@@ -10,6 +10,9 @@
 
 ;; modification for Racket by Damien Mattei
 
+;; example in DrRacket :
+;; #lang reader "Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/SRFI/SRFI-105.rkt"
+
 (require syntax/strip-context)
 
 (provide (rename-out [literal-read read]
@@ -533,17 +536,17 @@
 ;k
 ;2
 
-  ; repeatedly read in curly-infix and write traditional s-expression.
-  (define (process-input)
-    (let ((result (curly-infix-read)))
-      (cond ((not (eof-object? result))
-	     (let ((rv (eval result ns)))
-	       (write result) (display "\n")
-	       (write rv)
-	       (display "\n"))
-	     ;; (force-output) ; flush, so can interactively control something else
-	     (process-input)) ;; no else clause or other
-	    )))
+;; repeatedly read in curly-infix and write traditional s-expression.
+(define (process-input)
+  (let ((result (curly-infix-read)))
+    (cond ((not (eof-object? result))
+	   (let ((rv (eval result ns)))
+	     (write result) (display "\n")
+	     (write rv)
+	     (display "\n"))
+	   ;; (force-output) ; flush, so can interactively control something else
+	   (process-input)) ;; no else clause or other
+	  )))
 
 
 ;;  (process-input)
