@@ -32,7 +32,7 @@
 (define infix-operators
   (list
    ;;(list modulo quotient remainder gcd lcm)
-   (list '**)
+   (list 'expt '**)
    (list '* '/)
    (list '+ '-)
    
@@ -158,14 +158,14 @@
 
 
   ;; sometimes quoted args must be evaluated, depending of odd? args order must be swaped,sometimes both !
-  (define (calc-proc op a b) ;; keep in mind that now the op-erator and args are quoted !
+  ;; (define (calc-proc op a b) ;; keep in mind that now the op-erator and args are quoted !
  
-    (define proc (eval op (current-namespace)))  ;; this only works with procedure, not special form !
-    ;;(display "before eval arg")
-    (define val-a (eval a (current-namespace)))
-    (define val-b (eval b (current-namespace)))
-    ;;(display "after eval arg")
-    (if odd? (proc val-a val-b) (proc val-b val-a)))
+  ;;   (define proc (eval op (current-namespace)))  ;; this only works with procedure, not special form !
+  ;;   ;;(display "before eval arg")
+  ;;   (define val-a (eval a (current-namespace)))
+  ;;   (define val-b (eval b (current-namespace)))
+  ;;   ;;(display "after eval arg")
+  ;;   (if odd? (proc val-a val-b) (proc val-b val-a)))
 
   
   (define (calc op a b) ;; keep in mind that now the op-erator and args are quoted !
@@ -175,11 +175,12 @@
     ;; (display "calc : odd? = ") (display odd?) (newline)
     
     ;; special forms cases else procedure
-    (cond ((eq? op 'and) (andy2 a b))
-	  ((eq? op 'or) (ory2 a b))
-	  (else (calc-proc op a b)))) ;; procedure case
-
-
+    ;; (cond ((eq? op 'and) (andy2 a b))
+    ;; 	  ((eq? op 'or) (ory2 a b))
+    ;; 	  (else (calc-proc op a b)))) ;; procedure case
+    (if odd? 
+	(eval (list op a b) (current-namespace))
+	(eval (list op b a) (current-namespace))))
 
   
   (cond ((null? terms) stack) ; base case
@@ -196,7 +197,7 @@
 	 (let ((op (car stack))
 	       (fst (car terms))
 	       (snd (cadr stack)))
-	   (display "op=") (display op) (newline)
+	   ;;(display "op=") (display op) (newline)
 	   (!** (cdr terms)
 		(cons (calc op fst snd) (cddr stack))
 		operators
@@ -232,3 +233,11 @@
 
 ;; { #f and (begin (display "BAD") (newline) #t)}
 
+;; > (define c 300000)
+;; > (define x 120)
+;; > (define v 299990)
+;; > (define t 30)
+;; > (declare tp)
+;; > (declare xp)
+;; {xp <- {x - v * t} / (sqrt {1 - v ** 2 / c ** 2})}
+;;-1102228130.2405226
