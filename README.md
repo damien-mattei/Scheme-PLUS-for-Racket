@@ -1588,8 +1588,7 @@ scheme@(guile-user)&gt; v
     Rebecca Turner<br>
     <br>
 
-
-    <br>
+<br>
     <br>
     <h2><u>22. DrRacket graphic example in Scheme+:</u></h2>
     <p>This example&nbsp; create a graphic application that draw
