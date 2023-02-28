@@ -1581,10 +1581,17 @@ scheme@(guile-user)&gt; v
 {% endhighlight %}
 
 
-
-<br>
+   <br>
+   <br>
+    <h2><u>21. Contributors:</u></h2>
+    Maxime Devos<br>
+    Rebecca Turner<br>
     <br>
-    <h2><u>21. DrRacket graphic example in Scheme+:</u></h2>
+
+
+    <br>
+    <br>
+    <h2><u>22. DrRacket graphic example in Scheme+:</u></h2>
     <p>This example&nbsp; create a graphic application that draw
       interactively&nbsp; the <a
         href="https://en.wikipedia.org/wiki/Riemann_zeta_function"
