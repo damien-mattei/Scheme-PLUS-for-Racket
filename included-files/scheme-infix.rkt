@@ -3,6 +3,18 @@
 
 ;; infix evaluator with operator precedence
 
+;; this file must now be included in your main project file like this:
+;; at the beginning of your main file add:
+;; for infix operator precedence
+;; (define-namespace-anchor ankh)
+;; (define bsns (namespace-anchor->namespace ankh))
+;; (current-namespace bsns)
+;; and at the end of your main file add:
+;; (include "../../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/included-files/scheme-infix.rkt")
+;; or something like that
+
+
+
 ;;(provide (all-defined-out)) ;; export all bindings
 
 ;; as $nfx$ will be part of the definition of Scheme+ it is not wise to use it for implementing itself !
