@@ -2,7 +2,7 @@
 
 ;; Scheme+.rkt
 
-;; version 5.0
+;; version 7.0
 
 ;; author: Damien MATTEI
 
@@ -36,7 +36,8 @@
 	
 	(module test racket/base) ;; dummy
 
-	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless $nfx$)
+	(provide overload overload-procedure overload-operator overload-function def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ $> condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless   % << >> % & ∣ ) ;; $nfx$ , U+2223 ∣ DIVIDES (&mid;, &shortmid;, &smid;, &VerticalBar;) see: https://en.wikipedia.org/wiki/Vertical_bar because vertical line is reserved in Racket
+	;; do not type the ∣ with keyboard it is not the same and will give an 'undefined symbol' error ,also vertical_line disturb highlight syntaxing in emacs
 
 	;; conflict solving with -> and some Racket syntax:
 	;; use this line below with with Racket graphics that use 'function contract':
@@ -56,11 +57,17 @@
 	(include "included-files/block.scm")
 	(include "included-files/not-equal.scm")
 	(include "library/exponential.scm")
+	
 
 	(require "required-files/if-module.rkt")
 	(include "included-files/while-do-when-unless.scm")
 	(include "library/repeat-until.scm")
-	(include "included-files/scheme-infix.rkt")
+	(include "included-files/bitwise.rkt")
+	(include "library/modulo.scm")
+	;;(include "included-files/scheme-infix.rkt")
+        (include "included-files/overload.scm")
+       
+        
 
 	) ;; end module
 
