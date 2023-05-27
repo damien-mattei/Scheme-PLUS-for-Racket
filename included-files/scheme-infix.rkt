@@ -62,7 +62,7 @@
 	       #f))))
 
 
-;;(define-syntax mac+ (syntax-rules () ((_) +)))
+
 
 
 ;; > (define b #f)
@@ -88,7 +88,9 @@
 					      ;;(else (! (quote ident) (quote opspecial) (quote term1) (quote op) (quote term2)))))
 					      (else
 					       (!
-						
+
+						;; operators must be evaluated at macro expansion ,not macro definition
+						;; this is to get the last overloaded version of operators
 						(list
    						 (list expt **)
 						 (list * / %)
@@ -111,7 +113,9 @@
 						(opspecial ident ($nfx$ term1 op term2 ...))
 						
 						(!
-						 
+
+						 ;; operators must be evaluated at macro expansion ,not macro definition
+						 ;; this is to get the last overloaded version of operators
 						 (list
    						  (list expt **)
 						  (list * / %)
@@ -315,3 +319,6 @@
    
 ;;    )
 ;;   )
+
+
+
