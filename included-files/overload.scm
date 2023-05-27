@@ -62,15 +62,20 @@
   
   (syntax-rules ()
 
-     ((_ orig-funct funct (pred-arg1 ...)) (define orig-funct (create-overloaded-procedure orig-funct funct (list pred-arg1 ...))))))
+    ((_ orig-funct funct (pred-arg1 ...)) 
+     (define orig-funct (create-overloaded-procedure orig-funct funct (list pred-arg1 ...))))))
+
+      ;;'(define orig-funct (create-overloaded-procedure-macro orig-funct funct (list pred-arg1 ...))))))
 
 
 (define-syntax overload-operator
   
   (syntax-rules ()
 
-     ((_ orig-funct funct (pred-arg1 ...)) (define orig-funct (create-overloaded-operator orig-funct funct (list pred-arg1 ...))))))
-
+    ((_ orig-funct funct (pred-arg1 ...))
+     (define orig-funct (create-overloaded-operator orig-funct funct (list pred-arg1 ...))))))
+ 
+     ;;(define orig-funct (create-overloaded-operator-macro orig-funct funct (list pred-arg1 ...))))))
 
 
 (define (check-arguments pred-list args)
@@ -186,6 +191,38 @@
   (display "new-funct: ") (display new-funct) (newline)
 
   new-funct)
+
+(define-syntax create-overloaded-operator-macro
+
+  (syntax-rules ()
+
+     ((_ orig-funct funct pred-list) ;; works for associative operators
+
+      (begin ;; will cause Error with define not allowed in this expression context !!!
+	(display "create-overloaded-operator")
+	(display " : pred-list = ") (display pred-list) (newline)
+	(define old-funct orig-funct)
+	(define new-funct (lambda args ;; args is the list of arguments
+			    (display "new-funct: new-funct = ") (display new-funct) (newline)
+			    (display "new-funct : pred-list = ") (display pred-list) (newline)
+			    (display "new-funct : args = ") (display args) (newline)
+			    (define nb-args (length args))
+			    (display "new-funct : nb-args = ") (display nb-args) (newline)
+			    (cond ((check-arguments pred-list args) (begin
+								      (display "new funct :calling:") (display funct) (newline)
+								      (apply funct args)))
+				  ((> nb-args 2) (new-funct (car args) (apply new-funct (cdr args)))) ;; op(a,b,...) = op(a,op(b,...))
+				  (else
+				   (begin
+				     (display "new funct :calling: ") (display old-funct) (newline)
+				     (apply old-funct args))))))
+	
+	(display "funct: ") (display funct) (newline)
+	(display "orig-funct: ") (display orig-funct) (newline)
+	(display "old-funct: ") (display old-funct) (newline)
+	(display "new-funct: ") (display new-funct) (newline)
+	
+	new-funct))))
 
 
 

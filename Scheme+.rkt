@@ -36,8 +36,10 @@
 	
 	(module test racket/base) ;; dummy
 
-	(provide overload overload-procedure overload-operator overload-function def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ $> condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless   % << >> % & ∣ ) ;; $nfx$ , U+2223 ∣ DIVIDES (&mid;, &shortmid;, &smid;, &VerticalBar;) see: https://en.wikipedia.org/wiki/Vertical_bar because vertical line is reserved in Racket
+	;;(provide overload overload-procedure overload-operator overload-function def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ $> condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless   % << >> % & ∣ ) ;; $nfx$ , U+2223 ∣ DIVIDES (&mid;, &shortmid;, &smid;, &VerticalBar;) see: https://en.wikipedia.org/wiki/Vertical_bar because vertical line is reserved in Racket
 	;; do not type the ∣ with keyboard it is not the same and will give an 'undefined symbol' error ,also vertical_line disturb highlight syntaxing in emacs
+
+	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ $> condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless   % << >> % & ∣ )
 
 	;; conflict solving with -> and some Racket syntax:
 	;; use this line below with with Racket graphics that use 'function contract':
@@ -77,7 +79,9 @@
 
 	;; DEPRECATED include
 	;;(include "included-files/scheme-infix.rkt")
-        (include "included-files/overload.scm")
+
+	;; comment below if included from main
+	;;(include "included-files/overload.scm")
        
         
 

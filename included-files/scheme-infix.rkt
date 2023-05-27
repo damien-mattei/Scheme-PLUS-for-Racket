@@ -83,14 +83,14 @@
 						 (opspecial  ident (op term1 term2))) ;; {ident <- term1 op term2}
 					      
 					      ((or (equal? (quote op) (quote ->)) (equal? (quote op) (quote →)))
-					       (op term2 (opspecial ident term1))) ;; Warning: argument names of macro do not reprensent the values contained in this case
+					       (op term2 (opspecial ident term1))) ;; Warning: argument names of macro do not represent the values contained in this case
 					      
 					      ;;(else (! (quote ident) (quote opspecial) (quote term1) (quote op) (quote term2)))))
 					      (else
 					       (!
+						
 						(list
-   
-						 (list expt **)
+   						 (list expt **)
 						 (list * / %)
 						 (list + -)
 						 
@@ -98,9 +98,9 @@
 						 
 						 (list & ∣ )
 						 
-						 (list < > = <> ≠ <= >=)
-						 
-						 )
+						 (list < > = <> ≠ <= >=))
+
+						;; here we need to eval quote the <- or -> to avoid a bad syntax error with those macros
 						ident (eval (quote opspecial) (current-namespace)) term1 op term2))))
     
 						   
@@ -111,9 +111,9 @@
 						(opspecial ident ($nfx$ term1 op term2 ...))
 						
 						(!
+						 
 						 (list
-   
-						  (list expt **)
+   						  (list expt **)
 						  (list * / %)
 						  (list + -)
 						  
@@ -121,9 +121,8 @@
 						  
 						  (list & ∣ )
 						  
-						  (list < > = <> ≠ <= >=)
-						  
-						  )
+						  (list < > = <> ≠ <= >=))
+						 
 						 ident (eval (quote opspecial) (current-namespace))  term1 op term2 ...))))) ;; this is in fact a general case ($nfx$ term0 ops term1 op term2 ...)
 
     ;; now quoting all the macros,function, symbols ... so we are no more annoyed with macro 'bad syntax' error and also this should (?) keep the 'and and 'or short-circuited functionalities.

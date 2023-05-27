@@ -10,8 +10,6 @@
 
 ;; modification for Racket by Damien Mattei
 
-;; use with: #lang reader "SRFI-105.rkt"
-
 ;; example in DrRacket :
 ;; #lang reader "Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/SRFI/SRFI-105.rkt"
 
@@ -29,7 +27,7 @@
   
   (define lst-code (process-input-code-tail-rec in))
 
-  (strip-context `(module anything racket ,@lst-code)))
+  (strip-context `(module anything racket/load ,@lst-code)))
  
 
 ;; read all the expression of program
