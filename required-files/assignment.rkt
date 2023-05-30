@@ -5,7 +5,7 @@
 
 ;; This file is part of Scheme+
 
-;; Copyright 2022 Damien MATTEI
+;; Copyright 2023 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@
 	 ;;(begin
 	 ;;(display "<- : multidimensional vector or array set!") (newline)
 	 (if (vector? array)
-	     (array-n-dim-set! array value index1 index2 ...)
+	     (function-array-n-dim-set! array value (reverse (list index1 index2 ...))) ;;(array-n-dim-set! array value index1 index2 ...)
 	     (array-set! array index1 index2 ... value));)
 
 	 value)))
