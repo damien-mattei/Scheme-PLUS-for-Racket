@@ -27,7 +27,7 @@
   
   (define lst-code (process-input-code-tail-rec in))
 
-  (strip-context `(module anything racket/load ,@lst-code)))
+  (strip-context `(module anything racket/load ,@lst-code))) ;; this force a TOPLEVEL behavior !
  
 
 ;; read all the expression of program
