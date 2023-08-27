@@ -1,8 +1,8 @@
 ;;#lang racket
 
-;; Scheme+.rkt
+;; Scheme+.rkt 
 
-;; version 7.0
+;; version 7.1
 
 ;; author: Damien MATTEI
 
@@ -10,7 +10,7 @@
 
 ;; Racket Scheme version
 
-;; Copyright 2021-2022 Damien MATTEI
+;; Copyright 2021-2023 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,65 +27,64 @@
 
 
 ;; use :
-;; (require Scheme-PLUS-for-Racket/Scheme+)
-;; or :
-;; (require "Scheme+.rkt")
+
+;; (include "Scheme+.rkt")
 
 
-(module Scheme+ racket
+;; (module Scheme+ racket
 	
-	(module test racket/base) ;; dummy
+;; 	(module test racket/base) ;; dummy
 
-	;;(provide overload overload-procedure overload-operator overload-function def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ $> condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless   % << >> % & ∣ ) ;; $nfx$ , U+2223 ∣ DIVIDES (&mid;, &shortmid;, &smid;, &VerticalBar;) see: https://en.wikipedia.org/wiki/Vertical_bar because vertical line is reserved in Racket
-	;; do not type the ∣ with keyboard it is not the same and will give an 'undefined symbol' error ,also vertical_line disturb highlight syntaxing in emacs
+;; 	(provide define-overload-existing-operator define-overload-n-arity-operator define-overload-operator define-overload-existing-procedure define-overload-procedure $ovrld-ht$ overload def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $> $+> condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless   % << >> % & $ ∣ ) ;;$nfx$ !*prec set-infix-operators! update-operators infix-operators-lst)
 
-	(provide def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $ $> condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless   % << >> % & ∣ )
 
-	;; conflict solving with -> and some Racket syntax:
-	;; use this line below with with Racket graphics that use 'function contract':
-	;; https://docs.racket-lang.org/reference/function-contracts.html#%28form._%28%28lib._racket%2Fcontract%2Fbase..rkt%29._-~3e%29%29
-	;;(provide def $bracket-apply$ <- ← #;-> → <+ ⥆ +> ⥅ declare $ & condx <> ≠ ** <v v>)
+;;  U+2223 ∣ DIVIDES (&mid;, &shortmid;, &smid;, &VerticalBar;) see: https://en.wikipedia.org/wiki/Vertical_bar because vertical line is reserved in Racket
+;; do not type the ∣ with keyboard it is not the same and will give an 'undefined symbol' error ,also vertical_line disturb highlight syntaxing in emacs
 
-	(require srfi/31) ;; for 'rec in def.scm
+;; conflict solving with -> and some Racket syntax:
+;; https://docs.racket-lang.org/reference/function-contracts.html#%28form._%28%28lib._racket%2Fcontract%2Fbase..rkt%29._-~3e%29%29
 
-	(include "included-files/def.scm")
-	(include "included-files/array.scm")
-
-	(require "required-files/apply-square-brackets.rkt")
-	(require "required-files/assignment.rkt")
-
-	(include "included-files/declare.scm")
-	(include "included-files/condx.scm")
-	(include "included-files/block.scm")
-	(include "included-files/not-equal.scm")
-	(include "library/exponential.scm")
 	
+(require srfi/31) ;; for 'rec in def.scm
+(require srfi/69) ;; Basic hash tables
 
-	(require "required-files/if-module.rkt")
-	(include "included-files/while-do-when-unless.scm")
-	(include "library/repeat-until.scm")
-	(include "included-files/bitwise.rkt")
-	(include "library/modulo.scm")
+(require srfi/25) ;; Multi-dimensional Array Primitives
+(require srfi/8) ;; Values , receive
+
+(require (only-in racket/base [for for-racket])) ;; backup original Racket 'for'
+
+(require (for-syntax r6rs/private/base-for-syntax)) ;; for macro syntax (for ... : stxparam.rkt identifier-syntax: undefined
+
+(include "def.scm")
+
+(include "array.scm")
+
+(include "declare.scm")
+(include "condx.scm")
+(include "block.scm")
+(include "not-equal.scm")
+(include "exponential.scm")
 	
-	;; this file must now be included in your main project file like this:
-	;; at the beginning of your main file add:
-	;; for infix operator precedence
-	;; (define-namespace-anchor ankh)
-	;; (define bsns (namespace-anchor->namespace ankh))
-	;; (current-namespace bsns)
-	;; and at the end of your main file add:
-	;; (include "../../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/included-files/scheme-infix.rkt")
-	;; or something like that.
+(include "while-do-when-unless.scm")
+(include "repeat-until.scm")
+(include "bitwise.rkt")
+(include "modulo.scm")
 
-	;; DEPRECATED include
-	;;(include "included-files/scheme-infix.rkt")
+(include "slice.scm")
 
-	;; comment below if included from main
-	;;(include "included-files/overload.scm")
-       
-        
+(include "set-values-plus.scm")
 
-	) ;; end module
+(include "increment.scm")
+(include "for_next_step.scm")
+
+
+
+(include "assignment.rkt")
+(include "apply-square-brackets.rkt")
+
+;; include from your main file afer overloadind declarations when any
+;;(include "scheme-infix.rkt")
+
 
 
 
