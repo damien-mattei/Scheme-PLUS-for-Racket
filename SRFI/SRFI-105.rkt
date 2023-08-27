@@ -447,8 +447,11 @@
                             #\I #\E #\B #\O #\D #\X))
               (read-number port (list #\# (char-downcase c))))
             ((char=? c #\( )  ; Vector.
-              (list->vector (my-read-delimited-list my-read #\) port)))
-            ((char=? c #\\) (process-char port))
+	     (list->vector (my-read-delimited-list my-read #\) port)))
+
+	    ;; hash table : #hash(("a" . 1) ("b" . 20)) support to write...
+
+	    ((char=? c #\\) (process-char port))
             ; This supports SRFI-30 #|...|#
             ((char=? c #\|) (nest-comment port) (my-read port))
             ; If #!xyz, consume xyz and recurse.
