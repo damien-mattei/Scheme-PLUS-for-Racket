@@ -698,25 +698,24 @@
        
        (define (proc . args-lst)
 
-
-	 (display "proc=") (display proc) (newline)
-	 (define ht (hash-table->alist $ovrld-ht$))
-	 (display ht) (newline)
+	 ;;(display "proc=") (display proc) (newline)
+	 ;;(define ht (hash-table->alist $ovrld-ht$))
+	 ;;(display ht) (newline)
 
 	 ;;(display " un ")
 	 (define proc-lst (hash-table-ref $ovrld-ht$ qproc)) ;;  example: ((number? string?) (lambda (n s) (display n) (display s) (newline)))
-	 (display "proc-lst=") (display proc-lst)
-	 (newline)
+	 ;;(display "proc-lst=") (display proc-lst)
+	 ;;(newline)
 	 
 	 (define (check-args-lst pred-list) ; check arguments list match predicates
-	   (display "pred-list=") (display pred-list) (newline)
-	   (display "args-lst=") (display args-lst) (newline)
+	   ;;(display "pred-list=") (display pred-list) (newline)
+	   ;;(display "args-lst=") (display args-lst) (newline)
 	   (check-arguments pred-list args-lst))
 
 
 	 ;;(display " deux ")
 	 (define (test-proc pred-proc-list) ; test the procedure if it matches with arguments
-	   (display "pred-proc-list=") (display pred-proc-list) (newline)
+	   ;;(display "pred-proc-list=") (display pred-proc-list) (newline)
 	   (if (check-args-lst (car pred-proc-list)) ;; check args
 	       (car (cdr  pred-proc-list)) ;; return procedure
 	       #f))
@@ -727,16 +726,15 @@
 
 	 ;;(display "  quatre  ")
 	 
-	 (display "proc-search-result=") (display proc-search-result) (newline)
+	 ;;(display "proc-search-result=") (display proc-search-result) (newline)
 	 
 	 (condx  (proc-search-result (apply proc-search-result args-lst))
 		 (exec
 		  (define nb-args (length args-lst)))
-		 ((> nb-args 2) (begin
-				  (display ">2 args") (newline)
-				  (proc (car args-lst) (apply proc (cdr args-lst)))))
+		 ((> nb-args 2)   ;;(display ">2 args") (newline)
+				  (proc (car args-lst) (apply proc (cdr args-lst))))
 		 (else
-		  (display "else") (newline)
+		  ;;(display "else") (newline)
 		  (apply orig-proc args-lst))))
        
        ;;(hash-table-set! $ovrld-ht$ qproc (list (list (list number? number?) orig-proc)))

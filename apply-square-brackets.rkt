@@ -118,73 +118,6 @@
 
 
 
-;; (define-syntax $bracket-apply$-bak ;;  this implements a possible $bracket-apply$ as proposed in SRFI-105
-  
-;;   (syntax-rules ()
-    
-
-;;     ;; 1 argument in []
-;;     ;; T[index]
-;;     ((_ container index)
-
-;;      ;; this call evaluate the macro's arguments
-;;      ;; this avoid compute it twice or many
-;;      (apply-square-brackets-argument-1 container index))
-
-;;     ;; note : example are given with  a slice keyword that could be different of the current one 
-
-;;     ;; 2 arguments in [ ]
-;;     ;; ex: T[i1 $] , T[$ i2], T[i1 i2] , T[$ $]
-    
-;;     ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) $]}
-;;     ;; '#(3 4 5)
-;;     ((_ container index1-or-keyword index2-or-keyword)
-
-;;       (apply-square-brackets-argument-2 container index1-or-keyword index2-or-keyword))
-
-;;     ;; 3 arguments in [ ]
-;;     ;; T[i1 $ i2] , T[i1 i2 i3] , T[$ $ s]
-;;     ((_ container index1-or-keyword index2-or-keyword index3-or-keyword-or-step)
-
-;;      (apply-square-brackets-argument-3 container index1-or-keyword index2-or-keyword index3-or-keyword-or-step))
-
-;;     ;; 4 arguments in [ ]
-;;     ;; T[$ i2 $ s] , T[i1 $ $ s] , T[i1 $ i3 $] , T[i1 i2 i3 i4]
-;;     ((_ container index1-or-keyword index2-or-keyword index3-or-keyword index4-or-keyword-or-step) 
-
-;;      (apply-square-brackets-argument-4 container index1-or-keyword index2-or-keyword index3-or-keyword index4-or-keyword-or-step))
-
-
-;;     ;; 5 arguments in [ ]
-;;     ;; T[i1 $ i3 $ s] , T[i1 i2 i3 i4 i5]
-;;     ((_ container index1 index2-or-keyword index3 index4-or-keyword index5-or-step)
-
-;;      (apply-square-brackets-argument-5 container index1 index2-or-keyword index3 index4-or-keyword index5-or-step)) 
- 
-    
-;;     ;; more than 5 arguments in [ ]
-;;     ;; T[i1 i2 i3 i4 i5 ...]
-;;     ;; note: this could stay as a macro (not function) because i'm not sure someone will use a more than 5 dimension array
-;;     ((_ array index1 index2 index3 index4 index5 ...)
-
-
-;;      ($+>
-      
-;;       ;; this portion evaluate the macro's arguments
-;;       ;; to avoid compute it twice or many
-;;       {array-eval <+ array}
-;;       ;; note: we can not evaluate ellipsis before!
-      
-;;       (if (vector? array-eval)
-;; 	  (function-array-n-dim-ref array-eval (reverse (list index1 index2 index3 index4 index5 ...))) ;;(array-n-dim-ref array index1 index2 ...)   ;; note: we can not evaluate ellipsis before!
-;; 	  (array-ref array-eval index1 index2 index3 index4 index5 ...))   ;; array SRFI 25
-
-;;       ) ;; $+>
-
-;;      ) ;;  ((_ array index1 ...
-;;     ) ;; (syntax-rules ()
-
-;;   ) ;; (define-syntax $bracket-apply$ ... 
 
 
 ;; {T[$]}
@@ -240,7 +173,7 @@
 
 (define (apply-square-brackets-argument-2 container-eval index1-or-keyword-eval index2-or-keyword-eval)
 
-  (cond ((vector? container-eval) ;; 2 dimension vector ? or T[i1 $] , T[$ i2]
+  (cond ((vector? container-eval) ;; 2 dimension vector ? or 1 dimesnsion vector : T[i1 $] , T[$ i2]
 
 
 	 ;; {#(1 2 3 4 5)[2 $]}
@@ -294,7 +227,7 @@
 					(else ;; syntax error
 					 (error "$bracket-apply$ : bad arguments in string case,expecting $ i2 or i1 $, provided :" index1-or-keyword-eval index2-or-keyword-eval) )))
 
-	;;((flomat? container-eval) 
+	((flomat? container-eval) (ref container-eval index1-or-keyword-eval index2-or-keyword-eval))
 	
 	
 	(else ;; T[i1 i2] ,  2 dimension array

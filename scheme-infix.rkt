@@ -1,15 +1,5 @@
-;; #lang reader "../SRFI/SRFI-105.rkt"
 
-
-;; ;; infix evaluator with operator precedence
-
-;; (provide $nfx$ !*prec set-infix-operators!)
-
-;; (include "../included-files/bitwise.rkt")
-;; (include "../library/exponential.scm")
-;; (include "../library/modulo.scm")
-;; (include "../included-files/not-equal.scm")
-
+;; infix evaluator with operator precedence
 
 ;; doc deprecated !
 ;; this file must now be included in your main project file like this:
@@ -19,17 +9,9 @@
 (define bsns (namespace-anchor->namespace ankh))
 (current-namespace bsns)
 
-;; and at the end of your main file add:
+;; to be compatible with overloading of operator precedence at the end of your main file add:
 ;; (include "../../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/included-files/scheme-infix.rkt")
 ;; or something like that
-
-
-
-;;(provide (all-defined-out)) ;; export all bindings
-
-;; as $nfx$ will be part of the definition of Scheme+ it is not wise to use it for implementing itself !
-;; at some point this would cause infinite recursive load 
-;;(require "../../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
 
 
 ;; > {5 * 3 + 2}

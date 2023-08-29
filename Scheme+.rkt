@@ -48,6 +48,10 @@
 (require srfi/31) ;; for 'rec in def.scm
 (require srfi/69) ;; Basic hash tables
 
+(require (rename-in flomat (repeat repeat-flomat)
+		    	   (shape shape-flomat)
+			   (transpose transpose-flomat)))
+
 (require srfi/25) ;; Multi-dimensional Array Primitives
 (require srfi/8) ;; Values , receive
 
