@@ -19,7 +19,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 7.0 for Racket Scheme<br>
+          style="color: #999999;"> <font size="+2">version 7.1 for Racket Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;">
 	Display options for viewing this documentation:<br>
@@ -63,9 +63,6 @@
           language itself."</b></i></p>
     <p><i><b><br>
         </b></i></p>
-    <p><i>Scheme+</i> is a Scheme module.</p>
-    <p>Once loaded by inserting this in the header of the source file : <b>(require Scheme-PLUS-for-Racket/Scheme+)</b><br>
-    </p>
     <p><i>Scheme+</i> brings syntax to classic <i>Scheme</i> language like
       those:</p>
     <p><br>
@@ -380,7 +377,7 @@ content="text/html; charset=utf-8">Basic hash tables
     <p>for the rest read below and the documentation.</p>
     <br>
     <h2>2.<u>Download Scheme+:</u></h2>
-    <p>The source code of the <b>Scheme+ module</b> for <a href="https://racket-lang.org/"
+    <p>The source code of <b>Scheme+</b> for <a href="https://racket-lang.org/"
         target="_blank">Racket implementation of Scheme</a> can be retrieved
       here: </p>
     <p><br>
