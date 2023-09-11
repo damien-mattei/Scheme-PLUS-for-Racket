@@ -46,7 +46,14 @@
 	 
 	 define-overload-existing-n-arity-operator
 	 overload-existing-n-arity-operator
+
 	 
+	 $ovrld-square-brackets-lst$
+	 
+	 overload-square-brackets
+	 ;;find-getter-and-setter-for-overloaded-square-brackets
+	 find-getter-for-overloaded-square-brackets
+	 find-setter-for-overloaded-square-brackets
 	 
 	 )
 
@@ -56,7 +63,11 @@
 (include "condx.scm")
 
 
-(define $ovrld-ht$ (make-hash-table))
+(define $ovrld-ht$ (make-hash-table)) ;; for procedure and operators
+
+(define $ovrld-square-brackets-lst$ '()) ;; for square brackets
+
+
 
 ;; doc deprecated
 ;; scheme@(guile-user)> (use-modules (Scheme+))
@@ -88,24 +99,7 @@
        (hash-table-set! $ovrld-ht$ qorig-funct
 			(cons (list (list pred-arg1 ...) ;; example: ((number? string?) (lambda (n s) (display n) (display s) (newline)))
 				    funct)
-			      ovrld-lst))))
-    
-    ;;((_ funct-symb proc (pred-arg1 ...))
-
-     ;;(overload-procedure funct-symb proc (pred-arg1 ...)))
-    
-    ;; ((_ funct-symb proc (pred-arg1 ...) quote-operator)
-    ;;  (begin
-    ;;    (overload-operator funct-symb proc (pred-arg1 ...))
-    ;;    (update-operators))
-    ;;    )
-    
-    ;; ((_ funct-symb proc (pred-arg1 ...) quote-operator quote-n-arity)
-    ;;  (begin
-    ;;    (overload-n-arity-operator funct-symb proc (pred-arg1 ...))
-    ;;    (update-operators)))
-
-    ))
+			      ovrld-lst))))))
  	 
 
 
@@ -140,14 +134,6 @@
 ;; scheme@(guile-user)> (overload + add-pair pair? pair?)
 ;; overload
 ;; scheme@(guile-user)> (+ (cons 1 2) (cons 3 4))
-;; (define-syntax overload-procedure-bak
-  
-;;   (syntax-rules ()
-
-;;     ((_ orig-funct funct (pred-arg1 ...)) 
-;;      (define orig-funct (create-overloaded-procedure orig-funct funct (list pred-arg1 ...))))))
-
-;;'(define orig-funct (create-overloaded-procedure-macro orig-funct funct (list pred-arg1 ...))))))
 
 
 (define-syntax overload-procedure
@@ -208,39 +194,6 @@
      (overload orig-funct funct (pred-arg1 ...)))))
 
 
-;; DEPRECATED
-;; define not allowed in some code context
-;; (define-syntax overload-procedure
-  
-;;   (syntax-rules ()
-
-;;     ((_ orig-funct funct (pred-arg1 ...))
-
-;;      (begin
-;;        (define ovrld-lst (hash-table-ref $ovrld-ht$ orig-funct))
-;;        (hash-table-set! $ovrld-ht$ orig-funct
-;; 			(cons (list (list pred-arg1 ...) ;; example: ((number? string?) (lambda (n s) (display n) (display s) (newline)))
-;; 				    funct)
-;; 			      ovrld-lst))))))
-
-
-;; (define-syntax overload-operator
-  
-;;   (syntax-rules ()
-
-;;     ((_ orig-funct funct (pred-arg1 ...))
-;;      (define orig-funct (create-overloaded-operator orig-funct funct (list pred-arg1 ...))))))
- 
-;; ;;(define orig-funct (create-overloaded-operator-macro orig-funct funct (list pred-arg1 ...))))))
-
-
-;; (define-syntax overload-n-arity-operator
-  
-;;   (syntax-rules ()
-
-;;     ((_ orig-funct funct (pred-arg1 ...))
-;;      (define orig-funct (create-overloaded-n-arity-operator orig-funct funct (list pred-arg1 ...))))))
- 
 
 
 
@@ -260,8 +213,8 @@
 ;; args can be not the same number as predicates and their types must match 
 (define (check-arguments-for-n-arity pred-list args)
   (define type (car pred-list)) ;; i suppose all predicate are same
-  (display "check-arguments-for-n-arity : type = ") (display type) (newline)
-  (display "check-arguments-for-n-arity : args = ") (display args) (newline)
+  ;;(display "check-arguments-for-n-arity : type = ") (display type) (newline)
+  ;;(display "check-arguments-for-n-arity : args = ") (display args) (newline)
   (define lbd-assign (lambda (arg) (cons type arg)))
   (define pred-arg-list (map lbd-assign args))
   (andmap (λ (p) ((car p) (cdr p)))
@@ -531,7 +484,7 @@
        
        (define (proc . args-lst)
 	 
-	 (define proc-lst (hash-table-ref $ovrld-ht$ qproc)) ;;  example: ((number? string?) (lambda (n s) (display n) (display s) (newline)))
+	 (define proc-lst (hash-table-ref $ovrld-ht$ qproc)) ;;  return example: ((number? string?) (lambda (n s) (display n) (display s) (newline)))
 	 ;;(display proc-lst)
 	 ;;(newline)
 	 
@@ -702,7 +655,7 @@
 	 ;;(define ht (hash-table->alist $ovrld-ht$))
 	 ;;(display ht) (newline)
 
-	 ;;(display " un ")
+
 	 (define proc-lst (hash-table-ref $ovrld-ht$ qproc)) ;;  example: ((number? string?) (lambda (n s) (display n) (display s) (newline)))
 	 ;;(display "proc-lst=") (display proc-lst)
 	 ;;(newline)
@@ -713,29 +666,27 @@
 	   (check-arguments pred-list args-lst))
 
 
-	 ;;(display " deux ")
+
 	 (define (test-proc pred-proc-list) ; test the procedure if it matches with arguments
 	   ;;(display "pred-proc-list=") (display pred-proc-list) (newline)
 	   (if (check-args-lst (car pred-proc-list)) ;; check args
 	       (car (cdr  pred-proc-list)) ;; return procedure
 	       #f))
 
-	 ;;(display " trois ")
 	 
-	 (define proc-search-result (ormap test-proc  proc-lst)) ; search for a procedure matching arguments
+	 (define proc-search-result (ormap test-proc proc-lst)) ; search for a procedure matching arguments
 
-	 ;;(display "  quatre  ")
 	 
 	 ;;(display "proc-search-result=") (display proc-search-result) (newline)
 	 
-	 (condx  (proc-search-result (apply proc-search-result args-lst))
-		 (exec
-		  (define nb-args (length args-lst)))
-		 ((> nb-args 2)   ;;(display ">2 args") (newline)
-				  (proc (car args-lst) (apply proc (cdr args-lst))))
-		 (else
-		  ;;(display "else") (newline)
-		  (apply orig-proc args-lst))))
+	 (condx (proc-search-result (apply proc-search-result args-lst))
+		(exec
+		 (define nb-args (length args-lst)))
+		((> nb-args 2)   ;;(display ">2 args") (newline)
+		 (proc (car args-lst) (apply proc (cdr args-lst))))
+		(else
+		 ;;(display "else") (newline)
+		 (apply orig-proc args-lst))))
        
        ;;(hash-table-set! $ovrld-ht$ qproc (list (list (list number? number?) orig-proc)))
        (hash-table-set! $ovrld-ht$ qproc '())
@@ -790,3 +741,99 @@
 	     (apply orig-proc args-lst)))
        
 	 (hash-table-set! $ovrld-ht$ qproc '())))))
+
+
+
+
+
+;; (overload-square-brackets vector-ref vector-set! (vector? number?))
+;; > $ovrld-square-brackets-lst$
+;; '(((vector? number?) (#<procedure:vector-ref> . #<procedure:vector-set!>)))
+
+;; > matrix-vect?
+;; #<procedure:matrix-vect?>
+;; >  (overload-square-brackets matrix-vect-ref
+;; 	 matrix-vect-set!  (matrix-vect? number? number?))
+;; > $ovrld-square-brackets-lst$
+;; '(((#<procedure:matrix-vect?> #<procedure:number?> #<procedure:number?>) (#<procedure:matrix-vect-ref> . #<procedure:matrix-vect-set!>)))
+;; > (define Mv (matrix-vect #(#(1 2 3) #(4 5 6))))
+;; > Mv
+;; #<matrix-vect>
+;; > (matrix-vect? Mv)
+;; #t
+;; > (find-getter-for-overloaded-square-brackets (list Mv 1 0))
+;; #<procedure:matrix-vect-ref>
+;; > {Mv[1 0]}
+;; 4
+
+(define-syntax overload-square-brackets
+
+  (syntax-rules ()
+
+    ((_ getter setter (pred-arg pred-arg1 ...))   ;; getter setter and list of predicate to check the arguments
+
+	(modify-$ovrld-square-brackets-lst$ (list (list pred-arg pred-arg1 ...)
+						  (cons getter setter))))))
+
+
+;; avoid: set!: cannot mutate module-required identifier in: $ovrld-square-brackets-lst$
+(define (modify-$ovrld-square-brackets-lst$ arg)
+  (set! $ovrld-square-brackets-lst$ (cons arg $ovrld-square-brackets-lst$)))
+
+
+;; example, return : '(#<procedure:vector-ref> . #<procedure:vector-set!>)
+(define (find-getter-and-setter-for-overloaded-square-brackets args-lst) 
+
+  	 
+	 (define (check-args-lst pred-list) ; check arguments list match predicates
+	   (check-arguments pred-list args-lst))
+	 
+	 (define (test-proc pred-proc-list) ; test the procedure if it matches with arguments
+	   (if (check-args-lst (car pred-proc-list))
+	       (car (cdr  pred-proc-list))
+	       #f))
+	 
+	 (define proc-search-result (ormap test-proc $ovrld-square-brackets-lst$ )) ; search for a procedure matching arguments
+	 
+	 (if proc-search-result
+	     proc-search-result
+	     (error '$bracket-apply$ "failed with those arguments list ~a" args-lst)))
+       
+
+;; > (find-getter-for-overloaded-square-brackets '(#(1 2 3) 1))
+;; #<procedure:vector-ref>
+(define (find-getter-for-overloaded-square-brackets args-lst) 
+
+  	 
+	 (define (check-args-lst pred-list) ; check arguments list match predicates
+	   (check-arguments pred-list args-lst))
+	 
+	 (define (test-proc pred-proc-list) ; test the procedure if it matches with arguments
+	   (if (check-args-lst (car pred-proc-list))
+	       (car (cdr  pred-proc-list))
+	       #f))
+	 
+	 (define proc-search-result (ormap test-proc $ovrld-square-brackets-lst$ )) ; search for a procedure matching arguments
+	 
+	 (if proc-search-result
+	     (car proc-search-result)
+	     (error '$bracket-apply$ "no matching found in $ovrld-square-brackets-lst$ : failed with those arguments list ~a" args-lst)))
+
+
+
+(define (find-setter-for-overloaded-square-brackets args-lst) 
+	 
+	 (define (check-args-lst pred-list) ; check arguments list match predicates
+	   (check-arguments pred-list args-lst))
+	 
+	 (define (test-proc pred-proc-list) ; test the procedure if it matches with arguments
+	   (if (check-args-lst (car pred-proc-list))
+	       (car (cdr  pred-proc-list))
+	       #f))
+	 
+	 (define proc-search-result (ormap test-proc $ovrld-square-brackets-lst$ )) ; search for a procedure matching arguments
+	 
+	 (if proc-search-result
+	     (cdr proc-search-result)
+	     (error '$bracket-apply$ "no matching found in $ovrld-square-brackets-lst$ : failed with those arguments list ~a" args-lst)))
+       
