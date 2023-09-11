@@ -76,41 +76,6 @@
   )
 
 
-;; (define (set-infix-operators! updated-infix-operators)
-;;   (set! infix-operators-lst updated-infix-operators))
-
-
-
-;; ;; this function teach the overloaded operators to scheme infix procedures
-;; (define-syntax update-operators
-
-;;   (syntax-rules ()
-
-;;     ((_)
-  
-;;      (set-infix-operators! (list
-   
-;; 			    (list expt **)
-;; 			    (list * / %)
-;; 			    (list + -)
-			    
-;; 			    (list << >>)
-			    
-;; 			    (list & ∣ )
-			    
-;; 					; now this is interesting: because scheme is dynamically typed, we aren't
-;; 					; limited to any one type of function
-			    
-;; 			    (list < > = <> ≠ <= >=)
-			    
-;; 			    ;;(list 'dummy) ;; can keep the good order in case of non left-right assocciative operators.(odd? reverse them) 
-			    
-;; 			    )
-			   
-;; 			   )
-;;      )))
-
-
 
 
 
@@ -120,7 +85,8 @@
 ;; #f
 ;;; evaluates `terms` as a basic infix expression
 ;;(define (!0 . terms)
-(define (!0 infix-operators . terms)
+;;(define (!0 infix-operators . terms)
+(define (!0 infix-operators terms)
   ;;(display "! : infix-operators=") (display infix-operators) (newline)
   ;;(display "! : terms=") (display terms) (newline)
   (if (null? terms) ;; i added this null case but with correct input this should not be necessary
@@ -129,15 +95,8 @@
 	       infix-operators
 	       #f))))
 
-
-(define-syntax !prec ;; precursor of !0
-  (syntax-rules ()
-
-    ((_ term ...) (!0
-
-		   infix-operators-lst
-
-		   term ...))))
+(define (!prec . terms) ;; precursor of !0
+   (!0 infix-operators-lst terms))
 
 
 
@@ -339,13 +298,8 @@
 ;; -1102228130.2405226
 
 
-
-
-(define-syntax !*prec ;; precursor of !*
-  
-  (syntax-rules ()
-
-    ((_ terms)
-     (!* terms infix-operators-lst #f)))) ;;)
-
+(define (!*prec terms)   ;; precursor of !*
+  (if (null? terms) 
+      terms
+      (!* terms infix-operators-lst #f)))
 

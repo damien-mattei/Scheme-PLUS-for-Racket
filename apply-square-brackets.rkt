@@ -70,8 +70,13 @@
 
 (define ($bracket-apply$next container args)   ;;  this implements a possible $bracket-apply$ as proposed in SRFI-105
 
+  ;(display "apply-square-brackets.* : $bracket-apply$next : container = ") (display container) (newline)
+  
   ;;(display args) (newline)
   (case (length args)
+
+    ((0) (apply-square-brackets-argument-0 container))
+    
     ;; 1 argument in [ ]
     ;; T[index]
     ((1) (apply-square-brackets-argument-1 container
@@ -117,7 +122,19 @@
 
 
 
+(define (apply-square-brackets-argument-0 container-eval)
+   
+  (cond ((vector? container-eval)
+	 (vector-copy container-eval)) ;; return a copy of vector
 
+	
+	((hash-table? container-eval) (hash-table->alist container-eval)) ;; return the elements of hash table
+	
+	((string? container-eval)  (string-copy container-eval)) ;; return a copy of the string
+				   	
+	(else ;; array of SRFI 25	     
+	 container-eval))) ;; return the array (no copy procedure in SRFI 25 but exist in Guile)
+ 
 
 
 ;; {T[$]}
@@ -145,7 +162,7 @@
   ;; '#(1 0 3)
   (cond ((vector? container-eval)
 
-	 (if (equal? slice index-eval) ;; T[$] . T[1 $ 5] 
+	 (if (equal? slice index-eval) ;; T[$] 
 	     (vector-copy container-eval) ;; return a copy of vector
 	     (if (< index-eval 0) ;; negative index as in Python
 		 (vector-ref container-eval (+ (vector-length container-eval) index-eval)) ;; negative indexing
@@ -158,22 +175,35 @@
 	;; #\t
 	;; {"toto"[-1]}
 	;; #\o
-	((string? container-eval) (if (equal? slice index-eval) ;; T[$] . T[1 $ 5] 
+	((string? container-eval) (if (equal? slice index-eval) ;; T[$] 
 				      (string-copy container-eval) ;; return a copy of the string
 				      (if (< index-eval 0) ;; negative index as in Python
 					  (string-ref container-eval (+ (string-length container-eval) index-eval)) ;; negative indexing
 					  (string-ref container-eval index-eval)))) ;; return an element of the string
+
+	((flomat? container-eval) (if (equal? slice index-eval) ;; T[$] 
+				      (error "apply-square-brackets.* : assignment : slice not allowed with flomat")
+				      (row container-eval index-eval)))
+
+	;; array of SRFI 25
+	((array? container-eval) ;; T[i1] ,  1 dimension array
+	 ;;(display "apply-square-brackets.* : array case : quoted container-eval = ") (display (quote container-eval)) (newline)
+	 ;;(display "apply-square-brackets.* : array case : container-eval = ") (display container-eval) (newline)
+	 (array-ref container-eval index-eval)) ;; return the element of the array
 	
-	(else ;; array of SRFI 25	     
-	 (array-ref container-eval index-eval)))) ;; return the element of the array
+	(else 
+	 (define args-lst (list container-eval index-eval))
+	 (define proc (find-getter-for-overloaded-square-brackets args-lst))
+	 (apply proc args-lst)))
+
   ;; note : i do not use negative indexes or slices for array because they could be not starting at zero
 
-
+)
 
 
 (define (apply-square-brackets-argument-2 container-eval index1-or-keyword-eval index2-or-keyword-eval)
 
-  (cond ((vector? container-eval) ;; 2 dimension vector ? or 1 dimesnsion vector : T[i1 $] , T[$ i2]
+  (cond ((vector? container-eval) ;; 2 dimension vector ? or 1 dimension vector : T[i1 $] , T[$ i2]
 
 
 	 ;; {#(1 2 3 4 5)[2 $]}
@@ -227,14 +257,40 @@
 					(else ;; syntax error
 					 (error "$bracket-apply$ : bad arguments in string case,expecting $ i2 or i1 $, provided :" index1-or-keyword-eval index2-or-keyword-eval) )))
 
-	((flomat? container-eval) (ref container-eval index1-or-keyword-eval index2-or-keyword-eval))
+	((flomat? container-eval) (if (or (equal? slice index1-or-keyword-eval)
+					  (equal? slice index2-or-keyword-eval))
+				      (error "apply-square-brackets.* : assignment : slice not allowed with flomat")
+				      (ref container-eval index1-or-keyword-eval index2-or-keyword-eval)))
 	
-	
-	(else ;; T[i1 i2] ,  2 dimension array
-	 (array-ref container-eval index1-or-keyword-eval index2-or-keyword-eval))) ;; return the element of the array
-  ;; note : i do not use negative indexes or slices for array because they could be not starting at zero
+	 
+	((array? container-eval) ;; T[i1 i2] ,  2 dimension array
+	 (array-ref container-eval index1-or-keyword-eval index2-or-keyword-eval)) ;; return the element of the array
+	;; note : i do not use negative indexes or slices for array because they could be not starting at zero
+
+
+	;; 	> matrix-vect?
+	;; #<procedure:matrix-vect?>
+	;; >  (overload-square-brackets matrix-vect-ref
+	;; 	 matrix-vect-set!  (matrix-vect? number? number?))
+	;; > $ovrld-square-brackets-lst$
+	;; '(((#<procedure:matrix-vect?> #<procedure:number?> #<procedure:number?>) (#<procedure:matrix-vect-ref> . #<procedure:matrix-vect-set!>)))
+	;; > (define Mv (matrix-vect #(#(1 2 3) #(4 5 6))))
+	;; > Mv
+	;; #<matrix-vect>
+	;; > (matrix-vect? Mv)
+	;; #t
+	;; > (find-getter-for-overloaded-square-brackets (list Mv 1 0))
+	;; #<procedure:matrix-vect-ref>
+	;; > {Mv[1 0]}
+	;; 4
+	(else
+	 (define args-lst (list container-eval index1-or-keyword-eval index2-or-keyword-eval))
+	 (define proc (find-getter-for-overloaded-square-brackets args-lst))
+	 (apply proc args-lst)))
 
   )
+
+;; todo: made one dimension overload too
 
 
 
@@ -795,22 +851,25 @@
 
 ;; TODO :this code is only here to use Scheme+ but it should be in other place (scheme-infix.rkt)
 ;; split the expression using slice as separator
-(define (parse-square-brackets-arguments args-brackets)
+(def (parse-square-brackets-arguments args-brackets)
 
-  ;;(display "args-brackets=") (display args-brackets) (newline)
+  ;;(display "apply-square-brackets.* : parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
 
   (when (null? args-brackets)
-	(error "Empty [ ]"))
+	(return args-brackets))
 
   (declare result partial-result)
   
-  (def (psba args) ;; parse square brackets arguments   
-       ;;(display partial-result) (newline)
+  (def (psba args) ;; parse square brackets arguments
+
+       ;;(display "psba : args=") (display args) (newline)
+       ;;(display "psba : partial-result =") (display partial-result) (newline)
        (when (null? args)
 	     ;;(display "before !*prec") (newline)
 	     (<- result (append result (!*prec partial-result))) ;; !*prec is defined in scheme-infix.rkt
 	     ;;(display "after !*prec") (newline)
 	     ;;(display result) (newline)
+	     ;;(display "return-rec") (newline)
 	     (return-rec result)) ;; return from all recursive calls
        
        (<+ fst  (car args))
@@ -827,8 +886,10 @@
        
        (psba (cdr args))) ;; end def, recurse
 
+
+  
   (<+ rs  (psba args-brackets))
-  ;;(display "rs=") (display rs) (newline)
+  ;;(display "parse-square-brackets-arguments : rs=") (display rs) (newline)
   rs
   ) ;; initial call
 

@@ -2,7 +2,7 @@
 
 ;; This file is part of Scheme+
 
-;; Copyright 2021 Damien MATTEI
+;; Copyright 2021-2023 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -25,31 +25,43 @@
 ;; the value v should be put before in a let to avoid multiple evaluation after macro expand
 (define-syntax make-array-2d
   (syntax-rules ()
-    ((_ sx sy) (let* ((array (make-vector sy)))
-		 (for-basic (i 0 (- sy 1))
-		      (vector-set! array i (make-vector sx)))
+    ((_ lin col) (let* ((array (make-vector lin)))
+		 (for-basic (i 0 (- lin 1))
+		      (vector-set! array i (make-vector col)))
 		 array))
-    ((_ sx sy v) (let* ((array (make-vector sy)))
-		   (for-basic (i 0 (- sy 1))
-			(vector-set! array i (make-vector sx v)))
+    ((_ lin col v) (let* ((array (make-vector lin)))
+		   (for-basic (i 0 (- lin 1))
+			(vector-set! array i (make-vector col v)))
 		   array))
-    ((_ array sx sy) (begin
-		       (set! (quote array) (make-vector sy))
-		       (for-basic (i 0 (- sy 1))
-			    (vector-set! (quote array) i (make-vector sx)))))
-    ((_ array sx sy v) (begin
-			 (set! (quote array) (make-vector sy))
-			 (for-basic (i 0 (- sy 1))
-			      (vector-set! (quote array) i (make-vector sx v)))))))
+    ;; ((_ array sx sy) (begin
+    ;; 		       (set! (quote array) (make-vector sy))
+    ;; 		       (for-basic (i 0 (- sy 1))
+    ;; 			    (vector-set! (quote array) i (make-vector sx)))))
+    ((_ array lin col v) (begin
+			 (set! (quote array) (make-vector lin))
+			 (for-basic (i 0 (- lin 1))
+			      (vector-set! (quote array) i (make-vector col v)))))))
 
-;; TODO: order of indexes must be reversed to match Matrix and arrays conventions
+
+;; order of indexes  match Matrix and arrays conventions: line column
 (define-syntax array-2d-ref
   (syntax-rules ()
-    ((_ array x y) (vector-ref (vector-ref array y) x))))
+    ((_ array lin col) (vector-ref (vector-ref array lin) col))))
 
 (define-syntax array-2d-set!
   (syntax-rules ()
-    ((_ array x y val) (vector-set! (vector-ref array y) x val))))
+    ((_ array lin col val)
+       (vector-set! (vector-ref array lin) col val))))
+
+
+;; create a vector (or array) of line and column with a function
+(define (create-vector-2d fct lin col)
+  (define v (make-vector lin))
+  (for ((define l 0) (< l lin) (set! l (+ l 1)))
+       (vector-set! v l (make-vector col))
+       (for ((<+ c 0) (< c col) (set! c (+ c 1)))
+	    (array-2d-set! v l c (fct l c))))
+  v)
 
 
 

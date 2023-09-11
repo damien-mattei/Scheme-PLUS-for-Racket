@@ -59,6 +59,7 @@
 
 (require (for-syntax r6rs/private/base-for-syntax)) ;; for macro syntax (for ... : stxparam.rkt identifier-syntax: undefined
 
+
 (include "def.scm")
 
 (include "array.scm")
@@ -83,11 +84,10 @@
 
 
 
-(include "assignment.rkt")
-(include "apply-square-brackets.rkt")
+;;(include "assignment.rkt")
+;;(include "apply-square-brackets.rkt")
 
-;; include from your main file afer overloadind declarations when any
-;;(include "scheme-infix.rkt")
+;; include from your main file afer overloadind declarations when any with : (include "scheme-infix.rkt")
 
 
 

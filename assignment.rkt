@@ -68,12 +68,22 @@
 (define-syntax <-
   
   (syntax-rules ()
+
+
+    ((_ (kar kdr) expr) ; expr must be a pair
+
+     (begin
+       (set! kar (car expr))
+       (set! kdr (cdr expr))))
+    
+
+    
     ;;  special form like : (<- ($bracket-apply$ T 3) ($bracket-apply$ T 4))
-    ;; We will let the second $bracket-apply$ be executed and forbid the execution of first $bracket-apply$.
+    ;; We will let the second $bracket-apply$ be executed and block the execution of first $bracket-apply$.
     
     ;; one dimension array, example: {a[4] <- 7}
     ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
-    ((_ (bracket-apply container index ...) expr)
+    ((_ (bracket-apply container index index1 ...) expr)
 
      (begin
 
@@ -85,7 +95,10 @@
 	       (error "Bad <- form: the LHS of expression must be an identifier or of the form ($bracket-apply$ container index ...) , first argument is not $bracket-apply$:"
 		      (quote bracket-apply)))
 
-       (parse-square-brackets-arguments-and-assignment container expr index ...)))
+       ;;(display "<- : container name:") (display (quote container)) (newline)
+       ;;(display "<- : container:") (display container) (newline)
+       ;;(display "<- : expr:") (display expr) (newline)
+       (parse-square-brackets-arguments-and-assignment container expr index index1 ...)))
     
 
     
@@ -420,11 +433,10 @@
 			   0
 			   expr-eval)
 	     container-eval)
-	    (else (error "slicing not permitted with arrays")))
+	    (else (error "slicing not allowed with this container")))
 
       
       ;; normal case
-      ;; {T[7 2 4] <- 4}
       ;; {T[3] <- T[7 2 4]}
       
       
@@ -443,21 +455,25 @@
 	       (<- index-eval (+ (string-length container-eval) index-eval)))
 	     (string-set! container-eval index-eval expr-eval)
 	     expr-eval)
+
+	    ((flomat? container-eval)
+	     (error "row setting not allowed with flomat"))
 	    
-	    (else (array-set! container-eval index-eval expr-eval)
-		  expr-eval)))) ;; returning a value allow the chaining : {T[3] <- A[4] <- T[7 2 4]}
+	    ((array? container-eval)
+	     (array-set! container-eval index-eval expr-eval)
+	     expr-eval) ;; returning a value allow the chaining : {T[3] <- A[4] <- T[7 2 4]}
 
-
-
+	    (else ;; overloaded
+	     (define args-lst (list container-eval index-eval))
+	     (define setter! (find-setter-for-overloaded-square-brackets args-lst))
+	     (setter! container-eval index-eval expr-eval)))))
+	     
 
 
 
 
 
 (define (assignment-argument-2 container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval)
-
-  (when (not (or (vector? container-eval) (string? container-eval) (array? container-eval) (flomat? container-eval)))
-	     (error "assignment : container type not compatible : " container-eval))
   
   (<+ index1-or-keyword-eval-pos  index1-or-keyword-eval) ;; pos for positive
   (<+ index2-or-keyword-eval-pos  index2-or-keyword-eval)
@@ -518,10 +534,10 @@
 	 
 	 ((list (== slice) i2)
 	  (container-copy! container-eval
-						0
-						expr-eval
-						0
-						i2)
+			   0
+			   expr-eval
+			   0
+			   i2)
 	  container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
 	  )
 	 
@@ -529,9 +545,15 @@
 	  (cond ((vector? container-eval)  ;; normal case
 		 (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2))))
 		((array? container-eval)
+		 ;;(display "assignment.* : 2 args ,array case : container-eval = ") (display container-eval) (newline)
 		 (array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
-		(else
-		 (mset! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))) 
+		((flomat? container-eval) ; flomat
+		 (mset! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
+
+		(else ;; overloaded
+		 (define args-lst (list container-eval i1 i2))
+		 (define setter! (find-setter-for-overloaded-square-brackets args-lst))
+		 (setter! container-eval i1 i2 expr-eval)))
 	  expr-eval) ;; returning a value allow the chaining : {T[3 2] <- A[4] <- T[2 4]}
 
 	 ) ;; end match
@@ -546,7 +568,7 @@
 (define (assignment-argument-3 container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval expr-eval)
 
   (when (not (or (vector? container-eval)  (string? container-eval)  (array? container-eval)))
-	     (error "assignment : container type not compatible : " container-eval))
+	     (error "assignment-argument-3: container type not compatible : " container-eval))
 
   
   (<+ index1-or-keyword-eval-pos index1-or-keyword-eval)
@@ -712,7 +734,7 @@
 (define (assignment-argument-4 container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval expr-eval)
 
   (when (not (or (vector? container-eval)  (string? container-eval)  (array? container-eval)))
-	     (error "assignment : container type not compatible : " container-eval))
+	     (error "assignment-argument-4 : container type not compatible : " container-eval))
   
   (<+ index1-or-keyword-eval-pos index1-or-keyword-eval)
   (<+ index2-or-keyword-eval-pos  index2-or-keyword-eval)
@@ -834,7 +856,7 @@
 (define (assignment-argument-5 container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval expr-eval)
 
   (when (not (or (vector? container-eval)  (string? container-eval)  (array? container-eval)))
-	     (error "assignment : container type not compatible : " container-eval))
+	     (error "assignment-argument-5 : container type not compatible : " container-eval))
  
   (<+ index1-eval-pos  index1-eval)
   (<+ index2-or-keyword-eval-pos  index2-or-keyword-eval)
@@ -911,7 +933,7 @@
 (define (assignment-argument-6-and-more container expr args)
 
   (when (not (or (vector? container)  (array? container)))
-	     (error "assignment : container type not compatible : " container))
+	     (error "assignment-argument-6-and-more : container type not compatible : " container))
     
   (if (vector? container)
       (function-array-n-dim-set! container expr (reverse args)) ;; (array-n-dim-set! array value index1 index2 ...)
