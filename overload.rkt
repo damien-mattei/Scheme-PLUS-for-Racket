@@ -197,7 +197,9 @@
 
 
 
-;; args must be the same number as predicates and their types must match 
+;; args must be the same number as predicates and their types must match
+;;  (check-arguments '() '())
+;; #t
 (define (check-arguments pred-list args)
   ;;(display "pred-list=") (display pred-list) (newline)
   ;;(display "args=")(display args) (newline)
@@ -765,6 +767,22 @@
 ;; #<procedure:matrix-vect-ref>
 ;; > {Mv[1 0]}
 ;; 4
+
+;; >  (overload-square-brackets matrix-vect-ref matrix-vect-set!  (matrix-vect? number? number?))
+;; > (define Mv (matrix-vect (vector (vector 1 2 3) (vector 4 5 6))))
+;; > (matrix-vect-v Mv)
+;; '#(#(1 2 3) #(4 5 6))
+;; > {Mv[1 0] <- -7}
+;; -7
+;; > (matrix-vect-v Mv)
+;; '#(#(1 2 3) #(-7 5 6))
+;; > {Mv[1][0] <- 10}
+;; . . ../../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt:820:13: $bracket-apply$: no matching found in $ovrld-square-brackets-lst$ : failed with those arguments list (#<matrix-vect> 1)
+;; > (overload-square-brackets matrix-vect-line-ref matrix-vect-line-set! (matrix-vect? number?))
+;; > {Mv[1][0] <- 10}
+;; 10
+;; > (matrix-vect-v Mv)
+;; '#(#(1 2 3) #(10 5 6))
 
 (define-syntax overload-square-brackets
 

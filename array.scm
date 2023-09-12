@@ -53,6 +53,14 @@
     ((_ array lin col val)
        (vector-set! (vector-ref array lin) col val))))
 
+;; Scheme+ version
+;; create a vector of line and column with a function
+;; (define (create-vector-2d fct lin col)
+;;   {v <+ (make-array-2d lin col)}
+;;   (for ({l <+ 0} {l < lin} {l <- l + 1})
+;;        (for ({c <+ 0} {c < col} {c <- c + 1})
+;; 	    {v[l][c] <- (fct l c)}))
+;;   v)
 
 ;; create a vector (or array) of line and column with a function
 (define (create-vector-2d fct lin col)
