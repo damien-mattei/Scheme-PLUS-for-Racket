@@ -74,7 +74,9 @@
       ←&nbsp; :&nbsp; (unicode 2190 in hexadecimal that can be enter under Linux
       with Ctrl-Shift u 2190 Enter or Space bar)</p>
     <p style="margin-left: 40px;"><b>{x ← y}</b></p>
-	<p style="margin-left: 40px;"><b>With operator precedence: {xp <- {x - v * t} / (sqrt {1 - v ** 2 / c ** 2})}</b></p>
+	<p style="margin-left: 40px;"><b>With operator precedence: {xp <-
+  {x - v * t} / (sqrt {1 - v ** 2 / c ** 2})}</b></p>
+ <p style="margin-left: 40px;"><b> {M_i_o[j {i + 1}]  <-  M_i_o[j {i + 1}] - {(- η) * z_input[i] * მzⳆმz̃(z_output[j] z̃_output[j]) * ᐁ_i_o[j]}}</b></p>
     <div style="margin-left: 40px;"> </div>
     <p style="margin-left: 40px;">Assignment from right to left : <b>{y ← 7}</b></p>
     <p style="margin-left: 40px;">Assignment from left to right :
@@ -708,7 +710,7 @@ another method can be to 'require' the file : <b>(require
       <li><b>{x &lt;- y} </b></li>
       <li><b>{m[3] &lt;- 7}</b></li>
       <li><b>{T</b><b>[k] &lt;- x}</b></li>
-      <li><b>{T</b><b>[k] &lt;- </b><b><b>T</b><b>[{k + 1}]</b>}</b></li>
+      <li><b>{T</b><b>[k] &lt;- </b><b><b>T</b><b>[k + 1]</b>}</b></li>
       <li><b><b>{</b>T</b><b>[m n] &lt;- </b><b><b>T</b><b>[m {n +
     1}]</b>}</b></li>
 	<li><b>{my-hash-tbl["three"] &lt;- 3}</b></li>
