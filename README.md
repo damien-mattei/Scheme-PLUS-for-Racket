@@ -23,8 +23,6 @@
           </font></span></b></h1>
     <p style="text-align: center;">
 	Display options for viewing this documentation:<br>
-	<a href="README.md">Click here for a larger page view that improve code
-  display.</a>
   <br>
   <br>
     <a href="https://damien-mattei.github.io/Scheme-PLUS-for-Racket/Scheme+.html">Click here for the light HTML page version of this
