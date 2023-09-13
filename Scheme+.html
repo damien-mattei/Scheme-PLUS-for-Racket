@@ -292,7 +292,21 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
     <div style="background: #111111;
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;">
-      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff">#lang reader "SRFI-105.rkt"<br><br></span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">require</span> <span style="color: #ffffff">Scheme-PLUS-for-Racket/</span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff">Scheme+)</span>
+      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff">#lang reader "SRFI-105.rkt"<br><br></span><span style="color: #ffffff">(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt")
+
+
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/assignment.rkt") ; all sort ofassignment with <- 
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/apply-square-brackets.rkt") ; all sort of indexing with [] 
+
+
+; first stage overloading if any
+
+; to take in account the new overloaded operators scheme-infix.rkt must be included
+; after the overloading first stage definition of operators
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
+</span>
 </pre>
       <br>
       <br>
@@ -385,7 +399,7 @@ procedure as Scheme is not a typed language.<br>
     <p> </p>
     <br>
     <p>Hash Tables support :</p>
-    <pre>(require Scheme-PLUS-for-Racket/Scheme+)<br><br>(require srfi/69)  ;; support for SRFI 69 Basic hash tables
+    <pre><br><br>(require srfi/69)  ;; support for SRFI 69 Basic hash tables
 
 {my-hash-tbl &lt;+ (make-hash-table)} ;; add an object in the current environment, here a hash table
 (hash-table? my-hash-tbl)
@@ -684,11 +698,22 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
       Scheme.</p>
     <p>Prior to use <b>Scheme+</b> for DrRacket Scheme, you must add a
       <b>#lang reader "SRFI-105.rkt" </b>directive in the first line of
-      your program and the <b>module </b>must be loaded,this is done
-      by inserting the statement <b>(require
-        Scheme-PLUS-for-Racket/Scheme+)</b> in your program, however
-      another method can be to 'require' the file : <b>(require
-        "Scheme+.rkt") </b>if you have downloaded the source code.</p>
+      your program and by inserting the statement <b>
+    (include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt")
+
+
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/assignment.rkt") ; all sort ofassignment with <- 
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/apply-square-brackets.rkt") ; all sort of indexing with [] 
+
+
+; first stage overloading if any
+
+; to take in account the new overloaded operators scheme-infix.rkt must be included
+; after the overloading first stage definition of operators
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
+</b>if you have downloaded the source code.</p>
     <p>Below is the version of the above code written in Scheme+ :</p>
     <p><!-- HTML generated using hilite.me --></p>
     <!-- HTML generated using hilite.me -->
@@ -696,16 +721,22 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;"><span style="color: #ffffff"></span><span
         style="color: #ffffff"><b>#lang reader "SRFI-105.rkt"<br>
-        </b>(</span><span style="color: #ff0086; font-weight: bold">require
+      </b>
+      (include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt")
 
 
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/assignment.rkt") ; all sort ofassignment with <- 
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/apply-square-brackets.rkt") ; all sort of indexing with [] 
 
 
+; first stage overloading if any
 
-
-      </span><span style="color: #ffffff"></span><span style="color:
-        #ff0086; font-weight: bold"><b>Scheme-PLUS-for-Racket/</b>Scheme+</span><span
-        style="color: #ffffff">)<br>
+; to take in account the new overloaded operators scheme-infix.rkt must be included
+; after the overloading first stage definition of operators
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
+<br>
       </span> </div>
     <div style="background: #111111; overflow:auto;width:auto;border:
       gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;">
@@ -764,8 +795,25 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
       <div style="background: #111111;
         overflow:auto;width:auto;border:solid gray;border-width:.1em
         .1em .1em .8em;padding:.2em .6em;">
-        <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff"><span style="color: #ffffff"><b>#lang reader "SRFI-105.rkt"<br></b>(</span><span style="color: #ff0086; font-weight: bold">require </span><span style="color: #ffffff"></span><span style="color: #ff0086;
-        font-weight: bold"><b>Scheme-PLUS-for-Racket/</b>Scheme+</span><span style="color: #ffffff">)<br>
+        <pre style="margin: 0; line-height: 125%"><span style="color:
+      #ffffff"><span style="color: #ffffff"><b>#lang reader
+	"SRFI-105.rkt"<br></b>
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt")
+
+
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/assignment.rkt") ; all sort ofassignment with <- 
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/apply-square-brackets.rkt") ; all sort of indexing with [] 
+
+
+; first stage overloading if any
+
+; to take in account the new overloaded operators scheme-infix.rkt must be included
+; after the overloading first stage definition of operators
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
+
+	<br>
 </span></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">declare</span> <span style="color: #fb660a">size1</span> <span style="color: #fb660a">memo1</span><span style="color: #ffffff">)</span>
 
 <span style="color: #ffffff">{</span><span style="color: #fb660a">size1</span> <span style="color: #fb660a">&lt;-</span> <span style="color: #0086f7; font-weight: bold">10000</span><span style="color: #ffffff">}</span>
@@ -852,8 +900,21 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;"><span style="color: #ffffff">#lang
         reader "../SRFI/SRFI-105.rkt"<br>
-        ;;(require "../Scheme+.rkt")<br>
-        (require Scheme-PLUS-for-Racket/Scheme+)<br>
+        (include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt")
+
+
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/assignment.rkt") ; all sort ofassignment with <- 
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/apply-square-brackets.rkt") ; all sort of indexing with [] 
+
+
+; first stage overloading if any
+
+; to take in account the new overloaded operators scheme-infix.rkt must be included
+; after the overloading first stage definition of operators
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
+<br>
       </span><span style="color: #ff0086; font-weight: bold"></span><span
         style="color: #ffffff"></span><span style="color: #ff0086;
         font-weight: bold"></span><span style="color: #ffffff"></span> </div>
@@ -1115,7 +1176,24 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
     <div style="background: #111111;
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;">
-      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff">#lang reader "../SRFI/SRFI-105.rkt"<br>;;(require "../Scheme+.rkt")<br>(require Scheme-PLUS-for-Racket/Scheme+)</span>
+      <pre style="margin: 0; line-height: 125%"><span style="color:
+			  #ffffff">#lang reader
+      "../SRFI/SRFI-105.rkt"<br>
+      (include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt")
+
+
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/assignment.rkt") ; all sort ofassignment with <- 
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/apply-square-brackets.rkt") ; all sort of indexing with [] 
+
+
+; first stage overloading if any
+
+; to take in account the new overloaded operators scheme-infix.rkt must be included
+; after the overloading first stage definition of operators
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
+</span>
 </pre>
     </div>
     <div style="background: #111111;
@@ -1183,7 +1261,21 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
     <div style="background: #111111;
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;">
-      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ffffff">#lang reader "../SRFI/SRFI-105.rkt"<br>;;(require "../Scheme+.rkt")<br>(require Scheme-PLUS-for-Racket/Scheme+)</span>
+      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ffffff">#lang reader "../SRFI/SRFI-105.rkt"<br>(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt")
+
+
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/assignment.rkt") ; all sort ofassignment with <- 
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/apply-square-brackets.rkt") ; all sort of indexing with [] 
+
+
+; first stage overloading if any
+
+; to take in account the new overloaded operators scheme-infix.rkt must be included
+; after the overloading first stage definition of operators
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
+</span>
 </pre>
     </div>
     <div style="background: #111111;
@@ -2037,9 +2129,21 @@ scheme@(guile-user)&gt; v
       .1em .8em;padding:.2em .6em;">
       <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff">#</span><span style="color: #fb660a">lang</span> <span style="color: #fb660a">reader</span> <span style="color: #0086d2">"../SRFI/SRFI-105.rkt"</span>
 
-<span style="color: #008800; font-style: italic; background-color: #0f140f">;;(require Scheme-PLUS-for-Racket/Scheme+)</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
 
-<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">require</span> <span style="color: #0086d2">"../Scheme+.rkt"</span><span style="color: #ffffff">)</span>
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt")
+
+
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/assignment.rkt") ; all sort ofassignment with <- 
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/apply-square-brackets.rkt") ; all sort of indexing with [] 
+
+
+; first stage overloading if any
+
+; to take in account the new overloaded operators scheme-infix.rkt must be included
+; after the overloading first stage definition of operators
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
+</span>
 
 <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">include</span> <span style="color: #0086d2">"../library/increment.scm"</span><span style="color: #ffffff">)</span>
 <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">include</span> <span style="color: #0086d2">"../library/for-next-step.scm"</span><span style="color: #ffffff">)</span>
