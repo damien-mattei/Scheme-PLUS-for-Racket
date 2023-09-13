@@ -1835,20 +1835,7 @@ scheme@(guile-user)&gt; v
 (include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
 </span>
 
-<span class="p">(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
-
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt")
-
-
-(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/assignment.rkt") ; all sort ofassignment with <- 
-(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/apply-square-brackets.rkt") ; all sort of indexing with [] 
-
-
-; first stage overloading if any
-
-; to take in account the new overloaded operators scheme-infix.rkt must be included
-; after the overloading first stage definition of operators
-(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
+<span class="p">
 </span>
 
 <span class="p">(</span><span class="nf">include</span> <span class="s">"../library/increment.scm"</span><span class="p">)</span>
