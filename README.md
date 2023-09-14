@@ -340,26 +340,27 @@ vn-lst))<br>
 Note that when a function that overload an operator has more than 2 args (f a1 a2 a3 ...) and only (f a1 a2) is defined
 we do: (f a1 (f a2 a3 ...)) for operators.<br>
 A complete set of new procedures and macros: <br>
+<pre>
 define-overload-procedure
-	 overload-procedure
-	 <pre>
-		 define-overload-existing-procedure
-		 overload-existing-procedure
+overload-procedure
+
+ define-overload-existing-procedure
+overload-existing-procedure
 	 
-	 define-overload-operator
-	 overload-operator
+ define-overload-operator
+overload-operator
 	 
-	 define-overload-existing-operator
-	 overload-existing-operator
+ define-overload-existing-operator
+ overload-existing-operator
 	 
-	 define-overload-n-arity-operator
-	 overload-n-arity-operator
+ define-overload-n-arity-operator
+ overload-n-arity-operator
 	 
-	 define-overload-existing-n-arity-operator
-	 overload-existing-n-arity-operator
+ define-overload-existing-n-arity-operator
+ overload-existing-n-arity-operator
 	 
-	 overload-square-brackets
-	 </pre>
+ overload-square-brackets
+ </pre>
 allow overloading of both
 functions and operators. Those macros call procedures written
 recursively because all predicate must be test to find the matching
