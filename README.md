@@ -320,11 +320,11 @@ A possibility of defining overloaded functions or operators is given with this s
 (define-overload-existing-n-arity-operator +)<br>
 (define (add-n-lists . vn-lst) (implementation-add-n-lists
 vn-lst))<br>
-<pre>
+
 (define (implementation-add-n-lists vn-lst)
   {map-args <+ (cons + vn-lst)}
   (apply map map-args))
-  </pre>
+
 {'(1 2 3) + '(4 5 6) + '(7 8 9)}<br>
 (12 15 18)<br>
 <br>
