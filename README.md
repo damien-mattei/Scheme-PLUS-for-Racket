@@ -363,7 +363,9 @@ overload-operator
  </pre>
 allow overloading of both
 functions and operators. Those macros call procedures written
-recursively because all predicate must be test to find the matching
+recursively or imperatively with hash tables  depending of scheme
+ implementation  because all predicate
+must be test to find the matching
 procedure as Scheme is not a typed language.<br> 
 <br>
 <br>
