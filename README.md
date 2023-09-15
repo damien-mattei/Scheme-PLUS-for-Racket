@@ -1122,6 +1122,69 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```
 {% endhighlight %}
 
+
+
+Here is another overloading example:
+
+{% highlight scheme %}
+```scheme
+
+#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/SRFI/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions
+
+
+(provide (all-defined-out)) 
+
+(require srfi/42) ; Eager Comprehensions
+
+(require "matrix.rkt")
+
+
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt")
+
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/assignment.rkt") ; all sort of assignment with <- 
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/apply-square-brackets.rkt") ; all sort of indexing with [] 
+
+
+; first stage overloading
+(define-overload-existing-operator +)
+(define-overload-existing-operator *)
+(define-overload-procedure uniform)
+
+; to take in account the new overloaded operators scheme-infix.rkt must be included
+; after the overloading first stage definition of operators
+(include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt")
+
+
+; second stage overloading
+(overload-existing-operator + vector-append (vector? vector?))
+
+(overload-existing-operator * multiply-flomat-vector (flomat? vector?))
+
+;; return a number in ]-1,1[
+;; the dummy parameter is needed by a flomat procedure
+(define (uniform-dummy dummy) {(random) * (if {(random 2) = 0}  1 -1)}); we randomly choose the sign of the random number
+		         	
+
+; return a random number between [inf, sup]
+(define (uniform-interval inf sup)
+  {gap <+ {sup - inf}}
+  {inf + gap * (random)})
+
+(overload-procedure uniform uniform-dummy (number?))
+
+(overload-procedure uniform uniform-interval (number? number?))
+
+
+; sigmoïde
+(define (σ z̃) 
+  {1 / {1 + (exp (- z̃))}})
+
+
+```
+{% endhighlight %}
+
     
 <h2><br>
     </h2>
