@@ -45,6 +45,10 @@
   &lt;-), [ ],</b><b><font
           size="+2">⥆ </font>(or &lt;+) . </b><br>
     </p>
+	<div align="center"><img
+              src="Scheme+io_fichiers/scheme-plus.png"
+               alt="Vim example"><br>
+          </div>
 	<p><b>The idea of Scheme+ first come to my mind when comparing the
   assignation syntax used in Clojure with Scheme and Lisp, and later
   the easyness of creating and assigning variables in Python
