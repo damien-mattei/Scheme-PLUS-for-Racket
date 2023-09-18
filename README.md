@@ -145,6 +145,9 @@ you want)<br>
       </b></p>
     <p style="margin-left: 40px;"><b>"hella"</b></p>
     <p style="margin-left: 40px;"><b><br>
+	<p style="margin-left: 40px;"><b>Slicing a in Python: </b></p>
+	<p style="margin-left: 40px;"><b>{s[2 * 3 - 4 $ 2 * 3 + 1 $ 2 * 4 - 6] <- "0000"}</b></p>
+ <p style="margin-left: 40px;"><b>"ab0d0f0h"</b></p>
       </b></p>
     <p style="margin-left: 40px;"><b>with function definition:<br>
       </b></p>
