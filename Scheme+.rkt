@@ -84,11 +84,11 @@
 
 
 
+
+;; include from your main file afer overloadind declarations when any with :
+
+;;(include "scheme-infix.rkt")
+
 ;;(include "assignment.rkt")
 ;;(include "apply-square-brackets.rkt")
-
-;; include from your main file afer overloadind declarations when any with : (include "scheme-infix.rkt")
-
-
-
 

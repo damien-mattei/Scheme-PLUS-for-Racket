@@ -125,7 +125,7 @@
 					      ((or (equal? (quote op) (quote ->)) (equal? (quote op) (quote →)))
 					       (op term2 (opspecial ident term1))) ;; Warning: argument names of macro do not represent the values contained in this case
 					      
-					      ;;(else (!0 (quote ident) (quote opspecial) (quote term1) (quote op) (quote term2)))))
+					      
 					      (else
 					       (!prec
 						;; here we need to eval quote the <- or -> to avoid a bad syntax error with those macros
@@ -139,6 +139,8 @@
 						(opspecial ident ($nfx$ term1 op term2 ...))
 						
 						(!prec ident (eval (quote opspecial) (current-namespace))  term1 op term2 ...))))) ;; this is in fact a general case ($nfx$ term0 ops term1 op term2 ...)
+
+
 
     ;; now quoting all the macros,function, symbols ... so we are no more annoyed with macro 'bad syntax' error and also this should (?) keep the 'and and 'or short-circuited functionalities.
 
@@ -214,7 +216,7 @@
 
 
   (define (calc op a b)
-    (if odd? (op a b) (op b a)))
+    (if odd? (op a b) (op b a))) ;; evaluation is here 
 
   
   ;; (define (calc op a b) ;; keep in mind that now the op-erator and args are quoted !
@@ -232,9 +234,10 @@
   ;; 	(eval (list op b a) (interaction-environment))))
 
 
-
+  ;; for memory: (!** terms stack operators odd?)
+  ;; stack is the result accumulator 
   
-  (cond ((null? terms) stack) ; base case
+  (cond ((null? terms) stack) ; end case, we return the accumulated result 
 	;; operator we can evaluate -- pop operator and operand, then recurse
 	((and (> (length stack) 1) ;; (begin
 				   ;;   (display "operators=") (display operators) (newline)

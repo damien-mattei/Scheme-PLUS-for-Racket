@@ -455,6 +455,9 @@
             ((char=? c #\!) (my-read port) (my-read port))
 	    ((char=? c #\;) (read-error "SRFI-105 REPL : Unsupported #; extension"))
 	    ((char=? c #\') (read-error "SRFI-105 REPL : Unsupported #' extension"))
+	    ((char=? c #\:) (list->string
+			     (append (list #\# #\:)
+				     (read-until-delim port neoteric-delimiters))))
 	    (#t (read-error (string-append "SRFI-105 REPL :"
 					   "Unsupported # extension"
 					   " unsupported character causing this message is character:"

@@ -61,14 +61,14 @@
 
 ;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 $ 3 * 5 - 10 $ 2 * 4 - 6]}
 ;; '#(3 5)
-(define ($bracket-apply$ container . args-brackets)
+(define ($bracket-apply$ container . args-brackets)   ;;  this implements a possible $bracket-apply$ as proposed in SRFI-105
 
   ;;(display args-brackets) (newline)
   ($bracket-apply$next container (parse-square-brackets-arguments args-brackets)))
 
 
 
-(define ($bracket-apply$next container args)   ;;  this implements a possible $bracket-apply$ as proposed in SRFI-105
+(define ($bracket-apply$next container args)  
 
   ;(display "apply-square-brackets.* : $bracket-apply$next : container = ") (display container) (newline)
   
@@ -115,7 +115,7 @@
 					   (fifth args)))
     ;; more than 5 arguments in [ ]
     ;; T[i1 i2 i3 i4 i5 i6 ...]
-    (else 
+    (else ;; TODO : put the else case in a function like other cases
      (if (vector? container)
 	 (function-array-n-dim-ref container (reverse args)) 
 	 (array-ref container (list->vector args))))))   ;; array SRFI 25
@@ -847,6 +847,9 @@
 	(else ;; T[i1 i2 i3 i4 i5] ,  5 dimension array
 	 (array-ref container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval)))) ;; return the element of the array
   ;; note : i do not use negative indexes or slices for array because they could be not starting at zero
+
+
+
 
 
 ;; TODO :this code is only here to use Scheme+ but it should be in other place (scheme-infix.rkt)

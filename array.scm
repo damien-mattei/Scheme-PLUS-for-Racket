@@ -67,7 +67,7 @@
   (define v (make-vector lin))
   (for ((define l 0) (< l lin) (set! l (+ l 1)))
        (vector-set! v l (make-vector col))
-       (for ((<+ c 0) (< c col) (set! c (+ c 1)))
+       (for ((define c 0) (< c col) (set! c (+ c 1)))
 	    (array-2d-set! v l c (fct l c))))
   v)
 

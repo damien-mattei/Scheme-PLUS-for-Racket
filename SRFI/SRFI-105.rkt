@@ -40,14 +40,19 @@
       '()
       (cons result (process-input-code-rec in))))
 
+
 ;; read all the expression of program
 ;; a tail recursive version
 (define (process-input-code-tail-rec in) ;; in: port
+  
   (define (process-input acc)
+    
     (define result (curly-infix-read in))  ;; read an expression
+    
     (if (eof-object? result)
 	(reverse acc)
 	(process-input (cons result acc))))
+  
   (process-input '()))
 
 
@@ -460,6 +465,9 @@
             ((char=? c #\!) (my-read port) (my-read port))
 	    ((char=? c #\;) (read-error "SRFI-105 REPL : Unsupported #; extension"))
 	    ((char=? c #\') (read-error "SRFI-105 REPL : Unsupported #' extension"))
+	    ((char=? c #\:) (list->string
+			     (append (list #\# #\:)
+				     (read-until-delim port neoteric-delimiters))))
 	    (#t (read-error (string-append "SRFI-105 REPL :"
 					   "Unsupported # extension"
 					   " unsupported character causing this message is character:"
@@ -542,6 +550,7 @@
 ;2
 
 ;; repeatedly read in curly-infix and write traditional s-expression.
+;; does not seem to be used in Racket
 (define (process-input)
   (let ((result (curly-infix-read)))
     (cond ((not (eof-object? result))

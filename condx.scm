@@ -59,7 +59,7 @@
 ;;         (let () e ...)
 ;;         (condx tail ...)))))
 
-;; warning this ones behaves differently (can not remember the problem)
+;; warning this ones can not use inner definitions
 (define-syntax condx-begin
   (syntax-rules (exec else)
     ((_) '()) ;; allow no else clause

@@ -68,22 +68,129 @@
 (define $ovrld-square-brackets-lst$ '()) ;; for square brackets
 
 
+;; overload tests
 
-;; doc deprecated
-;; scheme@(guile-user)> (use-modules (Scheme+))
-;; scheme@(guile-user)> (define (add-vect-vect v1 v2) (map + v1 v2))
-;; scheme@(guile-user)> (overload + add-vect-vect (list? list?) 'operator)
-;; create-overloaded-operator : pred-list = (#<procedure list? (_)> #<procedure list? (_)>)
-;; funct: #<procedure add-vect-vect (v1 v2)>
-;; orig-funct: #<procedure + (#:optional _ _ . _)>
-;; old-funct: #<procedure + (#:optional _ _ . _)>
-;; new-funct: #<procedure new-funct args>
-;; scheme@(guile-user)> (+ '(1 2 3) '(4 5 6) '(7 8 9))
-;; new-funct: new-funct = #<procedure new-funct args>
-;; new-funct : pred-list = (#<procedure list? (_)> #<procedure list? (_)>)
-;; new-funct : args = ((1 2 3) (4 5 6) (7 8 9))
-;; new-funct : nb-args = 3
-;; (12 15 18)
+;; (display "before add-list-list") (newline)
+;; (define (add-list-list v1 v2) (map + v1 v2))
+;; (display "before define-overload") (newline)
+
+;; (define-overload-existing-n-arity-operator +)
+
+;; (define-overload-existing-operator *)
+
+;; (define-overload-existing-n-arity-operator -)
+
+;; (define (add-n-lists . vn-lst) (implementation-add-n-lists vn-lst))
+
+;; (define (sub-n-lists . vn-lst) (implementation-sub-n-lists vn-lst))
+
+;; (define-overload-existing-procedure length)
+;; (define-overload-procedure foobie)
+
+
+;; (define (implementation-add-n-lists vn-lst)
+;;   {map-args <+ (cons + vn-lst)}
+;;   (apply map map-args))
+
+
+;; (define (implementation-sub-n-lists vn-lst)
+;;   {map-args <+ (cons - vn-lst)}
+;;   (apply map map-args))
+
+
+
+;; (overload-existing-n-arity-operator + add-n-lists (list? list?))
+
+
+
+;; ;; > {'(1 2 3) - '(4 5 6) - '(7 8 9)}
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = ((1 2 3) (4 5 6) (7 8 9))
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (1 4 7)
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (2 5 8)
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (3 6 9)
+;; ;; '(-10 -11 -12)
+;; ;; > (+ '(1 2 3) '(4 5 6))
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = ((1 2 3) (4 5 6))
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (1 4)
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (2 5)
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (3 6)
+;; ;; '(5 7 9)
+;; ;; > {'(1 2 3) - '(4 5 6)}
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = ((1 2 3) (4 5 6))
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (1 4)
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (2 5)
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (3 6)
+;; ;; '(-3 -3 -3)
+;; ;; > (- '(1 2 3) '(4 5 6))
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = ((1 2 3) (4 5 6))
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (1 4)
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (2 5)
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (3 6)
+;; ;; '(-3 -3 -3)
+;; ;; > (- '(1 2 3))
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = ((1 2 3))
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (1)
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (2)
+;; ;; check-arguments-for-n-arity : type = #<procedure:list?>
+;; ;; check-arguments-for-n-arity : args = (3)
+;; ;; '(-1 -2 -3)
+;; (overload-existing-n-arity-operator - sub-n-lists (list? list?))
+
+;; (display "+ =") (display +) (newline)
+
+;; (+ '(1 2) '(3 4))
+
+;; (display "before mult-num-list") (newline)
+;; (define (mult-num-list k v) (map (λ (x) (* k x)) v))
+
+;; (overload-existing-operator * mult-num-list (number? list?))
+
+
+
+;; {t <+ {3 * '(1 2 3) + '(4 5 6) + '(7 8 9)}}
+;; (display t) (newline)
+
+;; ;; ../../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.scm:600:7: require: not at module level or top level in: (require (rename-in racket/base (* orig-proc)))
+;; ;; (define (foo) ;; ko
+;; ;;   ;;(declare x)
+;; ;;   (define x 23)
+;; ;;   (display "before define mult-num-list") (newline)
+;; ;;   (define (mult-num-list k v) (map (λ (x) (* k x)) v))
+;; ;;   (display "before overload *") (newline)
+;; ;;   (define-overload-existing-operator *)
+;; ;;   (overload * mult-num-list (number? list?))
+;; ;;   {t <+ {3 * '(1 2 3) + '(4 5 6) + '(7 8 9)}}
+;; ;;   {x <- 1 + x + 4 * 5}
+;; ;;   t)
+
+
+
+;; (overload-existing-procedure length vector-length (vector?))
+;; (overload-existing-procedure length string-length (string?))
+
+;; (length #(1 2 3 4))
+;; (length '(1 2 3))
+;; (length "abcde")
+
 
 (define-syntax overload
 
@@ -102,38 +209,6 @@
 			      ovrld-lst))))))
  	 
 
-
-
-;; (define (mult-num-vect k v) (map (λ (x) (* k x)) v))
-  
-;; (overload * mult-num-vect (number? list?) 'operator) 
-
-;; (* 3 (+ '(1 2 3) '(4 5 6)))
-
-;; (15 21 27)
-
-;; (+ (* 3 '(1 2 3)) '(4 5 6))
-;; (7 11 15)
-
-;; {3 * '(1 2 3) + '(4 5 6)}
-;; (7 11 15)
-
-;; {3 * '(1 2 3) + '(4 5 6) + '(7 8 9)}
-;; (14 19 24)
-
-
-;; scheme@(guile-user)> {3 * '(1 2 3)}
-;; $3 = (3 6 9)
-
-;; scheme@(guile-user)> (define (add-vect v) v)
-;; scheme@(guile-user)> (overload + add-vect (list?) 'operator)
-;; scheme@(guile-user)> (+ '(1 2 3))
-;; $7 = (1 2 3)
-
-;; scheme@(guile-user)> (define (add-pair p1 p2) (cons (+ (car p1) (car p2)) (+ (cdr p1) (cdr p2))))
-;; scheme@(guile-user)> (overload + add-pair pair? pair?)
-;; overload
-;; scheme@(guile-user)> (+ (cons 1 2) (cons 3 4))
 
 
 (define-syntax overload-procedure
@@ -201,8 +276,8 @@
 ;;  (check-arguments '() '())
 ;; #t
 (define (check-arguments pred-list args)
-  ;;(display "pred-list=") (display pred-list) (newline)
-  ;;(display "args=")(display args) (newline)
+  ;;(display "check-arguments : pred-list=") (display pred-list) (newline)
+  ;;(display "check-arguments : args=")(display args) (newline)
   (if (= (length pred-list) (length args))
       (let ((pred-arg-list (map cons pred-list args)))
 	(andmap (λ (p) ((car p) (cdr p)))
@@ -508,14 +583,7 @@
 
 
 
-;; > (define-overload-operator n+)
-;; > (define (add-list-list L1 L2) (map + L1 L2))
-;; > (overload n+ add-list-list (list? list?))
-;; n+
-;; > (n+ '(1 2 3) '(4 5 6))
-;; '(5 7 9)
-;; > (n+ '(1 2 3) '(4 5 6) '(7 8 9))
-;; '(12 15 18)
+
 (define-syntax define-overload-operator
 
   (syntax-rules ()
@@ -556,11 +624,7 @@
 
 
 
-;; > (define-overload-n-arity-operator n+)
-;; > (define plus +)
-;; > (overload n+ plus (number? number?))
-;; > (n+ 1 2 3 4 5)
-;; 15
+
 (define-syntax define-overload-n-arity-operator
 
   (syntax-rules ()
@@ -815,26 +879,30 @@
 	 
 	 (if proc-search-result
 	     proc-search-result
-	     (error '$bracket-apply$ "failed with those arguments list ~a" args-lst)))
+	     (error '$bracket-apply$ "failed with those arguments list : ~a" args-lst)))
        
 
 ;; > (find-getter-for-overloaded-square-brackets '(#(1 2 3) 1))
 ;; #<procedure:vector-ref>
 (define (find-getter-for-overloaded-square-brackets args-lst) 
 
-  	 
-	 (define (check-args-lst pred-list) ; check arguments list match predicates
-	   (check-arguments pred-list args-lst))
+  
+  (define (check-args-lst pred-list) ; check arguments list match predicates
+    ;;(display "check-args-lst : pred-list =") (display pred-list) (newline)
+    (check-arguments pred-list args-lst))
 	 
-	 (define (test-proc pred-proc-list) ; test the procedure if it matches with arguments
-	   (if (check-args-lst (car pred-proc-list))
-	       (car (cdr  pred-proc-list))
-	       #f))
-	 
-	 (define proc-search-result (ormap test-proc $ovrld-square-brackets-lst$ )) ; search for a procedure matching arguments
-	 
-	 (if proc-search-result
-	     (car proc-search-result)
+  (define (test-proc pred-proc-list) ; test the procedure if it matches with arguments
+    ;;(display "test-proc : pred-proc-list =") (display pred-proc-list) (newline)
+    (if (check-args-lst (car pred-proc-list))
+	(car (cdr  pred-proc-list))
+	#f))
+  
+  (define proc-search-result (ormap test-proc $ovrld-square-brackets-lst$ )) ; search for a procedure matching arguments
+
+  ;;(display "find-getter-for-overloaded-square-brackets : args-lst = ") (display args-lst) (newline) (newline)
+  
+  (if proc-search-result
+      (car proc-search-result)
 	     (error '$bracket-apply$ "no matching found in $ovrld-square-brackets-lst$ : failed with those arguments list ~a" args-lst)))
 
 
@@ -855,3 +923,24 @@
 	     (cdr proc-search-result)
 	     (error '$bracket-apply$ "no matching found in $ovrld-square-brackets-lst$ : failed with those arguments list ~a" args-lst)))
        
+
+;; other example 
+
+;; ; first stage overloading
+;; (define-overload-existing-operator +)
+;; (define-overload-existing-operator *)
+
+;; ; to take in account the new overloaded operators scheme-infix.rkt must be included
+;; ; after the overloading first stage definition of operators
+;; (include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
+
+
+;; ; second stage overloading
+;; (overload-existing-operator + vector-append (vector? vector?))
+;; (overload-existing-operator * multiply-matrix-vector (matrix-vect? vector?))
+
+;; ;; overload [ ] 
+;; (overload-square-brackets matrix-vect-ref matrix-vect-set!  (matrix-vect? number? number?))
+;; (overload-square-brackets matrix-vect-line-ref matrix-vect-line-set! (matrix-vect? number?))
+
+
