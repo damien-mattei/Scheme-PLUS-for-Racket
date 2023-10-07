@@ -125,10 +125,13 @@
     ;; > (list x y z u v w a b c)
     ;; '(2 4 5 2 4 5 2 4 5)
     ((_ (var10 ...) (var11 ...) ... expr) (begin  ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result 
-					    (define-values (var10 ...) expr)
-					    (define-values (var11 ...) (values var10 ...))
-					    ...
-					    (values var10 ...)))
+    					    (define-values (var10 ...) expr)
+    					    (define-values (var11 ...) (values var10 ...))
+    					    ...
+    					    (values var10 ...)))
+    
+   			    
+
     
     ((_ var expr) (begin
 		    (define var expr)

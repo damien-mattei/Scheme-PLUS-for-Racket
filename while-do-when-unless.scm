@@ -84,7 +84,7 @@
 	       (let ()
 
      		 ;;#f ; avoid empty begin but with (let () i don't care ! (bigloo use: (if #f #f) which creates a never executed instruction !)
-
+		 '() ;; avoid while-do-when-unless.scm: let: bad syntax (missing binding pairs or body) in: (let ())
                  expr ...)
 
                ;;(begin

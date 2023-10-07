@@ -265,7 +265,8 @@
   (syntax-rules ()
     
     ((_ (var1 ...) expr) (begin
-			   (set!-values-plus (var1 ...) expr)
+			   ;;(set!-values-plus (var1 ...) expr)
+			   (set!-values (var1 ...) expr)
 			   (values var1 ...)))
 
     ((_ (var10 ...) (var11 ...) ... expr)

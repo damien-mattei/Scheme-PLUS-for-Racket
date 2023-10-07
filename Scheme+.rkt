@@ -77,7 +77,7 @@
 
 (include "slice.scm")
 
-(include "set-values-plus.scm")
+;;(include "set-values-plus.scm") ;; useless in racket i suppose because set!-values already exist
 
 (include "increment.scm")
 (include "for_next_step.scm")
