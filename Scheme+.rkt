@@ -2,7 +2,7 @@
 
 ;; Scheme+.rkt 
 
-;; version 7.1
+;; version 7.2
 
 ;; author: Damien MATTEI
 
@@ -28,67 +28,132 @@
 
 ;; use :
 
-;; (include "Scheme+.rkt")
+;; this file must now be included in your main project file like this:
+;; at the beginning of your main file add
+;; for infix operator precedence:
+;; (define-namespace-anchor ankh)
+;; (define bsns (namespace-anchor->namespace ankh))
+;; (current-namespace bsns)
+
+;; (require "Scheme+.rkt")
 
 
-;; (module Scheme+ racket
+
+
+(module Scheme+ racket
 	
-;; 	(module test racket/base) ;; dummy
-
-;; 	(provide define-overload-existing-operator define-overload-n-arity-operator define-overload-operator define-overload-existing-procedure define-overload-procedure $ovrld-ht$ overload def $bracket-apply$ <- ← -> → <+ ⥆ +> ⥅ declare $> $+> condx <> ≠ ** <v v> ⇜ ⇝ if repeat do when unless   % << >> % & $ ∣ ) ;;$nfx$ !*prec set-infix-operators! update-operators infix-operators-lst)
+	(module test racket/base) ;; dummy
 
 
-;;  U+2223 ∣ DIVIDES (&mid;, &shortmid;, &smid;, &VerticalBar;) see: https://en.wikipedia.org/wiki/Vertical_bar because vertical line is reserved in Racket
-;; do not type the ∣ with keyboard it is not the same and will give an 'undefined symbol' error ,also vertical_line disturb highlight syntaxing in emacs
+	(provide def
+		 $bracket-apply$
+		 $
+		 for
+		 for-racket
+		 for-basic
+		 <- ←
+		 -> →
+		 <+ ⥆
+		 +> ⥅
+		 declare
+		 $>
+		 $+>
+		 condx
+		 <> ≠
+		 **
+		 <v v>
+		 ⇜ ⇝
+		 if repeat do when unless
+		 %
+		 << >>
+		 & ∣
+		 $nfx$ !*prec
+		 
+		 ;$ovrld-ht$
+		 
+		 define-overload-procedure
+		 overload-procedure
+		 
+		 define-overload-existing-procedure
+		 overload-existing-procedure
+		 
+		 define-overload-operator
+		 overload-operator
+		 
+		 define-overload-existing-operator
+		 overload-existing-operator
+		 
+		 define-overload-n-arity-operator
+		 overload-n-arity-operator
+		 
+		 define-overload-existing-n-arity-operator
+		 overload-existing-n-arity-operator
 
-;; conflict solving with -> and some Racket syntax:
-;; https://docs.racket-lang.org/reference/function-contracts.html#%28form._%28%28lib._racket%2Fcontract%2Fbase..rkt%29._-~3e%29%29
+		 
+		 ;$ovrld-square-brackets-lst$
+		 
+		 overload-square-brackets
+		 ;;find-getter-and-setter-for-overloaded-square-brackets
+		 find-getter-for-overloaded-square-brackets
+		 find-setter-for-overloaded-square-brackets
+
+		 infix-operators-lst
+		 set-infix-operators-lst!
+		 replace-operator!
+
+		 )
+
+
+	;;  U+2223 ∣ DIVIDES (&mid;, &shortmid;, &smid;, &VerticalBar;) see: https://en.wikipedia.org/wiki/Vertical_bar because vertical line is reserved in Racket
+	;; do not type the ∣ with keyboard it is not the same and will give an 'undefined symbol' error ,also vertical_line disturb highlight syntaxing in emacs
+
+	;; conflict solving with -> and some Racket syntax:
+	;; https://docs.racket-lang.org/reference/function-contracts.html#%28form._%28%28lib._racket%2Fcontract%2Fbase..rkt%29._-~3e%29%29
 
 	
-(require srfi/31) ;; for 'rec in def.scm
-(require srfi/69) ;; Basic hash tables
+	(require srfi/31) ;; for 'rec in def.scm
+	(require srfi/69) ;; Basic hash tables
 
-(require (rename-in flomat (repeat repeat-flomat)
-		    	   (shape shape-flomat)
-			   (transpose transpose-flomat)))
+	(require (rename-in flomat (repeat repeat-flomat)
+			    (shape shape-flomat)
+			    (transpose transpose-flomat)))
 
-(require srfi/25) ;; Multi-dimensional Array Primitives
-(require srfi/8) ;; Values , receive
+	(require srfi/25) ;; Multi-dimensional Array Primitives
+	(require srfi/8) ;; Values , receive
 
-(require (only-in racket/base [for for-racket])) ;; backup original Racket 'for'
+	(require (only-in racket/base [for for-racket])) ;; backup original Racket 'for'
 
-(require (for-syntax r6rs/private/base-for-syntax)) ;; for macro syntax (for ... : stxparam.rkt identifier-syntax: undefined
+	(require (for-syntax r6rs/private/base-for-syntax)) ;; for macro syntax (for ... : stxparam.rkt identifier-syntax: undefined
 
+	(require "infix-operators.rkt")
 
-(include "def.scm")
+	(require "overload.rkt")
 
-(include "array.scm")
+	(include "def.scm")
 
-(include "declare.scm")
-(include "condx.scm")
-(include "block.scm")
-(include "not-equal.scm")
-(include "exponential.scm")
+	(include "array.scm")
+
+	(include "declare.scm")
+	(include "condx.scm")
+	(include "block.scm")
+	(include "not-equal.scm")
+	(include "exponential.scm")
 	
-(include "while-do-when-unless.scm")
-(include "repeat-until.scm")
-(include "bitwise.rkt")
-(include "modulo.scm")
+	(include "while-do-when-unless.scm")
+	(include "repeat-until.scm")
+	(include "bitwise.rkt")
+	(include "modulo.scm")
 
-(include "slice.scm")
+	(include "slice.scm")
 
-;;(include "set-values-plus.scm") ;; useless in racket i suppose because set!-values already exist
+	;;(include "set-values-plus.scm") ;; useless in racket i suppose because set!-values already exist
 
-(include "increment.scm")
-(include "for_next_step.scm")
+	(include "increment.scm")
+	(include "for_next_step.scm")
 
+	(include "scheme-infix.rkt")
 
+	(include "assignment.rkt")
+	(include "apply-square-brackets.rkt")
 
-
-;; include from your main file afer overloadind declarations when any with :
-
-;;(include "scheme-infix.rkt")
-
-;;(include "assignment.rkt")
-;;(include "apply-square-brackets.rkt")
-
+)

@@ -861,6 +861,7 @@
   (when (null? args-brackets)
 	(return args-brackets))
 
+  ;; closure including pbsa, result and partial-result are lists
   (declare result partial-result)
   
   (def (psba args) ;; parse square brackets arguments

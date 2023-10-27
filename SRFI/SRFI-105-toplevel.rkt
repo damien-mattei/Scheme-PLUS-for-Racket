@@ -454,10 +454,17 @@
             ; and consider "#!" followed by / or . as a comment until "!#".
             ((char=? c #\!) (my-read port) (my-read port))
 	    ((char=? c #\;) (read-error "SRFI-105 REPL : Unsupported #; extension"))
-	    ((char=? c #\') (read-error "SRFI-105 REPL : Unsupported #' extension"))
+	    ;; read #:blabla
 	    ((char=? c #\:) (list->string
 			     (append (list #\# #\:)
 				     (read-until-delim port neoteric-delimiters))))
+	    ;; deal syntax with backquote, splicing,...
+	    ((char=? c #\`) (list 'quasisyntax (my-read port)))
+	    ((char=? c #\,) (if (char=? (peek-char port) #\@)
+				(begin
+				  (read-char port)
+				  (list 'unsyntax-splicing (my-read port)))
+				(list 'quasisyntax (my-read port))))
 	    (#t (read-error (string-append "SRFI-105 REPL :"
 					   "Unsupported # extension"
 					   " unsupported character causing this message is character:"

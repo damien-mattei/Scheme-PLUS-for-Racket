@@ -10,30 +10,21 @@
 
 ;; modification for Racket by Damien Mattei
 
-;; use with: #lang reader "SRFI-105.rkt"
+;; use with:
 
 ;; example in DrRacket :
-;; #lang reader "Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/SRFI/SRFI-105.rkt"
+;; (literal-read-syntax "/Users/mattei/Dropbox/git/AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2-curly+.rkt")
 
-(require syntax/strip-context)
-
-(provide (rename-out [literal-read read]
-                     [literal-read-syntax read-syntax]))
-
-
-(define (literal-read in)
-  (syntax->datum
-   (literal-read-syntax #f in)))
  
-(define (literal-read-syntax src in)
-  
-  (define lst-code (process-input-code-tail-rec in))
+(define (literal-read-syntax src)
 
-  (strip-context `(module anything racket ,@lst-code)))
+  (define in (open-input-file src #:mode 'text))
+  (define lst-code (process-input-code-tail-rec in))
+  lst-code)
  
 
 ;; read all the expression of program
-;; DEPRECATED (replace by tail recursive version)
+ 
 (define (process-input-code-rec in)
   (define result (curly-infix-read in))  ;; read an expression
   (if (eof-object? result)
@@ -55,17 +46,6 @@
   
   (process-input '()))
 
-
-;; the current read interaction handler, which is procedure that takes an arbitrary value and an input port 
-(define (literal-read-syntax-for-repl src in)
-
-  (define result (curly-infix-read in))
-  
-  (if (eof-object? result)
-      ;;(begin (display "eof") (newline) result)
-      result
-      (datum->syntax #f result))) ;; current-eval wait for a syntax object to pass to eval-syntax for evaluation
-      
 
   ; ------------------------------
   ; Curly-infix support procedures
@@ -392,9 +372,9 @@
   ; (but consistent with R5RS, probably R7RS, and several implementations).
   ; Also - R7RS draft 6 has "|" as delimiter, but we currently don't.
   (define neoteric-delimiters
-    (append (list #\( #\) #\[ #\] #\{ #\}  ; Add [] {}
-		  #\" #\;)                 ; Could add #\# or #\|
-	    whitespace-chars))
+     (append (list #\( #\) #\[ #\] #\{ #\}  ; Add [] {}
+                   #\" #\;)                 ; Could add #\# or #\|
+             whitespace-chars))
 
   (define (read-until-delim port delims)
     ; Read characters until eof or a character in "delims" is seen.
@@ -464,12 +444,10 @@
             ; and consider "#!" followed by / or . as a comment until "!#".
             ((char=? c #\!) (my-read port) (my-read port))
 	    ((char=? c #\;) (read-error "SRFI-105 REPL : Unsupported #; extension"))
-	    ;; read #:blabla
 	    ((char=? c #\:) (list->string
 			     (append (list #\# #\:)
 				     (read-until-delim port neoteric-delimiters))))
 	    ;; read #'blabla ,deal with syntax objects
-	    ;;((char=? c #\') (list 'syntax (curly-infix-read port)))
 	    ((char=? c #\') (list 'syntax (my-read port)))
 	    ;; deal syntax with backquote, splicing,...
 	    ((char=? c #\`) (list 'quasisyntax (my-read port)))
@@ -482,8 +460,6 @@
 					   "Unsupported # extension"
 					   " unsupported character causing this message is character:"
 					   (string c)))))))))
-
-
 
   (define (process-period port)
     ; We've peeked a period character.  Returns what it represents.
@@ -538,50 +514,20 @@
                   (#t (read-error "Invalid character name"))))))))))
 
 
-  ; Record the original read location, in case it's changed later:
-  (define default-scheme-read read)
+; Record the original read location, in case it's changed later:
+(define default-scheme-read read)
 
-  ; --------------
-  ; Demo of reader
-  ; --------------
+;; ; parse the input file from command line
+;; (define cmd-ln (command-line))
+;; ;(format #t "The command-line was:~{ ~w~}~%" cmd-ln)
+;; (define file-name (car (reverse cmd-ln)))
 
-(define-namespace-anchor a)
-(define ns (namespace-anchor->namespace a))
+;; (define code-lst (literal-read-syntax file-name))
 
+;; (define (dsp-expr expr)
+;;   (display (write expr))
+;;   (newline))
 
+;; ;(define do-not-display-result (map dsp-expr code-lst))
 
-
-;{1 + 1}
-;(+ 1 1)
-;2
-;(define k {1 + 1})
-;(define k (+ 1 1))
-;#<void>
-;k
-;k
-;2
-
-;; repeatedly read in curly-infix and write traditional s-expression.
-;; does not seem to be used in Racket
-(define (process-input)
-  (let ((result (curly-infix-read)))
-    (cond ((not (eof-object? result))
-	   (let ((rv (eval result ns)))
-	     (write result) (display "\n")
-	     (write rv)
-	     (display "\n"))
-	   ;; (force-output) ; flush, so can interactively control something else
-	   (process-input)) ;; no else clause or other
-	  )))
-
-
-;;  (process-input)
-
-;; Welcome to DrRacket, version 8.2 [cs].
-;; Language: reader "SRFI-105.rkt", with debugging; memory limit: 128 MB.
-;; > (define x 3)
-;; > {x + 1}
-;; 4
-(current-read-interaction literal-read-syntax-for-repl) ;; this procedure will be used by Racket REPL:
- ;; the current read interaction handler, which is procedure that takes an arbitrary value and an input port 
-
+;; (for-each dsp-expr code-lst)

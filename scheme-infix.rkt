@@ -1,13 +1,15 @@
 
 ;; infix evaluator with operator precedence
 
-;; doc deprecated !
+
+;;(require "./infix-operators.rkt")
+
 ;; this file must now be included in your main project file like this:
-;; at the beginning of your main file add:
-;; for infix operator precedence
-(define-namespace-anchor ankh)
-(define bsns (namespace-anchor->namespace ankh))
-(current-namespace bsns)
+;; at the beginning of your main file add
+;; for infix operator precedence:
+;; (define-namespace-anchor ankh)
+;; (define bsns (namespace-anchor->namespace ankh))
+;; (current-namespace bsns)
 
 ;; to be compatible with overloading of operator precedence at the end of your main file add:
 ;; (include "../../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/included-files/scheme-infix.rkt")
@@ -50,34 +52,35 @@
 ;; a list of lists of operators. lists are evaluated in order, so this also
 ;; determines operator precedence
 ;;  added bitwise operator with the associated precedences and modulo too
-(define infix-operators-lst
+;; (define infix-operators-lst
   
-  ;;'()
+;;   ;;'()
   
-  (list
+;;   (list
    
-   (list expt **)
-   (list * / %)
-   (list + -)
+;;    (list expt **)
+;;    (list * / %)
+;;    (list + -)
    
-   (list << >>)
+;;    (list << >>)
 
-   (list & ∣ )
+;;    (list & ∣ )
 
-  					; now this is interesting: because scheme is dynamically typed, we aren't
-  					; limited to any one type of function
+;;   					; now this is interesting: because scheme is dynamically typed, we aren't
+;;   					; limited to any one type of function
    
-   (list < > = <> ≠ <= >=)
+;;    (list < > = <> ≠ <= >=)
     
-   ;;(list 'dummy) ;; can keep the good order in case of non left-right assocciative operators.(odd? reverse them) 
+;;    ;;(list 'dummy) ;; can keep the good order in case of non left-right assocciative operators.(odd? reverse them) 
    
-   )
+;;    )
 
-  )
-
-
+;;   )
 
 
+
+;; calls order: !prec -> !0 -> !*
+;; !*prec -> !*
 
 
 ;; > (!0 #f && (begin (display "BAD") (newline) #t))
@@ -96,7 +99,8 @@
 	       #f))))
 
 (define (!prec . terms) ;; precursor of !0
-   (!0 infix-operators-lst terms))
+  ;;(display "!prec : infix-operators-lst=") (display infix-operators-lst) (newline)(newline)
+  (!0 (cdr infix-operators-lst) terms)) ; we skip the version number
 
 
 
@@ -128,7 +132,7 @@
 					      
 					      (else
 					       (!prec
-						;; here we need to eval quote the <- or -> to avoid a bad syntax error with those macros
+						;; here we need to (eval o quote) the <- or -> to avoid a bad syntax error with those macros at expansion stage but this case will never be evaluated at evaluation stage with <- or -> !
 						ident (eval (quote opspecial) (current-namespace)) term1 op term2))))
     
 						   
@@ -302,7 +306,8 @@
 
 
 (define (!*prec terms)   ;; precursor of !*
+  ;;(display "!*prec : infix-operators-lst=") (display infix-operators-lst) (newline)
   (if (null? terms) 
       terms
-      (!* terms infix-operators-lst #f)))
+      (!* terms (cdr infix-operators-lst) #f))) ; we skip the version number
 

@@ -27,6 +27,9 @@
 
 ;; Warning: overload is now a module to prevent infinite recursion in case someone overload a scheme procedure used in the implementation of any of the procedures provided by overload.scm (example: length !)
 
+(require "infix-operators.rkt")
+
+
 (provide $ovrld-ht$
 	 
 	 define-overload-procedure
@@ -682,18 +685,6 @@
 ;; overload tests
 
 
-;; (display +)
-;; (overload + add-list-list (list? list?))
-;; (display +)
-;; (newline)
-
-;; (+ '(1 2) '(3 4))
-
-;; (display "before mult-num-list") (newline)
-;; (define (mult-num-list k v) (map (λ (x) (* k x)) v))
-
-;; (overload * mult-num-list (number? list?))
-
 
 ;; {ztest <+ 1}
 ;; (display "before test infix") (newline)
@@ -757,7 +748,8 @@
        ;;(hash-table-set! $ovrld-ht$ qproc (list (list (list number? number?) orig-proc)))
        (hash-table-set! $ovrld-ht$ qproc '())
 
-       ;;(update-operators)
+       (replace-operator! orig-proc proc)
+       
        )))) 
 
 
@@ -806,7 +798,9 @@
 	     (apply proc-search-result args-lst)
 	     (apply orig-proc args-lst)))
        
-	 (hash-table-set! $ovrld-ht$ qproc '())))))
+       (hash-table-set! $ovrld-ht$ qproc '())
+       (replace-operator! orig-proc proc)
+       ))))
 
 
 

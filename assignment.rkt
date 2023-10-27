@@ -768,7 +768,7 @@
   
   (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-eval-pos index4-or-step-eval-pos)
 
-	 ;; T[i1 $ i2 $]
+	 ;; T[i1 $ i2 $]  i1 start , i2 end
 	 ((list i1 (== slice) i2 (== slice)) (<- ($bracket-apply$ container-eval i1 slice i2) expr-eval))
 	 
 	 ;; T[$ i2 $ s3]

@@ -17,10 +17,10 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+;; could useful:
 
+;; for macro syntax : identifier-syntax: undefined; use: (require (for-syntax r6rs/private/base-for-syntax))
 
-;; TODO : make a version vector with resizable arrays using classes
-;; cf: https://www.gnu.org/software/guile/manual/html_node/GOOPS.html
 
 ;; the value v should be put before in a let to avoid multiple evaluation after macro expand
 (define-syntax make-array-2d
@@ -108,6 +108,8 @@
   (if (< index 0)
       (+ (vector-length v) index)
       index))
+
+
 
 ;; this one is used by array.scm
 (define (function-array-n-dim-ref array L-reversed-indexes)
