@@ -398,8 +398,6 @@ height="722"><br>
 <p>Hash Tables support :</p>
     <pre>(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt")
-
 
 (require srfi/69)   ;; support for SRFI 69 <meta http-equiv="content-type"
 content="text/html; charset=utf-8">Basic hash tables
