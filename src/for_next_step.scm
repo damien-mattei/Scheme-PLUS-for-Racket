@@ -519,3 +519,40 @@
 ;;                         body ...)))
 ;;                    incrmt
 ;;                    (loop))))))))))
+
+
+
+
+
+
+
+;> (for ([x (in-range 0 3)]) (display x) (newline) )
+;0
+;1
+;2
+;> (for ([x (reversed (in-range 0 3))]) (display x) (newline) )
+;2
+;1
+;0
+(define-syntax reversed ; same as Python : reversed(range(0,3))
+  
+  		(syntax-rules ()
+
+    			((_ (name end)) (begin
+					  (unless (equal? (quote in-range) (quote name)) 
+	       					(error "first argument is not in-range:" (quote name)))
+					  ;;(in-range {end - 1} -1 -1)))
+					  (in-range (- end 1) -1 -1)))
+
+			((_ (name start end)) (begin
+					  	(unless (equal? (quote in-range) (quote name)) 
+	       						(error "first argument is not in-range:" (quote name)))
+					  	;;(in-range {end - 1} {start - 1} -1)))))
+						(in-range (- end 1) (- start 1) -1)))
+
+			((_ (name start end step)) (begin
+						     (unless (equal? (quote in-range) (quote name)) 
+							     (error "first argument is not in-range:" (quote name)))
+						     ;;(in-range {end - 1} {start - 1} (- step))))))
+						     (in-range (+ (- end step) 1) (- start 1) (- step)))))) ;; ERROR
+

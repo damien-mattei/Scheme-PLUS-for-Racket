@@ -51,6 +51,7 @@
 		 for
 		 for-racket
 		 for-basic
+		 reversed
 		 <- ←
 		 -> →
 		 <+ ⥆
@@ -125,35 +126,35 @@
 
 	(require (for-syntax r6rs/private/base-for-syntax)) ;; for macro syntax (for ... : stxparam.rkt identifier-syntax: undefined
 
-	(require "infix-operators.rkt")
+	(require "src/infix-operators.rkt")
 
-	(require "overload.rkt")
+	(require "src/overload.rkt")
 
-	(include "def.scm")
+	(include "src/def.scm")
 
-	(include "array.scm")
+	(include "src/array.scm")
 
-	(include "declare.scm")
-	(include "condx.scm")
-	(include "block.scm")
-	(include "not-equal.scm")
-	(include "exponential.scm")
+	(include "src/declare.scm")
+	(include "src/condx.scm")
+	(include "src/block.scm")
+	(include "src/not-equal.scm")
+	(include "src/exponential.scm")
 	
-	(include "while-do-when-unless.scm")
-	(include "repeat-until.scm")
-	(include "bitwise.rkt")
-	(include "modulo.scm")
+	(include "src/while-do-when-unless.scm")
+	(include "src/repeat-until.scm")
+	(include "src/bitwise.rkt")
+	(include "src/modulo.scm")
 
-	(include "slice.scm")
+	(include "src/slice.scm")
 
 	;;(include "set-values-plus.scm") ;; useless in racket i suppose because set!-values already exist
 
-	(include "increment.scm")
-	(include "for_next_step.scm")
+	(include "src/increment.scm")
+	(include "src/for_next_step.scm")
 
-	(include "scheme-infix.rkt")
+	(include "src/scheme-infix.rkt")
 
-	(include "assignment.rkt")
-	(include "apply-square-brackets.rkt")
+	(include "src/assignment.rkt")
+	(include "src/apply-square-brackets.rkt")
 
 )
