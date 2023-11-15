@@ -1,7 +1,7 @@
 #lang info
 (define collection "Scheme-PLUS-for-Racket")
-(define compile-omit-paths '("deprecated" "library" "examples" "SRFI" "compiled"))
-(define test-omit-paths '("deprecated" "library" "examples" "SRFI" "compiled"))
+(define compile-omit-paths '("deprecated" "library" "examples" "SRFI" "compiled" "src"))
+(define test-omit-paths '("deprecated" "library" "examples" "SRFI" "compiled" "src"))
 (define deps '("base"
 	       "srfi-lib"))
 (define pkg-desc "Scheme+ for Racket and SRFI-105 curly-infix with REPL")
