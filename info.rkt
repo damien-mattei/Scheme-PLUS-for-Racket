@@ -3,7 +3,8 @@
 (define compile-omit-paths '("deprecated" "library" "examples" "SRFI" "compiled" "src"))
 (define test-omit-paths '("deprecated" "library" "examples" "SRFI" "compiled" "src"))
 (define deps '("base"
-	       "srfi-lib"))
+	       "srfi-lib"
+	       "sci"))
 (define pkg-desc "Scheme+ for Racket and SRFI-105 curly-infix with REPL")
 (define version "7.2")
 (define pkg-authors '(mattei))

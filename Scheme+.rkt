@@ -129,10 +129,9 @@
 	(require "src/infix-operators.rkt")
 
 	(require "src/overload.rkt")
+	(require "src/array.rkt")
 
 	(include "src/def.scm")
-
-	(include "src/array.scm")
 
 	(include "src/declare.scm")
 	(include "src/condx.scm")
