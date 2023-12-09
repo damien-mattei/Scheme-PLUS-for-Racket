@@ -401,7 +401,7 @@ height="722"><br>
 <p> </p> 
 <br>
 <p>Hash Tables support :</p>
-    <pre>	(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+    <pre>(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
 
 
 ; first stage overloading if any
