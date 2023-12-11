@@ -17,9 +17,23 @@
 
 (require syntax/strip-context)
 
+(require srfi/31) ;; for 'rec in def.scm
+
 (provide (rename-out [literal-read read]
                      [literal-read-syntax read-syntax]))
 
+(include "../src/optimize-infix.scm")
+(include "../src/assignment-light.scm")
+(include "../src/block.scm")
+(include "../src/declare.scm")
+(include "../src/slice.scm")
+(include "../src/def.scm")
+(include "../src/optimize-infix-slice.scm")
+
+
+(define nfx-optim #t)
+
+(define slice-optim #t)
 
 (define (literal-read in)
   (syntax->datum
@@ -100,8 +114,11 @@
 
   ; Not a simple infix list - transform it.  Written as a separate procedure
   ; so that future experiments or SRFIs can easily replace just this piece.
-  (define (transform-mixed-infix lyst)
-     (cons '$nfx$ lyst))
+(define (transform-mixed-infix lyst)
+  ;;(display "lyst=") (display lyst) (newline)
+  (if nfx-optim
+      (!0 infix-operators-lst lyst)
+      (cons '$nfx$ lyst)))
 
   ; Given curly-infix lyst, map it to its final internal format.
   (define (process-curly lyst)
@@ -178,13 +195,20 @@
           ((char=? c #\( ) ; Implement f(x)
             (read-char port)
             (neoteric-process-tail port
-                (cons prefix (my-read-delimited-list neoteric-read-real #\) port))))
-          ((char=? c #\[ )  ; Implement f[x]
-            (read-char port)
-            (neoteric-process-tail port
+				   (cons prefix (my-read-delimited-list neoteric-read-real #\) port))))
+
+	   ((char=? c #\[ )  ; Implement f[x]
+	   (read-char port)
+	   (if slice-optim
+	       (neoteric-process-tail port
+				      (list '$bracket-apply$next
+					    prefix
+					    (cons 'list (parse-square-brackets-arguments (my-read-delimited-list neoteric-read-real #\] port)))))
+	       (neoteric-process-tail port
                   (cons '$bracket-apply$
-                    (cons prefix
-                      (my-read-delimited-list neoteric-read-real #\] port)))))
+	   		(cons prefix
+	   		      (my-read-delimited-list neoteric-read-real #\] port))))))
+	  
           ((char=? c #\{ )  ; Implement f{x}
             (read-char port)
             (neoteric-process-tail port
@@ -410,6 +434,7 @@
     (display "Error: ")
     (display message)
     (display "\n")
+    (error message)
     '())
 
   (define (read-number port starting-lyst)
@@ -551,15 +576,6 @@
 
 
 
-;{1 + 1}
-;(+ 1 1)
-;2
-;(define k {1 + 1})
-;(define k (+ 1 1))
-;#<void>
-;k
-;k
-;2
 
 ;; repeatedly read in curly-infix and write traditional s-expression.
 ;; does not seem to be used in Racket

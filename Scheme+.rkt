@@ -2,7 +2,7 @@
 
 ;; Scheme+.rkt 
 
-;; version 7.2
+;; version 7.3
 
 ;; author: Damien MATTEI
 
@@ -47,6 +47,7 @@
 
 	(provide def
 		 $bracket-apply$
+		 $bracket-apply$next
 		 $
 		 for
 		 for-racket
