@@ -52,6 +52,7 @@
 		 for
 		 for-racket
 		 for-basic
+		 for-basic/break
 		 reversed
 		 <- ←
 		 -> →
@@ -147,7 +148,7 @@
 
 	(include "src/slice.scm")
 
-	;;(include "set-values-plus.scm") ;; useless in racket i suppose because set!-values already exist
+        (include "src/set-values-plus.scm") ;; in racket set!-values already exist but i add another one to deal with other types using <- instead of set!
 
 	(include "src/increment.scm")
 	(include "src/for_next_step.scm")

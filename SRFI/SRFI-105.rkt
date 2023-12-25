@@ -58,16 +58,37 @@
 ;; read all the expression of program
 ;; a tail recursive version
 (define (process-input-code-tail-rec in) ;; in: port
+
+  (display "SRFI-105 Curly Infix parser with optimization by Damien MATTEI") (newline)
+  (display "(based on code from David A. Wheeler and Alan Manuel K. Gloria.)") (newline) (newline)
+  (display "Options :") (newline) (newline)
+  (if nfx-optim
+      (display "Infix optimizer is ON.")
+      (display "Infix optimizer is OFF."))
+  (newline)
+
+  (if slice-optim
+      (display "Infix optimizer on sliced containers is ON.")
+      (display "Infix optimizer on sliced containers is OFF."))
+  (newline)
+  (newline)
+  
+  (display "Parsed curly infix code result = ") (newline) (newline)
   
   (define (process-input acc)
     
     (define result (curly-infix-read in))  ;; read an expression
+
+    (display result) (newline)
     
     (if (eof-object? result)
 	(reverse acc)
 	(process-input (cons result acc))))
   
-  (process-input '()))
+  (define rv (process-input '()))
+
+  (newline) (newline)
+  rv)
 
 
 ;; the current read interaction handler, which is procedure that takes an arbitrary value and an input port 
@@ -116,8 +137,13 @@
   ; so that future experiments or SRFIs can easily replace just this piece.
 (define (transform-mixed-infix lyst)
   ;;(display "lyst=") (display lyst) (newline)
+  
   (if nfx-optim
-      (!0 infix-operators-lst lyst)
+      (let ((e0 (!0 infix-operators-lst lyst)))
+	;;(display "!0 result = ") (display e0) (newline)
+	(let ((na (n-arity e0)))
+	  ;;(display "na =") (display na) (newline)
+	  na))
       (cons '$nfx$ lyst)))
 
   ; Given curly-infix lyst, map it to its final internal format.

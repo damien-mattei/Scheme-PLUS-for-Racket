@@ -109,9 +109,11 @@
 (define-syntax <+
   (syntax-rules ()
     
-    ((_ (var1 ...) expr) (begin
+    ((_ (var1 ...) expr) ;;(begin
 			   (define-values (var1 ...) expr)
-			   (values var1 ...)))
+			   )
+    ;;)
+			   ;;(values var1 ...)))
     ;; (begin
     ;;   (define var1 '())
     ;;   ...
@@ -128,14 +130,17 @@
     					    (define-values (var10 ...) expr)
     					    (define-values (var11 ...) (values var10 ...))
     					    ...
-    					    (values var10 ...)))
+					    ))
+    					    ;;(values var10 ...)))
     
    			    
 
     
-    ((_ var expr) (begin
-		    (define var expr)
-		    var))
+    ((_ var expr)
+     ;; (begin
+     ;;   (define var expr)
+     ;;   var))
+     (define var expr))
     
      ;; > { y <+ z <+ 7 }
      ;; 7
@@ -151,10 +156,15 @@
 			      (define var expr)
 			      (define var1 var)
 			      ...
-			      var))
+			      ;;var))
+			      ))
     
      ))
-		 			
+
+
+
+
+
 
 (define-syntax ⥆
   (syntax-rules ()

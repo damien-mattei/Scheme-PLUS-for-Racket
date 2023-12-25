@@ -13,10 +13,10 @@
     ;;(<- x 5)
     ((_ var expr)
      
-     (begin
+     ;;(begin
        ;;(display "<- : variable set!") (newline)
-       (set! var expr)
-       var))
+       (set! var expr))
+       ;;var))
 
     
     ;; (declare x y z t)
@@ -39,7 +39,13 @@
     
     ((_ var var1 ... expr)
      
-     (<- var (<- var1 ... expr))) 
+     ;;(<- var (<- var1 ... expr)))
+
+    (begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result 
+	(<- var expr)
+	(<- var1 var)
+	...
+	))
      
     ))
 
