@@ -957,7 +957,7 @@
 	      (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4 i5))) ;;(array-n-dim-set! array expr-eval i1 i2)
 	      (array-set! container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval expr-eval))
 	  
-	  ;;expr-eval ;; returning a value allow the chaining : {T[3 5 6 2 1] <- A[4 2 3] <- T[2 2 4 6 7]}
+	  ;;expr-eval
 	  )  
 
 	 ) ;; match
@@ -977,7 +977,7 @@
       (function-array-n-dim-set! container expr (reverse args)) ;; (array-n-dim-set! array value index1 index2 ...)
       (array-set! container (list->vector args) expr))
   
-  ;;expr  ;; returning a value allow the chaining : {T[3 5 6 2 1] <- A[4 2 3] <- T[2 2 4 6 7]}
+  ;;expr  
   ) 
 
 

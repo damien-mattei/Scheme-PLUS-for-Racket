@@ -11,10 +11,6 @@
 ;; (define bsns (namespace-anchor->namespace ankh))
 ;; (current-namespace bsns)
 
-;; to be compatible with overloading of operator precedence at the end of your main file add:
-;; (include "../../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/included-files/scheme-infix.rkt")
-;; or something like that
-
 
 ;; > {5 * 3 + 2}
 ;; 17
