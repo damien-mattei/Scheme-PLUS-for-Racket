@@ -514,11 +514,14 @@
             ; In a real reader, consider handling "#! whitespace" per SRFI-22,
             ; and consider "#!" followed by / or . as a comment until "!#".
             ((char=? c #\!) (my-read port) (my-read port))
+	    
 	    ((char=? c #\;) (read-error "SRFI-105 REPL : Unsupported #; extension"))
+	    
 	    ;; read #:blabla
 	    ((char=? c #\:) (list->string
 			     (append (list #\# #\:)
 				     (read-until-delim port neoteric-delimiters))))
+	    
 	    ;; read #'blabla ,deal with syntax objects
 	    ;;((char=? c #\') (list 'syntax (curly-infix-read port)))
 	    ((char=? c #\') (list 'syntax (my-read port)))
