@@ -19,7 +19,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 7.2 for Racket Scheme<br>
+          style="color: #999999;"> <font size="+2">version 7.3 for Racket Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;">
 	Display options for viewing this documentation:<br>
@@ -420,8 +420,19 @@ content="text/html; charset=utf-8">Basic hash tables
 3
 
 </pre>
-    <p>for the rest read below and the documentation.</p>
+
+<br>
+
+
+<br>Programs now needs to be parsed due to the use of optimization
+schemes, it is automatic in Racket.
+
+<br>
+
+<p>for the rest read the documentation below and the online examples.</p>
     <br>
+	
+<br>
     <h2>2.<u>Download Scheme+:</u></h2>
     <p>The source code of <b>Scheme+</b> for <a href="https://racket-lang.org/"
         target="_blank">Racket implementation of Scheme</a> can be retrieved
