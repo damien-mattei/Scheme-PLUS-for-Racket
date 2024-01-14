@@ -207,6 +207,16 @@
                      (my-read-delimited-list my-read stop-char port)))))))))
 
 
+
+(define (parser-$bracket-apply$next-arguments port prefix)
+	 ;; create ($bracket-apply$next container (list args1 args2 ...))
+	 (list '$bracket-apply$next
+	       prefix ;; = container
+	       (cons 'list (optimizer-parse-square-brackets-arguments (my-read-delimited-list neoteric-read-real #\] port)))))
+
+
+
+
   ; Implement neoteric-expression's prefixed (), [], and {}.
   ; At this point, we have just finished reading some expression, which
   ; MIGHT be a prefix of some longer expression.  Examine the next
@@ -226,10 +236,10 @@
 	   ((char=? c #\[ )  ; Implement f[x]
 	   (read-char port)
 	   (if slice-optim
+	       
 	       (neoteric-process-tail port
-				      (list '$bracket-apply$next
-					    prefix
-					    (cons 'list (parse-square-brackets-arguments (my-read-delimited-list neoteric-read-real #\] port)))))
+				      (parser-$bracket-apply$next-arguments port prefix))
+	       
 	       (neoteric-process-tail port
                   (cons '$bracket-apply$
 	   		(cons prefix

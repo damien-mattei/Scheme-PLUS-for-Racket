@@ -116,9 +116,7 @@
     ;; more than 5 arguments in [ ]
     ;; T[i1 i2 i3 i4 i5 i6 ...]
     (else ;; TODO : put the else case in a function like other cases
-     (if (vector? container)
-	 (function-array-n-dim-ref container (reverse args)) 
-	 (array-ref container (list->vector args))))))   ;; array SRFI 25
+     (apply-square-brackets-argument-6-and-more container args))))
 
 
 
@@ -850,6 +848,12 @@
 
 
 
+(define (apply-square-brackets-argument-6-and-more container args)
+
+  (if (vector? container)
+      (function-array-n-dim-ref container (reverse args)) 
+      (array-ref container (list->vector args))))   ;; array SRFI 25
+
 
 
 ;; TODO :this code is only here to use Scheme+ but it should be in other place (scheme-infix.rkt)
@@ -892,8 +896,8 @@
 
 
   
-  (<+ rs  (psba args-brackets))
+  (<+ rs  (psba args-brackets))   ;; initial call
   ;;(display "parse-square-brackets-arguments : rs=") (display rs) (newline)
   rs
-  ) ;; initial call
+  )
 

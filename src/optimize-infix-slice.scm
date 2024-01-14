@@ -1,3 +1,5 @@
+;; some optimizer procedures
+
 (define operators-lst
   (apply append infix-operators-lst))
 
@@ -22,10 +24,8 @@
 
 
 
-
-
 ;; split the expression using slice as separator
-(def (parse-square-brackets-arguments args-brackets)
+(def (optimizer-parse-square-brackets-arguments args-brackets)
 
   ;;(display "curly-infix2prefix4kawa.scm : parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
 
@@ -72,4 +72,6 @@
   ;;(display "parse-square-brackets-arguments : rs=") (display rs) (newline)
   rs
   ) ;; initial call
+
+
 
