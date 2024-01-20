@@ -47,7 +47,7 @@
  
 
 ;; read all the expression of program
-;; DEPRECATED (replace by tail recursive version)
+;; DEPRECATED (replaced by tail recursive version)
 (define (process-input-code-rec in)
   (define result (curly-infix-read in))  ;; read an expression
   (if (eof-object? result)
@@ -79,7 +79,9 @@
     
     (define result (curly-infix-read in))  ;; read an expression
 
-    (display result) (newline)
+    ;;(display result) ;; remove " " in string !!!
+    (write result)
+    (newline)
     
     (if (eof-object? result)
 	(reverse acc)
@@ -524,8 +526,15 @@
             ; In a real reader, consider handling "#! whitespace" per SRFI-22,
             ; and consider "#!" followed by / or . as a comment until "!#".
             ((char=? c #\!) (my-read port) (my-read port))
-	    
-	    ((char=? c #\;) (read-error "SRFI-105 REPL : Unsupported #; extension"))
+
+	    ;; > (+ 1 #;2 3)
+	    ;; 4
+	    ;; > (+ 1 #;(+ 1 2) 3)
+	    ;; 4
+	    ;; > (+ 1 #;{1 + 2} 3)
+	    ;; 4
+	    ((char=? c #\;) ;(read-error "SRFI-105 REPL : Unsupported #; extension"))
+	     (my-read port) (my-read port))
 	    
 	    ;; read #:blabla
 	    ((char=? c #\:) (list->string
@@ -609,8 +618,8 @@
   ; Demo of reader
   ; --------------
 
-(define-namespace-anchor a)
-(define ns (namespace-anchor->namespace a))
+;; (define-namespace-anchor a)
+;; (define ns (namespace-anchor->namespace a))
 
 
 
@@ -618,16 +627,16 @@
 
 ;; repeatedly read in curly-infix and write traditional s-expression.
 ;; does not seem to be used in Racket
-(define (process-input)
-  (let ((result (curly-infix-read)))
-    (cond ((not (eof-object? result))
-	   (let ((rv (eval result ns)))
-	     (write result) (display "\n")
-	     (write rv)
-	     (display "\n"))
-	   ;; (force-output) ; flush, so can interactively control something else
-	   (process-input)) ;; no else clause or other
-	  )))
+;; (define (process-input)
+;;   (let ((result (curly-infix-read)))
+;;     (cond ((not (eof-object? result))
+;; 	   (let ((rv (eval result ns)))
+;; 	     (write result) (display "\n")
+;; 	     (write rv)
+;; 	     (display "\n"))
+;; 	   ;; (force-output) ; flush, so can interactively control something else
+;; 	   (process-input)) ;; no else clause or other
+;; 	  )))
 
 
 ;;  (process-input)
