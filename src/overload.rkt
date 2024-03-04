@@ -27,7 +27,7 @@
 
 ;; Warning: overload is now a module to prevent infinite recursion in case someone overload a scheme procedure used in the implementation of any of the procedures provided by overload.scm (example: length !)
 
-(require "infix-operators.rkt")
+;;(require "infix-operators.rkt")
 
 
 (provide $ovrld-ht$
@@ -748,7 +748,7 @@
        ;;(hash-table-set! $ovrld-ht$ qproc (list (list (list number? number?) orig-proc)))
        (hash-table-set! $ovrld-ht$ qproc '())
 
-       (replace-operator! orig-proc proc)
+       ;;(replace-operator! orig-proc proc)
        
        )))) 
 
@@ -799,7 +799,7 @@
 	     (apply orig-proc args-lst)))
        
        (hash-table-set! $ovrld-ht$ qproc '())
-       (replace-operator! orig-proc proc)
+       ;;(replace-operator! orig-proc proc)
        ))))
 
 

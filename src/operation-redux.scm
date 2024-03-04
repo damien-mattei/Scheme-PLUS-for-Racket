@@ -1,3 +1,49 @@
+(define infix-operators-lst-for-parser
+
+  '(
+    (expt **)
+    (* / %)
+    (+ -)
+	
+    (<< >>)
+
+    (& ∣)
+
+    (< > = ≠ <= >= <>)
+
+    (and)
+
+    (or)
+	
+	;;(list 'dummy) ;; can keep the good order in case of non left-right assocciative operators.(odd? reverse them) 
+
+    (<- -> ← → <v v> ⇜ ⇝)
+    (<+ +> ⥆ ⥅)
+    )
+
+  )
+
+(define operators-lst
+  (apply append infix-operators-lst-for-parser))
+
+
+(define (operator? x)
+  (member x operators-lst))
+
+
+;; check that expression is infix
+(define (infix? expr)
+  
+  (define (infix-rec? expr)
+    (cond ((null? expr) #t)
+	  ((not (zero? (modulo (length expr) 2))) #f)
+	  (else (and (operator? (car expr)) ;; check (op1 e1 ...) 
+		     (not (operator? (cadr expr)))
+		     (infix-rec? (cddr expr))))))
+  
+  (or (null? expr) (and (not (operator? (car expr)))
+			(infix-rec? (cdr expr)))))
+
 
 ;; return the operator of an operation
 (define (operator expr)

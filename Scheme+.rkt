@@ -2,7 +2,7 @@
 
 ;; Scheme+.rkt 
 
-;; version 7.3 
+;; version 7.4 
 
 ;; author: Damien MATTEI
 
@@ -46,16 +46,17 @@
 
 
 	(provide def
-		 $bracket-apply$
+		 ;;$bracket-apply$
 		 $bracket-apply$next
-		 $
+		 : ;;$
 		 for
 		 for-racket
 		 for-basic
 		 for-basic/break
 		 reversed
 		 <- ←
-		 -> →
+		 -> ;; can conflict with typed racket
+		 →  ;; can conflict with typed racket
 		 <+ ⥆
 		 +> ⥅
 		 declare
@@ -67,10 +68,12 @@
 		 <v v>
 		 ⇜ ⇝
 		 if repeat do when unless
+		
 		 %
 		 << >>
 		 & ∣
-		 $nfx$ !*prec
+
+		 ;;$nfx$ !*prec
 		 
 		 ;$ovrld-ht$
 		 
@@ -100,10 +103,13 @@
 		 find-getter-for-overloaded-square-brackets
 		 find-setter-for-overloaded-square-brackets
 
-		 infix-operators-lst
-		 set-infix-operators-lst!
-		 replace-operator!
+		 ;;infix-operators-lst
+		 ;;set-infix-operators-lst!
+		 ;;replace-operator!
 
+		 ;; for debug:
+		 ;;assignment-argument-0
+		 ;;return ;; should not work, for debug of Typed Racket
 		 )
 
 
@@ -117,7 +123,8 @@
 	(require srfi/31) ;; for 'rec in def.scm
 	(require srfi/69) ;; Basic hash tables
 
-	(require (rename-in flomat (repeat repeat-flomat)
+	(require (rename-in flomat
+			    (repeat repeat-flomat)
 			    (shape shape-flomat)
 			    (transpose transpose-flomat)))
 
@@ -128,7 +135,7 @@
 
 	(require (for-syntax r6rs/private/base-for-syntax)) ;; for macro syntax (for ... : stxparam.rkt identifier-syntax: undefined
 
-	(require "src/infix-operators.rkt")
+	;(require "src/infix-operators.rkt")
 
 	(require "src/overload.rkt")
 	(require "src/array.rkt")
@@ -153,7 +160,7 @@
 	(include "src/increment.scm")
 	(include "src/for_next_step.scm")
 
-	(include "src/scheme-infix.rkt")
+	;;(include "src/scheme-infix.rkt")
 
 	(include "src/assignment.rkt")
 	(include "src/apply-square-brackets.rkt")

@@ -3,7 +3,7 @@
 
 ;; This file is part of Scheme+
 
-;; Copyright 2021-2023 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -61,20 +61,26 @@
 
 ;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 $ 3 * 5 - 10 $ 2 * 4 - 6]}
 ;; '#(3 5)
-(define ($bracket-apply$ container . args-brackets)   ;;  this implements a possible $bracket-apply$ as proposed in SRFI-105
+;; (define ($bracket-apply$ container . args-brackets)   ;;  this implements a possible $bracket-apply$ as proposed in SRFI-105
 
-  ;;(display args-brackets) (newline)
-  ($bracket-apply$next container (parse-square-brackets-arguments args-brackets)))
+;;   ;;(display args-brackets) (newline)
+;;   ($bracket-apply$next container (parse-square-brackets-arguments args-brackets)))
 
 
 
 (define ($bracket-apply$next container args)  
 
-  ;(display "apply-square-brackets.* : $bracket-apply$next : container = ") (display container) (newline)
-  
+  ;;(display "apply-square-brackets.* : $bracket-apply$next : container = ") (display container) (newline)
   ;;(display args) (newline)
+
   (case (length args)
 
+    ;; > v
+    ;;'#(1 2 5)
+    ;; > {v}
+    ;;'#(1 2 5)
+    ;;    {v[]}
+    ;;'#(1 2 5)
     ((0) (apply-square-brackets-argument-0 container))
     
     ;; 1 argument in [ ]
@@ -121,7 +127,9 @@
 
 
 (define (apply-square-brackets-argument-0 container-eval)
-   
+
+
+  ;; why a copy???? why not the original object????
   (cond ((vector? container-eval)
 	 (vector-copy container-eval)) ;; return a copy of vector
 
@@ -253,7 +261,7 @@
 					     (substring container-eval index1-or-keyword-eval)))
 					
 					(else ;; syntax error
-					 (error "$bracket-apply$ : bad arguments in string case,expecting $ i2 or i1 $, provided :" index1-or-keyword-eval index2-or-keyword-eval) )))
+					 (error "apply-square-brackets-argument-2 : bad arguments in string case,expecting $ i2 or i1 $, provided :" index1-or-keyword-eval index2-or-keyword-eval) )))
 
 	((flomat? container-eval) (if (or (equal? slice index1-or-keyword-eval)
 					  (equal? slice index2-or-keyword-eval))
@@ -309,7 +317,7 @@
 		     (equal? slice index2-or-keyword-eval))
 
 		(when (= 0 index3-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "apply-square-brackets-argument-3 : slice step cannot be zero"))
 		
 		(let* ((size-input (vector-length container-eval))
 		       (size (quotient size-input (abs index3-or-keyword-or-step-eval)))
@@ -383,7 +391,7 @@
 		     (equal? slice index2-or-keyword-eval))
 
 		(when (= 0 index3-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "apply-square-brackets-argument-3 : slice step cannot be zero"))
 		
 		(let* ((size-input (string-length container-eval))
 		       (size (quotient size-input (abs index3-or-keyword-or-step-eval)))
@@ -440,7 +448,7 @@
 	       
 
 	       (else
-		(error "$bracket-apply$ : in string case, provided too much arguments:" index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval))))
+		(error "apply-square-brackets-argument-3 : in string case, provided too much arguments:" index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval))))
 
 
 	
@@ -452,6 +460,10 @@
 
 ;; {"123456789"[3 $  $ -2]}
 ;; "42"
+;; {(vector 1 2 3 4 5)[2 $ $ -1]}
+;;'#(3 2 1)
+;; {(vector 1 2 3 4 5)[2 $ $ 1]}
+;;'#(3 4 5)
 (define (apply-square-brackets-argument-4 container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval)
 
   
@@ -469,7 +481,7 @@
 		     (equal? slice index3-or-keyword-eval))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "apply-square-brackets-argument-4 : slice step cannot be zero"))
 		
 		(let* ((size 0) ;; result size
 		       (result '())
@@ -517,7 +529,7 @@
 		     (equal? index3-or-keyword-eval slice))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "apply-square-brackets-argument-4 : slice step cannot be zero"))
 		
 		(let* ((size-container-eval (vector-length container-eval))
 		       (i1 (if (< index1-or-keyword-eval 0) ;; negative index
@@ -583,7 +595,7 @@
 		     (equal? slice index3-or-keyword-eval))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "apply-square-brackets-argument-4 : slice step cannot be zero"))
 		
 		(let* ((size 0)
 		       (result '())
@@ -630,7 +642,7 @@
 		     (equal? index3-or-keyword-eval slice))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "apply-square-brackets-argument-4 : slice step cannot be zero"))
 		
 		(let* ((size-container-eval (string-length container-eval))
 		       (i1 (if (< index1-or-keyword-eval 0) ;; negative index
@@ -679,7 +691,7 @@
 	       
 	       ;; T[i1 i2 i3 i4] vector of vectors of vectors ... but we are in string context !!!
 	       (else	
-		(error "$bracket-apply$ : in string case, provided too much arguments:" index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval))))
+		(error "apply-square-brackets-argument-4 : in string case, provided too much arguments:" index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval))))
 
 	
 	(else ;; T[i1 i2 i3 i4] ,  4 dimension array
@@ -709,7 +721,7 @@
 	     (begin
 	       
 	       (when (= 0 index5-or-step-eval)
-		 (error "$bracket-apply$ : slice step cannot be zero"))
+		 (error "apply-square-brackets-argument-5 : slice step cannot be zero"))
 	       
 	       (let* ((size-container-eval (vector-length container-eval))
 		      
@@ -785,7 +797,7 @@
 	     (begin
 	       
 	       (when (= 0 index5-or-step-eval)
-		 (error "$bracket-apply$ : slice step cannot be zero"))
+		 (error "apply-square-brackets-argument-5 : slice step cannot be zero"))
 	       
 	       (let* ((size-container-eval (string-length container-eval))
 		      
@@ -839,7 +851,7 @@
 	     
 	     ;; T[i1 i2 i3 i4 i5] vector of vectors of vectors ... but we are in string context !!!
 	     
-	     (error "$bracket-apply$ : in string case, provided too much arguments:" index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval)))
+	     (error "apply-square-brackets-argument-5 : in string case, provided too much arguments:" index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval)))
 
 	
 	(else ;; T[i1 i2 i3 i4 i5] ,  5 dimension array
@@ -858,46 +870,46 @@
 
 ;; TODO :this code is only here to use Scheme+ but it should be in other place (scheme-infix.rkt)
 ;; split the expression using slice as separator
-(def (parse-square-brackets-arguments args-brackets)
+;; (def (parse-square-brackets-arguments args-brackets)
 
-  ;;(display "apply-square-brackets.* : parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
+;;   ;;(display "apply-square-brackets.* : parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
 
-  (when (null? args-brackets)
-	(return args-brackets))
+;;   (when (null? args-brackets)
+;; 	(return args-brackets))
 
-  ;; closure including pbsa, result and partial-result are lists
-  (declare result partial-result)
+;;   ;; closure including pbsa, result and partial-result are lists
+;;   (declare result partial-result)
   
-  (def (psba args) ;; parse square brackets arguments
+;;   (def (psba args) ;; parse square brackets arguments
 
-       ;;(display "psba : args=") (display args) (newline)
-       ;;(display "psba : partial-result =") (display partial-result) (newline)
-       (when (null? args)
-	     ;;(display "before !*prec") (newline)
-	     (<- result (append result (!*prec partial-result))) ;; !*prec is defined in scheme-infix.rkt
-	     ;;(display "after !*prec") (newline)
-	     ;;(display result) (newline)
-	     ;;(display "return-rec") (newline)
-	     (return-rec result)) ;; return from all recursive calls
+;;        ;;(display "psba : args=") (display args) (newline)
+;;        ;;(display "psba : partial-result =") (display partial-result) (newline)
+;;        (when (null? args)
+;; 	     ;;(display "before !*prec") (newline)
+;; 	     (<- result (append result (!*prec partial-result))) ;; !*prec is defined in scheme-infix.rkt
+;; 	     ;;(display "after !*prec") (newline)
+;; 	     ;;(display result) (newline)
+;; 	     ;;(display "return-rec") (newline)
+;; 	     (return-rec result)) ;; return from all recursive calls
        
-       (<+ fst  (car args))
+;;        (<+ fst  (car args))
        
-       (if (equal? slice fst)
+;;        (if (equal? slice fst)
 	   
-	   ($>
-	    (when (not (null? partial-result))
-		  (<- result (append result (!*prec partial-result))) ;; evaluate and store the expression
-		  (<- partial-result  '())) ;; empty for the next possible portion between slice operator
-	    (<- result  (append result (list fst)))) ;; append the slice operator
+;; 	   ($>
+;; 	    (when (not (null? partial-result))
+;; 		  (<- result (append result (!*prec partial-result))) ;; evaluate and store the expression
+;; 		  (<- partial-result  '())) ;; empty for the next possible portion between slice operator
+;; 	    (<- result  (append result (list fst)))) ;; append the slice operator
 	   
-	   (<- partial-result (append partial-result (list fst)))) ;; not a slice operator but append it
+;; 	   (<- partial-result (append partial-result (list fst)))) ;; not a slice operator but append it
        
-       (psba (cdr args))) ;; end def, recurse
+;;        (psba (cdr args))) ;; end def, recurse
 
 
   
-  (<+ rs  (psba args-brackets))   ;; initial call
-  ;;(display "parse-square-brackets-arguments : rs=") (display rs) (newline)
-  rs
-  )
+;;   (<+ rs  (psba args-brackets))   ;; initial call
+;;   ;;(display "parse-square-brackets-arguments : rs=") (display rs) (newline)
+;;   rs
+;;   )
 

@@ -1,5 +1,3 @@
-#lang racket
-
 ;; Copyright (C) 2012 David A. Wheeler and Alan Manuel K. Gloria. All Rights Reserved.
 
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -8,101 +6,14 @@
 
 ;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-;; modification for Racket by Damien Mattei
+;; modification and optimisation for Scheme implementations (Racket,...) and Scheme+ by Damien Mattei
 
-;; use with: #lang reader "SRFI-105.rkt"
-
-;; example in DrRacket :
-;; #lang reader "Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/SRFI/SRFI-105.rkt"
-
-(require syntax/strip-context)
-
-(require srfi/31) ;; for 'rec in def.scm
-
-(provide (rename-out [literal-read read]
-                     [literal-read-syntax read-syntax]))
-
-(include "../src/optimize-infix.scm")
-(include "../src/assignment-light.scm")
-(include "../src/block.scm")
-(include "../src/declare.scm")
-(include "../src/slice.scm")
-(include "../src/def.scm")
-(include "../src/optimize-infix-slice.scm")
 
 
 (define nfx-optim #t)
 
 (define slice-optim #t)
 
-(define (literal-read in)
-  (syntax->datum
-   (literal-read-syntax #f in)))
- 
-(define (literal-read-syntax src in)
-  
-  (define lst-code (process-input-code-tail-rec in))
-
-  (strip-context `(module anything racket ,@lst-code)))
- 
-
-;; read all the expression of program
-;; DEPRECATED (replaced by tail recursive version)
-(define (process-input-code-rec in)
-  (define result (curly-infix-read in))  ;; read an expression
-  (if (eof-object? result)
-      '()
-      (cons result (process-input-code-rec in))))
-
-
-;; read all the expression of program
-;; a tail recursive version
-(define (process-input-code-tail-rec in) ;; in: port
-
-  (display "SRFI-105 Curly Infix parser with optimization by Damien MATTEI") (newline)
-  (display "(based on code from David A. Wheeler and Alan Manuel K. Gloria.)") (newline) (newline)
-  (display "Options :") (newline) (newline)
-  (if nfx-optim
-      (display "Infix optimizer is ON.")
-      (display "Infix optimizer is OFF."))
-  (newline)
-
-  (if slice-optim
-      (display "Infix optimizer on sliced containers is ON.")
-      (display "Infix optimizer on sliced containers is OFF."))
-  (newline)
-  (newline)
-  
-  (display "Parsed curly infix code result = ") (newline) (newline)
-  
-  (define (process-input acc)
-    
-    (define result (curly-infix-read in))  ;; read an expression
-
-    ;;(display result) ;; remove " " in string !!!
-    (write result)
-    (newline)
-    
-    (if (eof-object? result)
-	(reverse acc)
-	(process-input (cons result acc))))
-  
-  (define rv (process-input '()))
-
-  (newline) (newline)
-  rv)
-
-
-;; the current read interaction handler, which is procedure that takes an arbitrary value and an input port 
-(define (literal-read-syntax-for-repl src in)
-
-  (define result (curly-infix-read in))
-  
-  (if (eof-object? result)
-      ;;(begin (display "eof") (newline) result)
-      result
-      (datum->syntax #f result))) ;; current-eval wait for a syntax object to pass to eval-syntax for evaluation
-      
 
   ; ------------------------------
   ; Curly-infix support procedures
@@ -135,18 +46,24 @@
       lyst
       (cons (car lyst) (alternating-parameters (cddr lyst)))))
 
+
+
   ; Not a simple infix list - transform it.  Written as a separate procedure
   ; so that future experiments or SRFIs can easily replace just this piece.
 (define (transform-mixed-infix lyst)
   ;;(display "lyst=") (display lyst) (newline)
   
   (if nfx-optim
-      (let ((e0 (!0 infix-operators-lst lyst)))
-	;;(display "!0 result = ") (display e0) (newline)
-	(let ((na (n-arity e0)))
-	  ;;(display "na =") (display na) (newline)
-	  na))
+      (begin
+	(unless (infix? lyst) (error "ERROR: expression is not in infix notation: " lyst))
+	(let ((e0 (!0 infix-operators-lst-for-parser lyst)))
+	  ;;(display "!0 result = ") (display e0) (newline)
+	  (let ((na (n-arity e0)))
+	    ;;(display "na =") (display na) (newline)
+	    na)))
       (cons '$nfx$ lyst)))
+
+
 
   ; Given curly-infix lyst, map it to its final internal format.
   (define (process-curly lyst)
@@ -297,10 +214,15 @@
         ((char=? c #\( )
           (read-char port)
           (my-read-delimited-list my-read #\) port))
+
         ((char=? c #\[ )
+
+	  ;;(default-scheme-read port)) ;; this convert [ ... ] in ($bracket-list$ ...) in Kawa at least allowing Kawa special expressions such as: [1 <: 7]
+
           (read-char port)
           (my-read-delimited-list my-read #\] port))
-        ((char=? c #\{ )
+
+	((char=? c #\{ )
           (read-char port)
           (process-curly
             (my-read-delimited-list neoteric-read-real #\} port)))
@@ -535,11 +457,19 @@
 	    ;; 4
 	    ((char=? c #\;) ;(read-error "SRFI-105 REPL : Unsupported #; extension"))
 	     (my-read port) (my-read port))
+
+	    ;; this remove #lang racket on anything else but i do not want it to be like that
+	    ;; removing any line starting with #l is not the good way
+	    ;; i should instead skip the first #lang ... line of the input file
+	    ;; ((char=? c #\l) ;; #lang ...
+	    ;;  (consume-to-eol port)
+	    ;;  (my-read port))
 	    
 	    ;; read #:blabla
-	    ((char=? c #\:) (list->string
-			     (append (list #\# #\:)
-				     (read-until-delim port neoteric-delimiters))))
+	    ((char=? c #\:) (string->keyword ;; also add #: in front of argument
+			     (list->string
+			      ;;(append (list #\# #\:)
+				      (read-until-delim port neoteric-delimiters))));;)
 	    
 	    ;; read #'blabla ,deal with syntax objects
 	    ;;((char=? c #\') (list 'syntax (curly-infix-read port)))
@@ -610,42 +540,6 @@
                   ((string-ci=? rest-string "bs") (integer->char #x0008))
                   (#t (read-error "Invalid character name"))))))))))
 
-
-  ; Record the original read location, in case it's changed later:
-  (define default-scheme-read read)
-
-  ; --------------
-  ; Demo of reader
-  ; --------------
-
-;; (define-namespace-anchor a)
-;; (define ns (namespace-anchor->namespace a))
-
-
-
-
-
-;; repeatedly read in curly-infix and write traditional s-expression.
-;; does not seem to be used in Racket
-;; (define (process-input)
-;;   (let ((result (curly-infix-read)))
-;;     (cond ((not (eof-object? result))
-;; 	   (let ((rv (eval result ns)))
-;; 	     (write result) (display "\n")
-;; 	     (write rv)
-;; 	     (display "\n"))
-;; 	   ;; (force-output) ; flush, so can interactively control something else
-;; 	   (process-input)) ;; no else clause or other
-;; 	  )))
-
-
-;;  (process-input)
-
-;; Welcome to DrRacket, version 8.2 [cs].
-;; Language: reader "SRFI-105.rkt", with debugging; memory limit: 128 MB.
-;; > (define x 3)
-;; > {x + 1}
-;; 4
-(current-read-interaction literal-read-syntax-for-repl) ;; this procedure will be used by Racket REPL:
- ;; the current read interaction handler, which is procedure that takes an arbitrary value and an input port 
+;; Record the original read location, in case it's changed later:
+(define default-scheme-read read)
 

@@ -23,6 +23,8 @@
 
 ;; (def x)
 
+;;(define return '()) ;; for debug of Typed Racket
+
 (define-syntax def
   
   (lambda (stx)

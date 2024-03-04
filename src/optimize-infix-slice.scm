@@ -1,27 +1,5 @@
 ;; some optimizer procedures
 
-(define operators-lst
-  (apply append infix-operators-lst))
-
-
-(define (operator? x)
-  (member x operators-lst))
-
-
-;; check that expression is infix
-(define (infix? expr)
-  
-  (define (infix-rec? expr)
-    (cond ((null? expr) #t)
-	  ((not (zero? (modulo (length expr) 2))) #f)
-	  (else (and (operator? (car expr)) ;; check (op1 e1 ...) 
-		     (not (operator? (cadr expr)))
-		     (infix-rec? (cddr expr))))))
-  
-  (or (null? expr) (and (not (operator? (car expr)))
-			(infix-rec? (cdr expr)))))
-
-
 
 
 ;; split the expression using slice as separator
