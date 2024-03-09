@@ -44,7 +44,7 @@
 
   ;;`(module aschemeplusprogram racket ,@lst-code))
 
-  (strip-context `(module aschemeplusprogram racket ,@lst-code))) ;; is this useful?
+  (strip-context `(module aschemeplusprogram racket ,@lst-code))) ;; is strip-context useful?
  
 
 ;; read all the expression of program

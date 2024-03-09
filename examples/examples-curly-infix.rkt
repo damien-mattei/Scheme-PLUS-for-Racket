@@ -1,4 +1,4 @@
-#lang reader "../SRFI/SRFI-105.rkt"
+#lang reader "../src/SRFI-105.rkt"
 
 ;;(require "examples-curly-infix2.rkt")
 
