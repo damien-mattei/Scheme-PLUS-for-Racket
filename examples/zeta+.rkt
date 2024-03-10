@@ -1,5 +1,7 @@
 #lang reader "../src/SRFI-105.rkt"
 
+;; example in Scheme+ that plot the convergence of th ζ Riemann complex serie (without Analytic continuation)
+
 (require "../Scheme+.rkt")
 
 (include "../src/increment.scm")
