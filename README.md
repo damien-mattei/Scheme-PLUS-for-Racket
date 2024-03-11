@@ -38,7 +38,7 @@
     <h2><u>1. Scheme+ at a glance:&nbsp;</u></h2>
 	
 	
-    <p><b>Scheme+ is an extension of the syntax of the <a href="https://en.wikipedia.org/wiki/Scheme_%28programming_language%29"
+<p><b>Scheme+ is an extension of the syntax of the <a href="https://en.wikipedia.org/wiki/Scheme_%28programming_language%29"
           target="_blank">Scheme</a> language.</b><br>
     </p>
 	<p><b>Scheme+ is to Scheme what a concept-car is to
