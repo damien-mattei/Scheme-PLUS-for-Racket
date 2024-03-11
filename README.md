@@ -19,7 +19,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 7.3 for Racket Scheme<br>
+          style="color: #999999;"> <font size="+2">version 7.5 for Racket Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;">
 	Display options for viewing this documentation:<br>
@@ -36,9 +36,15 @@
     <p><br>
     </p>
     <h2><u>1. Scheme+ at a glance:&nbsp;</u></h2>
+	
+	
     <p><b>Scheme+ is an extension of the syntax of the <a href="https://en.wikipedia.org/wiki/Scheme_%28programming_language%29"
           target="_blank">Scheme</a> language.</b><br>
     </p>
+	<p><b>Scheme+ is to Scheme what a concept-car is to
+	automobile.Scheme+ is a concept-language.It is ideally what
+	should be a modern Scheme.</b>
+	</p>
     <p><b>Scheme+ makes it easy the assignment of Scheme objects </b><b>in
         infix </b><b>(works also in prefix) </b><b>notation </b><b>with a few
         new operators&nbsp;</b><b> </b><b><b><b>← (or&nbsp;</b></b>
