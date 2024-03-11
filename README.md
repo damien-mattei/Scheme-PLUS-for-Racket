@@ -807,7 +807,7 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```scheme
 
 
-#lang reader "../SRFI/SRFI-105.rkt"
+#lang reader "../src/SRFI-105.rkt"
 
 (require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
 
@@ -950,7 +950,7 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```scheme
 
 
-#lang reader "../SRFI/SRFI-105.rkt"
+#lang reader "../src/SRFI-105.rkt"
 (require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
 
 
@@ -1015,7 +1015,7 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```scheme
 
 
-#lang reader "../SRFI/SRFI-105.rkt"
+#lang reader "../src/SRFI-105.rkt"
 (require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
 
 
@@ -1063,7 +1063,7 @@ Here is another overloading example:
 {% highlight scheme %}
 ```scheme
 
-#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/SRFI/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions
+#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions
 
 
 (provide (all-defined-out)) 
@@ -1749,7 +1749,7 @@ scheme@(guile-user)&gt; v
 {% highlight scheme %}
 ```scheme
 
-#lang reader "../SRFI/SRFI-105.rkt"
+#lang reader "../src/SRFI-105.rkt"
 
 (require
 "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
