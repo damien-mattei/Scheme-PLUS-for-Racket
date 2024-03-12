@@ -1827,295 +1827,290 @@ scheme@(guile-user)&gt; v
           <br>
           And here is the code (available in the example directory of
           the Scheme+ package):<br>
-          <br>
-          <figure class="highlight">
-            <pre><code class="language-scheme" data-lang="scheme"><span class="o"></span>
-<span class="o">#</span><span class="nv">lang</span> <span class="nv">reader</span> <span class="s">"../src/SRFI-105.rkt"</span>
+	  <br>
 
-<span class="c1">(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
-</span>
+	  <!-- HTML generated using hilite.me --><div style="background: #111111; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #ffffff">#</span><span style="color: #fb660a">lang</span> <span style="color: #fb660a">reader</span> <span style="color: #0086d2">&quot;../src/SRFI-105.rkt&quot;</span>
 
-<span class="p">
-</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;; example in Scheme+ that plot the convergence of th ζ Riemann complex serie (without Analytic continuation)</span>
 
-<span class="p">(</span><span class="nf">include</span> <span class="s">"../library/increment.scm"</span><span class="p">)</span>
-<span class="p">(</span><span class="nf">include</span> <span class="s">"../library/for-next-step.scm"</span><span class="p">)</span>
-<span class="p">(</span><span class="nf">include</span> <span class="s">"../library/repeat-until.scm"</span><span class="p">)</span>
+<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">require</span> <span style="color: #0086d2">&quot;../Scheme+.rkt&quot;</span><span style="color: #ffffff">)</span>
 
-<span class="p">(</span><span class="nf">require</span> <span class="nv">racket/gui/base</span><span class="p">)</span>
+<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">include</span> <span style="color: #0086d2">&quot;../src/increment.scm&quot;</span><span style="color: #ffffff">)</span>
 
-<span class="p">(</span><span class="k">define</span> <span class="nv">animation-mode</span> <span class="no">#f</span><span class="p">)</span>
+<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">require</span> <span style="color: #fb660a">racket/gui/base</span><span style="color: #ffffff">)</span>
 
-<span class="p">{</span><span class="nv">xws</span> <span class="p">⥆</span> <span class="mi">1000</span><span class="p">}</span> <span class="c1">;; X window size</span>
-<span class="p">{</span><span class="nv">yws</span> <span class="p">⥆</span> <span class="mi">800</span><span class="p">}</span> <span class="c1">;; Y window size</span>
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #fb660a">animation-mode</span> <span style="color: #0086d2">#t</span><span style="color: #ffffff">)</span>
 
-<span class="p">{</span><span class="nv">ywsp</span> <span class="p">⥆</span> <span class="p">{</span><span class="nv">yws</span> <span class="nv">-</span> <span class="mi">200</span><span class="p">}}</span> <span class="c1">;; Y window size for plot</span>
+<span style="color: #ffffff">{</span><span style="color: #fb660a">xws</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">1000</span><span style="color: #ffffff">}</span> <span style="color: #008800; font-style: italic; background-color: #0f140f">;; X window size</span>
+<span style="color: #ffffff">{</span><span style="color: #fb660a">yws</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">800</span><span style="color: #ffffff">}</span> <span style="color: #008800; font-style: italic; background-color: #0f140f">;; Y window size</span>
 
-<span class="c1">; Make a frame by instantiating the frame% class</span>
-<span class="p">{</span><span class="nv">frame0</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">new</span> <span class="nv">frame%</span> <span class="p">[</span><span class="nf">label</span> <span class="s">"Example"</span><span class="p">]</span>
-	       <span class="p">[</span><span class="nf">width</span> <span class="nv">xws</span><span class="p">]</span>
-	       <span class="p">[</span><span class="nf">height</span> <span class="nv">yws</span><span class="p">])</span><span class="p">}</span>
+<span style="color: #ffffff">{</span><span style="color: #fb660a">ywsp</span> <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">yws</span> <span style="color: #fb660a">-</span> <span style="color: #0086f7; font-weight: bold">200</span><span style="color: #ffffff">}</span> <span style="color: #008800; font-style: italic; background-color: #0f140f">;; Y window size for plot</span>
+
+<span style="color: #008800; font-style: italic; background-color: #0f140f">; Make a frame by instantiating the frame% class</span>
+<span style="color: #ffffff">{</span><span style="color: #fb660a">frame0</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">new</span> <span style="color: #fb660a">frame%</span> <span style="color: #ffffff">[</span><span style="color: #fb660a">label</span> <span style="color: #0086d2">&quot;Example&quot;</span><span style="color: #ffffff">]</span>
+	               <span style="color: #ffffff">[</span><span style="color: #fb660a">width</span> <span style="color: #fb660a">xws</span><span style="color: #ffffff">]</span>
+		       <span style="color: #ffffff">[</span><span style="color: #fb660a">height</span> <span style="color: #fb660a">yws</span><span style="color: #ffffff">])}</span>
 
 
-<span class="c1">; Make a static text message in the frame</span>
-<span class="p">{</span><span class="nv">msg</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">new</span> <span class="nv">message%</span> <span class="p">[</span><span class="nf">parent</span> <span class="nv">frame0</span><span class="p">]</span>
-	    <span class="p">[</span><span class="nf">label</span> <span class="s">"No events so far..."</span><span class="p">])</span><span class="p">}</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">; Make a static text message in the frame</span>
+<span style="color: #ffffff">{</span><span style="color: #fb660a">msg</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">new</span> <span style="color: #fb660a">message%</span> <span style="color: #ffffff">[</span><span style="color: #fb660a">parent</span> <span style="color: #fb660a">frame0</span><span style="color: #ffffff">]</span>
+	              <span style="color: #ffffff">[</span><span style="color: #fb660a">label</span> <span style="color: #0086d2">&quot;No events so far...&quot;</span><span style="color: #ffffff">])}</span>
  
-<span class="c1">;; Make a button in the frame</span>
-<span class="p">(</span><span class="nf">new</span> <span class="nv">button%</span> <span class="p">[</span><span class="nf">parent</span> <span class="nv">frame0</span><span class="p">]</span>
-             <span class="p">[</span><span class="nf">label</span> <span class="s">"Exit"</span><span class="p">]</span>
-             <span class="c1">; Callback procedure for a button click:</span>
-             <span class="p">[</span><span class="nf">callback</span> <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">button</span> <span class="nv">event</span><span class="p">)</span>
-                         <span class="p">(</span><span class="nf">send</span> <span class="nv">msg</span> <span class="nv">set-label</span> <span class="s">"Button click"</span><span class="p">)</span>
-			 <span class="p">(</span><span class="nf">exit</span><span class="p">))])</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;; Make a button in the frame</span>
+<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">new</span> <span style="color: #fb660a">button%</span> <span style="color: #ffffff">[</span><span style="color: #fb660a">parent</span> <span style="color: #fb660a">frame0</span><span style="color: #ffffff">]</span>
+             <span style="color: #ffffff">[</span><span style="color: #fb660a">label</span> <span style="color: #0086d2">&quot;Exit&quot;</span><span style="color: #ffffff">]</span>
+             <span style="color: #008800; font-style: italic; background-color: #0f140f">; Callback procedure for a button click:</span>
+             <span style="color: #ffffff">[</span><span style="color: #fb660a">callback</span> <span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">lambda </span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">button</span> <span style="color: #fb660a">event</span><span style="color: #ffffff">)</span>
+                         <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">msg</span> <span style="color: #fb660a">set-label</span> <span style="color: #0086d2">&quot;Button click&quot;</span><span style="color: #ffffff">)</span>
+			 <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">exit</span><span style="color: #ffffff">))])</span>
 
-<span class="p">(</span><span class="k">define</span> <span class="nv">no-pen</span> <span class="p">(</span><span class="nf">new</span> <span class="nv">pen%</span> <span class="p">[</span><span class="nf">style</span> <span class="ss">'transparent</span><span class="p">]))</span>
-<span class="p">(</span><span class="k">define</span> <span class="nv">no-brush</span> <span class="p">(</span><span class="nf">new</span> <span class="nv">brush%</span> <span class="p">[</span><span class="nf">style</span> <span class="ss">'transparent</span><span class="p">]))</span>
-<span class="p">(</span><span class="k">define</span> <span class="nv">blue-brush</span> <span class="p">(</span><span class="nf">new</span> <span class="nv">brush%</span> <span class="p">[</span><span class="nf">color</span> <span class="s">"blue"</span><span class="p">]))</span>
-<span class="p">(</span><span class="k">define</span> <span class="nv">yellow-brush</span> <span class="p">(</span><span class="nf">new</span> <span class="nv">brush%</span> <span class="p">[</span><span class="nf">color</span> <span class="s">"yellow"</span><span class="p">]))</span>
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #fb660a">no-pen</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">new</span> <span style="color: #fb660a">pen%</span> <span style="color: #ffffff">[</span><span style="color: #fb660a">style</span> <span style="color: #0086d2">&#39;transparent</span><span style="color: #ffffff">]))</span>
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #fb660a">no-brush</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">new</span> <span style="color: #fb660a">brush%</span> <span style="color: #ffffff">[</span><span style="color: #fb660a">style</span> <span style="color: #0086d2">&#39;transparent</span><span style="color: #ffffff">]))</span>
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #fb660a">blue-brush</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">new</span> <span style="color: #fb660a">brush%</span> <span style="color: #ffffff">[</span><span style="color: #fb660a">color</span> <span style="color: #0086d2">&quot;blue&quot;</span><span style="color: #ffffff">]))</span>
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #fb660a">yellow-brush</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">new</span> <span style="color: #fb660a">brush%</span> <span style="color: #ffffff">[</span><span style="color: #fb660a">color</span> <span style="color: #0086d2">&quot;yellow&quot;</span><span style="color: #ffffff">]))</span>
 
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;;{z ⥆ 0}</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;;{z ⥆ 2+1i}</span>
+<span style="color: #ffffff">{</span><span style="color: #fb660a">z</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">1.13</span><span style="color: #fb660a">+1</span><span style="color: #ffffff">.</span><span style="color: #0086f7; font-weight: bold">765</span><span style="color: #fb660a">i</span><span style="color: #ffffff">}</span>
 
-<span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">draw-z-point</span> <span class="nv">dc</span><span class="p">)</span>
-  <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">set-pen</span> <span class="nv">no-pen</span><span class="p">)</span>
-  <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">set-brush</span> <span class="nv">blue-brush</span><span class="p">)</span>
-  <span class="p">{</span><span class="nv">ga</span> <span class="p">⥆</span> <span class="mi">8</span><span class="p">}</span>
-  <span class="p">{</span><span class="nv">pa</span> <span class="p">⥆</span> <span class="mi">8</span><span class="p">}</span>
-  <span class="p">{</span><span class="p">(</span><span class="nf">x</span> <span class="nv">y</span><span class="p">)</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">to-screen-multi-values</span> <span class="nv">z</span><span class="p">)</span><span class="p">}</span>
-  <span class="p">{</span><span class="nv">x</span> <span class="p">←</span> <span class="p">{</span><span class="nv">x</span> <span class="nv">-</span> <span class="p">(</span><span class="nb">quotient</span> <span class="nv">ga</span> <span class="mi">2</span><span class="p">)</span><span class="p">}}</span>
-  <span class="p">{</span><span class="nv">y</span> <span class="p">←</span> <span class="p">{</span><span class="nv">y</span> <span class="nv">-</span> <span class="p">(</span><span class="nb">quotient</span> <span class="nv">pa</span> <span class="mi">2</span><span class="p">)</span><span class="p">}}</span>
-  <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">draw-ellipse</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nv">ga</span> <span class="nv">pa</span><span class="p">))</span>
-
-<span class="c1">;; convert to screen coords</span>
-<span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">to-screen</span> <span class="nv">z0</span><span class="p">)</span>
-  <span class="p">{</span><span class="nv">re</span> <span class="p">⥆</span> <span class="p">(</span><span class="nb">real-part</span> <span class="nv">z0</span><span class="p">)</span><span class="p">}</span>
-  <span class="p">{</span><span class="nv">im</span> <span class="p">⥆</span> <span class="p">(</span><span class="nb">imag-part</span> <span class="nv">z0</span><span class="p">)</span><span class="p">}</span>
-  <span class="p">{</span><span class="nv">xs</span> <span class="p">⥆</span> <span class="p">{</span><span class="nv">re</span> <span class="nv">*</span> <span class="nv">unit</span><span class="p">}}</span>
-  <span class="p">{</span><span class="nv">ys</span> <span class="p">⥆</span> <span class="p">{</span><span class="nv">im</span> <span class="nv">*</span> <span class="nv">unit</span><span class="p">}}</span>
-  <span class="p">(</span><span class="nb">make-rectangular</span> <span class="p">(</span><span class="nb">round</span> <span class="p">{</span><span class="nv">xo</span> <span class="nv">+</span> <span class="nv">xs</span><span class="p">}</span><span class="p">)</span>
-		    <span class="p">(</span><span class="nb">round</span> <span class="p">{</span><span class="nv">yo</span> <span class="nv">-</span> <span class="nv">ys</span><span class="p">}</span><span class="p">)))</span>
-
-<span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">to-screen-multi-values</span> <span class="nv">z0</span><span class="p">)</span>
-  <span class="p">{</span><span class="nv">re</span> <span class="p">⥆</span> <span class="p">(</span><span class="nb">real-part</span> <span class="nv">z0</span><span class="p">)</span><span class="p">}</span>
-  <span class="p">{</span><span class="nv">im</span> <span class="p">⥆</span> <span class="p">(</span><span class="nb">imag-part</span> <span class="nv">z0</span><span class="p">)</span><span class="p">}</span>
-  <span class="p">{</span><span class="nv">xs</span> <span class="p">⥆</span> <span class="p">{</span><span class="nv">re</span> <span class="nv">*</span> <span class="nv">unit</span><span class="p">}}</span>
-  <span class="p">{</span><span class="nv">ys</span> <span class="p">⥆</span> <span class="p">{</span><span class="nv">im</span> <span class="nv">*</span> <span class="nv">unit</span><span class="p">}}</span>
-  <span class="p">(</span><span class="nb">values</span> <span class="p">(</span><span class="nb">round</span> <span class="p">{</span><span class="nv">xo</span> <span class="nv">+</span> <span class="nv">xs</span><span class="p">}</span><span class="p">)</span>
-	  <span class="p">(</span><span class="nb">round</span> <span class="p">{</span><span class="nv">yo</span> <span class="nv">-</span> <span class="nv">ys</span><span class="p">}</span><span class="p">)))</span>
+<span style="color: #ffffff">{</span><span style="color: #fb660a">unit-axis-in-pixel</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">200</span><span style="color: #ffffff">}</span>
 
 
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">draw-z-point</span> <span style="color: #fb660a">dc</span><span style="color: #ffffff">)</span>
+  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">set-pen</span> <span style="color: #fb660a">no-pen</span><span style="color: #ffffff">)</span>
+  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">set-brush</span> <span style="color: #fb660a">blue-brush</span><span style="color: #ffffff">)</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">ga</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">8</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">pa</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">8</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">{(</span><span style="color: #ff0086; font-weight: bold">x</span> <span style="color: #fb660a">y</span><span style="color: #ffffff">)</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">to-screen-multi-values</span> <span style="color: #fb660a">z</span><span style="color: #ffffff">)}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">x</span> <span style="color: #ffffff">←</span> <span style="color: #fb660a">x</span> <span style="color: #fb660a">-</span> <span style="color: #ffffff">(quotient </span><span style="color: #fb660a">ga</span> <span style="color: #0086f7; font-weight: bold">2</span><span style="color: #ffffff">)}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">y</span> <span style="color: #ffffff">←</span> <span style="color: #fb660a">y</span> <span style="color: #fb660a">-</span> <span style="color: #ffffff">(quotient </span><span style="color: #fb660a">pa</span> <span style="color: #0086f7; font-weight: bold">2</span><span style="color: #ffffff">)}</span>
+  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">draw-ellipse</span> <span style="color: #fb660a">x</span> <span style="color: #fb660a">y</span> <span style="color: #fb660a">ga</span> <span style="color: #fb660a">pa</span><span style="color: #ffffff">))</span>
 
-<span class="c1">;;{z ⥆ 0}</span>
-<span class="c1">;;{z ⥆ 2+1i}</span>
-<span class="p">{</span><span class="nv">z</span> <span class="p">⥆</span> <span class="mf">1.13</span><span class="nv">+1</span><span class="o">.</span><span class="mi">765</span><span class="nv">i</span><span class="p">}</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;; convert to screen coords</span>
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">to-screen</span> <span style="color: #fb660a">z0</span><span style="color: #ffffff">)</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">re</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(real-part </span><span style="color: #fb660a">z0</span><span style="color: #ffffff">)}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">im</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(imag-part </span><span style="color: #fb660a">z0</span><span style="color: #ffffff">)}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">xs</span> <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">re</span> <span style="color: #fb660a">*</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">ys</span> <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">im</span> <span style="color: #fb660a">*</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">(make-rectangular (round {</span><span style="color: #fb660a">xo</span> <span style="color: #fb660a">+</span> <span style="color: #fb660a">xs</span><span style="color: #ffffff">})</span>
+		    <span style="color: #ffffff">(round {</span><span style="color: #fb660a">yo</span> <span style="color: #fb660a">-</span> <span style="color: #fb660a">ys</span><span style="color: #ffffff">})))</span>
+
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">to-screen-multi-values</span> <span style="color: #fb660a">z0</span><span style="color: #ffffff">)</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">re</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(real-part </span><span style="color: #fb660a">z0</span><span style="color: #ffffff">)}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">im</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(imag-part </span><span style="color: #fb660a">z0</span><span style="color: #ffffff">)}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">xs</span> <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">re</span> <span style="color: #fb660a">*</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">ys</span> <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">im</span> <span style="color: #fb660a">*</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">(values (round {</span><span style="color: #fb660a">xo</span> <span style="color: #fb660a">+</span> <span style="color: #fb660a">xs</span><span style="color: #ffffff">})</span>
+	  <span style="color: #ffffff">(round {</span><span style="color: #fb660a">yo</span> <span style="color: #fb660a">-</span> <span style="color: #fb660a">ys</span><span style="color: #ffffff">})))</span>
 
 
-<span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">draw-zeta</span> <span class="nv">dc</span><span class="p">)</span>
+
+
+
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">draw-zeta</span> <span style="color: #fb660a">dc</span><span style="color: #ffffff">)</span>
   
-  <span class="p">{</span><span class="nv">zi</span> <span class="p">⥆</span> <span class="mi">0</span><span class="p">}</span>
-  <span class="p">{</span><span class="nv">nmax</span> <span class="p">⥆</span> <span class="mi">10000000</span><span class="p">}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">zi</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">0</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">nmax</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">10000000</span><span style="color: #ffffff">}</span>
   
-  <span class="p">{</span><span class="nv">flag-color</span> <span class="p">⥆</span> <span class="no">#t</span><span class="p">}</span>
-  <span class="c1">;;(newline)</span>
-  <span class="p">(</span><span class="nf">for</span> <span class="p">(</span><span class="nf">n</span> <span class="mi">1</span> <span class="nv">nmax</span><span class="p">)</span>
-       <span class="p">(</span><span class="k">if</span> <span class="nv">flag-color</span>
-	   <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">set-pen</span> <span class="s">"blue"</span> <span class="mi">1</span> <span class="ss">'solid</span><span class="p">)</span>
-	   <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">set-pen</span> <span class="s">"green"</span> <span class="mi">1</span> <span class="ss">'solid</span><span class="p">))</span>
-       <span class="p">{</span><span class="nv">flag-color</span> <span class="p">←</span> <span class="p">(</span><span class="nb">not</span> <span class="nv">flag-color</span><span class="p">)</span><span class="p">}</span>
-       <span class="c1">;;(display "draw-zeta : n =") (display n) (newline)</span>
-       <span class="p">{</span><span class="nv">zp</span> <span class="p">⥆</span> <span class="p">{</span><span class="mf">1.0</span> <span class="nv">/</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">**</span> <span class="nv">z</span><span class="p">}}}</span>
-       <span class="c1">;; (display "draw-zeta : z =") (display z) (newline)</span>
-       <span class="c1">;; (display "draw-zeta : zp =") (display zp) (newline)</span>
-       <span class="c1">;; (display "draw-zeta : zi =") (display zi) (newline)</span>
-       <span class="p">{</span><span class="nv">zxtrm</span>  <span class="p">⥆</span> <span class="p">{</span><span class="nv">zi</span> <span class="nv">+</span> <span class="nv">zp</span><span class="p">}}</span>
-       <span class="c1">;;(display "draw-zeta : zxtrm =") (display zxtrm) (newline)</span>
-       <span class="p">{</span><span class="nv">zie</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">to-screen</span> <span class="nv">zi</span><span class="p">)</span><span class="p">}</span>
-       <span class="c1">;;(display "draw-zeta : zie =") (display zie) (newline)</span>
-       <span class="p">{</span><span class="nv">zxtrme</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">to-screen</span> <span class="nv">zxtrm</span><span class="p">)</span><span class="p">}</span>
-       <span class="c1">;;(display "draw-zeta : zxtrme =") (display zxtrme) (newline)</span>
-       <span class="p">{</span><span class="nv">x0</span> <span class="p">⥆</span>  <span class="p">(</span><span class="nb">real-part</span> <span class="nv">zie</span><span class="p">)</span><span class="p">}</span>
-       <span class="p">{</span><span class="nv">y0</span> <span class="p">⥆</span>  <span class="p">(</span><span class="nb">imag-part</span> <span class="nv">zie</span><span class="p">)</span><span class="p">}</span>
-       <span class="p">{</span><span class="nv">x1</span> <span class="p">⥆</span>  <span class="p">(</span><span class="nb">real-part</span> <span class="nv">zxtrme</span><span class="p">)</span><span class="p">}</span>
-       <span class="p">{</span><span class="nv">y1</span> <span class="p">⥆</span>  <span class="p">(</span><span class="nb">imag-part</span> <span class="nv">zxtrme</span><span class="p">)</span><span class="p">}</span>
-       <span class="p">(</span><span class="nf">when</span> <span class="p">{</span> <span class="p">{</span><span class="nv">x0</span> <span class="nv">&gt;=</span> <span class="mi">0</span><span class="p">}</span> <span class="nv">and</span> <span class="p">{</span><span class="nv">x0</span> <span class="nv">&lt;=</span> <span class="nv">xws</span><span class="p">}</span> <span class="nv">and</span>  <span class="p">{</span><span class="nv">x1</span> <span class="nv">&gt;=</span> <span class="mi">0</span><span class="p">}</span> <span class="nv">and</span> <span class="p">{</span><span class="nv">x1</span> <span class="nv">&lt;=</span> <span class="nv">xws</span><span class="p">}</span>
-	      <span class="nv">and</span> <span class="p">{</span><span class="nv">y0</span> <span class="nv">&gt;=</span> <span class="mi">0</span><span class="p">}</span> <span class="nv">and</span> <span class="p">{</span><span class="nv">y0</span> <span class="nv">&lt;=</span> <span class="nv">ywsp</span><span class="p">}</span> <span class="nv">and</span>  <span class="p">{</span><span class="nv">y1</span> <span class="nv">&gt;=</span> <span class="mi">0</span><span class="p">}</span> <span class="nv">and</span> <span class="p">{</span><span class="nv">y1</span> <span class="nv">&lt;=</span> <span class="nv">ywsp</span><span class="p">}}</span>
-	     <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">draw-line</span>
-		   <span class="nv">x0</span> <span class="nv">y0</span>
-		   <span class="nv">x1</span> <span class="nv">y1</span><span class="p">))</span>
-       <span class="p">{</span><span class="nv">zi</span> <span class="p">←</span> <span class="nv">zxtrm</span><span class="p">}</span><span class="p">))</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">flag-color</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086d2">#t</span><span style="color: #ffffff">}</span>
+  <span style="color: #008800; font-style: italic; background-color: #0f140f">;;(newline)</span>
+  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">for</span> <span style="color: #ffffff">({</span><span style="color: #fb660a">n</span> <span style="color: #fb660a">&lt;+</span> <span style="color: #0086f7; font-weight: bold">1</span><span style="color: #ffffff">}</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">n</span> <span style="color: #fb660a">&lt;=</span> <span style="color: #fb660a">nmax</span><span style="color: #ffffff">}</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">n</span> <span style="color: #fb660a">&lt;-</span> <span style="color: #fb660a">n</span> <span style="color: #fb660a">+</span> <span style="color: #0086f7; font-weight: bold">1</span><span style="color: #ffffff">})</span>
+       <span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">if </span><span style="color: #fb660a">flag-color</span>
+	   <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">set-pen</span> <span style="color: #0086d2">&quot;blue&quot;</span> <span style="color: #0086f7; font-weight: bold">1</span> <span style="color: #0086d2">&#39;solid</span><span style="color: #ffffff">)</span>
+	   <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">set-pen</span> <span style="color: #0086d2">&quot;green&quot;</span> <span style="color: #0086f7; font-weight: bold">1</span> <span style="color: #0086d2">&#39;solid</span><span style="color: #ffffff">))</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">flag-color</span> <span style="color: #ffffff">←</span> <span style="color: #ffffff">(not </span><span style="color: #fb660a">flag-color</span><span style="color: #ffffff">)}</span>
+       <span style="color: #008800; font-style: italic; background-color: #0f140f">;;(display &quot;draw-zeta : n =&quot;) (display n) (newline)</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">zp</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">1.0</span> <span style="color: #fb660a">/</span> <span style="color: #fb660a">n</span> <span style="color: #fb660a">**</span> <span style="color: #fb660a">z</span><span style="color: #ffffff">}</span>
+       <span style="color: #008800; font-style: italic; background-color: #0f140f">;; (display &quot;draw-zeta : z =&quot;) (display z) (newline)</span>
+       <span style="color: #008800; font-style: italic; background-color: #0f140f">;; (display &quot;draw-zeta : zp =&quot;) (display zp) (newline)</span>
+       <span style="color: #008800; font-style: italic; background-color: #0f140f">;; (display &quot;draw-zeta : zi =&quot;) (display zi) (newline)</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">zxtrm</span>  <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">zi</span> <span style="color: #fb660a">+</span> <span style="color: #fb660a">zp</span><span style="color: #ffffff">}</span>
+       <span style="color: #008800; font-style: italic; background-color: #0f140f">;;(display &quot;draw-zeta : zxtrm =&quot;) (display zxtrm) (newline)</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">zie</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">to-screen</span> <span style="color: #fb660a">zi</span><span style="color: #ffffff">)}</span>
+       <span style="color: #008800; font-style: italic; background-color: #0f140f">;;(display &quot;draw-zeta : zie =&quot;) (display zie) (newline)</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">zxtrme</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">to-screen</span> <span style="color: #fb660a">zxtrm</span><span style="color: #ffffff">)}</span>
+       <span style="color: #008800; font-style: italic; background-color: #0f140f">;;(display &quot;draw-zeta : zxtrme =&quot;) (display zxtrme) (newline)</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">x0</span> <span style="color: #ffffff">⥆</span>  <span style="color: #ffffff">(real-part </span><span style="color: #fb660a">zie</span><span style="color: #ffffff">)}</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">y0</span> <span style="color: #ffffff">⥆</span>  <span style="color: #ffffff">(imag-part </span><span style="color: #fb660a">zie</span><span style="color: #ffffff">)}</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">x1</span> <span style="color: #ffffff">⥆</span>  <span style="color: #ffffff">(real-part </span><span style="color: #fb660a">zxtrme</span><span style="color: #ffffff">)}</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">y1</span> <span style="color: #ffffff">⥆</span>  <span style="color: #ffffff">(imag-part </span><span style="color: #fb660a">zxtrme</span><span style="color: #ffffff">)}</span>
+       <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">when</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">x0</span> <span style="color: #fb660a">&gt;=</span> <span style="color: #0086f7; font-weight: bold">0</span> <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">x0</span> <span style="color: #fb660a">&lt;=</span> <span style="color: #fb660a">xws</span>  <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">x1</span> <span style="color: #fb660a">&gt;=</span> <span style="color: #0086f7; font-weight: bold">0</span> <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">x1</span> <span style="color: #fb660a">&lt;=</span> <span style="color: #fb660a">xws</span> <span style="color: #fb660a">and</span>
+	      <span style="color: #fb660a">y0</span> <span style="color: #fb660a">&gt;=</span> <span style="color: #0086f7; font-weight: bold">0</span> <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">y0</span> <span style="color: #fb660a">&lt;=</span> <span style="color: #fb660a">ywsp</span> <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">y1</span> <span style="color: #fb660a">&gt;=</span> <span style="color: #0086f7; font-weight: bold">0</span> <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">y1</span> <span style="color: #fb660a">&lt;=</span> <span style="color: #fb660a">ywsp</span><span style="color: #ffffff">}</span>
+	     <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">draw-line</span>
+		   <span style="color: #fb660a">x0</span> <span style="color: #fb660a">y0</span>
+		   <span style="color: #fb660a">x1</span> <span style="color: #fb660a">y1</span><span style="color: #ffffff">))</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">zi</span> <span style="color: #ffffff">←</span> <span style="color: #fb660a">zxtrm</span><span style="color: #ffffff">}))</span>
 
 
-<span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">draw-zeta-multi-values</span> <span class="nv">dc</span><span class="p">)</span>
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">draw-zeta-multi-values</span> <span style="color: #fb660a">dc</span><span style="color: #ffffff">)</span>
   
-  <span class="p">{</span><span class="nv">zi</span> <span class="p">⥆</span> <span class="mi">0</span><span class="p">}</span>
-  <span class="p">{</span><span class="nv">flag-color</span> <span class="p">⥆</span> <span class="no">#t</span><span class="p">}</span>
-  <span class="p">{</span><span class="nv">dmin</span> <span class="p">⥆</span> <span class="mi">2</span><span class="p">}</span> <span class="c1">;; minimal length  in pixel to draw line</span>
-  <span class="p">{</span><span class="nv">n</span> <span class="p">⥆</span> <span class="mi">1</span><span class="p">}</span>
-  <span class="p">(</span><span class="nb">newline</span><span class="p">)</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">zi</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">0</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">flag-color</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086d2">#t</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">dmin</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">2</span><span style="color: #ffffff">}</span> <span style="color: #008800; font-style: italic; background-color: #0f140f">;; minimal length  in pixel to draw line</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">n</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">1</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">newline</span><span style="color: #ffffff">)</span>
   
-  <span class="p">(</span><span class="nf">repeat</span>
+  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">repeat</span>
    
-       <span class="p">(</span><span class="k">if</span> <span class="nv">flag-color</span>
-	   <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">set-pen</span> <span class="s">"blue"</span> <span class="mi">1</span> <span class="ss">'solid</span><span class="p">)</span>
-	   <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">set-pen</span> <span class="s">"green"</span> <span class="mi">1</span> <span class="ss">'solid</span><span class="p">))</span>
-       <span class="p">{</span><span class="nv">flag-color</span> <span class="p">←</span> <span class="p">(</span><span class="nb">not</span> <span class="nv">flag-color</span><span class="p">)</span><span class="p">}</span>
-       <span class="c1">;;(display "draw-zeta-multi-values : n =") (display n) (newline)</span>
-       <span class="p">{</span><span class="nv">zp</span> <span class="p">⥆</span> <span class="p">{</span><span class="mf">1.0</span> <span class="nv">/</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">**</span> <span class="nv">z</span><span class="p">}}}</span>
-       <span class="p">{</span><span class="nv">zxtrm</span>  <span class="p">⥆</span> <span class="p">{</span><span class="nv">zi</span> <span class="nv">+</span> <span class="nv">zp</span><span class="p">}}</span>
-       <span class="c1">;;(display "draw-zeta-multi-values : zxtrm =") (display zxtrm) (newline)</span>
+       <span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">if </span><span style="color: #fb660a">flag-color</span>
+	   <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">set-pen</span> <span style="color: #0086d2">&quot;blue&quot;</span> <span style="color: #0086f7; font-weight: bold">1</span> <span style="color: #0086d2">&#39;solid</span><span style="color: #ffffff">)</span>
+	   <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">set-pen</span> <span style="color: #0086d2">&quot;green&quot;</span> <span style="color: #0086f7; font-weight: bold">1</span> <span style="color: #0086d2">&#39;solid</span><span style="color: #ffffff">))</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">flag-color</span> <span style="color: #ffffff">←</span> <span style="color: #ffffff">(not </span><span style="color: #fb660a">flag-color</span><span style="color: #ffffff">)}</span>
+       <span style="color: #008800; font-style: italic; background-color: #0f140f">;;(display &quot;draw-zeta-multi-values : n =&quot;) (display n) (newline)</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">zp</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">1.0</span> <span style="color: #fb660a">/</span> <span style="color: #fb660a">n</span> <span style="color: #fb660a">**</span> <span style="color: #fb660a">z</span><span style="color: #ffffff">}</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">zxtrm</span>  <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">zi</span> <span style="color: #fb660a">+</span> <span style="color: #fb660a">zp</span><span style="color: #ffffff">}</span>
+       <span style="color: #008800; font-style: italic; background-color: #0f140f">;;(display &quot;draw-zeta-multi-values : zxtrm =&quot;) (display zxtrm) (newline)</span>
  
-       <span class="p">{</span><span class="p">(</span><span class="nf">x0</span> <span class="nv">y0</span><span class="p">)</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">to-screen-multi-values</span> <span class="nv">zi</span><span class="p">)</span><span class="p">}</span> 
-       <span class="p">{</span><span class="p">(</span><span class="nf">x1</span> <span class="nv">y1</span><span class="p">)</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">to-screen-multi-values</span> <span class="nv">zxtrm</span><span class="p">)</span><span class="p">}</span>
+       <span style="color: #ffffff">{(</span><span style="color: #ff0086; font-weight: bold">x0</span> <span style="color: #fb660a">y0</span><span style="color: #ffffff">)</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">to-screen-multi-values</span> <span style="color: #fb660a">zi</span><span style="color: #ffffff">)}</span> 
+       <span style="color: #ffffff">{(</span><span style="color: #ff0086; font-weight: bold">x1</span> <span style="color: #fb660a">y1</span><span style="color: #ffffff">)</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">to-screen-multi-values</span> <span style="color: #fb660a">zxtrm</span><span style="color: #ffffff">)}</span>
  
-       <span class="p">(</span><span class="nf">when</span> <span class="p">{</span> <span class="p">{</span><span class="nv">x0</span> <span class="nv">&gt;=</span> <span class="mi">0</span><span class="p">}</span> <span class="nv">and</span> <span class="p">{</span><span class="nv">x0</span> <span class="nv">&lt;=</span> <span class="nv">xws</span><span class="p">}</span> <span class="nv">and</span>  <span class="p">{</span><span class="nv">x1</span> <span class="nv">&gt;=</span> <span class="mi">0</span><span class="p">}</span> <span class="nv">and</span> <span class="p">{</span><span class="nv">x1</span> <span class="nv">&lt;=</span> <span class="nv">xws</span><span class="p">}</span>
-	      <span class="nv">and</span> <span class="p">{</span><span class="nv">y0</span> <span class="nv">&gt;=</span> <span class="mi">0</span><span class="p">}</span> <span class="nv">and</span> <span class="p">{</span><span class="nv">y0</span> <span class="nv">&lt;=</span> <span class="nv">ywsp</span><span class="p">}</span> <span class="nv">and</span>  <span class="p">{</span><span class="nv">y1</span> <span class="nv">&gt;=</span> <span class="mi">0</span><span class="p">}</span> <span class="nv">and</span> <span class="p">{</span><span class="nv">y1</span> <span class="nv">&lt;=</span> <span class="nv">ywsp</span><span class="p">}}</span>
-	     <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">draw-line</span>
-		   <span class="nv">x0</span> <span class="nv">y0</span>
-		   <span class="nv">x1</span> <span class="nv">y1</span><span class="p">))</span>
+       <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">when</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">x0</span> <span style="color: #fb660a">&gt;=</span> <span style="color: #0086f7; font-weight: bold">0</span> <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">x0</span> <span style="color: #fb660a">&lt;=</span> <span style="color: #fb660a">xws</span>  <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">x1</span> <span style="color: #fb660a">&gt;=</span> <span style="color: #0086f7; font-weight: bold">0</span> <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">x1</span> <span style="color: #fb660a">&lt;=</span> <span style="color: #fb660a">xws</span> <span style="color: #fb660a">and</span>
+	      <span style="color: #fb660a">y0</span> <span style="color: #fb660a">&gt;=</span> <span style="color: #0086f7; font-weight: bold">0</span> <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">y0</span> <span style="color: #fb660a">&lt;=</span> <span style="color: #fb660a">ywsp</span> <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">y1</span> <span style="color: #fb660a">&gt;=</span> <span style="color: #0086f7; font-weight: bold">0</span> <span style="color: #fb660a; font-weight: bold">and </span><span style="color: #fb660a">y1</span> <span style="color: #fb660a">&lt;=</span> <span style="color: #fb660a">ywsp</span><span style="color: #ffffff">}</span>
+	     <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">draw-line</span>
+		   <span style="color: #fb660a">x0</span> <span style="color: #fb660a">y0</span>
+		   <span style="color: #fb660a">x1</span> <span style="color: #fb660a">y1</span><span style="color: #ffffff">))</span>
 
-       <span class="p">{</span><span class="nv">len-line</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">line-length</span> <span class="nv">x0</span> <span class="nv">y0</span> <span class="nv">x1</span> <span class="nv">y1</span><span class="p">)</span><span class="p">}</span>
-       <span class="p">{</span><span class="nv">zi</span> <span class="p">←</span> <span class="nv">zxtrm</span><span class="p">}</span>
-       <span class="p">{</span><span class="nv">n</span> <span class="p">←</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">+</span> <span class="mi">1</span><span class="p">}}</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">len-line</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">line-length</span> <span style="color: #fb660a">x0</span> <span style="color: #fb660a">y0</span> <span style="color: #fb660a">x1</span> <span style="color: #fb660a">y1</span><span style="color: #ffffff">)}</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">zi</span> <span style="color: #ffffff">←</span> <span style="color: #fb660a">zxtrm</span><span style="color: #ffffff">}</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">n</span> <span style="color: #ffffff">←</span> <span style="color: #fb660a">n</span> <span style="color: #fb660a">+</span> <span style="color: #0086f7; font-weight: bold">1</span><span style="color: #ffffff">}</span>
        
-       <span class="nv">until</span> <span class="p">{</span><span class="nv">len-line</span> <span class="nv">&lt;</span> <span class="nv">dmin</span><span class="p">}</span><span class="p">)</span>
+       <span style="color: #fb660a">until</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">len-line</span> <span style="color: #fb660a">&lt;</span> <span style="color: #fb660a">dmin</span><span style="color: #ffffff">})</span>
 
-  <span class="p">(</span><span class="nb">display</span> <span class="s">"draw-zeta-multi-values : z ="</span><span class="p">)</span> <span class="p">(</span><span class="nb">display</span> <span class="nv">z</span><span class="p">)</span> <span class="p">(</span><span class="nb">newline</span><span class="p">)</span>
-  <span class="p">(</span><span class="nb">display</span> <span class="s">"draw-zeta-multi-values : Riemann Zeta(z) = zi ="</span><span class="p">)</span> <span class="p">(</span><span class="nb">display</span> <span class="nv">zi</span><span class="p">)</span> <span class="p">(</span><span class="nb">newline</span><span class="p">)</span>
+  <span style="color: #ffffff">(display </span><span style="color: #0086d2">&quot;draw-zeta-multi-values : z =&quot;</span><span style="color: #ffffff">)</span> <span style="color: #ffffff">(display </span><span style="color: #fb660a">z</span><span style="color: #ffffff">)</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">newline</span><span style="color: #ffffff">)</span>
+  <span style="color: #ffffff">(display </span><span style="color: #0086d2">&quot;draw-zeta-multi-values : Riemann Zeta(z) = zi =&quot;</span><span style="color: #ffffff">)</span> <span style="color: #ffffff">(display </span><span style="color: #fb660a">zi</span><span style="color: #ffffff">)</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">newline</span><span style="color: #ffffff">)</span>
 
-  <span class="p">)</span>
-
-
-
-<span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">line-length</span> <span class="nv">x0</span> <span class="nv">y0</span> <span class="nv">x1</span> <span class="nv">y1</span><span class="p">)</span>
-  <span class="p">(</span><span class="nb">sqrt</span> <span class="p">{</span> <span class="p">{</span> <span class="p">{</span><span class="nv">x1</span> <span class="nv">-</span> <span class="nv">x0</span><span class="p">}</span> <span class="nv">**</span> <span class="mi">2</span><span class="p">}</span> <span class="nv">+</span> <span class="p">{</span> <span class="p">{</span><span class="nv">y1</span> <span class="nv">-</span> <span class="nv">y0</span><span class="p">}</span> <span class="nv">**</span> <span class="mi">2</span><span class="p">}}</span><span class="p">))</span>
+  <span style="color: #ffffff">)</span>
 
 
-<span class="c1">;; (new button% [parent frame0]</span>
-<span class="c1">;;              [label "Pause"]</span>
-<span class="c1">;;              [callback (λ (button event) (sleep 5))])</span>
+
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">line-length</span> <span style="color: #fb660a">x0</span> <span style="color: #fb660a">y0</span> <span style="color: #fb660a">x1</span> <span style="color: #fb660a">y1</span><span style="color: #ffffff">)</span>
+  <span style="color: #ffffff">(sqrt {</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">x1</span> <span style="color: #fb660a">-</span> <span style="color: #fb660a">x0</span><span style="color: #ffffff">}</span> <span style="color: #fb660a">**</span> <span style="color: #0086f7; font-weight: bold">2</span> <span style="color: #fb660a">+</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">y1</span> <span style="color: #fb660a">-</span> <span style="color: #fb660a">y0</span><span style="color: #ffffff">}</span> <span style="color: #fb660a">**</span> <span style="color: #0086f7; font-weight: bold">2</span> <span style="color: #ffffff">}))</span>
 
 
-<span class="c1">;; {panel ⥆ (new horizontal-panel% [parent frame0])}</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;; (new button% [parent frame0]</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;;              [label &quot;Pause&quot;]</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;;              [callback (λ (button event) (sleep 5))])</span>
 
-<span class="c1">;; (new button% [parent panel]</span>
-<span class="c1">;;              [label "Left"]</span>
-<span class="c1">;;              [callback (λ (button event)</span>
-<span class="c1">;;                          (send msg set-label "Left click"))])</span>
-<span class="c1">;; (new button% [parent panel]</span>
-<span class="c1">;;              [label "Right"]</span>
-<span class="c1">;;              [callback (λ (button event)</span>
-<span class="c1">;;                          (send msg set-label "Right click"))])</span>
 
-<span class="p">{</span><span class="nv">z-old</span> <span class="p">⥆</span> <span class="nv">z</span><span class="p">}</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;; {panel ⥆ (new horizontal-panel% [parent frame0])}</span>
 
-<span class="c1">; Derive a new canvas (a drawing window) class to handle events</span>
-<span class="p">{</span><span class="nv">my-canvas%</span> <span class="p">⥆</span>
-  <span class="p">(</span><span class="nf">class</span> <span class="nv">canvas%</span> <span class="c1">; The base class is canvas%</span>
-    <span class="c1">; Define overriding method to handle mouse events</span>
-    <span class="p">(</span><span class="nf">define/override</span> <span class="p">(</span><span class="nf">on-event</span> <span class="nv">event</span><span class="p">)</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;; (new button% [parent panel]</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;;              [label &quot;Left&quot;]</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;;              [callback (λ (button event)</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;;                          (send msg set-label &quot;Left click&quot;))])</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;; (new button% [parent panel]</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;;              [label &quot;Right&quot;]</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;;              [callback (λ (button event)</span>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;;                          (send msg set-label &quot;Right click&quot;))])</span>
+
+<span style="color: #ffffff">{</span><span style="color: #fb660a">z-old</span> <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">z</span><span style="color: #ffffff">}</span>
+
+<span style="color: #008800; font-style: italic; background-color: #0f140f">; Derive a new canvas (a drawing window) class to handle events</span>
+<span style="color: #ffffff">{</span><span style="color: #fb660a">my-canvas%</span> <span style="color: #ffffff">⥆</span>
+  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">class</span> <span style="color: #fb660a">canvas%</span> <span style="color: #008800; font-style: italic; background-color: #0f140f">; The base class is canvas%</span>
+    <span style="color: #008800; font-style: italic; background-color: #0f140f">; Define overriding method to handle mouse events</span>
+    <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">define/override</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">on-event</span> <span style="color: #fb660a">event</span><span style="color: #ffffff">)</span>
      
-      <span class="p">{</span><span class="nv">window-x</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">send</span> <span class="nv">event</span> <span class="nv">get-x</span><span class="p">)</span><span class="p">}</span>
-      <span class="p">{</span><span class="nv">window-y</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">send</span> <span class="nv">event</span> <span class="nv">get-y</span><span class="p">)</span><span class="p">}</span>
-      <span class="p">(</span><span class="nf">when</span> <span class="nv">animation-mode</span>
-	<span class="p">{</span><span class="nv">z</span> <span class="p">←</span> <span class="p">(</span><span class="nf">ret-z</span> <span class="nv">window-x</span> <span class="nv">window-y</span><span class="p">)</span><span class="p">}</span><span class="p">)</span>
+      <span style="color: #ffffff">{</span><span style="color: #fb660a">window-x</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">event</span> <span style="color: #fb660a">get-x</span><span style="color: #ffffff">)}</span>
+      <span style="color: #ffffff">{</span><span style="color: #fb660a">window-y</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">event</span> <span style="color: #fb660a">get-y</span><span style="color: #ffffff">)}</span>
+      <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">when</span> <span style="color: #fb660a">animation-mode</span>
+	<span style="color: #ffffff">{</span><span style="color: #fb660a">z</span> <span style="color: #ffffff">←</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">ret-z</span> <span style="color: #fb660a">window-x</span> <span style="color: #fb660a">window-y</span><span style="color: #ffffff">)})</span>
       
-      <span class="c1">;;{str ⥆ (string-append "(" (number-&gt;string window-x) " , " (number-&gt;string window-y) ")")}</span>
-      <span class="p">(</span><span class="nf">when</span> <span class="p">{</span><span class="nv">z</span> <span class="p">≠</span> <span class="nv">z-old</span><span class="p">}</span>
-	    <span class="p">{</span><span class="nv">z-old</span> <span class="p">←</span> <span class="nv">z</span><span class="p">}</span>
-	    <span class="p">{</span><span class="nv">str</span> <span class="p">⥆</span> <span class="p">(</span><span class="nb">number-&gt;string</span> <span class="nv">z</span><span class="p">)</span><span class="p">}</span> 
-	    <span class="p">(</span><span class="nf">send</span> <span class="nv">msg</span> <span class="nv">set-label</span> <span class="nv">str</span><span class="p">)</span>
-	    <span class="p">(</span><span class="nf">send</span> <span class="nv">cv</span> <span class="nv">refresh</span><span class="p">))</span>
+      <span style="color: #008800; font-style: italic; background-color: #0f140f">;;{str ⥆ (string-append &quot;(&quot; (number-&gt;string window-x) &quot; , &quot; (number-&gt;string window-y) &quot;)&quot;)}</span>
+      <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">when</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">z</span> <span style="color: #ffffff">≠</span> <span style="color: #fb660a">z-old</span><span style="color: #ffffff">}</span>
+	    <span style="color: #ffffff">{</span><span style="color: #fb660a">z-old</span> <span style="color: #ffffff">←</span> <span style="color: #fb660a">z</span><span style="color: #ffffff">}</span>
+	    <span style="color: #ffffff">{</span><span style="color: #fb660a">str</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(number-&gt;string </span><span style="color: #fb660a">z</span><span style="color: #ffffff">)}</span> 
+	    <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">msg</span> <span style="color: #fb660a">set-label</span> <span style="color: #fb660a">str</span><span style="color: #ffffff">)</span>
+	    <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">cv</span> <span style="color: #fb660a">refresh</span><span style="color: #ffffff">))</span>
       
-      <span class="p">)</span>
+      <span style="color: #ffffff">)</span>
     
-    <span class="c1">; Define overriding method to handle keyboard events</span>
-    <span class="p">(</span><span class="nf">define/override</span> <span class="p">(</span><span class="nf">on-char</span> <span class="nv">event</span><span class="p">)</span>
-      <span class="p">(</span><span class="nf">send</span> <span class="nv">msg</span> <span class="nv">set-label</span> <span class="s">"Canvas keyboard"</span><span class="p">))</span>
-    <span class="c1">; Call the superclass init, passing on all init args</span>
-    <span class="p">(</span><span class="nf">super-new</span><span class="p">))</span><span class="p">}</span>
+    <span style="color: #008800; font-style: italic; background-color: #0f140f">; Define overriding method to handle keyboard events</span>
+    <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">define/override</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">on-char</span> <span style="color: #fb660a">event</span><span style="color: #ffffff">)</span>
+      <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">msg</span> <span style="color: #fb660a">set-label</span> <span style="color: #0086d2">&quot;Canvas keyboard&quot;</span><span style="color: #ffffff">))</span>
+    <span style="color: #008800; font-style: italic; background-color: #0f140f">; Call the superclass init, passing on all init args</span>
+    <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">super-new</span><span style="color: #ffffff">))}</span>
 
 
-<span class="p">{</span><span class="nv">cv</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">new</span> <span class="nv">my-canvas%</span> <span class="p">[</span><span class="nf">parent</span> <span class="nv">frame0</span><span class="p">]</span>
-	   <span class="p">[</span><span class="nf">paint-callback</span>
-	    <span class="p">(</span><span class="p">λ</span> <span class="p">(</span><span class="nf">canvas</span> <span class="nv">dc</span><span class="p">)</span> <span class="c1">;; dc: Drawing Context</span>
-	      <span class="c1">;; cf. https://docs.racket-lang.org/draw/overview.html#%28tech._drawing._context%29</span>
+<span style="color: #ffffff">{</span><span style="color: #fb660a">cv</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">new</span> <span style="color: #fb660a">my-canvas%</span> <span style="color: #ffffff">[</span><span style="color: #fb660a">parent</span> <span style="color: #fb660a">frame0</span><span style="color: #ffffff">]</span>
+	   <span style="color: #ffffff">[</span><span style="color: #fb660a">paint-callback</span>
+	    <span style="color: #ffffff">(λ</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">canvas</span> <span style="color: #fb660a">dc</span><span style="color: #ffffff">)</span> <span style="color: #008800; font-style: italic; background-color: #0f140f">;; dc: Drawing Context</span>
+	      <span style="color: #008800; font-style: italic; background-color: #0f140f">;; cf. https://docs.racket-lang.org/draw/overview.html#%28tech._drawing._context%29</span>
 	      
-	      <span class="c1">;; (send dc draw-rectangle</span>
-	      <span class="c1">;; 	    (random 10) 10   ; Top-left at (0, 10), 10 pixels down from top-left</span>
-	      <span class="c1">;; 	    30 10) ; 30 pixels wide and 10 pixels high</span>
-	      <span class="c1">;; (send dc draw-line</span>
-	      <span class="c1">;; 	    (random 10) 0    ; Start at (0, 0), the top-left corner</span>
-	      <span class="c1">;; 	    30 30) ; and draw to (30, 30), the bottom-right corner</span>
+	      <span style="color: #008800; font-style: italic; background-color: #0f140f">;; (send dc draw-rectangle</span>
+	      <span style="color: #008800; font-style: italic; background-color: #0f140f">;; 	    (random 10) 10   ; Top-left at (0, 10), 10 pixels down from top-left</span>
+	      <span style="color: #008800; font-style: italic; background-color: #0f140f">;; 	    30 10) ; 30 pixels wide and 10 pixels high</span>
+	      <span style="color: #008800; font-style: italic; background-color: #0f140f">;; (send dc draw-line</span>
+	      <span style="color: #008800; font-style: italic; background-color: #0f140f">;; 	    (random 10) 0    ; Start at (0, 0), the top-left corner</span>
+	      <span style="color: #008800; font-style: italic; background-color: #0f140f">;; 	    30 30) ; and draw to (30, 30), the bottom-right corner</span>
 
-	      <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">erase</span><span class="p">)</span>
-	      <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">set-pen</span> <span class="s">"black"</span> <span class="mi">1</span> <span class="ss">'solid</span><span class="p">)</span>
-	      <span class="p">(</span><span class="nf">draw-axes</span> <span class="nv">dc</span><span class="p">)</span>
-	      <span class="p">(</span><span class="nf">draw-units</span> <span class="nv">dc</span><span class="p">)</span>
-	      <span class="p">(</span><span class="nf">draw-z-point</span> <span class="nv">dc</span><span class="p">)</span>
+	      <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">erase</span><span style="color: #ffffff">)</span>
+	      <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">set-pen</span> <span style="color: #0086d2">&quot;black&quot;</span> <span style="color: #0086f7; font-weight: bold">1</span> <span style="color: #0086d2">&#39;solid</span><span style="color: #ffffff">)</span>
+	      <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">draw-axes</span> <span style="color: #fb660a">dc</span><span style="color: #ffffff">)</span>
+	      <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">draw-units</span> <span style="color: #fb660a">dc</span><span style="color: #ffffff">)</span>
+	      <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">draw-z-point</span> <span style="color: #fb660a">dc</span><span style="color: #ffffff">)</span>
 
-	      <span class="p">(</span><span class="k">if</span> <span class="nv">animation-mode</span>
-		  <span class="p">(</span><span class="nf">draw-zeta-multi-values</span> <span class="nv">dc</span><span class="p">)</span>
-		  <span class="p">(</span><span class="nf">draw-zeta</span> <span class="nv">dc</span><span class="p">))</span>
+	      <span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">if </span><span style="color: #fb660a">animation-mode</span>
+		  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">draw-zeta-multi-values</span> <span style="color: #fb660a">dc</span><span style="color: #ffffff">)</span>
+		  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">draw-zeta</span> <span style="color: #fb660a">dc</span><span style="color: #ffffff">))</span>
 	      
-	      <span class="c1">;; (send dc set-scale 3 3)</span>
-	      <span class="c1">;; (send dc set-text-foreground "blue")</span>
-	      <span class="c1">;; (send dc draw-text "Don't Panic!" 0 0)</span>
-	      <span class="p">)])</span><span class="p">}</span>
+	      <span style="color: #008800; font-style: italic; background-color: #0f140f">;; (send dc set-scale 3 3)</span>
+	      <span style="color: #008800; font-style: italic; background-color: #0f140f">;; (send dc set-text-foreground &quot;blue&quot;)</span>
+	      <span style="color: #008800; font-style: italic; background-color: #0f140f">;; (send dc draw-text &quot;Don&#39;t Panic!&quot; 0 0)</span>
+	      <span style="color: #ffffff">)])}</span>
 
 
 
 
-<span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">center-coords</span><span class="p">)</span>
-  <span class="p">(</span><span class="nb">values</span> <span class="p">(</span><span class="nb">quotient</span> <span class="nv">xws</span> <span class="mi">2</span><span class="p">)</span>
-	  <span class="p">(</span><span class="nb">quotient</span> <span class="nv">ywsp</span> <span class="mi">2</span><span class="p">)))</span>
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">center-coords</span><span style="color: #ffffff">)</span>
+  <span style="color: #ffffff">(values (quotient </span><span style="color: #fb660a">xws</span> <span style="color: #0086f7; font-weight: bold">2</span><span style="color: #ffffff">)</span>
+	  <span style="color: #ffffff">(quotient </span><span style="color: #fb660a">ywsp</span> <span style="color: #0086f7; font-weight: bold">2</span><span style="color: #ffffff">)))</span>
 
-<span class="p">{</span><span class="p">(</span><span class="nf">xo</span> <span class="nv">yo</span><span class="p">)</span> <span class="p">⥆</span> <span class="p">(</span><span class="nf">center-coords</span><span class="p">)</span><span class="p">}</span>
+<span style="color: #ffffff">{(</span><span style="color: #ff0086; font-weight: bold">xo</span> <span style="color: #fb660a">yo</span><span style="color: #ffffff">)</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">center-coords</span><span style="color: #ffffff">)}</span>
 
-<span class="p">{</span><span class="nv">unit</span> <span class="p">⥆</span> <span class="mi">200</span><span class="p">}</span>
 
-<span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">draw-axes</span> <span class="nv">dc</span><span class="p">)</span>
-  <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">draw-line</span> <span class="c1">;; Ox</span>
-	<span class="mi">0</span> <span class="nv">yo</span> <span class="nv">xws</span> <span class="nv">yo</span><span class="p">)</span>
-  <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">draw-line</span> <span class="c1">;; Oy</span>
-	<span class="nv">xo</span> <span class="mi">0</span> <span class="nv">xo</span> <span class="nv">ywsp</span><span class="p">))</span>
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">draw-axes</span> <span style="color: #fb660a">dc</span><span style="color: #ffffff">)</span>
+  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">draw-line</span> <span style="color: #008800; font-style: italic; background-color: #0f140f">;; Ox</span>
+	<span style="color: #0086f7; font-weight: bold">0</span> <span style="color: #fb660a">yo</span> <span style="color: #fb660a">xws</span> <span style="color: #fb660a">yo</span><span style="color: #ffffff">)</span>
+  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">draw-line</span> <span style="color: #008800; font-style: italic; background-color: #0f140f">;; Oy</span>
+	<span style="color: #fb660a">xo</span> <span style="color: #0086f7; font-weight: bold">0</span> <span style="color: #fb660a">xo</span> <span style="color: #fb660a">ywsp</span><span style="color: #ffffff">))</span>
 
-<span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">draw-units</span> <span class="nv">dc</span><span class="p">)</span>
-  <span class="c1">;;X</span>
-  <span class="p">{</span><span class="nv">nun</span> <span class="p">⥆</span> <span class="p">(</span><span class="nb">quotient</span> <span class="nv">xo</span> <span class="nv">unit</span><span class="p">)</span><span class="p">}</span>
-  <span class="p">(</span><span class="nf">for</span> <span class="p">(</span><span class="nf">n</span> <span class="mi">1</span> <span class="nv">nun</span><span class="p">)</span>
-       <span class="p">{</span><span class="nv">xu</span> <span class="p">⥆</span> <span class="p">{</span><span class="nv">xo</span> <span class="nv">+</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">*</span> <span class="nv">unit</span><span class="p">}}}</span>
-       <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">draw-line</span>
-	     <span class="nv">xu</span> <span class="p">{</span><span class="nv">yo</span> <span class="nv">-</span> <span class="mi">3</span><span class="p">}</span>
-	     <span class="nv">xu</span> <span class="p">{</span><span class="nv">yo</span> <span class="nv">+</span> <span class="mi">3</span><span class="p">}</span><span class="p">)</span>
-       <span class="p">{</span><span class="nv">xum</span> <span class="p">⥆</span> <span class="p">{</span><span class="nv">xo</span> <span class="nv">-</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">*</span> <span class="nv">unit</span><span class="p">}}}</span>
-       <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">draw-line</span>
-	     <span class="nv">xum</span> <span class="p">{</span><span class="nv">yo</span> <span class="nv">-</span> <span class="mi">3</span><span class="p">}</span>
-	     <span class="nv">xum</span> <span class="p">{</span><span class="nv">yo</span> <span class="nv">+</span> <span class="mi">3</span><span class="p">}</span><span class="p">))</span>
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">draw-units</span> <span style="color: #fb660a">dc</span><span style="color: #ffffff">)</span>
+  <span style="color: #008800; font-style: italic; background-color: #0f140f">;;X</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">nun</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(quotient </span><span style="color: #fb660a">xo</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">)}</span>
+  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">for</span> <span style="color: #ffffff">({</span><span style="color: #fb660a">n</span> <span style="color: #fb660a">&lt;+</span> <span style="color: #0086f7; font-weight: bold">1</span><span style="color: #ffffff">}</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">n</span> <span style="color: #fb660a">&lt;=</span> <span style="color: #fb660a">nun</span><span style="color: #ffffff">}</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">n</span> <span style="color: #fb660a">&lt;-</span> <span style="color: #fb660a">n</span> <span style="color: #fb660a">+</span> <span style="color: #0086f7; font-weight: bold">1</span><span style="color: #ffffff">})</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">xu</span> <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">xo</span> <span style="color: #fb660a">+</span> <span style="color: #fb660a">n</span> <span style="color: #fb660a">*</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">}</span>
+       <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">draw-line</span>
+	     <span style="color: #fb660a">xu</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">yo</span> <span style="color: #fb660a">-</span> <span style="color: #0086f7; font-weight: bold">3</span><span style="color: #ffffff">}</span>
+	     <span style="color: #fb660a">xu</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">yo</span> <span style="color: #fb660a">+</span> <span style="color: #0086f7; font-weight: bold">3</span><span style="color: #ffffff">})</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">xum</span> <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">xo</span> <span style="color: #fb660a">-</span> <span style="color: #fb660a">n</span> <span style="color: #fb660a">*</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">}</span>
+       <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">draw-line</span>
+	     <span style="color: #fb660a">xum</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">yo</span> <span style="color: #fb660a">-</span> <span style="color: #0086f7; font-weight: bold">3</span><span style="color: #ffffff">}</span>
+	     <span style="color: #fb660a">xum</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">yo</span> <span style="color: #fb660a">+</span> <span style="color: #0086f7; font-weight: bold">3</span><span style="color: #ffffff">}))</span>
 
-  <span class="c1">;; Y</span>
-  <span class="p">{</span><span class="nv">nuny</span> <span class="p">⥆</span> <span class="p">(</span><span class="nb">quotient</span> <span class="nv">yo</span> <span class="nv">unit</span><span class="p">)</span><span class="p">}</span>
-  <span class="p">(</span><span class="nf">for</span> <span class="p">(</span><span class="nf">n</span> <span class="mi">1</span> <span class="nv">nuny</span><span class="p">)</span>
-       <span class="p">{</span><span class="nv">yu</span> <span class="p">⥆</span> <span class="p">{</span><span class="nv">yo</span> <span class="nv">-</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">*</span> <span class="nv">unit</span><span class="p">}}}</span>
-       <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">draw-line</span>
-	     <span class="p">{</span><span class="nv">xo</span> <span class="nv">-</span> <span class="mi">3</span><span class="p">}</span> <span class="nv">yu</span>
-	     <span class="p">{</span><span class="nv">xo</span> <span class="nv">+</span> <span class="mi">3</span><span class="p">}</span> <span class="nv">yu</span><span class="p">)</span>
-       <span class="p">{</span><span class="nv">yum</span> <span class="p">⥆</span> <span class="p">{</span><span class="nv">yo</span> <span class="nv">+</span> <span class="p">{</span><span class="nv">n</span> <span class="nv">*</span> <span class="nv">unit</span><span class="p">}}}</span>
-       <span class="p">(</span><span class="nf">send</span> <span class="nv">dc</span> <span class="nv">draw-line</span>
-	     <span class="p">{</span><span class="nv">xo</span> <span class="nv">-</span> <span class="mi">3</span><span class="p">}</span> <span class="nv">yum</span>
-	     <span class="p">{</span><span class="nv">xo</span> <span class="nv">+</span> <span class="mi">3</span><span class="p">}</span> <span class="nv">yum</span><span class="p">)))</span>
+  <span style="color: #008800; font-style: italic; background-color: #0f140f">;; Y</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">nuny</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(quotient </span><span style="color: #fb660a">yo</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">)}</span>
+  <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">for</span> <span style="color: #ffffff">({</span><span style="color: #fb660a">n</span> <span style="color: #fb660a">&lt;+</span> <span style="color: #0086f7; font-weight: bold">1</span><span style="color: #ffffff">}</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">n</span> <span style="color: #fb660a">&lt;=</span> <span style="color: #fb660a">nuny</span><span style="color: #ffffff">}</span> <span style="color: #ffffff">{</span><span style="color: #fb660a">n</span> <span style="color: #fb660a">&lt;-</span> <span style="color: #fb660a">n</span> <span style="color: #fb660a">+</span> <span style="color: #0086f7; font-weight: bold">1</span><span style="color: #ffffff">})</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">yu</span> <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">yo</span> <span style="color: #fb660a">-</span> <span style="color: #fb660a">n</span> <span style="color: #fb660a">*</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">}</span>
+       <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">draw-line</span>
+	     <span style="color: #ffffff">{</span><span style="color: #fb660a">xo</span> <span style="color: #fb660a">-</span> <span style="color: #0086f7; font-weight: bold">3</span><span style="color: #ffffff">}</span> <span style="color: #fb660a">yu</span>
+	     <span style="color: #ffffff">{</span><span style="color: #fb660a">xo</span> <span style="color: #fb660a">+</span> <span style="color: #0086f7; font-weight: bold">3</span><span style="color: #ffffff">}</span> <span style="color: #fb660a">yu</span><span style="color: #ffffff">)</span>
+       <span style="color: #ffffff">{</span><span style="color: #fb660a">yum</span> <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">yo</span> <span style="color: #fb660a">+</span> <span style="color: #fb660a">n</span> <span style="color: #fb660a">*</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">}</span>
+       <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">dc</span> <span style="color: #fb660a">draw-line</span>
+	     <span style="color: #ffffff">{</span><span style="color: #fb660a">xo</span> <span style="color: #fb660a">-</span> <span style="color: #0086f7; font-weight: bold">3</span><span style="color: #ffffff">}</span> <span style="color: #fb660a">yum</span>
+	     <span style="color: #ffffff">{</span><span style="color: #fb660a">xo</span> <span style="color: #fb660a">+</span> <span style="color: #0086f7; font-weight: bold">3</span><span style="color: #ffffff">}</span> <span style="color: #fb660a">yum</span><span style="color: #ffffff">)))</span>
 
-<span class="p">(</span><span class="nf">send</span> <span class="nv">frame0</span> <span class="nv">show</span> <span class="no">#t</span><span class="p">)</span>
+<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">send</span> <span style="color: #fb660a">frame0</span> <span style="color: #fb660a">show</span> <span style="color: #0086d2">#t</span><span style="color: #ffffff">)</span>
 
-<span class="c1">;; return the z complex from canvas plane where is the mouse pointer</span>
-<span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">ret-z</span> <span class="nv">x</span> <span class="nv">y</span><span class="p">)</span>
-  <span class="p">{</span><span class="nv">i</span> <span class="p">⥆</span> <span class="mi">0</span><span class="nv">+1i</span><span class="p">}</span> <span class="c1">;; imaginaire pur</span>
-  <span class="p">{</span><span class="nv">re</span> <span class="p">⥆</span> <span class="p">{</span><span class="nv">x</span> <span class="nv">-</span> <span class="nv">xo</span><span class="p">}}</span>
-  <span class="p">{</span><span class="nv">re</span> <span class="p">←</span> <span class="p">{</span><span class="nv">re</span> <span class="nv">/</span> <span class="nv">unit</span><span class="p">}}</span>
-  <span class="p">{</span><span class="nv">im</span> <span class="p">⥆</span> <span class="p">(</span><span class="nb">-</span> <span class="p">{</span><span class="nv">y</span> <span class="nv">-</span> <span class="nv">yo</span><span class="p">}</span><span class="p">)</span><span class="p">}</span>
-  <span class="p">{</span><span class="nv">im</span> <span class="p">←</span> <span class="p">{</span><span class="nv">im</span> <span class="nv">/</span> <span class="nv">unit</span><span class="p">}}</span>
-  <span class="p">(</span><span class="nb">exact-&gt;inexact</span> <span class="p">{</span><span class="nv">re</span> <span class="nv">+</span> <span class="p">{</span><span class="nv">i</span> <span class="nv">*</span> <span class="nv">im</span><span class="p">}}</span><span class="p">))</span>
-
-<span class="o"></span></code></pre>
-          </figure>
+<span style="color: #008800; font-style: italic; background-color: #0f140f">;; return the z complex from canvas plane where is the mouse pointer</span>
+<span style="color: #ffffff">(</span><span style="color: #fb660a; font-weight: bold">define </span><span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">ret-z</span> <span style="color: #fb660a">x</span> <span style="color: #fb660a">y</span><span style="color: #ffffff">)</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">i</span> <span style="color: #ffffff">⥆</span> <span style="color: #0086f7; font-weight: bold">0</span><span style="color: #fb660a">+1i</span><span style="color: #ffffff">}</span> <span style="color: #008800; font-style: italic; background-color: #0f140f">;; imaginaire pur</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">re</span> <span style="color: #ffffff">⥆</span> <span style="color: #fb660a">x</span> <span style="color: #fb660a">-</span> <span style="color: #fb660a">xo</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">re</span> <span style="color: #ffffff">←</span> <span style="color: #fb660a">re</span> <span style="color: #fb660a">/</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">im</span> <span style="color: #ffffff">⥆</span> <span style="color: #ffffff">(- {</span><span style="color: #fb660a">y</span> <span style="color: #fb660a">-</span> <span style="color: #fb660a">yo</span><span style="color: #ffffff">})}</span> <span style="color: #008800; font-style: italic; background-color: #0f140f">;; or yo - y</span>
+  <span style="color: #ffffff">{</span><span style="color: #fb660a">im</span> <span style="color: #ffffff">←</span> <span style="color: #fb660a">im</span> <span style="color: #fb660a">/</span> <span style="color: #fb660a">unit-axis-in-pixel</span><span style="color: #ffffff">}</span>
+  <span style="color: #ffffff">(exact-&gt;inexact {</span><span style="color: #fb660a">re</span> <span style="color: #fb660a">+</span> <span style="color: #fb660a">i</span> <span style="color: #fb660a">*</span> <span style="color: #fb660a">im</span><span style="color: #ffffff">}))</span>
+</pre></div>
           <br>
           <br>
           <p align="center"><br>
