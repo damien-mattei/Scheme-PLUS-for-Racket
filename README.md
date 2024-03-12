@@ -1751,30 +1751,30 @@ scheme@(guile-user)&gt; v
 
 #lang reader "../src/SRFI-105.rkt"
 
-(require
-"../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
-(include "../library/increment.scm")
-(include "../library/for-next-step.scm")
-(include "../library/repeat-until.scm")
+;; example in Scheme+ that plot the convergence of th ζ Riemann complex serie (without Analytic continuation)
+
+(require "../Scheme+.rkt")
+
+(include "../src/increment.scm")
 
 (require racket/gui/base)
 
-(define animation-mode #f)
+(define animation-mode #t)
 
 {xws ⥆ 1000} ;; X window size
 {yws ⥆ 800} ;; Y window size
 
-{ywsp ⥆ {yws - 200}} ;; Y window size for plot
+{ywsp ⥆ yws - 200} ;; Y window size for plot
 
 ; Make a frame by instantiating the frame% class
 {frame0 ⥆ (new frame% [label "Example"]
-	       [width xws]
-	       [height yws])}
+	               [width xws]
+		       [height yws])}
 
 
 ; Make a static text message in the frame
 {msg ⥆ (new message% [parent frame0]
-	    [label "No events so far..."])}
+	              [label "No events so far..."])}
  
 ;; Make a button in the frame
 (new button% [parent frame0]
@@ -1789,6 +1789,12 @@ scheme@(guile-user)&gt; v
 (define blue-brush (new brush% [color "blue"]))
 (define yellow-brush (new brush% [color "yellow"]))
 
+;;{z ⥆ 0}
+;;{z ⥆ 2+1i}
+{z ⥆ 1.13+1.765i}
+
+{unit-axis-in-pixel ⥆ 200}
+
 
 (define (draw-z-point dc)
   (send dc set-pen no-pen)
@@ -1796,32 +1802,29 @@ scheme@(guile-user)&gt; v
   {ga ⥆ 8}
   {pa ⥆ 8}
   {(x y) ⥆ (to-screen-multi-values z)}
-  {x ← {x - (quotient ga 2)}}
-  {y ← {y - (quotient pa 2)}}
+  {x ← x - (quotient ga 2)}
+  {y ← y - (quotient pa 2)}
   (send dc draw-ellipse x y ga pa))
 
 ;; convert to screen coords
 (define (to-screen z0)
   {re ⥆ (real-part z0)}
   {im ⥆ (imag-part z0)}
-  {xs ⥆ {re * unit}}
-  {ys ⥆ {im * unit}}
+  {xs ⥆ re * unit-axis-in-pixel}
+  {ys ⥆ im * unit-axis-in-pixel}
   (make-rectangular (round {xo + xs})
 		    (round {yo - ys})))
 
 (define (to-screen-multi-values z0)
   {re ⥆ (real-part z0)}
   {im ⥆ (imag-part z0)}
-  {xs ⥆ {re * unit}}
-  {ys ⥆ {im * unit}}
+  {xs ⥆ re * unit-axis-in-pixel}
+  {ys ⥆ im * unit-axis-in-pixel}
   (values (round {xo + xs})
 	  (round {yo - ys})))
 
 
 
-;;{z ⥆ 0}
-;;{z ⥆ 2+1i}
-{z ⥆ 1.13+1.765i}
 
 
 (define (draw-zeta dc)
@@ -1831,17 +1834,17 @@ scheme@(guile-user)&gt; v
   
   {flag-color ⥆ #t}
   ;;(newline)
-  (for (n 1 nmax)
+  (for ({n <+ 1} {n <= nmax} {n <- n + 1})
        (if flag-color
 	   (send dc set-pen "blue" 1 'solid)
 	   (send dc set-pen "green" 1 'solid))
        {flag-color ← (not flag-color)}
        ;;(display "draw-zeta : n =") (display n) (newline)
-       {zp ⥆ {1.0 / {n ** z}}}
+       {zp ⥆ 1.0 / n ** z}
        ;; (display "draw-zeta : z =") (display z) (newline)
        ;; (display "draw-zeta : zp =") (display zp) (newline)
        ;; (display "draw-zeta : zi =") (display zi) (newline)
-       {zxtrm  ⥆ {zi + zp}}
+       {zxtrm  ⥆ zi + zp}
        ;;(display "draw-zeta : zxtrm =") (display zxtrm) (newline)
        {zie ⥆ (to-screen zi)}
        ;;(display "draw-zeta : zie =") (display zie) (newline)
@@ -1851,8 +1854,8 @@ scheme@(guile-user)&gt; v
        {y0 ⥆  (imag-part zie)}
        {x1 ⥆  (real-part zxtrme)}
        {y1 ⥆  (imag-part zxtrme)}
-       (when { {x0 >= 0} and {x0 <= xws} and  {x1 >= 0} and {x1 <= xws}
-	      and {y0 >= 0} and {y0 <= ywsp} and  {y1 >= 0} and {y1 <= ywsp}}
+       (when {x0 >= 0 and x0 <= xws  and x1 >= 0 and x1 <= xws and
+	      y0 >= 0 and y0 <= ywsp and y1 >= 0 and y1 <= ywsp}
 	     (send dc draw-line
 		   x0 y0
 		   x1 y1))
@@ -1874,22 +1877,22 @@ scheme@(guile-user)&gt; v
 	   (send dc set-pen "green" 1 'solid))
        {flag-color ← (not flag-color)}
        ;;(display "draw-zeta-multi-values : n =") (display n) (newline)
-       {zp ⥆ {1.0 / {n ** z}}}
-       {zxtrm  ⥆ {zi + zp}}
+       {zp ⥆ 1.0 / n ** z}
+       {zxtrm  ⥆ zi + zp}
        ;;(display "draw-zeta-multi-values : zxtrm =") (display zxtrm) (newline)
  
        {(x0 y0) ⥆ (to-screen-multi-values zi)} 
        {(x1 y1) ⥆ (to-screen-multi-values zxtrm)}
  
-       (when { {x0 >= 0} and {x0 <= xws} and  {x1 >= 0} and {x1 <= xws}
-	      and {y0 >= 0} and {y0 <= ywsp} and  {y1 >= 0} and {y1 <= ywsp}}
+       (when {x0 >= 0 and x0 <= xws  and x1 >= 0 and x1 <= xws and
+	      y0 >= 0 and y0 <= ywsp and y1 >= 0 and y1 <= ywsp}
 	     (send dc draw-line
 		   x0 y0
 		   x1 y1))
 
        {len-line ⥆ (line-length x0 y0 x1 y1)}
        {zi ← zxtrm}
-       {n ← {n + 1}}
+       {n ← n + 1}
        
        until {len-line < dmin})
 
@@ -1901,7 +1904,7 @@ scheme@(guile-user)&gt; v
 
 
 (define (line-length x0 y0 x1 y1)
-  (sqrt { { {x1 - x0} ** 2} + { {y1 - y0} ** 2}}))
+  (sqrt { {x1 - x0} ** 2 + {y1 - y0} ** 2 }))
 
 
 ;; (new button% [parent frame0]
@@ -1985,7 +1988,6 @@ scheme@(guile-user)&gt; v
 
 {(xo yo) ⥆ (center-coords)}
 
-{unit ⥆ 200}
 
 (define (draw-axes dc)
   (send dc draw-line ;; Ox
@@ -1995,25 +1997,25 @@ scheme@(guile-user)&gt; v
 
 (define (draw-units dc)
   ;;X
-  {nun ⥆ (quotient xo unit)}
-  (for (n 1 nun)
-       {xu ⥆ {xo + {n * unit}}}
+  {nun ⥆ (quotient xo unit-axis-in-pixel)}
+  (for ({n <+ 1} {n <= nun} {n <- n + 1})
+       {xu ⥆ xo + n * unit-axis-in-pixel}
        (send dc draw-line
 	     xu {yo - 3}
 	     xu {yo + 3})
-       {xum ⥆ {xo - {n * unit}}}
+       {xum ⥆ xo - n * unit-axis-in-pixel}
        (send dc draw-line
 	     xum {yo - 3}
 	     xum {yo + 3}))
 
   ;; Y
-  {nuny ⥆ (quotient yo unit)}
-  (for (n 1 nuny)
-       {yu ⥆ {yo - {n * unit}}}
+  {nuny ⥆ (quotient yo unit-axis-in-pixel)}
+  (for ({n <+ 1} {n <= nuny} {n <- n + 1})
+       {yu ⥆ yo - n * unit-axis-in-pixel}
        (send dc draw-line
 	     {xo - 3} yu
 	     {xo + 3} yu)
-       {yum ⥆ {yo + {n * unit}}}
+       {yum ⥆ yo + n * unit-axis-in-pixel}
        (send dc draw-line
 	     {xo - 3} yum
 	     {xo + 3} yum)))
@@ -2023,11 +2025,14 @@ scheme@(guile-user)&gt; v
 ;; return the z complex from canvas plane where is the mouse pointer
 (define (ret-z x y)
   {i ⥆ 0+1i} ;; imaginaire pur
-  {re ⥆ {x - xo}}
-  {re ← {re / unit}}
-  {im ⥆ (- {y - yo})}
-  {im ← {im / unit}}
-  (exact->inexact {re + {i * im}}))
+  {re ⥆ x - xo}
+  {re ← re / unit-axis-in-pixel}
+  {im ⥆ (- {y - yo})} ;; or yo - y
+  {im ← im / unit-axis-in-pixel}
+  (exact->inexact {re + i * im}))
+
+
+
 
 ```
 {% endhighlight %}
