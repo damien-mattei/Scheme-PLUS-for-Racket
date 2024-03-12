@@ -7,7 +7,7 @@
 	       "sci"
 	       "r6rs-lib"))
 (define pkg-desc "Scheme+ for Racket and SRFI-105 curly-infix with REPL")
-(define version "7.2")
+(define version "7.5")
 (define pkg-authors '(mattei))
 (define scribblings '(("scribblings/scheme-plus.scrbl" ())))
 (define build-deps '("scribble-lib" "racket-doc" "scribble-code-examples" "scribble-doc"))

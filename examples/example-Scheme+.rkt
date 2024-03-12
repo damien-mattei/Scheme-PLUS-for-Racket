@@ -30,7 +30,7 @@
   {c <+ (real-part z2)}
   {d <+ (imag-part z2)}
 
-  ;;{arg <+ {{c * angle(z1)} + {{d * log(sqr(a) + sqr(b))} / 2}}}
+  ;;{arg <+ c * angle(z1) + d * log(sqr(a) + sqr(b)) / 2}
   
   {arg <+ c * angle(z1) + d * log(sqr(magnitude(z1))) / 2}
 
