@@ -46,11 +46,15 @@
 
 (define srfi-105 #f)
 
+(define lang-reader #f)
+
 (define (literal-read-syntax src)
 
   (define in (open-input-file src))
   (define lst-code (process-input-code-tail-rec in))
-  `(module aschemeplusprogram racket ,@lst-code))
+  (if lang-reader
+      `(module aschemeplusprogram racket ,@lst-code)
+      lst-code))
 ;;(cons 'module (cons 'aschemeplusprogram (cons 'racket lst-code))))
 ;; (strip-context `(module aschemeplusprogram racket ,@lst-code))) ;; is this useful?
 
@@ -73,15 +77,16 @@
 
   (display "SRFI-105 Curly Infix parser with operator precedence by Damien MATTEI" stderr) (newline stderr)
   (display "(based on code from David A. Wheeler and Alan Manuel K. Gloria.)" stderr) (newline stderr) (newline stderr)
-  (display "Options :" stderr) (newline stderr) (newline stderr)
+  
 
   (when srfi-105
+	(display "Options :" stderr) (newline stderr) (newline stderr)
 	(display "SRFI-105 strict compatibility mode is ON." stderr))
   (newline stderr)
 
   (newline stderr)
   
-  (display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
+  
 
 
   ;; internal define
@@ -99,12 +104,28 @@
 	(process-input (cons result acc))))
   ;; end internal define
 
-  ;; skip the #lang ... first line
-  (consume-to-eol in)
-  (display "(module aschemeplusprogram racket " stderr)
-  (newline stderr)
-  (define rv (process-input '()))
-  (display ")" stderr)
+  ;; check the #lang ... first line
+  (define header-reader-length (string-length "#lang reader"))
+  (define frst-line-beginning (peek-string header-reader-length 0 in))
+  ;;(display "frst-line-beginning = " stderr) (display frst-line-beginning stderr) (newline stderr)
+  (define rv '())
+  (if (string=? "#lang reader"
+		frst-line-beginning)
+      (begin
+	(display "#lang reader detected " stderr)
+	(newline stderr)(newline stderr)
+	(consume-to-eol in)
+	(set! lang-reader #t)
+	(display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
+	(display "(module aschemeplusprogram racket " stderr)
+	(newline stderr)
+	(set! rv (process-input '()))
+	(display ")" stderr))
+
+      (begin
+	(display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
+	(set! rv (process-input '()))))
+      
   (newline stderr)
 
   rv)
@@ -153,6 +174,12 @@
 
 ;;(for-each wrt-expr code-lst)
 ;;(wrt-expr code-lst)
-(pretty-print code-lst
-	      (current-output-port)
-	      1) ;; quote-depth : remove global quote of expression
+
+(if lang-reader
+    (pretty-print code-lst
+		  (current-output-port)
+		  1) ;; quote-depth : remove global quote of expression
+    (for-each (lambda (expr) (pretty-print expr
+					   (current-output-port)
+					   1)) ;; quote-depth : remove global quote of
+	      code-lst))

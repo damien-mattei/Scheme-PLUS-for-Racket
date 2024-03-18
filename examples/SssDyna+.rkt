@@ -527,3 +527,104 @@
 	       
 	 [exec {s <- (subset-sum-value R t)}] ; at this point c is not part of a solution
 	 [else {dyna[ls t] <- s} s])) ;; return boolean value which is the solution when true/found.
+
+
+
+
+
+
+;; (best-sol 100 '(101) '(90 4 3))
+;; (101)
+
+(define (best-sol t L1 L2)
+  ;; (display "L1=")
+  ;; (display L1)
+  ;; (newline)
+  ;; (display "L2=")
+  ;; (display L2)
+  ;; (newline)
+  (let [(s1 (apply + L1))
+	(s2 (apply + L2))]
+    (if {(abs {t - s1}) <= (abs {t - s2})}
+	L1
+	L2)))
+
+(define (best-sol3 t L1 L2 L3)
+  ;; (display "best-sol3") (newline)
+  ;; (display "t=") (display t) (newline)
+  ;; (display "L1=")
+  ;; (display L1)
+  ;; (newline)
+  ;; (display "L2=")
+  ;; (display L2)
+  ;; (newline)
+  ;; (display "L3=")
+  ;; (display L3)
+  ;; (newline)
+  (let [(L22 (best-sol t L2 L3))]
+    (best-sol t L1 L22)))
+
+;; functions below are not good
+(define (start-ssigma-sol-approx-dyna L t)
+  ;; (display "start-ssigma-sol-approx")
+  ;; (newline)
+  ;; (display "L=") (display L)
+  ;; (newline)
+  ;; (display "t=") (display t)
+  ;; (newline)
+  ;; (newline)
+  
+
+
+  (let [(ls (length L))
+  	(dyn (array-ref dyna ls t))]
+    (if (not (null? dyn))
+  	dyn
+	(ssigma-sol-approx-dyna L t '() t '()))))
+
+;; TODO try to get out function constant parameters (if there are)
+(define (ssigma-sol-approx-dyna L t S t-init AS) ;; AS:approximative solution
+
+  ;; (display "L=") (display L)
+  ;; (newline)
+  ;; (display "S=") (display S)
+  ;; (newline)
+  ;; (display "AS=") (display AS)
+  ;; (newline)
+  ;; (newline)
+  
+  (if (null? L)
+      
+      (begin
+	;; (display "null L")
+	;; (newline)
+	;; (display "S=") (display S)
+	;; (newline) 
+	;; (display "AS=") (display AS)
+	;; (newline)
+	;; (display "return best-sol")
+	;; (newline)
+	(best-sol t-init AS S)) ;; must return S or AS and save it in dyna
+      
+      (let [ (c (first L))
+	     (R (rest L)) ]
+	(cond [ {c = t} (best-sol t-init AS (cons c S)) ] ;; c is the solution and save the best in dyna
+	      [ {c > t} (ssigma-sol-approx R t S t-init (best-sol t-init
+								  AS
+								  (list c))) ] ;; c is to big to be a solution but can be an approximation 
+	      ;; c < t at this point
+	      ;; c is part of the solution or his approximation
+	      ;; or c is not part of solution or his approximation
+	      [ else (best-sol3 t-init AS
+				
+				       (begin
+					 ;;(display "append c=") (display c) (newline)
+
+					 (append (cons c S)
+						 (start-ssigma-sol-approx R {t - c}))) ;; we have to find a solution for t-c now
+
+				       (ssigma-sol-approx R t S t-init AS))])))) ;;  we must save the best in dyna (TODO : where? verify)
+
+
+
+
