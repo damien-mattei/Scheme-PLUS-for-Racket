@@ -44,8 +44,8 @@
 
   ;;`(module aschemeplusprogram racket ,@lst-code))
 
-  (display " lst-code= ") (newline)
-  (display lst-code) (newline)
+  ;;(display " lst-code= ") (newline)
+  ;;(display lst-code) (newline)
   (strip-context `(module aschemeplusprogram racket ,@lst-code))) ;; is strip-context useful?
  
 
