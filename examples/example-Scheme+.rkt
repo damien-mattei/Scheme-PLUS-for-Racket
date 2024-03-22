@@ -1,5 +1,7 @@
 #lang reader "../src/SRFI-105.rkt"
 
+(module example-scheme-plus racket
+
 
 (require "../Scheme+.rkt")
 
@@ -84,3 +86,7 @@
     ;;(newline)
     )
   r)
+
+
+) ; end module
+

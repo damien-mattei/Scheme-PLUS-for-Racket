@@ -19,6 +19,9 @@
 ;; > (require "exo_retropropagationNhidden_layers_matrix_v2+.rkt")
 
 
+(module exo_retropropagationNhidden_layers_matrix_v2 racket
+
+
 (provide (all-defined-out)) 
 
 ;; this file must now be included in your main project file like this:
@@ -416,3 +419,6 @@ but will it works with Scheme+ parser?
 (send r3 apprentissage Llearning)
 
 (send r3 test Ltest)
+
+) ; end module
+

@@ -4,8 +4,14 @@
 
 ;; Author: Damien Mattei
 
-;; use: (require "matrix-by-vectors+.rkt")
+;; /Applications/Racket\ v8.11/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/matrix-by-vectors+.rkt > ../../../../AI_Deep_Learning/matrix-by-vectors.rkt
 
+
+;; use: (require "matrix-by-vectors+.rkt")
+;; or:
+;; (require "matrix-by-vectors.rkt")
+
+(module matrix-by-vectors racket
 
 (provide matrix-vect
 	 matrix-vect?
@@ -22,7 +28,9 @@
 	 matrix-column->vector
 	 *)
 
-(require srfi/43) ; vector , warning vector-map has index as extra parameter...
+;;(require srfi/43) ; vector , warning vector-map has index as extra parameter...
+;;(import (srfi :43)) 
+
 
 (require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
 
@@ -146,4 +154,5 @@
 (overload-square-brackets matrix-vect-line-ref matrix-vect-line-set! (matrix-vect? number?))
 
 
+) ; end module
 

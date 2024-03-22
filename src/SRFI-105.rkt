@@ -46,8 +46,8 @@
 
   ;;(display " lst-code= ") (newline)
   ;;(display lst-code) (newline)
-  (strip-context `(module aschemeplusprogram racket ,@lst-code))) ;; is strip-context useful?
- 
+  ;;(strip-context `(module aschemeplusprogram racket ,@lst-code))) ;; is strip-context useful?
+  lst-code)
 
 ;; read all the expression of program
 ;; DEPRECATED (replaced by tail recursive version)
@@ -78,24 +78,25 @@
   
   (display "Parsed curly infix code result = ") (newline) (newline)
   
-  (define (process-input acc)
+  ;;(define (process-input acc)
     
     (define result (curly-infix-read in))  ;; read an expression
 
     (if (eof-object? result)
-	(reverse acc)
+	(error "ERROR: EOF : End Of File : " result)
 	(begin
 	  (write result)
 	  (newline)
-	  (process-input (cons result acc)))))
+	  result)))
+	  ;;(process-input (cons result acc)))))
 
-  (display "(module aschemeplusprogram racket ")
-  (newline)
-  (define rv (process-input '()))
-  (display ")")
-  (newline) (newline)
-  ;;(cons '(provide (all-defined-out)) rv))
-  rv)
+  ;; (display "(module aschemeplusprogram racket ")
+  ;; (newline)
+  ;; (define rv (process-input '()))
+  ;; (display ")")
+  ;; (newline) (newline)
+  
+  ;; rv)
 
 
 ;; the current read interaction handler, which is procedure that takes an arbitrary value and an input port 

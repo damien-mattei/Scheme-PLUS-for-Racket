@@ -4,6 +4,9 @@
 
 ;; Author: Damien Mattei
 
+
+(module matrix racket
+
 (provide multiply-flomat-vector
 	 dim
 	 *) ; matrix-column->vector) 
@@ -39,3 +42,7 @@
   {lin <+ (first shp)}
   {col <+ (second shp)}
   (values lin col))
+
+
+) ; end module
+

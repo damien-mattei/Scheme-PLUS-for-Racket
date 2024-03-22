@@ -23,6 +23,8 @@
 
 ;; if necessary some files can be retrieved here: https://github.com/damien-mattei/library-FunctProg
 
+(module sssdyna racket
+
 (require "../Scheme+.rkt")
 ;;(require Scheme-PLUS-for-Racket/Scheme+)
 
@@ -627,4 +629,5 @@
 
 
 
+) ; end module
 
