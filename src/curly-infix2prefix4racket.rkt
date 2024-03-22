@@ -52,9 +52,10 @@
 
   (define in (open-input-file src))
   (define lst-code (process-input-code-tail-rec in))
-  (if lang-reader
-      `(module aschemeplusprogram racket ,@lst-code)
-      lst-code))
+  ;; (if lang-reader
+  ;;     `(module aschemeplusprogram racket ,@lst-code)
+  lst-code)
+ ;;)
 ;;(cons 'module (cons 'aschemeplusprogram (cons 'racket lst-code))))
 ;; (strip-context `(module aschemeplusprogram racket ,@lst-code))) ;; is this useful?
 
@@ -95,8 +96,11 @@
     (define result (curly-infix-read in))  ;; read an expression
 
     (unless (eof-object? result)
-	    (write result stderr) ;; without 'write' but 'display' string delimiters disappears !
-	    (newline stderr)
+	    (pretty-print result
+			  stderr
+			  1)
+	    ;;(write result stderr) ;; without 'write' but 'display' string delimiters disappears !
+	    ;;(newline stderr)
 	    (newline stderr))
     
     (if (eof-object? result)
@@ -117,10 +121,11 @@
 	(consume-to-eol in)
 	(set! lang-reader #t)
 	(display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
-	(display "(module aschemeplusprogram racket " stderr)
-	(newline stderr)
+	;;(display "(module aschemeplusprogram racket " stderr)
+	;;(newline stderr)
 	(set! rv (process-input '()))
-	(display ")" stderr))
+	;;(display ")" stderr)
+	)
 
       (begin
 	(display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
@@ -175,11 +180,12 @@
 ;;(for-each wrt-expr code-lst)
 ;;(wrt-expr code-lst)
 
-(if lang-reader
-    (pretty-print code-lst
-		  (current-output-port)
-		  1) ;; quote-depth : remove global quote of expression
+;; (if lang-reader
+;;     (pretty-print code-lst
+;; 		  (current-output-port)
+;; 		  1) ;; quote-depth : remove global quote of expression
     (for-each (lambda (expr) (pretty-print expr
 					   (current-output-port)
 					   1)) ;; quote-depth : remove global quote of
-	      code-lst))
+	      code-lst)
+;;)

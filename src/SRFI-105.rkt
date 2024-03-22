@@ -85,7 +85,10 @@
     (if (eof-object? result)
 	(error "ERROR: EOF : End Of File : " result)
 	(begin
-	  (write result)
+	  (pretty-print result
+			(current-output-port)
+			1)
+	  ;;(write result)
 	  (newline)
 	  result)))
 	  ;;(process-input (cons result acc)))))
