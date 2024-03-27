@@ -25,10 +25,12 @@
 
 (module sssdyna racket
 
-(require "../Scheme+.rkt")
-;;(require Scheme-PLUS-for-Racket/Scheme+)
+;;(require "../Scheme+.rkt")
+(require Scheme-PLUS-for-Racket/Scheme+)
 
 (require srfi/25) ;; Multi-dimensional Array Primitives
+
+;;(provide (all-defined-out)) ;; export all bindings
 
 (define (one? n)
   (= n 1))
@@ -611,7 +613,7 @@
       (let [ (c (first L))
 	     (R (rest L)) ]
 	(cond [ {c = t} (best-sol t-init AS (cons c S)) ] ;; c is the solution and save the best in dyna
-	      [ {c > t} (ssigma-sol-approx R t S t-init (best-sol t-init
+	      [ {c > t} (ssigma-sol-approx-dyna R t S t-init (best-sol t-init
 								  AS
 								  (list c))) ] ;; c is to big to be a solution but can be an approximation 
 	      ;; c < t at this point
@@ -623,9 +625,9 @@
 					 ;;(display "append c=") (display c) (newline)
 
 					 (append (cons c S)
-						 (start-ssigma-sol-approx R {t - c}))) ;; we have to find a solution for t-c now
+						 (start-ssigma-sol-approx-dyna R {t - c}))) ;; we have to find a solution for t-c now
 
-				       (ssigma-sol-approx R t S t-init AS))])))) ;;  we must save the best in dyna (TODO : where? verify)
+				       (ssigma-sol-approx-dyna R t S t-init AS))])))) ;;  we must save the best in dyna (TODO : where? verify)
 
 
 

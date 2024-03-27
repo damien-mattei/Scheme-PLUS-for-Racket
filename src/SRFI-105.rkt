@@ -19,6 +19,8 @@
 
 (require srfi/31) ;; for 'rec in def.scm
 
+(require (only-in racket/base [do do-scheme])) ; backup original do
+
 (provide (rename-out [literal-read read]
                      [literal-read-syntax read-syntax]))
 
@@ -31,8 +33,47 @@
 (include "def.scm")
 (include "optimize-infix-slice.scm")
 
+(include "while-do-when-unless.scm")
+
 (include "SRFI-105.scm")
 
+(define flag-r6rs #f)
+
+(define (test-blank-lines-or-comments li)
+  (display "test-blank-lines-or-comments :$") (display li) (display "$") (newline)
+  (define bl (or (not (non-empty-string? li)) ; empty line
+		 (regexp-match #px"^[[:blank:]]*$" li) ; only spaces, tabs
+		 (regexp-match #px"^[[:blank:]]*;+" li))) ; space,tabs, comments
+  (display "bl = ") (display bl) (newline) (newline)
+  bl)
+
+      
+
+(define (skip-comments-and-empty-lines in)
+  
+  ;; (define li '())
+  ;; (define fpos '())
+  ;; (define cpt -1)
+
+  ;; (do
+  ;;     (set! cpt (+ 1 cpt))
+  ;;     (set! fpos (file-position in))
+  ;;     (set! li (read-line in))
+  ;;     while (test-blank-lines-or-comments li))
+  
+  ;; (file-position in fpos) ;; rewind to the code to parse after comments or spaces
+
+  (do
+      while (or (regexp-try-match #px"^[[:space:]]" in)  ; skip space,tab,new line,...
+		(regexp-try-match #px"^;[^\n]*\n" in)))  ; and also comments
+
+	   
+  ;; (display "SRFI-105.rkt : skip-comments-and-empty-lines : number of skipped lines (comments, spaces) at beginning : ")
+  ;; (display cpt)
+  ;; (newline)
+  )
+   
+  
 
 (define (literal-read in)
   (syntax->datum
@@ -42,12 +83,17 @@
   
   (define lst-code (process-input-code-tail-rec in))
 
+  (when flag-r6rs
+	(set! lst-code `(module aschemeplusr6rsprogram r6rs ,lst-code)))
+  
   ;;`(module aschemeplusprogram racket ,@lst-code))
 
   ;;(display " lst-code= ") (newline)
   ;;(display lst-code) (newline)
   ;;(strip-context `(module aschemeplusprogram racket ,@lst-code))) ;; is strip-context useful?
   lst-code)
+
+
 
 ;; read all the expression of program
 ;; DEPRECATED (replaced by tail recursive version)
@@ -75,23 +121,47 @@
       (display "Infix optimizer on sliced containers is OFF."))
   (newline)
   (newline)
+
+  (port-count-lines! in) ; turn on counting on port
+  
+  (display "Possibly skipping some header's lines containing space,tabs,new line,etc  or comments.") (newline) (newline)
+  (skip-comments-and-empty-lines in)
+
+  (when (regexp-try-match #px"^#!r6rs[[:blank:]]*\n" in)
+	(set! flag-r6rs #t)
+	(display "Detected R6RS code. (#!r6rs)") (newline) (newline))
+
+  (declare lc cc pc)
+  (set!-values (lc cc pc) (port-next-location in))
+  (display "SRFI-105.rkt : number of skipped lines (comments, spaces, directives,...) at header's beginning : ")
+  (display lc)
+  (newline)
+  (newline)
   
   (display "Parsed curly infix code result = ") (newline) (newline)
   
   ;;(define (process-input acc)
-    
-    (define result (curly-infix-read in))  ;; read an expression
 
-    (if (eof-object? result)
-	(error "ERROR: EOF : End Of File : " result)
-	(begin
-	  (pretty-print result
+  (when flag-r6rs
+	(display "(module aschemeplusr6rsprogram r6rs")
+	(newline))
+  
+  (define result (curly-infix-read in))  ;; read an expression
+  
+  (if (eof-object? result)
+      (error "ERROR: EOF : End Of File : " result)
+      (begin
+	(pretty-print result
 			(current-output-port)
 			1)
-	  ;;(write result)
-	  (newline)
-	  result)))
-	  ;;(process-input (cons result acc)))))
+	;;(write result)
+	(newline)
+	(when flag-r6rs
+	      (display ")")
+	      (newline))
+	result)))
+
+  ;;(process-input (cons result acc)))))
 
   ;; (display "(module aschemeplusprogram racket ")
   ;; (newline)

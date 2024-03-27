@@ -10,10 +10,10 @@
 
 ;; modification for Racket by Damien Mattei
 
-;; use with: racket curly-infix2prefix4racket.scm [options] file2parse.scm
+;; use with: racket curly-infix2prefix4racket.scm [options] file2parse.scm > parsedfile.scm
 
 ;; example in DrRacket :
-;; /Applications/Racket\ v8.11/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors+.rkt > ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors.rkt
+;; /Applications/Racket\ v8.12/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors+.rkt > ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors.rkt
 
 ;; options:
 
@@ -40,13 +40,25 @@
 (include "def.scm")
 (include "optimize-infix-slice.scm")
 
+(include "while-do-when-unless.scm")
+
 (define stderr (current-error-port))
 
 (include "SRFI-105.scm")
 
 (define srfi-105 #f)
 
-(define lang-reader #f)
+;;(define lang-reader #f)
+
+(define flag-r6rs #f)
+
+(define (skip-comments-and-empty-lines in)
+ 
+  (do
+      while (or (regexp-try-match #px"^[[:space:]]" in)  ; skip space,tab,new line,...
+		(regexp-try-match #px"^;[^\n]*\n" in)))  ; and also comments
+  )
+   
 
 (define (literal-read-syntax src)
 
@@ -86,10 +98,8 @@
   (newline stderr)
 
   (newline stderr)
-  
-  
 
-
+  
   ;; internal define
   (define (process-input acc)
     
@@ -97,8 +107,8 @@
 
     (unless (eof-object? result)
 	    (pretty-print result
-			  stderr
-			  1)
+	    		  stderr
+	    		  1) ;; quote-depth : remove global quote of
 	    ;;(write result stderr) ;; without 'write' but 'display' string delimiters disappears !
 	    ;;(newline stderr)
 	    (newline stderr))
@@ -108,29 +118,50 @@
 	(process-input (cons result acc))))
   ;; end internal define
 
+  
   ;; check the #lang ... first line
   (define header-reader-length (string-length "#lang reader"))
   (define frst-line-beginning (peek-string header-reader-length 0 in))
   ;;(display "frst-line-beginning = " stderr) (display frst-line-beginning stderr) (newline stderr)
   (define rv '())
-  (if (string=? "#lang reader"
+  
+  (when (string=? "#lang reader"
 		frst-line-beginning)
-      (begin
+  
 	(display "#lang reader detected " stderr)
 	(newline stderr)(newline stderr)
-	(consume-to-eol in)
-	(set! lang-reader #t)
-	(display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
-	;;(display "(module aschemeplusprogram racket " stderr)
-	;;(newline stderr)
-	(set! rv (process-input '()))
-	;;(display ")" stderr)
+	(consume-to-eol in) ; skip the first line #lang reader ... SRFI-105.rkt
+	;;(set! lang-reader #t)
 	)
 
-      (begin
-	(display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
-	(set! rv (process-input '()))))
-      
+  (port-count-lines! in) ; turn on counting on port
+  
+  (display "Possibly skipping some header's lines containing space,tabs,new line,etc  or comments.") (newline) (newline)
+  (skip-comments-and-empty-lines in)
+
+  (when (regexp-try-match #px"^#!r6rs[[:blank:]]*\n" in)
+	(set! flag-r6rs #t)
+	(display "Detected R6RS code. (#!r6rs)") (newline) (newline))
+
+  (declare lc cc pc)
+  (set!-values (lc cc pc) (port-next-location in))
+  (display "SRFI-105.rkt : number of skipped lines (comments, spaces, directives,...) at header's beginning : ")
+  (display lc)
+  (newline)
+  (newline)
+  
+  (display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
+
+  (when flag-r6rs
+	(display "#!r6rs" stderr) (newline stderr)
+	(newline stderr))
+  
+  ;;(display "(module aschemeplusprogram racket " stderr)
+  ;;(newline stderr)
+  (set! rv (process-input '()))
+  ;;(display ")" stderr)
+	
+     
   (newline stderr)
 
   rv)
@@ -184,8 +215,15 @@
 ;;     (pretty-print code-lst
 ;; 		  (current-output-port)
 ;; 		  1) ;; quote-depth : remove global quote of expression
-    (for-each (lambda (expr) (pretty-print expr
-					   (current-output-port)
-					   1)) ;; quote-depth : remove global quote of
-	      code-lst)
+
+
+(when flag-r6rs
+      (display "#!r6rs") (newline)
+      (newline))
+
+(for-each (lambda (expr) (pretty-print expr
+				       (current-output-port)
+				       1)) ;; quote-depth : remove global quote of
+	  code-lst)
+
 ;;)

@@ -62,51 +62,68 @@
 
 
 ;; 'do is redefined here only to allow 'define in body as allowed in Scheme+
+;; (define-syntax do
+
+;;   (syntax-rules ()
+
+;;     ((do ((var init step ...) ...)
+
+;;          (test expr ...)
+
+;;          command ...)
+
+;;      (letrec
+
+;;        ((loop
+
+;;          (lambda (var ...)
+
+;;            (if test
+
+;;                ;;(begin
+;; 	       (let ()
+
+;;      		 ;;#f ; avoid empty begin but with (let () i don't care ! (bigloo use: (if #f #f) which creates a never executed instruction !)
+;; 		 '() ;; avoid while-do-when-unless.scm: let: bad syntax (missing binding pairs or body) in: (let ())
+;;                  expr ...)
+
+;;                ;;(begin
+;; 	       (let ()
+
+;;                  command
+
+;;                  ...
+
+;;                  (loop (do "step" var step ...)
+
+;;                        ...))))))
+
+;;        (loop init ...)))
+
+;;     ((do "step" x)
+
+;;      x)
+
+;;     ((do "step" x y)
+
+;;      y)))
+
+
+
+;; > (define i 0) 
+;; > (do (display-nl "toto") (set! i (+ i 1)) while (< i 4)) 
+;; toto
+;; toto
+;; toto
+;; toto
+;; Warning: this 'do' break the one of scheme !
 (define-syntax do
+  (syntax-rules (do)
+    ((do b1 ...
+       while pred)
+     (let loop () b1 ... (when pred (loop))))))
 
-  (syntax-rules ()
 
-    ((do ((var init step ...) ...)
-
-         (test expr ...)
-
-         command ...)
-
-     (letrec
-
-       ((loop
-
-         (lambda (var ...)
-
-           (if test
-
-               ;;(begin
-	       (let ()
-
-     		 ;;#f ; avoid empty begin but with (let () i don't care ! (bigloo use: (if #f #f) which creates a never executed instruction !)
-		 '() ;; avoid while-do-when-unless.scm: let: bad syntax (missing binding pairs or body) in: (let ())
-                 expr ...)
-
-               ;;(begin
-	       (let ()
-
-                 command
-
-                 ...
-
-                 (loop (do "step" var step ...)
-
-                       ...))))))
-
-       (loop init ...)))
-
-    ((do "step" x)
-
-     x)
-
-    ((do "step" x y)
-
-     y)))
 
 
 ;; definitions redefined here only to allow 'define in body as allowed in Scheme+

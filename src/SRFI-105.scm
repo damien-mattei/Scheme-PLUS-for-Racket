@@ -442,8 +442,10 @@
 	    ;; hash table : #hash(("a" . 1) ("b" . 20)) support to write...
 
 	    ((char=? c #\\) (process-char port))
+	    
             ; This supports SRFI-30 #|...|#
             ((char=? c #\|) (nest-comment port) (my-read port))
+	    
             ; If #!xyz, consume xyz and recurse.
             ; In a real reader, consider handling "#! whitespace" per SRFI-22,
             ; and consider "#!" followed by / or . as a comment until "!#".
@@ -470,6 +472,21 @@
 			     (list->string
 			      ;;(append (list #\# #\:)
 				      (read-until-delim port neoteric-delimiters))));;)
+
+	    ;; Racket's regular expressions special syntax
+	    ((char=? c #\r) (if (not (equal? (read-char port) #\x))
+				(error "process-sharp : awaiting regexp : character x not found")
+				(let ((str (my-read port)))
+				  (if (not (string? str))
+				      (error "process-sharp : awaiting regexp : string not found" str)
+				      (list 'regexp str)))))
+
+	    ((char=? c #\p) (if (not (equal? (read-char port) #\x))
+				(error "process-sharp : awaiting regexp : character x not found")
+				(let ((str (my-read port)))
+				  (if (not (string? str))
+				      (error "process-sharp : awaiting pregexp : string not found" str)
+				      (list 'pregexp str)))))
 	    
 	    ;; read #'blabla ,deal with syntax objects
 	    ;;((char=? c #\') (list 'syntax (curly-infix-read port)))
