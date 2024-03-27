@@ -1,8 +1,8 @@
 ;;#lang racket
 
-;; Scheme+.rkt 
+;; main.rkt (old name: Scheme+.rkt) 
 
-;; version 7.5
+;; version 7.9
 
 ;; author: Damien MATTEI
 
@@ -10,7 +10,7 @@
 
 ;; Racket Scheme version
 
-;; Copyright 2021-2023 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,7 +35,8 @@
 ;; (define bsns (namespace-anchor->namespace ankh))
 ;; (current-namespace bsns)
 
-;; (require "Scheme+.rkt")
+;; (require "main.rkt")
+;; previous was: (require "Scheme+.rkt")
 
 
 
