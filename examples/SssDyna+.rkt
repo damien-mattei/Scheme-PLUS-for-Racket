@@ -26,8 +26,10 @@
 (module sssdyna racket
 
 ;;(require "../Scheme+.rkt")
-(require Scheme-PLUS-for-Racket/Scheme+)
-
+;;(require Scheme-PLUS-for-Racket/Scheme+)
+;;(require "../main.rkt")
+(require Scheme-PLUS-for-Racket)	
+	
 (require srfi/25) ;; Multi-dimensional Array Primitives
 
 ;;(provide (all-defined-out)) ;; export all bindings
