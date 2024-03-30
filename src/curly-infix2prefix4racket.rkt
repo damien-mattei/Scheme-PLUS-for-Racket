@@ -40,7 +40,8 @@
 (include "def.scm")
 (include "optimize-infix-slice.scm")
 
-(include "while-do-when-unless.scm")
+(include "when-unless.rkt")
+(include "while-do.scm")
 
 (define stderr (current-error-port))
 
@@ -136,7 +137,7 @@
 
   (port-count-lines! in) ; turn on counting on port
   
-  (display "Possibly skipping some header's lines containing space,tabs,new line,etc  or comments.") (newline) (newline)
+  (display "Possibly skipping some header's lines containing space,tabs,new line,etc  or comments." stderr) (newline stderr) (newline stderr)
   (skip-comments-and-empty-lines in)
 
   (when (regexp-try-match #px"^#!r6rs[[:blank:]]*\n" in)
@@ -145,10 +146,10 @@
 
   (declare lc cc pc)
   (set!-values (lc cc pc) (port-next-location in))
-  (display "SRFI-105.rkt : number of skipped lines (comments, spaces, directives,...) at header's beginning : ")
-  (display lc)
-  (newline)
-  (newline)
+  (display "SRFI-105.rkt : number of skipped lines (comments, spaces, directives,...) at header's beginning : " stderr)
+  (display lc stderr)
+  (newline stderr)
+  (newline stderr)
   
   (display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
 
