@@ -304,7 +304,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
     <div style="background: #111111;
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;">
-      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff">#lang reader "SRFI-105.rkt"<br><br></span><span style="color: #ffffff">(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff">#lang reader "SRFI-105.rkt"<br><br></span><span style="color: #ffffff">(require Scheme-PLUS-for-Racket)
 </span>
 </pre>
       <br>
@@ -738,7 +738,7 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
     <p>Prior to use <b>Scheme+</b> for DrRacket Scheme, you must add a
       <b>#lang reader "SRFI-105.rkt" </b>directive in the first line of
       your program and by inserting the statement <b><pre>
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require Scheme-PLUS-for-Racket)
 </pre>
 </b>if you have downloaded the source code.</p>
     <p>Below is the version of the above code written in Scheme+ :</p>
@@ -749,7 +749,7 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
       .1em .8em;padding:.2em .6em;"><span style="color: #ffffff"></span><span
         style="color: #ffffff"><b>#lang reader "SRFI-105.rkt"<br>
       </b><pre>
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
 </pre>
 <br>
       </span> </div>
@@ -813,7 +813,7 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
         <pre style="margin: 0; line-height: 125%"><span style="color:
       #ffffff"><span style="color: #ffffff"><b>#lang reader
 	"SRFI-105.rkt"<br></b><pre>
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require Scheme-PLUS-for-Racket)
 </pre>
 
 	<br>
@@ -903,7 +903,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;"><span style="color: #ffffff">#lang
         reader "../src/SRFI-105.rkt"<br><pre>
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
 </pre>
 <br>
       </span><span style="color: #ff0086; font-weight: bold"></span><span
@@ -1169,7 +1169,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
       .1em .8em;padding:.2em .6em;">
       <pre style="margin: 0; line-height: 125%"><span style="color:
 			  #ffffff">#lang reader "../src/SRFI-105.rkt"<br>
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require Scheme-PLUS-for-Racket)
 </span>
 </pre>
     </div>
@@ -1238,7 +1238,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
     <div style="background: #111111;
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;">
-      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ffffff">#lang reader "../src/SRFI-105.rkt"<br>(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ffffff">#lang reader "../src/SRFI-105.rkt"<br>(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
 </span>
 </pre>
     </div>
@@ -1298,7 +1298,7 @@ Here is another overloading example:<br>
 (require "matrix.rkt")
 
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require Scheme-PLUS-for-Racket)
 
 
 ; first stage overloading
@@ -2140,7 +2140,7 @@ scheme@(guile-user)&gt; v
 
 <span style="color: #008800; font-style: italic; background-color: #0f140f">;; example in Scheme+ that plot the convergence of th ζ Riemann complex serie (without Analytic continuation)</span>
 
-<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">require</span> <span style="color: #0086d2">&quot;../Scheme+.rkt&quot;</span><span style="color: #ffffff">)</span>
+<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">require</span> <span style="color: #0086d2">&quot;../main.rkt&quot;</span><span style="color: #ffffff">)</span>
 
 <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">include</span> <span style="color: #0086d2">&quot;../src/increment.scm&quot;</span><span style="color: #ffffff">)</span>
 

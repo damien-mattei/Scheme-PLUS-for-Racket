@@ -253,7 +253,7 @@ the fly:<br>
 #lang reader "SRFI-105.rkt"
 
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require Scheme-PLUS-for-Racket)
 
 
 ; first stage overloading if any
@@ -410,7 +410,7 @@ height="722"><br>
 <p> </p> 
 <br>
 <p>Hash Tables support :</p>
-    <pre>(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+    <pre>(require Scheme-PLUS-for-Racket)
 
 
 ; first stage overloading if any
@@ -663,7 +663,7 @@ of Scheme+ (in the subdirectory <b>SRFI</b>)<br>
 your program and by inserting the statement 
 
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require Scheme-PLUS-for-Racket)
 
 
 ; first stage overloading if any
@@ -677,7 +677,7 @@ your program and by inserting the statement
 ```scheme
 
 #lang reader "SRFI-105.rkt"
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
 
 
 ; first stage overloading if any
@@ -731,7 +731,7 @@ your program and by inserting the statement
 ```scheme
 
 #lang reader "SRFI-105.rkt"
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
 
 (declare size1 memo1)
 
@@ -809,7 +809,7 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 
 #lang reader "../src/SRFI-105.rkt"
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require Scheme-PLUS-for-Racket)
 
 {L-init <+ '(1 3 4 16 17 24 45 64 197 256 275 323 540 723 889 915 1040 1041 1093 1099 1111 1284 1344 1520 2027 2500 2734 3000 3267 3610 4285 5027)}
 {t-init <+ 35267}
@@ -951,7 +951,7 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 
 
 #lang reader "../src/SRFI-105.rkt"
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require Scheme-PLUS-for-Racket)
 
 
 (declare L-init t-init ls dyna cpt)
@@ -1016,7 +1016,7 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 
 
 #lang reader "../src/SRFI-105.rkt"
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require Scheme-PLUS-for-Racket)
 
 
 (def (subset-sum-dyna L t)
@@ -1073,7 +1073,7 @@ Here is another overloading example:
 (require "matrix.rkt")
 
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
 
 
 ; first stage overloading
@@ -1753,7 +1753,7 @@ scheme@(guile-user)&gt; v
 
 ;; example in Scheme+ that plot the convergence of th ζ Riemann complex serie (without Analytic continuation)
 
-(require "../Scheme+.rkt")
+(require "../main.rkt")
 
 (include "../src/increment.scm")
 
