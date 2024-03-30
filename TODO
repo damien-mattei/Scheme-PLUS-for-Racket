@@ -1,2 +1,7 @@
+new macro if then else
+optimize what can be easily optimized : example <+ define
+double interpretation of 'do' in a macro if feasible
+try to support a R6RS version (fork/branch on github)
+tester le parsing avec make Makefile
 
 

@@ -33,7 +33,8 @@
 (include "def.scm")
 (include "optimize-infix-slice.scm")
 
-(include "while-do-when-unless.scm")
+(include "when-unless.rkt")
+(include "while-do.scm")
 
 (include "SRFI-105.scm")
 

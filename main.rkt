@@ -36,7 +36,7 @@
 ;; (current-namespace bsns)
 
 ;; (require "main.rkt")
-;; previous was: (require "Scheme+.rkt")
+;; previous name was: (require "Scheme+.rkt")
 
 
 
@@ -133,7 +133,7 @@
 	(require srfi/8) ;; Values , receive
 
 	(require (only-in racket/base [for for-racket] ;; backup original Racket 'for'
-			              [do do-scheme])) 
+			              [do do-scheme])) ;; backup original Scheme 'do'
 
 	(require (for-syntax r6rs/private/base-for-syntax)) ;; for macro syntax (for ... : stxparam.rkt identifier-syntax: undefined
 
@@ -149,8 +149,10 @@
 	(include "src/block.scm")
 	(include "src/not-equal.scm")
 	(include "src/exponential.scm")
+
+	(include "src/when-unless.rkt")
+	(include "src/while-do.scm")
 	
-	(include "src/while-do-when-unless.scm")
 	(include "src/repeat-until.scm")
 	(include "src/bitwise.rkt")
 	(include "src/modulo.scm")

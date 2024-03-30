@@ -111,14 +111,29 @@
 
 
 ;; > (define i 0) 
-;; > (do (display-nl "toto") (set! i (+ i 1)) while (< i 4)) 
+;; > (do (display "toto") (newline) (set! i (+ i 1)) while (< i 4)) 
 ;; toto
 ;; toto
 ;; toto
 ;; toto
-;; Warning: this 'do' break the one of scheme !
+;;  this 'do' do not break the one of scheme:
+
+;;  (do ((i 1 (+ i 1))
+ ;;     (p 3 (* 3 p)))
+;;     ((> i 4)
+;;      p)
+;;   (display p)(newline))
+;; 3
+;; 9
+;; 27
+;; 81
+;; 243
 (define-syntax do
-  (syntax-rules (do)
+  (syntax-rules (while)
+
+    ((do ((variable init step ...) ...) (test expr ...) body ...)
+     (do-scheme ((variable init step ...) ...) (test expr ...) body ...))
+    
     ((do b1 ...
        while pred)
      (let loop () b1 ... (when pred (loop))))))
@@ -126,22 +141,4 @@
 
 
 
-;; definitions redefined here only to allow 'define in body as allowed in Scheme+
 
-;; implémenté de base en Racket
-;; (define-syntax when
-;;   (syntax-rules ()
-;;     ;;((when test result1 result2 ...)
-;;     ((when test result1  ...)
-;;      (if test
-;;          ;;(begin result1 result2 ...)))))
-;; 	 ;;(let () result1 result2 ...)))))
-;; 	 (let () result1 ...)))))
-
-(define-syntax unless
-  (syntax-rules ()
-    ;;((unless test result1 result2 ...)
-    ((unless test result1 ...)
-     (when (not test)
-       	 ;;(let () result1 result2 ...)))))
-	  result1 ...))))
