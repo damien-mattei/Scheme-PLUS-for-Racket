@@ -3,7 +3,7 @@
 
 ;; but 'do in Scheme has a painful syntax
 
-;; syntax defined in this file are inspired from Pascal language
+;; syntax defined in this file are inspired from Pascal language, C , Java,Javascript
 
 ;; scheme@(guile-user)> (use-modules (Scheme+))
 ;; scheme@(guile-user)> (define i 0)
@@ -128,6 +128,13 @@
 ;; 27
 ;; 81
 ;; 243
+
+;; > (do  (define j i)  (display "toto") (newline) (set! i (+ i 1)) while (< j 4)) 
+;; toto
+;; toto
+;; toto
+;; toto
+;; toto
 (define-syntax do
   (syntax-rules (while)
 
@@ -139,6 +146,30 @@
      (let loop () b1 ... (when pred (loop))))))
 
 
+
+
+;; > (define x 0)
+;; > (while (< x 10)
+;;           (define y x)  
+;;             (display y)
+;;             (newline)
+;;             (set! x (+ x 1)))
+;; 0
+;; 1
+;; 2
+;; 3
+;; 4
+;; 5
+;; 6
+;; 7
+;; 8
+;; 9
+;; > 
+(define-syntax-rule (while condition body ...)
+  (let loop ()
+    (when condition
+      body ...
+      (loop))))
 
 
 

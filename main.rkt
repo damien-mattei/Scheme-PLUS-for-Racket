@@ -68,7 +68,7 @@
 		 **
 		 <v v>
 		 ⇜ ⇝
-		 if repeat do when unless
+		 if repeat do when unless while
 		
 		 %
 		 << >>
