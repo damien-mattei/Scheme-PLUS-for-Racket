@@ -4,7 +4,8 @@
 
 ;; example in Scheme+ that plot the convergence of th ζ Riemann complex serie (without Analytic continuation)
 
-(require "../Scheme+.rkt")
+;;(require "../Scheme+.rkt")
+(require "../main.rkt")
 
 (include "../src/increment.scm")
 
