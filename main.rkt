@@ -55,10 +55,10 @@
 		 for-basic
 		 for-basic/break
 		 reversed
-		 <- ←
+		 <- ← :=
 		 -> ;; can conflict with typed racket
 		 →  ;; can conflict with typed racket
-		 <+ ⥆
+		 <+ ⥆ :+
 		 +> ⥅
 		 declare
 		 $>

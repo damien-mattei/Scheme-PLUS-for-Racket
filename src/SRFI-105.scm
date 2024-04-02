@@ -103,9 +103,14 @@
         ((or (eq? c #\)) (eq? c #\]) (eq? c #\}))
           (read-char port)
           (read-error "Bad closing character"))
-        (#t
+
+	(#t
+	 
           (let ((datum (my-read port)))
-            (cond
+
+	    (cond 
+
+	     ;; here we got chars ... (not symbols)
 	     ;; processing period . is important for functions with variable numbers of parameters: (fct arg1 . restargs)
 	     ((eq? datum (string->symbol (string #\.))) ;; only this one works with Racket Scheme
                ;;((eq? datum '.) ;; do not works with Racket Scheme
@@ -121,9 +126,18 @@
                      (#t
                        (read-char port)
                        datum2))))
-               (#t
-                   (cons datum
-                     (my-read-delimited-list my-read stop-char port)))))))))
+	     
+	     (#t
+	      ;; here we get a symbolic scheme expression
+	      (let ((datum2 (cons datum
+				  (my-read-delimited-list my-read stop-char port))))
+
+		;; (when (and (list? datum2)
+		;; 	   (not (null? datum2))
+		;; 	   (equal? (car datum2) 'if))
+		;;       (error "find an IF in datum2:" datum2))
+		
+		datum2))))))))
 
 
 

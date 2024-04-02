@@ -260,6 +260,14 @@
 
 
 
+(define-syntax :=
+
+  (syntax-rules ()
+
+    ((_ var ...) (<- var ...))))
+
+
+
 ;; (declare x y z)
 ;;  {(x y z) <v (values 2 4 5)}
 ;; > (list x y z)
