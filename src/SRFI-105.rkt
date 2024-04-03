@@ -36,6 +36,8 @@
 (include "when-unless.rkt")
 (include "while-do.scm")
 
+(include "condx.scm")
+
 (include "SRFI-105.scm")
 
 (define flag-r6rs #f)

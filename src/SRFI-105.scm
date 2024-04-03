@@ -15,6 +15,16 @@
 (define slice-optim #t)
 
 
+;; library procedures and macro
+(define insert cons)
+
+;; insert and set 
+(define-syntax insert-set!
+  (syntax-rules ()
+    ((_ expr var)
+     (set! var (insert expr var)))))
+
+
   ; ------------------------------
   ; Curly-infix support procedures
   ; ------------------------------
@@ -78,6 +88,90 @@
      (#t  (transform-mixed-infix lyst))))
 
 
+;; usefull procedures and macro for the next part of code
+(define (then=? arg)
+  (or (equal? arg 'then) (equal? arg 'THEN)))
+
+(define (else=? arg)
+  (or (equal? arg 'else) (equal? arg 'ELSE)))
+
+
+
+(define (call-parse-if-args Largs)
+
+  (define lenL (length Largs))
+
+  (when (< lenL 2)
+	(error "if: too few arguments:" Largs))
+
+  (define test (car Largs))
+  (define e1 (cadr Largs))
+
+  ; deal with the old 2 args 'if' but modified
+  (condx ((= lenL 2) `(when ,test ,e1))
+	 (exec (define e2 (third Largs)))
+	 ((and (= lenL 3) (then=? e2)) `(when ,test
+					      ,e2))
+	 ((and (= lenL 3) (else=? e2)) `(unless ,test
+						,e2))
+	 ((= lenL 3) `(if ,test
+			  ,e1
+			  ,e2))
+
+	 (else
+	  
+	  (define L-then '())
+	  (define L-else '())
+	  (define flag-then #f)
+	  (define flag-else #f)
+	  			   
+	  (define (parse-if-args L)
+	    
+	    (condx ((null? L) (set! L-then (reverse L-then))
+		              (set! L-else (reverse L-else)))
+		   
+		   (exec (define ec (car L))
+			 (define rstL (cdr L)))
+			 		   
+		   ((then=? ec) (set! flag-then #t)
+		                (parse-if-args rstL)) ; recurse
+		   ;;(exec (display "before else=?") (newline))
+		   ((else=? ec) (set! flag-else #t)
+		                (set! flag-then #f)
+		                (parse-if-args rstL)) ; recurse
+
+		   ;;(exec (display "before flag-then") (newline))
+		   (flag-then (insert-set! ec L-then)
+		              (parse-if-args rstL)) ; recurse
+
+		   ;;(exec (display "before flag-else") (newline))
+		   (flag-else (insert-set! ec L-else)
+		              (parse-if-args rstL)) ; recurse
+		   
+		   (else ; start with 'then' directives but without 'then' keyword !
+		    ;; i allow this syntax but this is dangerous:  risk of confusion with regular scheme syntax
+		    ;;(display "L-then=")(display L-then) (newline)
+		    (insert-set! ec L-then)
+		    ;;(display "flag-then=")(display flag-then) (newline)
+		    (set! flag-then #t)
+		    (parse-if-args rstL)))) ; recurse
+	    
+	    (define Lr (cdr Largs)) ; list of arguments of 'if' without the test
+						    
+	    (parse-if-args Lr) ; call the parsing of arguments
+	    
+	    (cond ((null? L-then) `(unless ,test
+					   ,@L-else))
+		  ((null? L-else) `(when ,test
+					 ,@L-then))
+		  (else `(if ,test
+			     (let ()
+			       ,@L-then)
+			     (let ()
+			       ,@L-else)))))))
+
+
+
   ; ------------------------------------------------
   ; Key procedures to implement neoteric-expressions
   ; ------------------------------------------------
@@ -132,10 +226,24 @@
 	      (let ((datum2 (cons datum
 				  (my-read-delimited-list my-read stop-char port))))
 
-		;; (when (and (list? datum2)
-		;; 	   (not (null? datum2))
-		;; 	   (equal? (car datum2) 'if))
-		;;       (error "find an IF in datum2:" datum2))
+		(when (and (list? datum2)
+			   (not (null? datum2))
+			   (equal? (car datum2) 'if))
+		      ;; (display "datum2=") (newline)
+		      ;; (pretty-print datum2
+		      ;; 		    (current-output-port)
+		      ;; 		    1)
+		      ;; (newline)
+		      ;; (newline)
+		      (define datum3 (call-parse-if-args (cdr datum2)))
+		      ;; (display "datum3=") (newline)
+		      ;; (pretty-print datum3
+		      ;; 		    (current-output-port)
+		      ;; 		    1)
+		      ;; (newline)
+		      ;; (newline)
+		      ;; (error "find an IF in datum2")
+		      (set! datum2 datum3))
 		
 		datum2))))))))
 
