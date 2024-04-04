@@ -2,7 +2,7 @@
 
 ;; main.rkt (old name: Scheme+.rkt) 
 
-;; version 8.0
+;; version 8.1
 
 ;; author: Damien MATTEI
 
