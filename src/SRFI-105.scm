@@ -238,9 +238,7 @@
 
 	     ;; here we got chars ... (not symbols)
 	     ;; processing period . is important for functions with variable numbers of parameters: (fct arg1 . restargs)
-	     ((eq? datum (string->symbol (string #\.))) ;; only this one works with Racket Scheme
-               ;;((eq? datum '.) ;; do not works with Racket Scheme
-               ;;((eq? datum 'period) ;; this one annihilate the processing: datum will never be equal to 'period !
+	     ((eq? datum (string->symbol (string #\.))) ;; only this one works
                  (let ((datum2 (my-read port)))
                    (consume-whitespace port)
                    (cond

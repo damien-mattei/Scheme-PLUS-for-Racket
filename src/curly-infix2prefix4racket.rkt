@@ -45,11 +45,11 @@
 
 (define stderr (current-error-port))
 
+(include "condx.scm")
+
 (include "SRFI-105.scm")
 
 (define srfi-105 #f)
-
-;;(define lang-reader #f)
 
 (define flag-r6rs #f)
 

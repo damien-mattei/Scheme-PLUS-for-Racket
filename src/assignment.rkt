@@ -74,18 +74,20 @@
 ;; "ab0d0f0h"
 
 ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
+
 (define-syntax <-
   
-  (syntax-rules ()
-
+  (lambda (stx)
+    
+    (syntax-case stx ()
 
     ;; {(x y) <- Lexemples[ip]}   
     ((_ (kar kdr) expr) ; expr must be a pair
 
-     (begin
-       ;;(display "<- : case (_ (kar kdr) expr)") (newline)
-       (set! kar (car expr))
-       (set! kdr (cdr expr))))
+     #`(begin
+	 ;;(display "<- : case (_ (kar kdr) expr)") (newline)
+	 (set! kar (car expr))
+	 (set! kdr (cdr expr))))
     
 
 
@@ -94,7 +96,7 @@
     ;;((_ (brket-applynext container (lst index index1 ...)) expr)
     ((_ (brket-applynext container (lst index ...)) expr) ;; possible to have NO index
      
-     (begin
+     #`(begin
 
        ;; add a checking
        ;; (define x 3)
@@ -147,7 +149,7 @@
      ;;   (display "<- : variable set!") (newline)
      ;;   (display "var =") (display var) (newline)
      ;;   (display "expr =") (display expr) (newline)
-       (set! var expr))
+       #`(set! var expr))
        ;; (display "after set! : var =") (display var) (newline)))
        ;;var))
 
@@ -174,13 +176,13 @@
      
      ;;(<- var (<- var1 ... expr)))
 
-     (begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result
+     #`(begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result
        ;;(display "<- : case (_ var var1 ... expr)") (newline)
 	(<- var expr)
 	(<- var1 var)
 	...))
 
-    ))
+    )))
 
 
 
