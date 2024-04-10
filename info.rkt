@@ -5,7 +5,8 @@
 (define deps '("base"
 	       "srfi-lib"
 	       "sci"
-	       "r6rs-lib"))
+	       "r6rs-lib"
+	       "reprovide-lang-lib"))
 (define pkg-desc "Scheme+ for Racket and SRFI-105 curly-infix with REPL")
 (define version "8.1")
 (define pkg-authors '(mattei))
