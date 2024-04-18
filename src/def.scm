@@ -1,7 +1,7 @@
 
 ;; This file is part of Scheme+
 
-;; Copyright 2021-2023 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -17,6 +17,38 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+; Tests
+;; (define x 3)
+;; (if (defined? x) 'defined 'not-defined) ; -> defined
+
+;; (let ([y 4])
+;;    (if (defined? y) 'defined 'not-defined)) ; -> defined
+
+;; (if (defined? z) 'defined 'not-defined) ; -> not-defined
+;; (define-syntax (defined? stx)
+;;   (syntax-case stx ()
+;;     [(_ id)
+;;      (with-syntax ([v (identifier-binding #'id)]) ; Racket feature , not RnRS
+;;        #''v)]))
+
+; Tests
+;; (if-defined z (list z) 'not-defined) ; -> not-defined
+
+;; (if-defined t (void) (define t 5))
+;; t ; -> 5
+
+;; (define x 3)
+;; (if-defined x (void) (define x 6))
+;; x ; -> 3
+(define-syntax (if-defined stx)
+  (syntax-case stx ()
+    [(_ id iftrue iffalse)
+     (let ([where (identifier-binding #'id)])
+       (display "if-defined : where=") (display where) (newline)
+       (display "id=") (display #'id) (newline)(newline)
+       (if where #'iftrue #'iffalse))]))
+
+
 ;; scheme@(guile-user)> (def (foo) (when #t (return "hello") "bye"))
 ;; scheme@(guile-user)> (foo)
 ;;  "hello"
@@ -26,7 +58,7 @@
 ;;(define return '()) ;; for debug of Typed Racket
 
 (define-syntax def
-  
+
   (lambda (stx)
     
       (syntax-case stx ()

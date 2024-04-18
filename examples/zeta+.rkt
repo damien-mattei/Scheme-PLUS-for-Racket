@@ -13,19 +13,19 @@
 
 (define animation-mode #t)
 
-{xws ⥆ 1000} ;; X window size
-{yws ⥆ 800} ;; Y window size
+{xws ← 1000} ;; X window size
+{yws ← 800} ;; Y window size
 
-{ywsp ⥆ yws - 200} ;; Y window size for plot
+{ywsp ← yws - 200} ;; Y window size for plot
 
 ; Make a frame by instantiating the frame% class
-{frame0 ⥆ (new frame% [label "Example"]
+{frame0 ← (new frame% [label "Example"]
 	               [width xws]
 		       [height yws])}
 
 
 ; Make a static text message in the frame
-{msg ⥆ (new message% [parent frame0]
+{msg ← (new message% [parent frame0]
 	              [label "No events so far..."])}
  
 ;; Make a button in the frame
@@ -43,16 +43,16 @@
 
 ;;{z ⥆ 0}
 ;;{z ⥆ 2+1i}
-{z ⥆ 1.13+1.765i}
+{z ← 1.13+1.765i}
 
-{unit-axis-in-pixel ⥆ 200}
+{unit-axis-in-pixel ← 200}
 
 
 (define (draw-z-point dc)
   (send dc set-pen no-pen)
   (send dc set-brush blue-brush)
-  {ga ⥆ 8}
-  {pa ⥆ 8}
+  {ga ← 8}
+  {pa ← 8}
   {(x y) ⥆ (to-screen-multi-values z)}
   {x ← x - (quotient ga 2)}
   {y ← y - (quotient pa 2)}
@@ -60,18 +60,18 @@
 
 ;; convert to screen coords
 (define (to-screen z0)
-  {re ⥆ (real-part z0)}
-  {im ⥆ (imag-part z0)}
-  {xs ⥆ re * unit-axis-in-pixel}
-  {ys ⥆ im * unit-axis-in-pixel}
+  {re ← (real-part z0)}
+  {im ← (imag-part z0)}
+  {xs ← re * unit-axis-in-pixel}
+  {ys ← im * unit-axis-in-pixel}
   (make-rectangular (round {xo + xs})
 		    (round {yo - ys})))
 
 (define (to-screen-multi-values z0)
-  {re ⥆ (real-part z0)}
-  {im ⥆ (imag-part z0)}
-  {xs ⥆ re * unit-axis-in-pixel}
-  {ys ⥆ im * unit-axis-in-pixel}
+  {re ← (real-part z0)}
+  {im ← (imag-part z0)}
+  {xs ← re * unit-axis-in-pixel}
+  {ys ← im * unit-axis-in-pixel}
   (values (round {xo + xs})
 	  (round {yo - ys})))
 
@@ -81,31 +81,31 @@
 
 (define (draw-zeta dc)
   
-  {zi ⥆ 0}
-  {nmax ⥆ 10000000}
+  {zi ← 0}
+  {nmax ← 10000000}
   
-  {flag-color ⥆ #t}
+  {flag-color ← #t}
   ;;(newline)
-  (for ({n <+ 1} {n <= nmax} {n <- n + 1})
+  (for ({n ← 1} {n <= nmax} {n <- n + 1})
        (if flag-color
 	   (send dc set-pen "blue" 1 'solid)
 	   (send dc set-pen "green" 1 'solid))
        {flag-color ← (not flag-color)}
        ;;(display "draw-zeta : n =") (display n) (newline)
-       {zp ⥆ 1.0 / n ** z}
+       {zp ← 1.0 / n ** z}
        ;; (display "draw-zeta : z =") (display z) (newline)
        ;; (display "draw-zeta : zp =") (display zp) (newline)
        ;; (display "draw-zeta : zi =") (display zi) (newline)
-       {zxtrm  ⥆ zi + zp}
+       {zxtrm  ← zi + zp}
        ;;(display "draw-zeta : zxtrm =") (display zxtrm) (newline)
-       {zie ⥆ (to-screen zi)}
+       {zie ← (to-screen zi)}
        ;;(display "draw-zeta : zie =") (display zie) (newline)
-       {zxtrme ⥆ (to-screen zxtrm)}
+       {zxtrme ← (to-screen zxtrm)}
        ;;(display "draw-zeta : zxtrme =") (display zxtrme) (newline)
-       {x0 ⥆  (real-part zie)}
-       {y0 ⥆  (imag-part zie)}
-       {x1 ⥆  (real-part zxtrme)}
-       {y1 ⥆  (imag-part zxtrme)}
+       {x0 ←  (real-part zie)}
+       {y0 ←  (imag-part zie)}
+       {x1 ←  (real-part zxtrme)}
+       {y1 ←  (imag-part zxtrme)}
        (when {x0 >= 0 and x0 <= xws  and x1 >= 0 and x1 <= xws and
 	      y0 >= 0 and y0 <= ywsp and y1 >= 0 and y1 <= ywsp}
 	     (send dc draw-line
@@ -116,10 +116,10 @@
 
 (define (draw-zeta-multi-values dc)
   
-  {zi ⥆ 0}
-  {flag-color ⥆ #t}
-  {dmin ⥆ 2} ;; minimal length  in pixel to draw line
-  {n ⥆ 1}
+  {zi ← 0}
+  {flag-color ← #t}
+  {dmin ← 2} ;; minimal length  in pixel to draw line
+  {n ← 1}
   (newline)
   
   (repeat
@@ -129,8 +129,8 @@
 	   (send dc set-pen "green" 1 'solid))
        {flag-color ← (not flag-color)}
        ;;(display "draw-zeta-multi-values : n =") (display n) (newline)
-       {zp ⥆ 1.0 / n ** z}
-       {zxtrm  ⥆ zi + zp}
+       {zp ← 1.0 / n ** z}
+       {zxtrm  ← zi + zp}
        ;;(display "draw-zeta-multi-values : zxtrm =") (display zxtrm) (newline)
  
        {(x0 y0) ⥆ (to-screen-multi-values zi)} 
@@ -142,7 +142,7 @@
 		   x0 y0
 		   x1 y1))
 
-       {len-line ⥆ (line-length x0 y0 x1 y1)}
+       {len-line ← (line-length x0 y0 x1 y1)}
        {zi ← zxtrm}
        {n ← n + 1}
        
@@ -175,23 +175,23 @@
 ;;              [callback (λ (button event)
 ;;                          (send msg set-label "Right click"))])
 
-{z-old ⥆ z}
+{z-old ← z}
 
 ; Derive a new canvas (a drawing window) class to handle events
-{my-canvas% ⥆
+{my-canvas% ←
   (class canvas% ; The base class is canvas%
     ; Define overriding method to handle mouse events
     (define/override (on-event event)
      
-      {window-x ⥆ (send event get-x)}
-      {window-y ⥆ (send event get-y)}
+      {window-x ← (send event get-x)}
+      {window-y ← (send event get-y)}
       (when animation-mode
 	{z ← (ret-z window-x window-y)})
       
       ;;{str ⥆ (string-append "(" (number->string window-x) " , " (number->string window-y) ")")}
       (when {z ≠ z-old}
 	    {z-old ← z}
-	    {str ⥆ (number->string z)} 
+	    {str ← (number->string z)} 
 	    (send msg set-label str)
 	    (send cv refresh))
       
@@ -204,7 +204,7 @@
     (super-new))}
 
 
-{cv ⥆ (new my-canvas% [parent frame0]
+{cv ← (new my-canvas% [parent frame0]
 	   [paint-callback
 	    (λ (canvas dc) ;; dc: Drawing Context
 	      ;; cf. https://docs.racket-lang.org/draw/overview.html#%28tech._drawing._context%29
@@ -249,25 +249,25 @@
 
 (define (draw-units dc)
   ;;X
-  {nun ⥆ (quotient xo unit-axis-in-pixel)}
-  (for ({n <+ 1} {n <= nun} {n <- n + 1})
-       {xu ⥆ xo + n * unit-axis-in-pixel}
+  {nun ← (quotient xo unit-axis-in-pixel)}
+  (for ({n ← 1} {n <= nun} {n <- n + 1})
+       {xu ← xo + n * unit-axis-in-pixel}
        (send dc draw-line
 	     xu {yo - 3}
 	     xu {yo + 3})
-       {xum ⥆ xo - n * unit-axis-in-pixel}
+       {xum ← xo - n * unit-axis-in-pixel}
        (send dc draw-line
 	     xum {yo - 3}
 	     xum {yo + 3}))
 
   ;; Y
-  {nuny ⥆ (quotient yo unit-axis-in-pixel)}
-  (for ({n <+ 1} {n <= nuny} {n <- n + 1})
-       {yu ⥆ yo - n * unit-axis-in-pixel}
+  {nuny ← (quotient yo unit-axis-in-pixel)}
+  (for ({n ← 1} {n <= nuny} {n <- n + 1})
+       {yu ← yo - n * unit-axis-in-pixel}
        (send dc draw-line
 	     {xo - 3} yu
 	     {xo + 3} yu)
-       {yum ⥆ yo + n * unit-axis-in-pixel}
+       {yum ← yo + n * unit-axis-in-pixel}
        (send dc draw-line
 	     {xo - 3} yum
 	     {xo + 3} yum)))
@@ -276,10 +276,10 @@
 
 ;; return the z complex from canvas plane where is the mouse pointer
 (define (ret-z x y)
-  {i ⥆ 0+1i} ;; imaginaire pur
-  {re ⥆ x - xo}
+  {i ← 0+1i} ;; imaginaire pur
+  {re ← x - xo}
   {re ← re / unit-axis-in-pixel}
-  {im ⥆ (- {y - yo})} ;; or yo - y
+  {im ← (- {y - yo})} ;; or yo - y
   {im ← im / unit-axis-in-pixel}
   (exact->inexact {re + i * im}))
 

@@ -1,18 +1,7 @@
 try to support a R6RS version (fork/branch on github)
 tester le parsing avec make Makefile
 
-> (define-syntax (defined? stx)
-  (syntax-case stx ()
-    [(_ id)
-     (with-syntax ([v (identifier-binding #'id)])
-       #''v)]))
-> (defined? zz)
-#f
-> (defined? x)
-'(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt">
-  x
-  #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt">
-  x
-  0
-  0
-  0)
+use more syntax-case
+set values!
+
+etendre aux arrays le defined?

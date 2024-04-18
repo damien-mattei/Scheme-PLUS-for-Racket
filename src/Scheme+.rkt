@@ -2,7 +2,7 @@
 
 ;; Scheme+.rkt 
 
-;; version 8.2
+;; version 8.4
 
 ;; author: Damien MATTEI
 
@@ -42,7 +42,8 @@
 
 
 (module Scheme+ racket
-	
+
+	;; TODO: try to remove the test, it seems no more used by pkgd
 	(module test racket/base) ;; dummy
 
 
@@ -137,7 +138,7 @@
 
 	(require (for-syntax r6rs/private/base-for-syntax)) ;; for macro syntax (for ... : stxparam.rkt identifier-syntax: undefined
 
-	;(require "infix-operators.rkt")
+	(require "infix-operators.rkt") ; not mandatory
 
 	(require "overload.rkt")
 	(require "array.rkt")
@@ -164,7 +165,7 @@
 	(include "increment.scm")
 	(include "for_next_step.scm")
 
-	;;(include "scheme-infix.rkt")
+	(include "scheme-infix.rkt") ; not mandatory
 
 	(include "assignment.rkt")
 	(include "apply-square-brackets.rkt")

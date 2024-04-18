@@ -61,14 +61,14 @@
 
 ;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 $ 3 * 5 - 10 $ 2 * 4 - 6]}
 ;; '#(3 5)
-;; (define ($bracket-apply$ container . args-brackets)   ;;  this implements a possible $bracket-apply$ as proposed in SRFI-105
+(define ($bracket-apply$ container . args-brackets)   ;;  this implements a possible $bracket-apply$ as proposed in SRFI-105
 
-;;   ;;(display args-brackets) (newline)
-;;   ($bracket-apply$next container (parse-square-brackets-arguments args-brackets)))
+  ;;(display args-brackets) (newline)
+  ($bracket-apply$next container (parse-square-brackets-arguments args-brackets)))
 
 
 
-(define ($bracket-apply$next container args)  
+(define ($bracket-apply$next container args)  ; list of arguments
 
   ;;(display "apply-square-brackets.* : $bracket-apply$next : container = ") (display container) (newline)
   ;;(display args) (newline)
@@ -870,46 +870,46 @@
 
 ;; TODO :this code is only here to use Scheme+ but it should be in other place (scheme-infix.rkt)
 ;; split the expression using slice as separator
-;; (def (parse-square-brackets-arguments args-brackets)
+(def (parse-square-brackets-arguments args-brackets)
 
-;;   ;;(display "apply-square-brackets.* : parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
+  ;;(display "apply-square-brackets.* : parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
 
-;;   (when (null? args-brackets)
-;; 	(return args-brackets))
+  (when (null? args-brackets)
+	(return args-brackets))
 
-;;   ;; closure including pbsa, result and partial-result are lists
-;;   (declare result partial-result)
+  ;; closure including pbsa, result and partial-result are lists
+  (declare result partial-result)
   
-;;   (def (psba args) ;; parse square brackets arguments
+  (def (psba args) ;; parse square brackets arguments
 
-;;        ;;(display "psba : args=") (display args) (newline)
-;;        ;;(display "psba : partial-result =") (display partial-result) (newline)
-;;        (when (null? args)
-;; 	     ;;(display "before !*prec") (newline)
-;; 	     (<- result (append result (!*prec partial-result))) ;; !*prec is defined in scheme-infix.rkt
-;; 	     ;;(display "after !*prec") (newline)
-;; 	     ;;(display result) (newline)
-;; 	     ;;(display "return-rec") (newline)
-;; 	     (return-rec result)) ;; return from all recursive calls
+       ;;(display "psba : args=") (display args) (newline)
+       ;;(display "psba : partial-result =") (display partial-result) (newline)
+       (when (null? args)
+	     ;;(display "before !*prec") (newline)
+	     (<- result (append result (!*prec partial-result))) ;; !*prec is defined in scheme-infix.rkt
+	     ;;(display "after !*prec") (newline)
+	     ;;(display result) (newline)
+	     ;;(display "return-rec") (newline)
+	     (return-rec result)) ;; return from all recursive calls
        
-;;        (<+ fst  (car args))
+       (<+ fst  (car args))
        
-;;        (if (equal? slice fst)
+       (if (equal? slice fst)
 	   
-;; 	   ($>
-;; 	    (when (not (null? partial-result))
-;; 		  (<- result (append result (!*prec partial-result))) ;; evaluate and store the expression
-;; 		  (<- partial-result  '())) ;; empty for the next possible portion between slice operator
-;; 	    (<- result  (append result (list fst)))) ;; append the slice operator
+	   ($>
+	    (when (not (null? partial-result))
+		  (<- result (append result (!*prec partial-result))) ;; evaluate and store the expression
+		  (<- partial-result  '())) ;; empty for the next possible portion between slice operator
+	    (<- result  (append result (list fst)))) ;; append the slice operator
 	   
-;; 	   (<- partial-result (append partial-result (list fst)))) ;; not a slice operator but append it
+	   (<- partial-result (append partial-result (list fst)))) ;; not a slice operator but append it
        
-;;        (psba (cdr args))) ;; end def, recurse
+       (psba (cdr args))) ;; end def, recurse
 
 
   
-;;   (<+ rs  (psba args-brackets))   ;; initial call
-;;   ;;(display "parse-square-brackets-arguments : rs=") (display rs) (newline)
-;;   rs
-;;   )
+  (<+ rs  (psba args-brackets))   ;; initial call
+  ;;(display "parse-square-brackets-arguments : rs=") (display rs) (newline)
+  rs
+  )
 

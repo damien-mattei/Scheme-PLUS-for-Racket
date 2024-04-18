@@ -144,10 +144,14 @@
 ;; this one is used by array.scm
 (define (function-array-n-dim-ref array L-reversed-indexes)
   ;;(display L-reversed-indexes) (newline)
-  (if (= 1 (length L-reversed-indexes))
-      (vector-ref array (negative-vector-index (car L-reversed-indexes) ;; compatible with negative indexes
-					       array))
-      (vector-ref (function-array-n-dim-ref array (cdr L-reversed-indexes))
+  (if (= 1 (length L-reversed-indexes)) ; base case : array of dimension 1 : vector
+      ;; vector
+      (vector-ref array
+		  (negative-vector-index (car L-reversed-indexes) ;; compatible with negative indexes
+					 array))
+
+      ;; vector of vectors
+      (vector-ref (function-array-n-dim-ref array (cdr L-reversed-indexes)) ; the sub-array
 		  (negative-vector-index (car L-reversed-indexes)
 					 array))))
 

@@ -27,8 +27,8 @@
 
 ;;(require "../Scheme+.rkt")
 ;;(require Scheme-PLUS-for-Racket/Scheme+)
-;;(require "../main.rkt")
-(require Scheme-PLUS-for-Racket)	
+(require "../main.rkt")
+;;(require Scheme-PLUS-for-Racket)	
 	
 (require srfi/25) ;; Multi-dimensional Array Primitives
 
@@ -40,6 +40,7 @@
 (declare L-init t-init ls dyna cpt)
 
 {L-init <- '(1 3 4 16 17 24 45 64 197 256 275 323 540 723 889 915 1040 1041 1093 1099 1111 1284 1344 1520 2027 2500 2734 3000 3267 3610 4285 5027)}
+
 {t-init <- 35267}
 ;;{t-init <- 21}
 
@@ -135,11 +136,11 @@
   ;;(def ls (length L))
   ;;(def dyn {dyna[ls t]})
 
-  {ls <+ (length L)}
+  {ls <- (length L)}
 
   ;;(display "ls=") (display ls) (display " ") (display "t=") (display t) (newline)
   
-  {dyn <+ dyna[ls t]}
+  {dyn <- dyna[ls t]}
   
   (def c)
   (def R)
@@ -252,7 +253,7 @@
 		    ;; else
 		    (let [(R (rest L))]
 		      
-		      (if {c > t}   ;; continue searching a solution in the rest
+		      (if {c > t}   ;; c is too big to be a solution or part of it -> continue searching a solution in the rest
 			    
 			  (let [(s (ssigma-proto R t))]
 			    (array-set! dyna
@@ -263,7 +264,7 @@
 			
 			  ;; else
 			  ;; c < t at this point
-			  ;; c is part of the solution or his approximation
+			  ;; c is part of the solution (or his approximation)
 			  ;; or c is not part of solution
 			  (let [(s {(ssigma-proto R {t - c}) or (ssigma-proto R t)})]
 			    (array-set! dyna (tf->12 s)
@@ -319,11 +320,11 @@
 
 
 ;; (subset-sum-dyna  L-init t-init)
-;; #t ;; there exist a solution
+;; #t ;; there exists a solution
 
 (def (subset-sum-dyna L t)
 
-  (declare ls dyn) ;; declare multiple variables
+  ;;(declare ls dyn) ;; declare multiple variables
 
   {ls <- (length L)}
   {dyn <- dyna[ls t]}
@@ -337,13 +338,13 @@
     {dyna[ls t] <- 2}
     (return #f))
 
-  {c <+ (first L)}
+  {c <- (first L)}
 
   (when {c = t}  ;; c is the solution
     {dyna[ls t] <- 1}
     (return #t))
 
-  {R <+ (rest L)} ;; continue searching a solution in the rest
+  {R <- (rest L)} ;; continue searching a solution in the rest
 
   (declare s)
   (if {c > t}  ;; c is to big to be a solution
@@ -395,7 +396,7 @@
 
 (define (subset-sum-condx L t)
 
-  (declare ls dyn) ;; declare multiple variables or use <+ instead of <- below
+  (declare ls dyn) ;; declare multiple variables or use <- instead of <- below
 
   {ls <- (length L)}
   {dyn <- dyna[ls t]}
@@ -405,19 +406,19 @@
   (condx [{dyn <> 0} (one? dyn)]
 	 [(null? L) {dyna[ls t] <- 2}  #f] ;; return #f
 	 
-	 [exec {c <+ (first L)}]	 
+	 [exec {c <- (first L)}]	 
 	 ;; c is the solution
 	 [{c = t} {dyna[ls t] <- 1}  #t]  ;; return #t
 	 
-	 [exec {R <+ (rest L)}]	 
+	 [exec {R <- (rest L)}]	 
 	 ;; continue searching a solution in the rest
-	 [{c > t} {s <+ (subset-sum-condx R t)}
+	 [{c > t} {s <- (subset-sum-condx R t)}
 	          {dyna[ls t] <- (tf->12 s)}
 		  s] ;; return boolean value
 			
 	 ;; else : c < t at this point
 	 ;; c is part of a solution OR not part of a solution
-	 [else {s <+ (subset-sum-condx R {t - c}) or (subset-sum-condx R t)}
+	 [else {s <- (subset-sum-condx R {t - c}) or (subset-sum-condx R t)}
 	       {dyna[ls t] <- (tf->12 s)}
 	       s])) ;; return boolean value
 
@@ -427,8 +428,8 @@
 
 (define (subset-sum L t)
 
-  {ls <+ (length L)}
-  {dyn <+ dyna[ls t]}
+  {ls <- (length L)}
+  {dyn <- dyna[ls t]}
 
   {cpt <- cpt + 1} ;; cpt has been already defined at toplevel
   
@@ -437,19 +438,19 @@
   (condx [{dyn <> 0} (one? dyn)]
 	 [(null? L) {dyna[ls t] <- 2}  #f] ;; return #f
 	 
-	 [exec {c <+ (first L)}]	 
+	 [exec {c <- (first L)}]	 
 	 ;; c is the solution
 	 [{c = t} {dyna[ls t] <- 1}  #t]  ;; return #t
 	 
-	 [exec {R <+ (rest L)}]	 
+	 [exec {R <- (rest L)}]	 
 	 ;; continue searching a solution in the rest
-	 [{c > t} {s <+ (subset-sum R t)}
+	 [{c > t} {s <- (subset-sum R t)}
 	          {dyna[ls t] <- (tf->12 s)}
 		  s] ;; return boolean value
 			
 	 ;; else : c < t at this point
 	 ;; c is part of a solution OR not part of a solution
-	 [else {s <+ (subset-sum R {t - c}) or (subset-sum R t)}
+	 [else {s <- (subset-sum R {t - c}) or (subset-sum R t)}
 	       {dyna[ls t] <- (tf->12 s)}
 	       s])) ;; return boolean value
 
@@ -500,6 +501,15 @@
 
 ;; > (subset-sum-value  '(17 24 45 64 197 256 323 540 723 889 915 1040 1041 1093 1111 1284 1344 1520 2027 2500 2734 3000 3267 4285 5027) t-init)
 ;; #f
+
+;; > (subset-sum-value L-init t-init)
+;; '(1 3 4 16 17 24 45 64 197 256 275 323 540 889 915 1040 1041 1093 1099 1111 1344 1520 2027 2500 2734 3267 3610 4285 5027)
+;; > t-init
+;; 35267
+;; > (+ 1 3 4 16 17 24 45 64 197 256 275 323 540 889 915 1040 1041 1093 1099 1111 1344 1520 2027 2500 2734 3267 3610 4285 5027)
+;; 35267
+
+
 (define (subset-sum-value L t)
 
   ;; declaration on top
