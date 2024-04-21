@@ -19,7 +19,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 8.1 for Racket Scheme<br>
+          style="color: #999999;"> <font size="+2">version 8.5 for Racket Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;">
 	Display options for viewing this documentation:<br>
@@ -484,8 +484,8 @@ moz-do-not-send="true" src="Scheme+io_fichiers/logo-and-text-1-2.png"
 title="Racket Scheme" alt="Racket Scheme web site" width="396"
 border="0" height="120"></a><br>
 <br>
-<p>It has been developed with Racket v8.5 on <b>Mac</b><font
-color="#9999ff"><b> </b><b>OS</b></font> and Racket v7.7 under <b>Linux</b>.<br>
+<p>It has been developed with Racket on <b>Mac</b><font
+color="#9999ff"><b> </b><b>OS</b></font> and Racket under <b>Linux</b>.<br>
 <br>
 <br>
 <br>
