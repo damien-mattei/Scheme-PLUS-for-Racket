@@ -81,39 +81,32 @@
     
     (syntax-case stx ()
 
-    ;; {(x y) <- Lexemples[ip]}   
-    ((_ (kar kdr) expr) ; expr must be a pair
+    ;; ;; {(x y) <- Lexemples[ip]}   
+    ;; ((_ (kar kdr) expr) ; expr must be a pair
 
-     #`(begin
-	 ;;(display "<- : case (_ (kar kdr) expr)") (newline)
-	 (set! kar (car expr))
-	 (set! kdr (cdr expr))))
+    ;;  #`(begin
+    ;; 	 ;;(display "<- : case (_ (kar kdr) expr)") (newline)
+    ;; 	 (set! kar (car expr))
+    ;; 	 (set! kdr (cdr expr))))
     
 
 
 
     ;; optimised by parser form
-    ;;((_ (brket-applynext container (lst index index1 ...)) expr)
-    ((_ (brket-applynext container (lst index ...)) expr) ;; possible to have NO index
-     ;; lst is list !
+
+    ((_ (brket-applynext container index ...) expr) ;; possible to have NO index
+
+     (begin
+
+       ;;(display "<- : #'brket-applynext =") (display (syntax->datum #'brket-applynext)) (newline)
      
-     #`(begin
-
-       ;; add a checking
-       ;; (define x 3)
-       ;; > (<- (aye x 3) 7)
-       ;; . . ../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/required-files/assignment.rkt:1:6: Bad <- form: the LHS of expression must be an identifier or of the form (bracket-apply container index) , first argument  'aye " is not bracket-apply."
-       (unless (equal? (quote $bracket-apply$next) (quote brket-applynext)) 
-	       (error "Bad <- form: the LHS of expression must be an identifier or of the form (bracket-applynext container index ...) , first argument is not bracket-applynext:"
-		      (quote brket-applynext)))
-
-       ;; (display "<- : case (_ (brket-applynext container (lst index ...)) expr) : (quote container) :") (display (quote container)) (newline)
-       ;; (display "<- : container:") (display container) (newline)
-       ;; (display "<- : expr:") (display expr) (newline)
-       
-       ;;(assignmentnext container expr (lst index index1 ...))))
-       (assignmentnext container expr (lst index  ...)))) ;; possible to have NO index
-
+       (if (equal? (quote $bracket-apply$next) (syntax->datum #'brket-applynext)) 
+	   
+	   #'(assignmentnext container expr index  ...)
+	   ;; possible to have NO index
+	   
+	   #'(define-or/and-set!-values (brket-applynext container index ...) expr)))) ;; the argument's names does not match the use
+    ;; TODO: define vars when necessary
 
 
     
@@ -451,40 +444,40 @@
       ;; {v[] <- #(1 2 3)}
       ;; > v
       ;;'#(1 2 3)
-      [(_ container expr (_))
+      [(_ container expr)
        #'(assignment-argument-0 container expr)]
     
       ;; 1 argument in [ ]
       ;; T[index]
-      [(_ container expr (_ arg1))
+      [(_ container expr arg1)
        #'(assignment-argument-1 container arg1 expr)]
       
       ;; 2 arguments in [ ]
       ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]   
       ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
       ;; '#(3 4 5)
-      [(_ container expr (_ arg1 arg2))
+      [(_ container expr arg1 arg2)
        #'(assignment-argument-2 container arg1 arg2 expr)]
 
       ;; 3 arguments in [ ]
       ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
-      [(_ container expr (_ arg1 arg2 arg3))
+      [(_ container expr arg1 arg2 arg3)
        #'(assignment-argument-3 container arg1 arg2 arg3 expr)]
 
       ;; 4 arguments in [ ]
       ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
-      [(_ container expr (_ arg1 arg2 arg3 arg4))
+      [(_ container expr arg1 arg2 arg3 arg4)
        #'(assignment-argument-4 container arg1 arg2 arg3 arg4 expr)]
 
       ;; 5 arguments in [ ]
       ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
-      [(_ container expr (_ arg1 arg2 arg3 arg4 arg5))
+      [(_ container expr arg1 arg2 arg3 arg4 arg5)
        #'(assignment-argument-5 container arg1 arg2 arg3 arg4 arg5 expr)]
 
       ;; more than 5 arguments in [ ]
       ;; T[i1 i2 i3 i4 i5 i6 ...]
-      [(_ container expr (lst arg1 arg2 arg3 arg4 arg5 arg6 ...))
-       #'(assignment-argument-6-and-more container (lst arg1 arg2 arg3 arg4 arg5 arg6 ...) expr)]
+      [(_ container expr arg1 arg2 arg3 arg4 arg5 arg6 ...)
+       #'(assignment-argument-6-and-more container (list arg1 arg2 arg3 arg4 arg5 arg6 ...) expr)]
       
       )))
 
@@ -749,11 +742,11 @@
 (define-syntax assignment-argument-0
   (syntax-rules ()
 
-    ((_ container-eval expr-eval)
-     ;; (display "assignment-argument-0 : container-eval =")
+    ((_ container expr)
+     ;; (display "assignment-argument-0 : container-eval =") ;; note: no more eval as a macro now (to be renamed if used)
      ;; (display container-eval)
      ;; (newline)
-     (<- container-eval expr-eval))))
+     (<- container expr))))
 
 
 (define (assignment-argument-1 container-eval index-eval expr-eval)

@@ -36,3 +36,90 @@
 ;; (define z)
 ;; (set!-values (x y z) (values 0 1 2))
 ;; (pk x y z)
+
+
+;; this define a variable or if it already exists set it to '()
+(define-syntax define-or-clear-values
+  (syntax-rules ()
+    ((_ var ...) (begin
+		    (<- var '())
+		    ...))))
+
+;; define or/and set! values
+(define-syntax define-or/and-set!-values
+  (syntax-rules ()
+    ((_ (var ...) expr)
+     (begin
+       (define-or-clear-values var ...)
+       (set!-values-plus (var ...) expr)))))
+
+
+;; examples:
+
+;; {(a b c d e) <- (values 1 2 3 4 5)}
+;; id=.#<syntax a>
+;; if-defined : where=#f
+
+;; id=.#<syntax b>
+;; if-defined : where=#f
+
+;; id=.#<syntax c>
+;; if-defined : where=#f
+
+;; id=.#<syntax d>
+;; if-defined : where=#f
+
+;; id=.#<syntax e>
+;; if-defined : where=#f
+
+;; id=.#<syntax a>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> a #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> a 0 0 0)
+
+;; id=.#<syntax b>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> b #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> b 0 0 0)
+
+;; id=.#<syntax c>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> c #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> c 0 0 0)
+
+;; id=.#<syntax d>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> d #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> d 0 0 0)
+
+;; id=.#<syntax e>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> e #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> e 0 0 0)
+
+;; > (list a b c d e)
+;; '(1 2 3 4 5)
+
+
+
+;; (define T (make-vector 5))
+;; {(a T[3] c d e) <- (values 1 -2 3 4 5)}
+;; id=.#<syntax a>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> a #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> a 0 0 0)
+
+;; id=.#<syntax c>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> c #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> c 0 0 0)
+
+;; id=.#<syntax d>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> d #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> d 0 0 0)
+
+;; id=.#<syntax e>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> e #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> e 0 0 0)
+
+;; id=.#<syntax a>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> a #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> a 0 0 0)
+
+;; id=.#<syntax c>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> c #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> c 0 0 0)
+
+;; id=.#<syntax d>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> d #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> d 0 0 0)
+
+;; id=.#<syntax e>
+;; if-defined : where=(#<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> e #<module-path-index="/Users/mattei/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt"> e 0 0 0)
+
+;; > {list(a T[3] c d e)}
+;; '(1 -2 3 4 5)
+;; > T
+;; '#(0 0 0 -2 0)
+;; > 

@@ -280,10 +280,9 @@
 
 
 (define (parser-$bracket-apply$next-arguments port prefix)
-	 ;; create ($bracket-apply$next container (list args1 args2 ...))
-	 (list '$bracket-apply$next
-	       prefix ;; = container (vector,array,hash table ....)
-	       (cons 'list (optimizer-parse-square-brackets-arguments (my-read-delimited-list neoteric-read-real #\] port)))))
+  ;; create ($bracket-apply$next container args1 args2 ...)
+  `($bracket-apply$next ,prefix ;; = container (vector,array,hash table ....)
+			,@(optimizer-parse-square-brackets-arguments (my-read-delimited-list neoteric-read-real #\] port))))
 
 
 
@@ -295,26 +294,30 @@
   ; then the expression "prefix" is actually a prefix.
   ; Otherwise, just return the prefix and do not consume that next char.
   ; This recurses, to handle formats like f(x)(y).
-  (define (neoteric-process-tail port prefix)
-      (let* ((c (peek-char port)))
-        (cond
-          ((eof-object? c) prefix)
-          ((char=? c #\( ) ; Implement f(x)
+(define (neoteric-process-tail port prefix)
+  
+  (let* ((c (peek-char port)))
+    
+    (cond
+     
+	 ((eof-object? c) prefix)
+
+	 ;;   f = prefix
+	 
+	 ((char=? c #\( ) ; Implement f(x)
             (read-char port)
             (neoteric-process-tail port
 				   (cons prefix (my-read-delimited-list neoteric-read-real #\) port))))
 
-	   ((char=? c #\[ )  ; Implement f[x]
-	   (read-char port)
-	   (if slice-optim
+	   ((char=? c #\[ )  ; Implement f[x] 
+	    (read-char port)
+	    (if slice-optim
 	       
-	       (neoteric-process-tail port
+		(neoteric-process-tail port
 				      (parser-$bracket-apply$next-arguments port prefix))
 	       
-	       (neoteric-process-tail port
-                  (cons '$bracket-apply$
-	   		(cons prefix
-	   		      (my-read-delimited-list neoteric-read-real #\] port))))))
+		(neoteric-process-tail port
+				       `($bracket-apply$ ,prefix ,@(my-read-delimited-list neoteric-read-real #\] port)))))
 	  
           ((char=? c #\{ )  ; Implement f{x}
             (read-char port)
@@ -324,6 +327,7 @@
                 (if (eqv? tail '())
                   (list prefix) ; Map f{} to (f), not (f ()).
                   (list prefix tail)))))
+	  
           (#t prefix))))
 
 

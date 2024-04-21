@@ -1,7 +1,3 @@
 try to support a R6RS version (fork/branch on github)
 tester le parsing avec make Makefile
 
-use more syntax-case
-set values!
-
-etendre aux arrays le defined?

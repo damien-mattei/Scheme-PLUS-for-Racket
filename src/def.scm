@@ -44,8 +44,8 @@
   (syntax-case stx ()
     [(_ id iftrue iffalse)
      (let ([where (identifier-binding #'id)])
-       (display "if-defined : where=") (display where) (newline)
-       (display "id=") (display #'id) (newline)(newline)
+       ;;(display "id=") (display #'id) (newline)
+       ;;(display "if-defined : where=") (display where) (newline) (newline)
        (if where #'iftrue #'iffalse))]))
 
 

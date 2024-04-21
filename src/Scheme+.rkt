@@ -2,7 +2,7 @@
 
 ;; Scheme+.rkt 
 
-;; version 8.4
+;; version 8.5
 
 ;; author: Damien MATTEI
 
@@ -28,17 +28,18 @@
 
 ;; use :
 
+;; (require "main.rkt")
+;; or (require "src/Scheme+.rkt")
+;; or if installed in the system or account user: (require Scheme-PLUS-for-Racket)
+
+
+;; deprecated:
 ;; this file must now be included in your main project file like this:
 ;; at the beginning of your main file add
 ;; for infix operator precedence:
 ;; (define-namespace-anchor ankh)
 ;; (define bsns (namespace-anchor->namespace ankh))
 ;; (current-namespace bsns)
-
-;; (require "main.rkt")
-;; previous name was: (require "Scheme+.rkt")
-
-
 
 
 (module Scheme+ racket

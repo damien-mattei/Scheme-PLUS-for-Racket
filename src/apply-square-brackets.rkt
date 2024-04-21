@@ -68,7 +68,7 @@
 
 
 
-(define ($bracket-apply$next container args)  ; list of arguments
+(define ($bracket-apply$next container . args)  ; list of arguments
 
   ;;(display "apply-square-brackets.* : $bracket-apply$next : container = ") (display container) (newline)
   ;;(display args) (newline)
@@ -121,7 +121,7 @@
 					   (fifth args)))
     ;; more than 5 arguments in [ ]
     ;; T[i1 i2 i3 i4 i5 i6 ...]
-    (else ;; TODO : put the else case in a function like other cases
+    (else 
      (apply-square-brackets-argument-6-and-more container args))))
 
 
