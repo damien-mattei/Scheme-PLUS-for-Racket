@@ -42,7 +42,7 @@
 (define-syntax define-or-clear-values
   (syntax-rules ()
     ((_ var ...) (begin
-		    (<- var '())
+		    (<- var '()) ; in racket <- can possibly define the value (if not already defined) 
 		    ...))))
 
 ;; define or/and set! values
@@ -123,3 +123,30 @@
 ;; > T
 ;; '#(0 0 0 -2 0)
 ;; > 
+
+
+
+;; > (return-values (values 1 2 3))
+;; 1
+;; 2
+;; 3
+;; > (return-values (values 1))
+;; 1
+;; > (return-values 1)
+;; 1
+;; > (return-values (sin 0.7))
+;; 0.644217687237691
+(define-syntax return-values
+    (syntax-rules ()
+      ((_ expr) (call-with-values (lambda () expr)
+                                  values))))
+
+;; > ((create-return-values 3))
+;; 3
+;; > ((create-return-values (values 1 2 3)))
+;; 1
+;; 2
+;; 3
+(define-syntax create-return-values
+    (syntax-rules ()
+      ((_ expr) (lambda () (return-values expr)))))

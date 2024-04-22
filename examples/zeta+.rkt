@@ -11,7 +11,7 @@
 
 (require racket/gui/base)
 
-(define animation-mode #t)
+{animation-mode ← #t}
 
 {xws ← 1000} ;; X window size
 {yws ← 800} ;; Y window size
@@ -36,13 +36,13 @@
                          (send msg set-label "Button click")
 			 (exit))])
 
-(define no-pen (new pen% [style 'transparent]))
-(define no-brush (new brush% [style 'transparent]))
-(define blue-brush (new brush% [color "blue"]))
-(define yellow-brush (new brush% [color "yellow"]))
+{no-pen ← (new pen% [style 'transparent])}
+{no-brush ← (new brush% [style 'transparent])}
+{blue-brush ← (new brush% [color "blue"])}
+{yellow-brush ← (new brush% [color "yellow"])}
 
-;;{z ⥆ 0}
-;;{z ⥆ 2+1i}
+;;{z ← 0}
+;;{z ← 2+1i}
 {z ← 1.13+1.765i}
 
 {unit-axis-in-pixel ← 200}
@@ -53,7 +53,7 @@
   (send dc set-brush blue-brush)
   {ga ← 8}
   {pa ← 8}
-  {(x y) ⥆ (to-screen-multi-values z)}
+  {(x y) ← (to-screen-multi-values z)}
   {x ← x - (quotient ga 2)}
   {y ← y - (quotient pa 2)}
   (send dc draw-ellipse x y ga pa))
@@ -86,7 +86,7 @@
   
   {flag-color ← #t}
   ;;(newline)
-  (for ({n ← 1} {n <= nmax} {n <- n + 1})
+  (for ({n ← 1} {n <= nmax} {n ← n + 1})
        (if flag-color
 	   (send dc set-pen "blue" 1 'solid)
 	   (send dc set-pen "green" 1 'solid))
@@ -133,8 +133,8 @@
        {zxtrm  ← zi + zp}
        ;;(display "draw-zeta-multi-values : zxtrm =") (display zxtrm) (newline)
  
-       {(x0 y0) ⥆ (to-screen-multi-values zi)} 
-       {(x1 y1) ⥆ (to-screen-multi-values zxtrm)}
+       {(x0 y0) ← (to-screen-multi-values zi)} 
+       {(x1 y1) ← (to-screen-multi-values zxtrm)}
  
        (when {x0 >= 0 and x0 <= xws  and x1 >= 0 and x1 <= xws and
 	      y0 >= 0 and y0 <= ywsp and y1 >= 0 and y1 <= ywsp}
@@ -164,7 +164,7 @@
 ;;              [callback (λ (button event) (sleep 5))])
 
 
-;; {panel ⥆ (new horizontal-panel% [parent frame0])}
+;; {panel ← (new horizontal-panel% [parent frame0])}
 
 ;; (new button% [parent panel]
 ;;              [label "Left"]
@@ -188,7 +188,7 @@
       (when animation-mode
 	{z ← (ret-z window-x window-y)})
       
-      ;;{str ⥆ (string-append "(" (number->string window-x) " , " (number->string window-y) ")")}
+      ;;{str ← (string-append "(" (number->string window-x) " , " (number->string window-y) ")")}
       (when {z ≠ z-old}
 	    {z-old ← z}
 	    {str ← (number->string z)} 
@@ -238,7 +238,7 @@
   (values (quotient xws 2)
 	  (quotient ywsp 2)))
 
-{(xo yo) ⥆ (center-coords)}
+{(xo yo) ← (center-coords)}
 
 
 (define (draw-axes dc)
@@ -250,7 +250,7 @@
 (define (draw-units dc)
   ;;X
   {nun ← (quotient xo unit-axis-in-pixel)}
-  (for ({n ← 1} {n <= nun} {n <- n + 1})
+  (for ({n ← 1} {n <= nun} {n ← n + 1})
        {xu ← xo + n * unit-axis-in-pixel}
        (send dc draw-line
 	     xu {yo - 3}
@@ -262,7 +262,7 @@
 
   ;; Y
   {nuny ← (quotient yo unit-axis-in-pixel)}
-  (for ({n ← 1} {n <= nuny} {n <- n + 1})
+  (for ({n ← 1} {n <= nuny} {n ← n + 1})
        {yu ← yo - n * unit-axis-in-pixel}
        (send dc draw-line
 	     {xo - 3} yu

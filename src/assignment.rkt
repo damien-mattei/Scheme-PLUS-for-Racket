@@ -73,6 +73,11 @@
 ;; > {s[2 * 3 - 4 $ 2 * 3 + 1 $ 2 * 4 - 6] <- "0000"}
 ;; "ab0d0f0h"
 
+
+;; > (define T #(1 2 3 4 5 6 7))
+;; > {T[T[2]]}
+;; 4
+
 ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
 
 (define-syntax <-
@@ -80,6 +85,20 @@
   (lambda (stx)
     
     (syntax-case stx ()
+
+      ;; silly case
+      ((_ ( ) expr)
+       #'(void)) ;; void is not portable ;'())
+
+      ;; one value in values !
+      ;; > {(x) <- (values 7)}
+      ;; > x
+      ;; 7
+      ((_ (var) expr)
+
+       #'(define-or/and-set!-values (var) expr))
+
+      
 
     ;; ;; {(x y) <- Lexemples[ip]}   
     ;; ((_ (kar kdr) expr) ; expr must be a pair
@@ -94,9 +113,10 @@
 
     ;; optimised by parser form
 
-    ((_ (brket-applynext container index ...) expr) ;; possible to have NO index
+      ((_ (brket-applynext container index ...) expr) ; possible to have NO index :
+					; minimal form is (_ (brket-applynext container) expr)
 
-     (begin
+     ;(begin
 
        ;;(display "<- : #'brket-applynext =") (display (syntax->datum #'brket-applynext)) (newline)
      
@@ -105,8 +125,8 @@
 	   #'(assignmentnext container expr index  ...)
 	   ;; possible to have NO index
 	   
-	   #'(define-or/and-set!-values (brket-applynext container index ...) expr)))) ;; the argument's names does not match the use
-    ;; TODO: define vars when necessary
+	   #'(define-or/and-set!-values (brket-applynext container index ...) expr)));) ;; the argument's names does not match the use
+    
 
 
     
@@ -134,7 +154,7 @@
     ;;    (assignmentnext container expr (parse-square-brackets-arguments (list index index1 ...)))))
     
 
-    
+    ;; TODO : try to insert ((_ (var10 ...) (var11 ...) ... expr)
     
     ;;(<- x 5)
     ((_ var expr)
@@ -169,16 +189,36 @@
     ;; 0
     ;; > I
     ;; #<array:srfi-9-record-type-descriptor>
-    
+
+    ;; > (declare a b c d)
+    ;; > {(a b) <- (c d) <- (values 5 7)}
+    ;; > a
+    ;; 5
+    ;; > b
+    ;; 7
+    ;; > c
+    ;; 5
+    ;; > d
+    ;; 7
+
+    ;; without declare:
+    ;; > {(a b) <- (c d) <- (values 5 7)}
+    ;; > (list a b c d)
+    ;; '(5 7 5 7)
     ((_ var var1 ... expr)
      
      ;;(<- var (<- var1 ... expr)))
 
      #`(begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result
-       ;;(display "<- : case (_ var var1 ... expr)") (newline)
-	(<- var expr)
-	(<- var1 var)
-	...))
+	 ;;(display "<- : case (_ var var1 ... expr)") (newline)
+	 ;;(<- var expr)
+	 (define return-values-of-expr (create-return-values expr))
+	 (<- var (return-values-of-expr))
+	 ;;(display "<- : case : passed (<- var expr)") (newline)
+	 ;;(display "<- : case : var=") (display var) (newline) 
+	 ;;(<- var1 var)
+	 (<- var1 (return-values-of-expr))
+	 ...))
 
     )))
 
@@ -364,12 +404,17 @@
     ((_ expr ...) (v> expr ...))))
 
 
+
+
+
+
 (define-syntax check-step
 
   (syntax-rules ()
 
     ((_ step)  (when (= step 0)
 		     (error "assignment : slice step cannot be zero")))))
+
 
 
 ;; (define (assignmentnext container expr args)

@@ -43,10 +43,10 @@
 (define-syntax (if-defined stx)
   (syntax-case stx ()
     [(_ id iftrue iffalse)
-     (let ([where (identifier-binding #'id)])
+     (let ([exist-id (identifier-binding #'id)])
        ;;(display "id=") (display #'id) (newline)
-       ;;(display "if-defined : where=") (display where) (newline) (newline)
-       (if where #'iftrue #'iffalse))]))
+       ;;(display "if-defined : exist-id=") (display exist-id) (newline) (newline)
+       (if exist-id #'iftrue #'iffalse))]))
 
 
 ;; scheme@(guile-user)> (def (foo) (when #t (return "hello") "bye"))
