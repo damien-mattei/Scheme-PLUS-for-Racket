@@ -2,7 +2,7 @@
 
 ;; Scheme+.rkt 
 
-;; version 8.5
+;; version 8.7
 
 ;; author: Damien MATTEI
 

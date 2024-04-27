@@ -61,27 +61,25 @@
 
 ;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 $ 3 * 5 - 10 $ 2 * 4 - 6]}
 ;; '#(3 5)
+
+;; DEPRECATED:
+;; other procedures are used now, and there is no SRFI 105 in racket/base or official racket
+;; but could possibly used when parsing a scheme+ file for racket in srfi-105 compatible mode
+;; and by loading the parsed file in racket
 (define ($bracket-apply$ container . args-brackets)   ;;  this implements a possible $bracket-apply$ as proposed in SRFI-105
 
   ;;(display args-brackets) (newline)
-  ($bracket-apply$next container (parse-square-brackets-arguments args-brackets)))
+  ($bracket-apply$next4list-args container (parse-square-brackets-arguments args-brackets)))
 
 
 
-(define ($bracket-apply$next container . args)  ; list of arguments
+(define ($bracket-apply$next4list-args container args) 
 
-  ;;(display "apply-square-brackets.* : $bracket-apply$next : container = ") (display container) (newline)
-  ;;(display args) (newline)
-
+;;(display args) (newline)
   (case (length args)
 
-    ;; > v
-    ;;'#(1 2 5)
-    ;; > {v}
-    ;;'#(1 2 5)
-    ;;    {v[]}
-    ;;'#(1 2 5)
     ((0) (apply-square-brackets-argument-0 container))
+
     
     ;; 1 argument in [ ]
     ;; T[index]
@@ -123,6 +121,13 @@
     ;; T[i1 i2 i3 i4 i5 i6 ...]
     (else 
      (apply-square-brackets-argument-6-and-more container args))))
+
+
+
+
+(define ($bracket-apply$next container . args)   ;; optimized version
+
+  ($bracket-apply$next4list-args container args))
 
 
 

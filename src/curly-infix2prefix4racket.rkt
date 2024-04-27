@@ -51,6 +51,9 @@
 
 (define srfi-105 #f)
 
+;; quiet mode that do not display on standart error the code
+(define verbose #f)
+
 (define flag-r6rs #f)
 
 (define (skip-comments-and-empty-lines in)
@@ -88,17 +91,17 @@
 ;; a tail recursive version
 (define (process-input-code-tail-rec in) ;; in: port
 
-
-  (display "SRFI-105 Curly Infix parser with operator precedence by Damien MATTEI" stderr) (newline stderr)
-  (display "(based on code from David A. Wheeler and Alan Manuel K. Gloria.)" stderr) (newline stderr) (newline stderr)
-  
-
-  (when srfi-105
-	(display "Options :" stderr) (newline stderr) (newline stderr)
-	(display "SRFI-105 strict compatibility mode is ON." stderr))
-  (newline stderr)
-
-  (newline stderr)
+  (when verbose
+	(display "SRFI-105 Curly Infix parser with operator precedence by Damien MATTEI" stderr) (newline stderr)
+	(display "(based on code from David A. Wheeler and Alan Manuel K. Gloria.)" stderr) (newline stderr) (newline stderr)
+	
+	
+	(when srfi-105
+	      (display "Options :" stderr) (newline stderr) (newline stderr)
+	      (display "SRFI-105 strict compatibility mode is ON." stderr))
+	(newline stderr)
+	
+	(newline stderr))
 
   
   ;; internal define
@@ -106,13 +109,14 @@
     
     (define result (curly-infix-read in))  ;; read an expression
 
-    (unless (eof-object? result)
-	    (pretty-print result
-	    		  stderr
-	    		  1) ;; quote-depth : remove global quote of
-	    ;;(write result stderr) ;; without 'write' but 'display' string delimiters disappears !
-	    ;;(newline stderr)
-	    (newline stderr))
+    (when verbose
+	  (unless (eof-object? result)
+		  (pretty-print result
+				stderr
+				1) ;; quote-depth : remove global quote of
+		  ;;(write result stderr) ;; without 'write' but 'display' string delimiters disappears !
+		  ;;(newline stderr)
+		  (newline stderr)))
     
     (if (eof-object? result)
 	(reverse acc)
@@ -128,42 +132,47 @@
   
   (when (string=? "#lang reader"
 		frst-line-beginning)
-  
-	(display "#lang reader detected " stderr)
-	(newline stderr)(newline stderr)
+
+	(when verbose
+	      (display "#lang reader detected " stderr)
+	      (newline stderr)(newline stderr))
 	(consume-to-eol in) ; skip the first line #lang reader ... SRFI-105.rkt
 	;;(set! lang-reader #t)
 	)
 
   (port-count-lines! in) ; turn on counting on port
-  
-  (display "Possibly skipping some header's lines containing space,tabs,new line,etc  or comments." stderr) (newline stderr) (newline stderr)
+
+  (when verbose
+	(display "Possibly skipping some header's lines containing space,tabs,new line,etc  or comments." stderr) (newline stderr) (newline stderr))
   (skip-comments-and-empty-lines in)
 
   (when (regexp-try-match #px"^#!r6rs[[:blank:]]*\n" in)
 	(set! flag-r6rs #t)
-	(display "Detected R6RS code. (#!r6rs)") (newline) (newline))
+	(when verbose
+	      (display "Detected R6RS code. (#!r6rs)") (newline) (newline)))
 
   (declare lc cc pc)
   (set!-values (lc cc pc) (port-next-location in))
-  (display "SRFI-105.rkt : number of skipped lines (comments, spaces, directives,...) at header's beginning : " stderr)
-  (display lc stderr)
-  (newline stderr)
-  (newline stderr)
+  (when verbose
+	(display "SRFI-105.rkt : number of skipped lines (comments, spaces, directives,...) at header's beginning : " stderr)
+	(display lc stderr)
+	(newline stderr)
+	(newline stderr)
   
-  (display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
+	(display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr))
 
   (when flag-r6rs
-	(display "#!r6rs" stderr) (newline stderr)
-	(newline stderr))
+	(when verbose
+	      (display "#!r6rs" stderr) (newline stderr)
+	      (newline stderr)))
   
   ;;(display "(module aschemeplusprogram racket " stderr)
   ;;(newline stderr)
   (set! rv (process-input '()))
   ;;(display ")" stderr)
 	
-     
-  (newline stderr)
+   (when verbose  
+	 (newline stderr))
 
   rv)
 
@@ -184,6 +193,7 @@
       (display "racket curly-infix2prefix4racket.scm [options] file2parse.scm") (newline) (newline)
       (display "options:") (newline)(newline)
       (display "  --srfi-105 : set strict compatibility mode with SRFI-105 ") (newline) (newline)
+      (display "  --verbose : display code on stderr too ") (newline) (newline)
       (exit))
 
 
@@ -193,7 +203,10 @@
       (set! slice-optim #f))
 
 
-;; TODO quiet mode that do not display on standart error the code
+(when (member "--verbose" options)
+      (set! verbose #t))
+
+
 
 (define file-name (car (reverse cmd-ln)))
 

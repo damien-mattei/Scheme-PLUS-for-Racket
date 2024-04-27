@@ -111,21 +111,62 @@
 
 
 
-    ;; optimised by parser form
-
-      ((_ (brket-applynext container index ...) expr) ; possible to have NO index :
+      ;; example: {a[4] <- 7}
+      ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
+      
+      ((_ (brket-applynext container index ...) expr)  ; possible to have NO index :
 					; minimal form is (_ (brket-applynext container) expr)
 
-     ;(begin
+       ;; We will let the second $bracket-apply$ be executed and forbid the execution of first $bracket-apply$.
+       (cond ((equal? (quote $bracket-apply$next) (syntax->datum #'brket-applynext))  ;; already parsed and optimised by parser
+	      #'(assignmentnext container expr index  ...)) ; possible to have NO index
+	     
+	     ((equal? (quote $bracket-apply$) (syntax->datum #'brket-applynext)) ;; integrated curly-infix of guile (no parsing) at REPL
+	      ;; we parse arguments at posteriori
+	      (case (length (syntax->datum #'(index ...)))
 
-       ;;(display "<- : #'brket-applynext =") (display (syntax->datum #'brket-applynext)) (newline)
-     
-       (if (equal? (quote $bracket-apply$next) (syntax->datum #'brket-applynext)) 
-	   
-	   #'(assignmentnext container expr index  ...)
-	   ;; possible to have NO index
-	   
-	   #'(define-or/and-set!-values (brket-applynext container index ...) expr)));) ;; the argument's names does not match the use
+		;; 0 argument in []
+		;; T[]
+		;; {v[] <- #(1 2 3)}
+		;; > v
+		;;'#(1 2 3)
+		((0) 
+		 #'(assignment-argument-0 container index ... expr))  ; possible to have NO index
+
+		;; 1 argument in [ ]
+		;; T[index]
+		((1)
+		 #'(assignment-argument-1 container index ... expr))
+
+		;; 2 arguments in [ ]
+		;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]   
+		;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
+		;; '#(3 4 5)
+		((2)
+		 #'(assignment-argument-2 container index ... expr))
+
+		;; 3 arguments in [ ]
+		;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
+		((3)
+		 #'(assignment-argument-3 container index ... expr))
+
+		;; 4 arguments in [ ]
+		;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
+		((4)
+		 #'(assignment-argument-4 container index ... expr))
+
+		;; 5 arguments in [ ]
+		;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
+		((5)
+		 #'(assignment-argument-5 container index ... expr))
+
+		;; more than 5 arguments in [ ]
+		;; T[i1 i2 i3 i4 i5 i6 ...]
+		(else
+		 #'(assignment-argument-6-and-more container (list index ...) expr))))
+
+	     (else
+	      #'(define-or/and-set!-values (brket-applynext container index ...) expr)))) ;; the argument's names does not match the use
     
 
 
@@ -153,8 +194,6 @@
        
     ;;    (assignmentnext container expr (parse-square-brackets-arguments (list index index1 ...)))))
     
-
-    ;; TODO : try to insert ((_ (var10 ...) (var11 ...) ... expr)
     
     ;;(<- x 5)
     ((_ var expr)
@@ -167,7 +206,7 @@
        ;; (display "after set! : var =") (display var) (newline)))
      ;;var))
 
-     #`(if-defined var
+     #'(if-defined var
 		   (set! var expr)
 		   (define var expr)))
 
@@ -209,7 +248,7 @@
      
      ;;(<- var (<- var1 ... expr)))
 
-     #`(begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result
+     #'(begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result
 	 ;;(display "<- : case (_ var var1 ... expr)") (newline)
 	 ;;(<- var expr)
 	 (define return-values-of-expr (create-return-values expr))
@@ -672,25 +711,29 @@
 
 (define (copy-slice-with-negative-step container-eval expr-eval i1 i2 step)
   (for (($> (<+ k i1) (<+ i 0)) (> k i2) (<- k (+ k step)))
-       (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
+       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
+       (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
        (<- i (+ i 1))))
 
 (define (copy-slice-starting-at-zero-with-negative-step container-eval expr-eval i1 step)
   (for (($> (<+ k i1) (<+ i 0)) (>= k 0) (<- k (+ k step)))
-       (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
+       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
+       (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
        (<- i (+ i 1))))
 
 
 (define (copy-slice-with-positive-step container-eval expr-eval i1 i2 step)
   (for (($> (<+ k i1) (<+ i 0)) (< k i2) (<- k (+ k step)))
-       (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
+       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
+       (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
        (<- i (+ i 1))))
 
 
 (define (copy-slice-starting-at-zero-with-positive-step container-eval expr-eval i2 step)
   ;;(display "copy-slice-starting-at-zero-with-positive-step : container-eval=") (display container-eval) (newline)
   (for (($> (<+ k 0) (<+ i 0)) (< k i2) (<- k (+ k step)))
-       (<+ bkt ($bracket-apply$next expr-eval (list i)))
+       ;;(<+ bkt ($bracket-apply$next expr-eval (list i)))
+       (<+ bkt ($bracket-apply$next expr-eval i))
        ;;(display "bkt=") (display bkt) (newline)
        (assignment-argument-1-index container-eval k bkt)
        (<- i (+ i 1))))
@@ -1304,6 +1347,15 @@
 
 (define (assignment-argument-5 container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval expr-eval)
 
+  ;; (display "assignment-argument-5") (newline)
+  ;; (display "container-eval=") (display container-eval) (newline)
+  ;; (display "index1-eval=") (display index1-eval) (newline)
+  ;; (display "index2-or-keyword-eval=") (display index2-or-keyword-eval) (newline)
+  ;; (display "index3-eval=") (display index3-eval) (newline)
+  ;; (display "index4-or-keyword-eval=") (display index4-or-keyword-eval) (newline)
+  ;; (display "index5-or-step-eval=") (display index5-or-step-eval) (newline)
+  ;; (display "expr-eval=") (display expr-eval) (newline)
+  
   (when (not (or (vector? container-eval)  (string? container-eval)  (array? container-eval)))
 	     (error "assignment-argument-5 : container type not compatible : " container-eval))
  
@@ -1333,7 +1385,7 @@
 
 	 ;; T[i1 $ i2 $ step]	 	 
 	 ;; > {s <+ (string-append "abcdefgh")}
-	 ;; > {s[2 $ 7 $ 2] <- "1234"}
+	 ;; > {s[2 : 7 : 2] <- "1234"}
 	 ;; > s
 	 ;; "ab1d2f3h"
 
@@ -1348,19 +1400,25 @@
 	 ;; v
 	 ;; [1, 2, 3, -3, 5, -2, 7, -1, 9]
 	 
-	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
-	 ;; >  {v[7 $ 2 $ -2] <- (vector -1 -2 -3)}
+	 ;; > {v <- (vector 1 2 3 4 5 6 7 8 9)}
+	 ;; >  {v[7 : 2 : -2] <- (vector -1 -2 -3)}
 	 ;; > v
 	 ;; '#(1 2 3 -3 5 -2 7 -1 9)
 
 	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
-	 ;; > {v[7 $ 3 $ -2] <- (vector -1 -2 -3)}
+	 ;; > {v[7 : 3 : -2] <- (vector -1 -2 -3)}
 	 ;; > v
 	 ;; '#(1 2 3 4 5 -2 7 -1 9)
 	 ((list i1 (== slice) i2 (== slice) step-not-used)
 	  
 	  (<+ step index5-or-step-eval)
 
+	  ;; (display "container-eval=") (display container-eval) (newline)
+	  ;; (display "i1=") (display i1) (newline)
+	  ;; (display "i2=") (display i2) (newline)
+	  ;; (display "step=") (display step) (newline)
+	  ;; (display "expr-eval=") (display expr-eval) (newline)
+	  
 	  (copy-stepped-slice container-eval expr-eval i1 i2 step))
 	 
 	 

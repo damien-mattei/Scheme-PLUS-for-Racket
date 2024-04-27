@@ -4,7 +4,7 @@
 
 ;; Author: Damien Mattei
 
-;; /Applications/Racket\ v8.11/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/matrix-by-vectors+.rkt > ../../../../AI_Deep_Learning/matrix-by-vectors.rkt
+;; /Applications/Racket\ v8.12/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/matrix-by-vectors+.rkt > ../../../../AI_Deep_Learning/matrix-by-vectors.rkt
 
 
 ;; use: (require "matrix-by-vectors+.rkt")
@@ -32,7 +32,10 @@
 ;;(import (srfi :43)) 
 
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/Scheme+.rkt")
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
+
+
 
 (define-overload-existing-operator *) ;; create a procedure,must be before infix procedures
 
@@ -53,9 +56,9 @@
   (when (not (matrix-vect? M))
 	(error "argument is not of type matrix"))
   
-  {v <+ (matrix-vect-v M)}
-  {lin <+ (vector-length v)}
-  {col <+ (vector-length {v[0]})}
+  {v <- (matrix-vect-v M)}
+  {lin <- (vector-length v)}
+  {col <- (vector-length {v[0]})}
   (values lin col))
 
 
@@ -63,21 +66,25 @@
 
   {(n1 p1) <+ (dim-matrix-vect M1)}
   {(n2 p2) <+ (dim-matrix-vect M2)}
+  ;; (display "multiply-matrix-matrix : n1=") (display n1) (newline)
+  ;; (display "multiply-matrix-matrix : p1=") (display p1) (newline)
+  ;; (display "multiply-matrix-matrix : n2=") (display n2) (newline)
+  ;; (display "multiply-matrix-matrix : p2=") (display p2) (newline)
 
   (when {p1 ≠ n2} (error "matrix-by-vectors.* : matrix product impossible, incompatible dimensions"))
 
-  {v1 <+ (matrix-vect-v M1)}
-  {v2 <+ (matrix-vect-v M2)}
+  {v1 <- (matrix-vect-v M1)}
+  {v2 <- (matrix-vect-v M2)}
   
   (define (res i j)
-    {sum <+ 0}
-    (for ({k <+ 0} {k < p1} {k <- k + 1})
+    {sum <- 0}
+    (for ({k <- 0} {k < p1} {k <- k + 1})
     	 {sum <- sum + v1[i][k] * v2[k][j]})
     sum)
     ;; (for/sum ([k (in-range p1)])
     ;; 	     {v1[i][k] * v2[k][j]}))
 
-  {v <+ (create-vector-2d res n1 p2)}
+  {v <- (create-vector-2d res n1 p2)}
   ;(display "v=") (display v) (newline)
 
   (matrix-vect v))
@@ -91,13 +98,13 @@
 				   v)))
 
 (define (matrix-column->vector Mc)
-  {v <+ (matrix-vect-v Mc)}
+  {v <- (matrix-vect-v Mc)}
   ;;(display "matrix-by-vectors : matrix-column->vector : v =") (display v) (newline)
   (vector-map-srfi-43 (lambda (i v2) {v2[0]})
 		      v))
 
 (define (multiply-matrix-vector M v) ;; args: matrix ,vector ;  return vector
-  {Mc <+ (vector->matrix-column v)}
+  {Mc <- (vector->matrix-column v)}
   ;;(display "matrix-by-vectors : multiply-matrix-vector : v=") (display v) (newline)
   ;;(display Mc) (newline)
   ;;(display (matrix-vect-v Mc)) (newline)
@@ -112,11 +119,11 @@
 
 ;; define getter,setter
 (define (matrix-vect-ref M lin col)
-  {v <+ (matrix-vect-v M)}
+  {v <- (matrix-vect-v M)}
   {v[lin][col]})
 
 (define (matrix-vect-set! M lin col x)
-  {v <+ (matrix-vect-v M)}
+  {v <- (matrix-vect-v M)}
   {v[lin][col] <- x})
 
 
@@ -140,12 +147,12 @@
 ;; 4
 ;; > 
 (define (matrix-vect-line-ref M lin)
-  {v <+ (matrix-vect-v M)}
+  {v <- (matrix-vect-v M)}
   {v[lin]})
 
 
 (define (matrix-vect-line-set! M lin vect-line)
-  {v <+ (matrix-vect-v M)}
+  {v <- (matrix-vect-v M)}
   {v[lin] <- vect-line})
 
 

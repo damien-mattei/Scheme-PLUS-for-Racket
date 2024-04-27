@@ -12,7 +12,7 @@
 ; use MacVim to show ALL the characters of this file (not Emacs, not Aquamacs)
 					; jeu de couleurs: Torte ou Koehler
 					
-; modify it to be recompiled by Racket ?   
+; modify it to be recompiled by Racket ? 1 
 
 
 ;; use in GUI 
@@ -23,13 +23,19 @@
 
 ;; or :
 
-;; /Applications/Racket\ v8.11/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors+.rkt > ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors.rkt
+;; /Applications/Racket\ v8.12/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors+.rkt > ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors.rkt
 
-;; /Applications/Racket\ v8.11/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/matrix-by-vectors+.rkt > ../../../../AI_Deep_Learning/matrix-by-vectors.rkt
+;; /Applications/Racket\ v8.12/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/matrix-by-vectors+.rkt > ../../../../AI_Deep_Learning/matrix-by-vectors.rkt
 
 ;; and you need to modify the code to load the parsed included module files (no + in name: example: matrix-by-vectors.rkt
 
+;; or : make -f Makefile.Racket
+
 ;; (require "exo_retropropagationNhidden_layers_matrix_v2_by_vectors.rkt")
+
+
+;;#!r6rs
+
 
 (module exo_retropropagationNhidden_layers_matrix_v2_by_vectors racket
 
@@ -47,7 +53,8 @@
 (require (rename-in srfi/42
 	(: s42:))) ; Eager Comprehensions
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
 
 
 
@@ -58,7 +65,7 @@
 
 ; return a random number between [inf, sup]
 (define (uniform-interval inf sup)
-  {gap <+ sup - inf}
+  {gap <- sup - inf}
   {inf + gap * (random)})
 
 
@@ -83,9 +90,9 @@
 but will it works with Scheme+ parser?
 |#
 
-(require "matrix-by-vectors+.rkt")
+;;(require "matrix-by-vectors+.rkt")
 ;; use one or the other:
-;;(require "matrix-by-vectors.rkt")
+(require "matrix-by-vectors.rkt")
 
 
 
@@ -123,7 +130,7 @@ but will it works with Scheme+ parser?
 		     (activation_function_hidden_layer_derivative der_tanh)
 		     (activation_function_output_layer_derivative der_tanh))
 	 
-	 {lnc <+ (vector-length nc)}
+	 {lnc <- (vector-length nc)}
 
 	 ; les entrées concrètes seront fournies avec la méthode accepte
 	 ;; (field (z (vector-ec (s42: i (vector-length nc)) (make-vector {nc[i]} 0))))
@@ -148,7 +155,7 @@ but will it works with Scheme+ parser?
 	 (display "z̃=") (display z̃) (newline)
 
 	 ; a definition in class seems like a field
-	 {M <+ (vector-ec (s42: n {lnc - 1}) ; vectors by eager comprehension (SRFI 42)
+	 {M <- (vector-ec (s42: n {lnc - 1}) ; vectors by eager comprehension (SRFI 42)
 			  create-matrix-vect-by-function(uniform-dummy nc[n + 1] {nc[n] + 1}))} ;; Matrix-vect
 
 	 ;(field (M (vector-ec (s42: n {lnc - 1}) ; vectors by eager comprehension (SRFI 42)
@@ -181,7 +188,7 @@ but will it works with Scheme+ parser?
 
 		;; propagation des entrées vers la sortie
 
-		{n <+ vector-length(z)}
+		{n <- vector-length(z)}
 		;(display "n=") (display n) (newline)
 
 		;; hidden layers
@@ -250,7 +257,7 @@ but will it works with Scheme+ parser?
 	 
 	(define/public (apprentissage Lexemples) ; apprentissage des poids par une liste d'exemples
 	   
-	  {ip <+ 0} ; numéro de l'exemple courant
+	  {ip <- 0} ; numéro de l'exemple courant
 
 	  (declare x y)
 	  (for-racket ([it (in-range nbiter)]) ; le nombre d'itérations est fixé !
@@ -260,18 +267,19 @@ but will it works with Scheme+ parser?
 
 		      ;(display it)(newline)
 		      
-		      ;{err <+ 0.0} ; l'erreur totale pour cet exemple
+		      ;{err <- 0.0} ; l'erreur totale pour cet exemple
 
-		      {(x y) <- Lexemples[ip]}         ; un nouvel exemple à apprendre
+		      {x <- (car Lexemples[ip])}         ; un nouvel exemple à apprendre
+		      {y <- (cdr Lexemples[ip])} 
 
 		      ;; PROPAGATION VERS L'AVANT
 		      (accepte_et_propage x)       ; sorties obtenues sur l'exemple courant, self.z_k et z_j sont mis à jour
 
 		      ; RETRO_PROPAGATION VERS L'ARRIERE, EN DEUX TEMPS
 
-		      {i <+ i_output_layer <+ vector-length(z) - 1} ; start at index i of the ouput layer
+		      {i <- i_output_layer <- vector-length(z) - 1} ; start at index i of the ouput layer
 
-		      {ns <+ vector-length(z[i])}
+		      {ns <- vector-length(z[i])}
 		     
 
 		      ;; TEMPS 1. calcul des gradients locaux sur la couche k de sortie (les erreurs commises)
@@ -287,7 +295,7 @@ but will it works with Scheme+ parser?
 
 		      ;; modification des poids de la matrice de transition de la derniére couche de neurones cachés à la couche de sortie
 
-		      {მzⳆმz̃ <+ activation_function_output_layer_derivative}
+		      {მzⳆმz̃ <- activation_function_output_layer_derivative}
 
 		      {modification_des_poids(M[i - 1] ηₛ z[i - 1] z[i] z̃[i] ᐁ[i] მzⳆმz̃)}
 
@@ -296,8 +304,8 @@ but will it works with Scheme+ parser?
 		      {მzⳆმz̃ <- activation_function_hidden_layer_derivative}
 
 		      (for-racket ([i (reversed (in-range 1 i_output_layer))])
-				{nc <+ vector-length(z[i])}
-				{ns <+ vector-length(z[i + 1])}
+				{nc <- vector-length(z[i])}
+				{ns <- vector-length(z[i + 1])}
 				(for-racket ([j (in-range nc)])
 					{ᐁ[i][j] <- (for/sum ([k (in-range ns)])
 							მzⳆმz̃(z[i + 1][k] z̃[i + 1][k]) * M[i][k {j + 1}] * ᐁ[i + 1][k])})
@@ -319,7 +327,7 @@ but will it works with Scheme+ parser?
 	  ; the length of output and input layer with coeff. used for bias update
 	  {(len_layer_output len_layer_input_plus1forBias) <+ (dim-matrix-vect M_i_o)} ; use values and define-values to create bindings
         
-	  {len_layer_input <+ len_layer_input_plus1forBias - 1}
+	  {len_layer_input <- len_layer_input_plus1forBias - 1}
 
 	  ;(display "modification_des_poids : len_layer_input = ") (display len_layer_input) (newline)
 	  ;(display "modification_des_poids : len_layer_output = ") (display len_layer_output) (newline)
@@ -344,11 +352,12 @@ but will it works with Scheme+ parser?
 	(define/public (test Lexemples)
 
           (display "Test des exemples :") (newline)
-          {err <+ 0}
+          {err <- 0}
 
 	  (declare entree sortie_attendue ᐁ)
 	  (for-racket ([entree-sortie_attendue Lexemples])
-		{(entree sortie_attendue) <- entree-sortie_attendue} ; use pairs in Scheme instead of tuples and vectors in Python
+		{entree <- (car entree-sortie_attendue)} 
+		{sortie_attendue <- (cdr entree-sortie_attendue)} 
 		(accepte_et_propage entree)
 		(printf "~a --> ~a : on attendait ~a" entree {z[vector-length(z) - 1]} sortie_attendue) (newline)
 		{ᐁ <- sortie_attendue[0] - z[vector-length(z) - 1][0]} ; erreur sur un element
@@ -370,7 +379,7 @@ but will it works with Scheme+ parser?
 (printf "################## NOT ##################")
 (newline)
 
-{r1 <+ (new ReseauRetroPropagation (nc #(1 2 1))
+{r1 <- (new ReseauRetroPropagation (nc #(1 2 1))
 				   (nbiter 5000)
 				   (ηₛ 10)
 				   (activation_function_hidden_layer σ)
@@ -378,7 +387,7 @@ but will it works with Scheme+ parser?
 				   (activation_function_hidden_layer_derivative der_σ)
 				   (activation_function_output_layer_derivative der_σ))}
 
-{Lexemples1 <+ #((#(1) . #(0)) (#(0) . #(1)))}  ; use pairs in Scheme instead of vectors in Python
+{Lexemples1 <- #((#(1) . #(0)) (#(0) . #(1)))}  ; use pairs in Scheme instead of vectors in Python
 
 (send r1 apprentissage Lexemples1)
 
@@ -386,12 +395,12 @@ but will it works with Scheme+ parser?
 
 (newline)
 
-;(for ({i <+ 0} {i < 100} {i <- i + 1})
+;(for ({i <- 0} {i < 100} {i <- i + 1})
 
 (printf "################## XOR ##################")
 (newline)
 
-{r2 <+ (new ReseauRetroPropagation (nc #(2 8 1)) ; 20" - 35"
+{r2 <- (new ReseauRetroPropagation (nc #(2 8 1)) ; 20" - 35"
 				   (nbiter 250000)
 				   (ηₛ 0.1)
 				   (activation_function_hidden_layer σ)
@@ -399,7 +408,7 @@ but will it works with Scheme+ parser?
 				   (activation_function_hidden_layer_derivative der_σ)
 				   (activation_function_output_layer_derivative der_σ))}
 
-{Lexemples2 <+ #( (#(1 0) . #(1))  (#(0 0) . #(0))  (#(0 1) . #(1))  (#(1 1) . #(0)))}  ; use pairs in Scheme instead of vectors in Python
+{Lexemples2 <- #( (#(1 0) . #(1))  (#(0 0) . #(0))  (#(0 1) . #(1))  (#(1 1) . #(0)))}  ; use pairs in Scheme instead of vectors in Python
 
 (send r2 apprentissage Lexemples2)
 
@@ -408,10 +417,12 @@ but will it works with Scheme+ parser?
 ;) ; end 'for'
 
 
+
+
 (printf "################## SINUS - SINE ##################")
 (newline)
 
-{r3 <+ (new ReseauRetroPropagation (nc #(1 70 70 1))
+{r3 <- (new ReseauRetroPropagation (nc #(1 70 70 1))
 				   (nbiter 50000)
 				   (ηₛ 0.01)
 				   (activation_function_hidden_layer atan)
@@ -419,15 +430,12 @@ but will it works with Scheme+ parser?
 				   (activation_function_hidden_layer_derivative der_atan)
 				   (activation_function_output_layer_derivative der_tanh))}
 
-(declare pi)
-{pi <- 4 * atan(1)}
 
-
-{Llearning <+ (vector-ec (:list x (list-ec (s42: n 10000)    ; vectors,lists by eager comprehension (SRFI 42)
+{Llearning <- (vector-ec (:list x (list-ec (s42: n 10000)    ; vectors,lists by eager comprehension (SRFI 42)
 				      (uniform-interval (- pi) pi)))
 			 (cons (vector x) (vector (sin x))))}  ; use pairs in Scheme instead of vectors in Python
 
-{Ltest <+ (vector-ec (:list x (list-ec (s42: n 10) ; vectors,lists by eager comprehension (SRFI 42)
+{Ltest <- (vector-ec (:list x (list-ec (s42: n 10) ; vectors,lists by eager comprehension (SRFI 42)
 				       (uniform-interval {(- pi) / 2} {pi / 2})))
 		     (cons (vector x) (vector (sin x))))}  ; use pairs in Scheme instead of vectors in Python
 
