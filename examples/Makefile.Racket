@@ -1,0 +1,51 @@
+# example of Makefile for Scheme+ for Racket
+# Makefile for back-propagation program
+# author: Damien Mattei
+
+
+
+
+# program to build
+MYPROGRAM=exo_retropropagationNhidden_layers_matrix_v2_by_vectors+.rkt
+
+# path to Scheme+ directory
+SCHEME_PLUS=../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket
+
+SCHEME_EXEC=/Applications/Racket\ v8.12/bin/racket 
+
+# Scheme+ for parser
+PARSER:=$(SCHEME_EXEC) $(SCHEME_PLUS)/src/curly-infix2prefix4racket.rkt
+
+# parsed program name
+PROGRAM_PARSED=exo_retropropagationNhidden_layers_matrix_v2_by_vectors.rkt
+
+
+# files that are simply included in source code
+INCLUDED_FILES=matrix-by-vectors.rkt
+
+# files to parse
+OBJECT= $(PROGRAM_PARSED) $(INCLUDED_FILES) 
+
+
+
+# create directory, build objects
+# note: object modules have the same name than module source but are in different directories
+all: $(OBJECT) 
+
+
+
+# create Scheme files (*.scm) by parsing Scheme+ files (*+.scm)
+%.scm: %+.scm
+	@echo PARSING $< :
+	$(PARSER) $< > $@
+
+# create Scheme files (*.rkt) by parsing Scheme+ files (*+.rkt)
+%.rkt: %+.rkt
+	@echo PARSING $< :
+	$(PARSER) $< > $@
+
+
+clean:
+	rm -rf $(OBJECT)
+
+
