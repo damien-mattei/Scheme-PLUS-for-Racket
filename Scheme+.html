@@ -1580,40 +1580,11 @@ Here is another overloading example:<br>
     <p style="text-align: left;">error: define: not allowed in an
       expression context in: (define x 1)<br>
     </p>
-    <p style="text-align: left;">for this reason i provide a <b>&amp; </b>macro
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      that is defined with a <b>let </b>as this:<br>
+    <p style="text-align: left;">for this reason i provide a <b>$+>
+              </b>macro that is defined with a <b>let </b>as this:<br>
     </p>
     <p style="text-align: left;"> </p>
-    <pre style="margin: 0; line-height: 125%">(<span style="color: #AA22FF; font-weight: bold">define-syntax </span><span style="color: #B8860B">&amp;</span>
+    <pre style="margin: 0; line-height: 125%">(<span style="color: #AA22FF; font-weight: bold">define-syntax </span><span style="color: #B8860B">$+></span>
   (<span style="color: #AA22FF; font-weight: bold">syntax-rules </span>()
     ((<span style="color: #00A000">_</span> <span style="color: #B8860B">ev</span>)  <span style="color: #B8860B">ev</span>)
     ((<span style="color: #00A000">_</span> <span style="color: #B8860B">ev</span> <span style="color: #666666">...</span>) (<span style="color: #AA22FF; font-weight: bold">let </span>() <span style="color: #B8860B">ev</span> <span style="color: #666666">...</span>))))
@@ -1622,7 +1593,7 @@ Here is another overloading example:<br>
     </p>
     <p> </p>
     <div id="highlight-preview">
-      <pre class="scheme" style="font-family:monospace;"><span style="color: #006600;">(</span>def bar <span style="color: #006600;">(</span><span style="color: #006600;">&amp;</span> <span style="color: #006600;">(</span>declare x y<span style="color: #006600;">)</span>
+      <pre class="scheme" style="font-family:monospace;"><span style="color: #006600;">(</span>def bar <span style="color: #006600;">(</span><span style="color: #006600;">$+></span> <span style="color: #006600;">(</span>declare x y<span style="color: #006600;">)</span>
             <span style="color: #006600;">{</span>x <span style="color: #006600;">&lt;-</span> <span style="color: #cc66cc;">1</span><span style="color: #006600;">}</span> 
             <span style="color: #006600;">{</span>y <span style="color: #006600;">&lt;-</span> <span style="color: #cc66cc;">2</span><span style="color: #006600;">}</span>
             <span style="color: #006600;">(</span><span style="color: #b1b100;">λ</span> <span style="color: #006600;">(</span><span style="color: #b1b100;">t</span><span style="color: #006600;">)</span> <span style="color: #006600;">(</span><span style="color: #006600;">+</span> x y <span style="color: #b1b100;">t</span><span style="color: #006600;">)</span><span style="color: #006600;">)</span><span style="color: #006600;">)</span><span style="color: #006600;">)<br><br></span><span style="color: #006600;"></span></pre>

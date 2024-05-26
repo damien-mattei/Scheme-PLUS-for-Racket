@@ -1200,7 +1200,7 @@ Here is another overloading example:
 <p style="text-align: left;">error: define: not allowed in an expression
       context in: (define x 1)<br>
     </p>
-    <p style="text-align: left;">for this reason i provide a <b>&amp; </b>macro
+    <p style="text-align: left;">for this reason i provide a <b>$+> </b>macro
       that is defined with a <b>let </b>as this:<br>
     </p>
     <p style="text-align: left;"> </p>
@@ -1209,7 +1209,7 @@ Here is another overloading example:
 ```scheme
 
 
-(define-syntax &
+(define-syntax $+>
   (syntax-rules ()
     ((_ ev)  ev)
     ((_ ev ...) (let () ev ...))))
@@ -1228,7 +1228,7 @@ Here is another overloading example:
 ```scheme
 
 
-(def bar (& (declare x y)
+(def bar ($+> (declare x y)
             {x <- 1} 
             {y <- 2}
             (λ (t) (+ x y t))))
