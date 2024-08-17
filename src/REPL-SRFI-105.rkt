@@ -29,6 +29,7 @@
 (include "slice.scm")
 (include "def.scm")
 (include "optimize-infix-slice.scm")
+(include "condx.scm")
 
 (include "SRFI-105.scm")
 
