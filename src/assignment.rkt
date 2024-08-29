@@ -165,6 +165,21 @@
 		(else
 		 #'(assignment-argument-6-and-more container (list index ...) expr))))
 
+	     ;; > (declare a b c d)
+	     ;; > {(a b) <- (c d) <- (values 5 7)}
+	     ;; > a
+	     ;; 5
+	     ;; > b
+	     ;; 7
+	     ;; > c
+	     ;; 5
+	     ;; > d
+	     ;; 7
+
+	     ;; without declare:
+	     ;; > {(a b) <- (c d) <- (values 5 7)}
+	     ;; > (list a b c d)
+	     ;; '(5 7 5 7)
 	     (else
 	      #'(define-or/and-set!-values (brket-applynext container index ...) expr)))) ;; the argument's names does not match the use
     
@@ -229,21 +244,7 @@
     ;; > I
     ;; #<array:srfi-9-record-type-descriptor>
 
-    ;; > (declare a b c d)
-    ;; > {(a b) <- (c d) <- (values 5 7)}
-    ;; > a
-    ;; 5
-    ;; > b
-    ;; 7
-    ;; > c
-    ;; 5
-    ;; > d
-    ;; 7
-
-    ;; without declare:
-    ;; > {(a b) <- (c d) <- (values 5 7)}
-    ;; > (list a b c d)
-    ;; '(5 7 5 7)
+    
     ((_ var var1 ... expr)
      
      ;;(<- var (<- var1 ... expr)))

@@ -51,8 +51,8 @@
 (define (draw-z-point dc)
   (send dc set-pen no-pen)
   (send dc set-brush blue-brush)
-  {ga ← 8}
-  {pa ← 8}
+  {ga ← 8} ; grand axe / big axis
+  {pa ← 8} ; petit axe / little axis
   {(x y) ← (to-screen-multi-values z)}
   {x ← x - (quotient ga 2)}
   {y ← y - (quotient pa 2)}
