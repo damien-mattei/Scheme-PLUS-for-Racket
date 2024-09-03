@@ -45,7 +45,7 @@
 (module Scheme+ racket
 
 	;; TODO: try to remove the test, it seems no more used by pkgd
-	(module test racket/base) ;; dummy
+	;;(module test racket/base) ;; dummy
 
 
 	(provide def
