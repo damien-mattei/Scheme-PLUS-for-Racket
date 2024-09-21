@@ -1,2 +1,2 @@
 #lang reprovide
-"src/Scheme+.rkt"
+"Scheme+.rkt"

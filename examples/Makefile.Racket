@@ -8,13 +8,17 @@
 # program to build
 MYPROGRAM=exo_retropropagationNhidden_layers_matrix_v2_by_vectors+.rkt
 
-# path to Scheme+ directory
-SCHEME_PLUS=../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket
+# path to SRFI-105 directory
+SRFI-105=../SRFI-105-for-Racket
 
-SCHEME_EXEC=/Applications/Racket\ v8.12/bin/racket 
+# for MacOS:
+#SCHEME_EXEC=/Applications/Racket\ v8.12/bin/racket
+SCHEME_EXEC=racket
+
 
 # Scheme+ for parser
-PARSER:=$(SCHEME_EXEC) $(SCHEME_PLUS)/src/curly-infix2prefix4racket.rkt
+#PARSER:=$(SCHEME_EXEC) $(SCHEME_PLUS)/src/curly-infix2prefix4racket.rkt
+PARSER:=$(SRFI-105)/src/curly-infix2prefix4racket.rkt
 
 # parsed program name
 PROGRAM_PARSED=exo_retropropagationNhidden_layers_matrix_v2_by_vectors.rkt

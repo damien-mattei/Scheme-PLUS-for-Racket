@@ -1,4 +1,8 @@
-#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/SRFI/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions
+;;#lang reader "../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
+
+#lang reader SRFI-105
+
+;;#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions
 
 
 ; Deep Learning : back propagation, gradient descent, neural network with N hidden layers
@@ -10,7 +14,7 @@
 
 
 ; MacOS users : use MacVim to show ALL the characters of this file (not Emacs, not Aquamacs)
-;; jeu de couleurs: Torte ou Koehler
+;; jeu de couleurs: Torte ou Koehler / Peachpuff ou Retrobox la nuit
 
 ;; use in GUI 
 ;; use in command line:
@@ -24,15 +28,13 @@
 
 (provide (all-defined-out)) 
 
-;; this file must now be included in your main project file like this:
-;; at the beginning of your main file add
-;; for infix operator precedence:
-(define-namespace-anchor ankh)
-(define bsns (namespace-anchor->namespace ankh))
-(current-namespace bsns)
+(require plot)
 
+;(require srfi/42) ; Eager Comprehensions
 
-(require srfi/42) ; Eager Comprehensions
+(require (rename-in srfi/42
+	(: s42:))) ; Eager Comprehensions
+
 
 (require (rename-in flomat (repeat repeat-flomat)
 			   (shape shape-flomat)
@@ -40,7 +42,11 @@
 
 (require "matrix+.rkt")
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+(require Scheme+)
+;;(require Scheme-PLUS-for-Racket)
+;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/Scheme+.rkt")
+
+(require (only-in racket/base [for for-racket]))
 
 ; first stage overloading
 (define-overload-existing-operator +)
@@ -58,7 +64,7 @@
 
 ; return a random number between [inf, sup]
 (define (uniform-interval inf sup)
-  {gap <+ {sup - inf}}
+  {gap <- {sup - inf}}
   {inf + gap * (random)})
 
 (overload-procedure uniform uniform-dummy (number?))
@@ -86,31 +92,6 @@
 but will it works with Scheme+ parser?
 |#
 
-;> (for ([x (in-range 0 3)]) (display x) (newline) )
-;0
-;1
-;2
-;> (for ([x (reversed (in-range 0 3))]) (display x) (newline) )
-;2
-;1
-;0
-(define-syntax reversed ; same as Python : reversed(range(0,3))
-  
-  		(syntax-rules ()
-
-    			((_ (name end)) (begin
-					  (unless (equal? (quote in-range) (quote name)) 
-	       					(error "first argument is not in-range:" (quote name)))
-					  (in-range {end - 1} -1 -1)))
-
-			((_ (name start end)) (begin
-					  	(unless (equal? (quote in-range) (quote name)) 
-	       						(error "first argument is not in-range:" (quote name)))
-					  	(in-range {end - 1} {start - 1} -1)))))
-
-
-
-
 
 ; (make-object ReseauRetroPropagation)
 ; (define net (new ReseauRetroPropagation (nc #(1 2 3 4))))
@@ -134,7 +115,7 @@ but will it works with Scheme+ parser?
 		     (activation_function_hidden_layer_derivative der_tanh)
 		     (activation_function_output_layer_derivative der_tanh))
 	 
-	 {lnc <+ (vector-length nc)}
+	 {lnc <- (vector-length nc)}
 
 	 ; les entrées concrètes seront fournies avec la méthode accepte
 	 ;; (field (z (vector-ec (: i (vector-length nc)) (make-vector {nc[i]} 0))))
@@ -154,13 +135,18 @@ but will it works with Scheme+ parser?
 
 	 (define-pointwise-unary uniform) ;; flomat library feature
 
-	 {M <+ (vector-ec (: n {lnc - 1}) ; vectors by eager comprehension (SRFI 42)
-			  (.uniform! (zeros {nc[n + 1]} {nc[n] + 1})))} ;; flomat Matrix
+	 (field (M (vector-ec (s42: n {lnc - 1}) ; vectors by eager comprehension (SRFI 42)
+			  (.uniform! (zeros {nc[n + 1]} {nc[n] + 1}))))) ;; flomat Matrix
 					   
 	 (display "M=") (display M) (newline)
 
-	 (field (ᐁ (for/vector ([lg nc])
-			       (make-vector lg 0))))
+	 ;(field (ᐁ (for/vector ([lg nc])
+	 ;		       (make-vector lg 0))))
+
+	 ; here ᐁ  is not a field but a variable (could not be accessed outside the class,no getter...)
+	 {ᐁ <- (for/vector ([lg nc])
+			       (make-vector lg 0))}
+
 
 	 
 	 (display "ᐁ=") (display ᐁ) (newline)
@@ -183,7 +169,7 @@ but will it works with Scheme+ parser?
 
 		;; propagation des entrées vers la sortie
 
-		{n <+ vector-length(z)}
+		{n <- vector-length(z)}
 		;(display "n=") (display n) (newline)
 
 		;; hidden layers
@@ -246,28 +232,29 @@ but will it works with Scheme+ parser?
 	 
 	(define/public (apprentissage Lexemples) ; apprentissage des poids par une liste d'exemples
 	   
-	  {ip <+ 0} ; numéro de l'exemple courant
+	  {ip <- 0} ; numéro de l'exemple courant
 
 	  (declare x y)
 	  (for-racket ([it (in-range nbiter)]) ; le nombre d'itérations est fixé !
 
-		      (when {it % 100 = 0}
+		      (when {it % 1000 = 0}
 			(display it)(newline))
 
 		      ;(display it)(newline)
 		      
-		      {err <+ 0.0} ; l'erreur totale pour cet exemple
+		      {err <- 0.0} ; l'erreur totale pour cet exemple
 
-		      {(x y) <- Lexemples[ip]}         ; un nouvel exemple à apprendre
+		      {x <- (car Lexemples[ip])}         ; un nouvel exemple à apprendre
+		      {y <- (cdr Lexemples[ip])} 
 
 		      ;; PROPAGATION VERS L'AVANT
 		      (accepte_et_propage x)       ; sorties obtenues sur l'exemple courant, self.z_k et z_j sont mis à jour
 
 		      ; RETRO_PROPAGATION VERS L'ARRIERE, EN DEUX TEMPS
 
-		      {i <+ i_output_layer <+ {vector-length(z) - 1}} ; start at index i of the ouput layer
+		      {i <- i_output_layer <- vector-length(z) - 1} ; start at index i of the ouput layer
 
-		      {ns <+ vector-length(z[i])}
+		      {ns <- vector-length(z[i])}
 		     
 
 		      ;; TEMPS 1. calcul des gradients locaux sur la couche k de sortie (les erreurs commises)
@@ -283,7 +270,7 @@ but will it works with Scheme+ parser?
 
 		      ;; modification des poids de la matrice de transition de la derniére couche de neurones cachés à la couche de sortie
 
-		      {მzⳆმz̃ <+ activation_function_output_layer_derivative}
+		      {მzⳆმz̃ <- activation_function_output_layer_derivative}
 
 		      {modification_des_poids(M[i - 1] ηₛ z[i - 1] z[i] z̃[i] ᐁ[i] მzⳆმz̃)}
 
@@ -292,10 +279,9 @@ but will it works with Scheme+ parser?
 		      {მzⳆმz̃ <- activation_function_hidden_layer_derivative}
 
 		      (for-racket ([i (reversed (in-range 1 i_output_layer))])
-				{nc <+ vector-length(z[i])}
-				{ns <+ vector-length(z[i + 1])}
+				{nc <- vector-length(z[i])}
+				{ns <- vector-length(z[i + 1])}
 				(for-racket ([j (in-range nc)])
-					{k <+ 0}
 					{ᐁ[i][j] <- (for/sum ([k (in-range ns)])
 							{მzⳆმz̃(z[i + 1][k] z̃[i + 1][k]) * M[i][k {j + 1}] * ᐁ[i + 1][k]})})
 				; modification des poids de la matrice de transition de la couche i-1 à i
@@ -314,9 +300,9 @@ but will it works with Scheme+ parser?
 	(define (modification_des_poids M_i_o η z_input z_output z̃_output ᐁ_i_o მzⳆმz̃) ; derivative of activation function of the layer
 	 
 	  ; the length of output and input layer with coeff. used for bias update
-	  {(len_layer_output len_layer_input_plus1forBias) <+ (dim M_i_o)} ; use values and define-values to create bindings
+	  {(len_layer_output len_layer_input_plus1forBias) <- (dim M_i_o)} ; use values and define-values to create bindings
         
-	  {len_layer_input <+ {len_layer_input_plus1forBias - 1}}
+	  {len_layer_input <- {len_layer_input_plus1forBias - 1}}
 
 	  (for-racket ([j (in-range len_layer_output)]) ; line
 		
@@ -331,11 +317,12 @@ but will it works with Scheme+ parser?
 	(define/public (test Lexemples)
 
           (display "Test des exemples :") (newline)
-          {err <+ 0}
+          {err <- 0}
 
 	  (declare entree sortie_attendue ᐁ)
 	  (for-racket ([entree-sortie_attendue Lexemples])
-		{(entree sortie_attendue) <- entree-sortie_attendue} ; use pairs in Scheme instead of tuples and vectors in Python
+		{entree <- (car entree-sortie_attendue)} 
+		{sortie_attendue <- (cdr entree-sortie_attendue)} ; use pairs in Scheme instead of tuples and vectors in Python
 		(accepte_et_propage entree)
 		(printf "~a --> ~a : on attendait ~a" entree {z[vector-length(z) - 1]} sortie_attendue) (newline)
 		{ᐁ <- sortie_attendue[0] - z[vector-length(z) - 1][0]} ; erreur sur un element
@@ -344,6 +331,29 @@ but will it works with Scheme+ parser?
 	  {err <- err * 0.5}
 	  (display "Error on examples=") (display error) (newline))
 
+
+	
+	; compute the points for plotting
+	(define/public (DL-data-2D)
+
+		(list-ec (s42: n 100)
+	      		($+>
+			    {xp <- (- pi) / 2 + pi * n / 100}
+			    (accepte_et_propage (vector xp))
+			    {xp-DL <- z[vector-length(z) - 1][0]}
+			    (vector xp xp-DL))))
+
+
+	; plot in 2D the points of the input/output layers
+	(define/public (DL-plot)
+		
+		{Lplot-DL <- (DL-data-2D)}
+
+		(plot (points Lplot-DL  #:sym 'fullcircle1
+            	         		#:color "red")))
+
+
+	
 
 
    ) ; end class
@@ -357,7 +367,7 @@ but will it works with Scheme+ parser?
 (printf "################## NOT ##################")
 (newline)
 
-{r1 <+ (new ReseauRetroPropagation (nc #(1 2 1))
+{r1 <- (new ReseauRetroPropagation (nc #(1 2 1))
 				   (nbiter 5000)
 				   (ηₛ 10)
 				   (activation_function_hidden_layer σ)
@@ -365,19 +375,47 @@ but will it works with Scheme+ parser?
 				   (activation_function_hidden_layer_derivative der_σ)
 				   (activation_function_output_layer_derivative der_σ))}
 
-{Lexemples1 <+ #((#(1) . #(0)) (#(0) . #(1)))}  ; use pairs in Scheme instead of vectors in Python
+{Lexemples1 <- #((#(1) . #(0)) (#(0) . #(1)))}  ; use pairs in Scheme instead of vectors in Python
 
 (send r1 apprentissage Lexemples1)
 
 (send r1 test Lexemples1)
 
+{precision <- 100.0}
+
+(display "precision=") (display precision) (newline)
+
+(define (trunc x) ; truncate a number x to log10(precision) decimals
+	{round{precision * x} / precision})
+
+(define-pointwise-unary trunc) ; flomat library feature that create an unary function .trunc!
+
+(define (trunc-matrix mt) ; truncate coefficient of a matrix 
+	(.trunc! mt))
+
+{M <- (get-field M r1)} ; get the vector of matrices in the retro-propagation class
+
+(newline)
+(display "Matrix vector M=") (newline)
+(display M)
+(newline)
+
+; truncate all the transitional matrices of the deep neural network
+(for-racket ([mt M])
+	(trunc-matrix mt)) 
+
+(display "Matrix vector modified M=") (newline)
+(display M)
+(newline)
+
+(send r1 test Lexemples1)
 (newline)
 
 
 (printf "################## XOR ##################")
 (newline)
 
-{r2 <+ (new ReseauRetroPropagation (nc #(2 3 1))
+{r2 <- (new ReseauRetroPropagation (nc #(2 3 1))
 				   (nbiter 250000)
 				   (ηₛ 10)
 				   (activation_function_hidden_layer σ)
@@ -385,40 +423,134 @@ but will it works with Scheme+ parser?
 				   (activation_function_hidden_layer_derivative der_σ)
 				   (activation_function_output_layer_derivative der_σ))}
 
-{Lexemples2 <+ #( (#(1 0) . #(1))  (#(0 0) . #(0))  (#(0 1) . #(1))  (#(1 1) . #(0)))}  ; use pairs in Scheme instead of vectors in Python
+{Lexemples2 <- #( (#(1 0) . #(1))  (#(0 0) . #(0))  (#(0 1) . #(1))  (#(1 1) . #(0)))}  ; use pairs in Scheme instead of vectors in Python
 
 (send r2 apprentissage Lexemples2)
 
 (send r2 test Lexemples2)
 
+{M <- (get-field M r2)} ; get the vector of matrices in the retro-propagation class
+
+(newline)
+(display "Matrix vector M=") (newline)
+(display M)
+(newline)
+
+; truncate all the transitional matrices of the deep neural network
+(for-racket ([mt M])
+	(trunc-matrix mt)) 
+
+(display "Matrix vector modified M=") (newline)
+(display M)
+(newline)
+
+(send r2 test Lexemples2)
+(newline)
 
 
 
 (printf "################## SINUS ##################")
 (newline)
 
-{r3 <+ (new ReseauRetroPropagation (nc #(1 70 70 1))
+{r3 <- (new ReseauRetroPropagation (nc #(1 70 70 1))
 				   (nbiter 50000)
 				   (ηₛ 0.01)
-				   (activation_function_hidden_layer atan)
+				   (activation_function_hidden_layer atan) ;tanh) ; atan)
 				   (activation_function_output_layer tanh)
-				   (activation_function_hidden_layer_derivative der_atan)
+				   (activation_function_hidden_layer_derivative der_atan) ;der_tanh); der_atan)
 				   (activation_function_output_layer_derivative der_tanh))}
 
-{Llearning <+ (vector-ec (:list x (list-ec (: n 10000)
+{Llearning <- (vector-ec (:list x (list-ec (s42: n 10000)
 					   (uniform (- pi) pi)))
 			 (cons (vector x) (vector (sin x))))   ; vectors by eager comprehension (SRFI 42)
 	   }  ; use pairs in Scheme instead of vectors in Python
 
-{Ltest <+ (vector-ec (:list x (list-ec (: n 10)
+{Ltest <- (vector-ec (:list x (list-ec (s42: n 10)
 				       (uniform {(- pi) / 2} {pi / 2})))
 		     (cons (vector x) (vector (sin x))))   ; vectors by eager comprehension (SRFI 42)
        }  ; use pairs in Scheme instead of vectors in Python
 
+;{Lplot <- (list-ec (:list x (list-ec (s42: n 100)
+;				{{(- pi) / 2} + {n / 100} * pi}))
+;		   (vector x (sin x)))}
+
+;(display "Lplot=") (newline)
+;(display Lplot)
+;(newline)
+
+
+{Lplot-sin <- (list-ec (s42: n 100)
+	      	     ($+> ; begin-def
+			{xp <- (- pi) / 2 + pi * n / 100}
+			(vector xp (sin xp))))}
+
+(display "Lplot-sin =") (newline)
+(display Lplot-sin )
+(newline)
+
+(plot (points Lplot-sin  #:sym 'fullcircle1
+            	         #:color "blue"
+			 #:label "y = sin(x)"))
+
+ 
 
 (send r3 apprentissage Llearning)
 
 (send r3 test Ltest)
+
+(send r3 DL-plot)
+
+{Lplot-DL-main <- (send r3 DL-data-2D)} ; bug possibly cause by Lplot-DL being defined in 2 places (see define/public method)
+
+(plot (list (points Lplot-sin  #:sym 'fullcircle1
+                	       #:color "blue"
+			       #:label "y = sin(x)")
+	    (points Lplot-DL-main   #:sym 'circle1
+            	               	    #:color "red"
+				    #:label "neural sine")))
+
+
+{M <- (get-field M r3)} ; get the vector of matrices in the retro-propagation class
+
+(newline)
+(display "Matrix vector M=") (newline)
+(display M)
+(newline)
+
+
+{precision <- 1000.0}
+
+(display "precision=") (display precision) (newline)
+
+(define (trunc3 x) ; truncate a number x to log10(precision) decimals
+	{round{precision * x} / precision})
+
+(define-pointwise-unary trunc3) ; flomat library feature that create an unary function .trunc!
+
+(define (trunc3-matrix mt) ; truncate coefficient of a matrix 
+	(.trunc3! mt))
+
+
+; truncate all the transitional matrices of the deep neural network
+(for-racket ([mt M])
+	(trunc3-matrix mt)) 
+
+(display "Matrix vector modified M=") (newline)
+(display M)
+(newline)
+
+(send r3 test Ltest)
+(newline)
+
+{Lplot-DL-trunc <- (send r3 DL-data-2D)} 
+
+(plot (list (points Lplot-DL-trunc  #:sym 'circle1
+                	            #:color "green"
+				    #:label "neural sine - matrices with truncated numbers")
+	    (points Lplot-DL-main   #:sym 'circle1
+            	               	    #:color "red"
+				    #:label "neural sine")))
+
 
 ) ; end module
 

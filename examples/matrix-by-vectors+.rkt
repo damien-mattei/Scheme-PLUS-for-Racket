@@ -1,4 +1,10 @@
-#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions
+;;#lang reader "../../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
+
+#lang reader SRFI-105
+
+;;#lang reader "../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
+
+;;#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions
 
 ;; Matrix  based on vector of vectors
 
@@ -32,8 +38,12 @@
 ;;(import (srfi :43)) 
 
 
+;;(require "../../Scheme-PLUS-for-Racket/src/Scheme+.rkt")
+(require Scheme+)
+
+;;(require Scheme-PLUS-for-Racket)
 ;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/Scheme+.rkt")
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
+;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
 
 
 
@@ -41,7 +51,10 @@
 
 (require (rename-in srfi/43 (vector-map vector-map-srfi-43)))  ; vector , warning vector-map has index as extra parameter...
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/array.rkt")
+;;(require "../../Scheme-PLUS-for-Racket/src/array.rkt")
+(require Scheme+/array)
+;;(require "../Scheme-PLUS-for-Racket/src/array.rkt")
+;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/array.rkt")
 
 (struct matrix-vect (v)) ;; matrix based on vector of vectors
 

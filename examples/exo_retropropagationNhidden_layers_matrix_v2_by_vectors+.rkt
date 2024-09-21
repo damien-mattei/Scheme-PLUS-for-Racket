@@ -1,4 +1,10 @@
-#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions and a few more
+;;#lang reader "../../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
+
+#lang reader SRFI-105
+
+;;#lang reader "../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
+
+;;#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions and a few more
 
 
 ; Deep Learning : back propagation, gradient descent, neural network with N hidden layers
@@ -34,7 +40,7 @@
 ;; (require "exo_retropropagationNhidden_layers_matrix_v2_by_vectors.rkt")
 
 
-;;#!r6rs
+
 
 
 (module exo_retropropagationNhidden_layers_matrix_v2_by_vectors racket
@@ -51,12 +57,17 @@
 
 
 (require (rename-in srfi/42
-	(: s42:))) ; Eager Comprehensions
+		    (: s42:))) ; Eager Comprehensions
 
+;;(require "../../Scheme-PLUS-for-Racket/src/Scheme+.rkt")
+
+(require Scheme+)
+
+;;(require Scheme-PLUS-for-Racket)
 ;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
+;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
 
-
+(require (only-in racket/base [for for-racket])) ;; backup original Racket 'for'
 
 ;; return a number in ]-1,1[
 ;;(define (uniform-dummy dummy1 dummy2) {(random) * (if {(random 2) = 0} 1 -1)})  ; we randomly choose the sign of the random number
@@ -90,9 +101,9 @@
 but will it works with Scheme+ parser?
 |#
 
-;;(require "matrix-by-vectors+.rkt")
+(require "matrix-by-vectors+.rkt")
 ;; use one or the other:
-(require "matrix-by-vectors.rkt")
+;;(require "matrix-by-vectors.rkt")
 
 
 
@@ -195,7 +206,10 @@ but will it works with Scheme+ parser?
 		(declare z_1)
 
 		(declare i) ; because the variable will be used outside the 'for' loop too
-		
+		;(define i 0)
+		;(declare i-body-function)
+
+		;; warning if declaring i '() it cause a problem in for-racket, i being not a real
 		;(for-racket ([i (in-range {n - 2})]) ; warning : in Racket the variable 'i' 
 		; is only seen inside the 'for' but i need it ouside too
 		(for ({i <- 0} {i < n - 2} {i <- i + 1}) ; personnal 'for' definition as in Javascript,C,C++,Java
@@ -229,27 +243,28 @@ but will it works with Scheme+ parser?
 		     
 		     {z[i + 1] <- vector-map(activation_function_hidden_layer z̃[i + 1])}
 
-		     ;(display "z[i + 1] = ") (display {z[i + 1]}) (newline)
+		     ;;(display "z[i + 1] = ") (display {z[i + 1]}) (newline)
+		     ;{i-body-function <- i}
 
-		  ) ; end for
+		  ) ; end for or for-racket
+
+		;{i <- i-body-function}
+		;; output layer
+		;{i <- i + 1} ; if was used with for-racket
+		;;(display "accepte_et_propage : i=") (display i) (newline)
 
 
-		 ; output layer
-        	 ;{i <- i + 1} ; was used with for-racket
-		 ;(display "i=") (display i) (newline)
+		;; calcul des stimuli reçus par la couche cachée d'indice i+1 à-partir de la précedente
 
+		;; create a list with 1 in front for the bias coefficient
+        	{z_1 <- #(1) + z[i]}
 
-		 ; calcul des stimuli reçus par la couche cachée d'indice i+1 à-partir de la précedente
+		{z̃[i + 1] <- M[i] * z_1} ; z̃ = matrix * vector , return a vector
 
-        	 ; create a list with 1 in front for the bias coefficient
-        	 {z_1 <- #(1) + z[i]}
-
-		 {z̃[i + 1] <- M[i] * z_1} ; z̃ = matrix * vector , return a vector
-
-		 ; calcul des réponses des neurones de la couche de sortie
-		 {z[i + 1] <- vector-map(activation_function_output_layer z̃[i + 1])}
-		 ;(display "z[i + 1] = ") (display {z[i + 1]}) (newline)
-	
+		;; calcul des réponses des neurones de la couche de sortie
+		{z[i + 1] <- vector-map(activation_function_output_layer z̃[i + 1])}
+		;;(display "z[i + 1] = ") (display {z[i + 1]}) (newline)
+		
 	) ; end define
 
 
@@ -387,7 +402,8 @@ but will it works with Scheme+ parser?
 				   (activation_function_hidden_layer_derivative der_σ)
 				   (activation_function_output_layer_derivative der_σ))}
 
-{Lexemples1 <- #((#(1) . #(0)) (#(0) . #(1)))}  ; use pairs in Scheme instead of vectors in Python
+{Lexemples1 <- #((#(1) . #(0))
+		 (#(0) . #(1)))}  ; use pairs in Scheme instead of vectors in Python
 
 (send r1 apprentissage Lexemples1)
 
@@ -395,7 +411,7 @@ but will it works with Scheme+ parser?
 
 (newline)
 
-;(for ({i <- 0} {i < 100} {i <- i + 1})
+
 
 (printf "################## XOR ##################")
 (newline)
@@ -408,13 +424,16 @@ but will it works with Scheme+ parser?
 				   (activation_function_hidden_layer_derivative der_σ)
 				   (activation_function_output_layer_derivative der_σ))}
 
-{Lexemples2 <- #( (#(1 0) . #(1))  (#(0 0) . #(0))  (#(0 1) . #(1))  (#(1 1) . #(0)))}  ; use pairs in Scheme instead of vectors in Python
+{Lexemples2 <- #( (#(1 0) . #(1))
+		  (#(0 0) . #(0))
+		  (#(0 1) . #(1))
+		  (#(1 1) . #(0)) )}  ; use pairs in Scheme instead of vectors in Python
 
 (send r2 apprentissage Lexemples2)
 
 (send r2 test Lexemples2)
 
-;) ; end 'for'
+
 
 
 

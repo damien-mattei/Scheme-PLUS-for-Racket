@@ -1,13 +1,17 @@
-#lang reader "../src/SRFI-105.rkt"
+#lang reader SRFI-105
+;;#lang reader "../src/SRFI-105.rkt"
  
 (module zeta racket
 
 ;; example in Scheme+ that plot the convergence of th ζ Riemann complex serie (without Analytic continuation)
 
+(require Scheme+)
+	
 ;;(require "../Scheme+.rkt")
-(require "../main.rkt")
+;;(require "../main.rkt")
 
-(include "../src/increment.scm")
+(require Scheme+/increment)
+;;(include "../src/increment.scm")
 
 (require racket/gui/base)
 

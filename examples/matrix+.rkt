@@ -1,4 +1,8 @@
-#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
+;;#lang reader "../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
+
+#lang reader SRFI-105
+
+;;#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
 
 ;; Matrix  file
 
@@ -17,8 +21,10 @@
 
 ;; (require (for-syntax r6rs/private/base-for-syntax)) ;; for macro syntax (for ... : identifier-syntax: undefined;
 
+(require Scheme+)
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
+;;(require Scheme-PLUS-for-Racket)
+;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/Scheme+.rkt")
 
 (define-overload-existing-operator *)
 
@@ -29,19 +35,19 @@
 
 
 ;; (define (matrix-column->vector C)
-;;   {lgC <+ (ncols C)}
-;;   {v <+ (make-vector lgC 0)}
-;;   (for ({i <+ 0} {i < lgC} {i <- i + 1})
+;;   {lgC <- (ncols C)}
+;;   {v <- (make-vector lgC 0)}
+;;   (for ({i <- 0} {i < lgC} {i <- i + 1})
 ;;        {v[i] <- C[i]})
 ;;   v)
 
 
 (define (dim M)
   ;;(display "matrix.rkt : dim : M = ") (display M) (newline)
-  {shp <+ (shape-flomat M)}
-  {lin <+ (first shp)}
-  {col <+ (second shp)}
-  (values lin col))
+  {shp <- (shape-flomat M)}
+  {lin <- (first shp)}
+  {colonne <- (second shp)} ; WARNING do not use col or column they are Racket's procedures (flomat?)
+  (values lin colonne))
 
 
 ) ; end module
