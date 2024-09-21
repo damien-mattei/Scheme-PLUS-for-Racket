@@ -1134,7 +1134,7 @@ Here is another overloading example:
 
 <figure class="highlight"><pre><code class="language-scheme" data-lang="scheme"><span class="o"></span><span class="nv"></span>
 
-<span class="o">#</span><span class="nv">lang</span> <span class="nv">reader</span> <span class="s">"../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt"</span> <span class="c1">; SRFI-105 Curly-infix-expressions</span>
+<span class="o">#</span><span class="nv">lang</span> <span class="nv">reader</span> <span class="s">" SRFI-105"</span> <span class="c1">; SRFI-105 Curly-infix-expressions</span>
 
 
 <span class="p">(</span><span class="nf">provide</span> <span class="p">(</span><span class="nf">all-defined-out</span><span class="p">))</span> 
@@ -1144,23 +1144,12 @@ Here is another overloading example:
 <span class="p">(</span><span class="nf">require</span> <span class="s">"matrix.rkt"</span><span class="p">)</span>
 
 
-<span class="p">(</span><span class="nf">include</span> <span class="s">"../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt"</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nf">require</span> <span class="s">"../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/overload.rkt"</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nf">include</span> <span class="s">"../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/assignment.rkt"</span><span class="p">)</span> <span class="c1">; all sort of assignment with &lt;- </span>
-<span class="p">(</span><span class="nf">include</span> <span class="s">"../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/apply-square-brackets.rkt"</span><span class="p">)</span> <span class="c1">; all sort of indexing with [] </span>
-
+<span class="p">(</span><span class="nf">require</span> <span class="s">" Scheme+"</span><span class="p">)</span>
 
 <span class="c1">; first stage overloading</span>
 <span class="p">(</span><span class="nf">define-overload-existing-operator</span> <span class="nv">+</span><span class="p">)</span>
 <span class="p">(</span><span class="nf">define-overload-existing-operator</span> <span class="nv">*</span><span class="p">)</span>
 <span class="p">(</span><span class="nf">define-overload-procedure</span> <span class="nv">uniform</span><span class="p">)</span>
-
-<span class="c1">; to take in account the new overloaded operators scheme-infix.rkt must be included</span>
-<span class="c1">; after the overloading first stage definition of operators</span>
-<span class="p">(</span><span class="nf">include</span> <span class="s">"../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt"</span><span class="p">)</span>
-
 
 <span class="c1">; second stage overloading</span>
 <span class="p">(</span><span class="nf">overload-existing-operator</span> <span class="nv">+</span> <span class="nv">vector-append</span> <span class="p">(</span><span class="nb">vector?</span> <span class="nv">vector?</span><span class="p">))</span>
@@ -1832,9 +1821,9 @@ scheme@(guile-user)&gt; v
 
 <span style="color: #008800; font-style: italic; background-color: #0f140f">;; example in Scheme+ that plot the convergence of th ζ Riemann complex serie (without Analytic continuation)</span>
 
-<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">require</span> <span style="color: #0086d2">&quot;../main.rkt&quot;</span><span style="color: #ffffff">)</span>
+<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">require</span> <span style="color: #0086d2">Scheme+</span><span style="color: #ffffff">)</span>
 
-<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">include</span> <span style="color: #0086d2">&quot;../src/increment.scm&quot;</span><span style="color: #ffffff">)</span>
+<span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">require</span> <span style="color: #0086d2"> Scheme+/increment</span><span style="color: #ffffff">)</span>
 
 <span style="color: #ffffff">(</span><span style="color: #ff0086; font-weight: bold">require</span> <span style="color: #fb660a">racket/gui/base</span><span style="color: #ffffff">)</span>
 

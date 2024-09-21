@@ -1748,9 +1748,9 @@ scheme@(guile-user)&gt; v
 
 ;; example in Scheme+ that plot the convergence of th ζ Riemann complex serie (without Analytic continuation)
 
-(require "../main.rkt")
+(require Scheme+)
 
-(include "../src/increment.scm")
+(require Scheme+/increment)
 
 (require racket/gui/base)
 
