@@ -32,7 +32,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 8.7 for
+          style="color: #999999;"> <font size="+2">version 9.3 for
             Racket Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;"> </p>
@@ -304,7 +304,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
     <div style="background: #111111;
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;">
-      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff">#lang reader "SRFI-105.rkt"<br><br></span><span style="color: #ffffff">(require Scheme-PLUS-for-Racket)
+      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff">#lang reader SRFI-105<br><br></span><span style="color: #ffffff">(require Scheme+)
 </span>
 </pre>
       <br>
@@ -487,10 +487,6 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
     <p>Including : <br>
     </p>
     <div style="margin-left: 40px;"> </div>
-    <p style="margin-left: 40px;">An implementation of the SRFI-105
-      "Curly Infix" with a REPL (Read Eval Print Loop) for Racket (file
-      SRFI-105.rkt).<br>
-    </p>
     <p style="margin-left: 40px;">The enhanced set of LET special forms
       in the file let.scm.</p>
     <div style="margin-left: 40px;"> </div>
@@ -573,14 +569,13 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
     <p><br>
     </p>
     <h2>5.<u>Installation:</u></h2>
-    You also need the <b>SRFI-105 Curly Infix language</b> for Racket
+    You also need the  <a href="https://github.com/damien-mattei/SRFI-105-for-Racket">SRFI-105 Curly Infix language for Racket
+and its REPL (Read Eval Print Loop) that will allow you to use infix
+notation and Scheme+</a> for Racket
     and its REPL (Read Eval Print Loop) that will allow you to use infix
     notation and Scheme+.<br>
     <br>
     This is <b>mandatory</b>.<br>
-    <br>
-    You can find the <b>SRFI-105.rkt</b> file in the downloaded package
-    of Scheme+ (in the subdirectory <b>SRFI</b>)<br>
     <br>
     <h2><u>6. Idea and rationale:</u></h2>
     <p>The core language of <a
@@ -736,9 +731,9 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
     <p>Scheme+ allow to write code more readable and simpler than normal
       Scheme.</p>
     <p>Prior to use <b>Scheme+</b> for DrRacket Scheme, you must add a
-      <b>#lang reader "SRFI-105.rkt" </b>directive in the first line of
+      <b>#lang reader SRFI-105 </b>directive in the first line of
       your program and by inserting the statement <b><pre>
-(require Scheme-PLUS-for-Racket)
+(require Scheme+)
 </pre>
 </b>if you have downloaded the source code.</p>
     <p>Below is the version of the above code written in Scheme+ :</p>
@@ -747,9 +742,9 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
     <div style="background: #111111;
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;"><span style="color: #ffffff"></span><span
-        style="color: #ffffff"><b>#lang reader "SRFI-105.rkt"<br>
+        style="color: #ffffff"><b>#lang reader SRFI-105<br>
       </b><pre>
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
+(require Scheme+)
 </pre>
 <br>
       </span> </div>
@@ -812,8 +807,8 @@ href="https://github.com/damien-mattei/Scheme-PLUS-for-Racket/tarball/main"
         .1em .1em .8em;padding:.2em .6em;">
         <pre style="margin: 0; line-height: 125%"><span style="color:
       #ffffff"><span style="color: #ffffff"><b>#lang reader
-	"SRFI-105.rkt"<br></b><pre>
-(require Scheme-PLUS-for-Racket)
+	SRFI-105<br></b><pre>
+(require Scheme+)
 </pre>
 
 	<br>
@@ -903,7 +898,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;"><span style="color: #ffffff">#lang
         reader "../src/SRFI-105.rkt"<br><pre>
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
+(require Scheme+)
 </pre>
 <br>
       </span><span style="color: #ff0086; font-weight: bold"></span><span
@@ -1168,8 +1163,8 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;">
       <pre style="margin: 0; line-height: 125%"><span style="color:
-			  #ffffff">#lang reader "../src/SRFI-105.rkt"<br>
-(require Scheme-PLUS-for-Racket)
+			  #ffffff">#lang reader SRFI-105<br>
+(require Scheme+)
 </span>
 </pre>
     </div>
@@ -1238,7 +1233,7 @@ href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dy
     <div style="background: #111111;
       overflow:auto;width:auto;border:solid gray;border-width:.1em .1em
       .1em .8em;padding:.2em .6em;">
-      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ffffff">#lang reader "../src/SRFI-105.rkt"<br>(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
+      <pre style="margin: 0; line-height: 125%"><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ff0086; font-weight: bold"></span><span style="color: #ffffff"></span><span style="color: #ffffff">#lang reader SRFI-105<br>(require Scheme+)
 </span>
 </pre>
     </div>
@@ -1288,7 +1283,7 @@ Here is another overloading example:<br>
 
 <pre>
 
-#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions
+#lang reader SRFI-105 ; SRFI-105 Curly-infix-expressions
 
 
 (provide (all-defined-out)) 
@@ -1298,7 +1293,7 @@ Here is another overloading example:<br>
 (require "matrix.rkt")
 
 
-(require Scheme-PLUS-for-Racket)
+(require Scheme+)
 
 
 ; first stage overloading

@@ -19,7 +19,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 8.7 for Racket Scheme<br>
+          style="color: #999999;"> <font size="+2">version 9.3 for Racket Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;">
 	Display options for viewing this documentation:<br>
@@ -250,10 +250,10 @@ the fly:<br>
 
 {% highlight scheme %}
 ```scheme
-#lang reader "SRFI-105.rkt"
+#lang reader SRFI-105
 
 
-(require Scheme-PLUS-for-Racket)
+(require Scheme+)
 
 
 ; first stage overloading if any
@@ -410,7 +410,7 @@ height="722"><br>
 <p> </p> 
 <br>
 <p>Hash Tables support :</p>
-    <pre>(require Scheme-PLUS-for-Racket)
+    <pre>(require Scheme+)
 
 
 ; first stage overloading if any
@@ -463,9 +463,6 @@ schemes, it is automatic in Racket.
 	<p>Including : <br>
 </p>
 <div style="margin-left: 40px;"> </div>
-<p style="margin-left: 40px;">An implementation of the SRFI-105
-"Curly Infix" with a REPL (Read Eval Print Loop) for Racket. (file SRFI-105.rkt)<br>
-</p>
 <p style="margin-left: 40px;">The enhanced set of LET special forms
 in the file let.scm.</p>
 <div style="margin-left: 40px;"> </div>
@@ -507,14 +504,12 @@ target="_blank" moz-do-not-send="true">Github issues system</a>.<br>
 </p>
     <h2>5.<u>Installation:</u></h2>
 	<p><br>
-You also need the <b>SRFI-105 Curly Infix language</b> for Racket
+You also need the <a href="https://github.com/damien-mattei/SRFI-105-for-Racket">SRFI-105 Curly Infix language for Racket
 and its REPL (Read Eval Print Loop) that will allow you to use infix
-notation and Scheme+.<br>
+notation and Scheme+</a>.<br>
 <br>
 This is <b>mandatory</b>.<br>
 <br>
-You can find the <b>SRFI-105.rkt</b> file in the downloaded package
-of Scheme+ (in the subdirectory <b>SRFI</b>)<br>
 <br>
 <h2><u>6. Idea and rationale:</u></h2>
     <p>The core language of <a href="https://en.wikipedia.org/wiki/Scheme_%28programming_language%29"
@@ -659,11 +654,11 @@ of Scheme+ (in the subdirectory <b>SRFI</b>)<br>
     <p>Scheme+ allow to write code more readable and simpler than
     normal Scheme.</p>
 	<p>Prior to use <b>Scheme+</b> for DrRacket Scheme, you must add a
-<b>#lang reader "SRFI-105.rkt" </b>directive in the first line of
+<b>#lang reader SRFI-105 </b>directive in the first line of
 your program and by inserting the statement 
 
 
-(require Scheme-PLUS-for-Racket)
+(require Scheme+)
 
 
 ; first stage overloading if any
@@ -676,8 +671,8 @@ your program and by inserting the statement
 {% highlight scheme %}
 ```scheme
 
-#lang reader "SRFI-105.rkt"
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
+#lang reader SRFI-105
+(require Scheme+)
 
 
 ; first stage overloading if any
@@ -730,8 +725,8 @@ your program and by inserting the statement
 {% highlight scheme %}
 ```scheme
 
-#lang reader "SRFI-105.rkt"
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
+#lang reader SRFI-105
+(require Scheme+)
 
 (declare size1 memo1)
 
@@ -807,9 +802,9 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```scheme
 
 
-#lang reader "../src/SRFI-105.rkt"
+#lang reader SRFI-105
 
-(require Scheme-PLUS-for-Racket)
+(require Scheme+)
 
 {L-init <+ '(1 3 4 16 17 24 45 64 197 256 275 323 540 723 889 915 1040 1041 1093 1099 1111 1284 1344 1520 2027 2500 2734 3000 3267 3610 4285 5027)}
 {t-init <+ 35267}
@@ -950,8 +945,8 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```scheme
 
 
-#lang reader "../src/SRFI-105.rkt"
-(require Scheme-PLUS-for-Racket)
+#lang reader SRFI-105
+(require Scheme+)
 
 
 (declare L-init t-init ls dyna cpt)
@@ -1015,8 +1010,8 @@ disj-norm-form = (or (and c (not d)) (and (not a) (not b) (not c) (not d)) (and 
 ```scheme
 
 
-#lang reader "../src/SRFI-105.rkt"
-(require Scheme-PLUS-for-Racket)
+#lang reader SRFI-105
+(require Scheme+)
 
 
 (def (subset-sum-dyna L t)
@@ -1063,7 +1058,7 @@ Here is another overloading example:
 {% highlight scheme %}
 ```scheme
 
-#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions
+#lang reader SRFI-105 ; SRFI-105 Curly-infix-expressions
 
 
 (provide (all-defined-out)) 
@@ -1073,7 +1068,7 @@ Here is another overloading example:
 (require "matrix.rkt")
 
 
-(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
+(require Scheme+)
 
 
 ; first stage overloading
@@ -1749,7 +1744,7 @@ scheme@(guile-user)&gt; v
 {% highlight scheme %}
 ```scheme
 
-#lang reader "../src/SRFI-105.rkt"
+#lang reader SRFI-105
 
 ;; example in Scheme+ that plot the convergence of th ζ Riemann complex serie (without Analytic continuation)
 
