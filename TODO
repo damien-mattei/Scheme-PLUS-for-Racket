@@ -1,2 +1,14 @@
-tester le parsing avec make Makefile
+{-4 sin(x) + x y ² - 5 x / y}
+
+¹⁰
+
+{ x ² + y ² + z ² }
+
+a ² - 2 a b + b ²
+
+
+make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
+
+
+
 

@@ -51,11 +51,12 @@
 			 ;; TODO : make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
 			 (n-arity ;; this avoids : '{x <- y <- z <- t <- u <- 3 * 4 + 1}
 			   ;; SRFI-105.scm : !0 result = (<- (<- (<- (<- (<- x y) z) t) u) (+ (* 3 4) 1)) ;; fail set! ...
-			   ;; transform in : '(<- x y z t u (+ (* 3 4) 1))
-			   (!0-generic (syntax->list #'(e1 op1 e2 op2 e3 op ...)) ; apply operator precedence rules
+			  ;; transform in : '(<- x y z t u (+ (* 3 4) 1))
+			  (car
+			   (!*prec-generic (syntax->list #'(e1 op1 e2 op2 e3 op ...)) ; apply operator precedence rules
 				       infix-operators-lst-for-parser-syntax
 				       ;;(get-infix-operators-lst-for-parser-syntax)
-				       (lambda (op a b) (list op a b))))))
+				       (lambda (op a b) (list op a b)))))))
 	   
 	   (display "$nfx$ : parsed-args=") (display #'parsed-args) (newline)
 	   #'parsed-args)))))

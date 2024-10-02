@@ -22,40 +22,12 @@
 
 (module infix-with-precedence-to-prefix racket
 
-  (provide !*prec-generic  
-	   !0-generic)
+  (provide !*prec-generic)
+	   ;;!0-generic)
 
   (require (only-in srfi/1 any)
 	   Scheme+/syntax)
 	  
-  
-
-
-;;; evaluates `terms` symbolically or numerically as a basic infix expression
-(define (!0-generic terms  operator-precedence creator)
-
-  ;; (newline)
-  ;; (display "!0-generic : terms=") (display terms) (newline)
-  ;; (display "!0-generic : operator-precedence=") (display operator-precedence) (newline)
-  (when (not (list? terms))
-    (display "!0-generic : WARNING , terms is not a list, perheaps expander is not psyntax (Portable Syntax)") (newline)
-    (display "!0-generic : terms=") (display terms) (newline))
-
-  (define rv
-    (if (null? terms) ;; i added this null case but with correct input this should not be necessary
-	terms
-	(car (!*-generic (reverse terms) ; for exponentiation evaluated from right to left
-			 operator-precedence
-			 #;#f
-			 creator))))
-
-  ;; (display "!0-generic : rv=") (display rv) (newline)
-  ;; (newline)
-  rv
-
-  )
-
-
 
 
 
@@ -164,8 +136,14 @@
 		      ;;odd?;(not odd?)
 		      creator))))
 
+;; wrap a null test
+(define (check-null-and-!*-generic terms operator-precedence creator)
 
-
+  (if (null? terms) ;; never for infix as there is e1 op1 e2 op2 e3 at least
+	terms
+	(!*-generic (reverse terms) ; start reversed for exponentiation (highest precedence operator)
+		    operator-precedence
+		    creator)))
 
 
 ;; evaluate a list of groups of operators in the list of terms - forward in operator groups
@@ -184,10 +162,10 @@
 	;; (display rv-tms)
 	;; (newline)
 	
-      (!*-generic rv-tms; this forward in terms 
-		  (cdr operator-groups) ;  rest of precedence list , this forward in operator groups of precedence ,check another group
-		  ;;(not odd?)
-		  creator))))
+	(!*-generic rv-tms; this forward in terms 
+		    (cdr operator-groups) ;  rest of precedence list , this forward in operator groups of precedence ,check another group
+		    ;;(not odd?)
+		    creator))))
 
 
 
@@ -196,18 +174,49 @@
   ;;(display "!*prec-generic : terms=") (display terms) (newline)
   ;;(display "!*prec-generic : operator-precedence=") (display operator-precedence) (newline)
 
-  (define rv
-    (if (null? terms) 
-	terms
-	(!*-generic (reverse terms) ; start reversed for exponentiation (highest precedence operator)
-		    operator-precedence
-		    ;;#f
-		    creator)))
+  (when (not (list? terms))
+    (display "!*prec-generic : WARNING , terms is not a list, perheaps expander is not psyntax (Portable Syntax)") (newline)
+    (display "!*prec-generic : terms=") (display terms) (newline))
 
-  ;;(display "!*prec-generic : rv=") (display rv) (newline)
-  ;;(newline)
+  (define rv
+    (check-null-and-!*-generic  terms ; start reversed for exponentiation (highest precedence operator)
+				operator-precedence
+				creator))
+
+  ;; (display "!*prec-generic : rv=") (display rv) (newline)
+  ;; (newline)
   
   rv)
+
+
+;; DEPRECATED
+;;; evaluates `terms` symbolically or numerically as a basic infix expression
+;; no more called by nfx
+(define (!0-generic terms  operator-precedence creator) 
+
+  ;; (newline)
+  ;; (display "!0-generic : terms=") (display terms) (newline)
+  ;; (display "!0-generic : operator-precedence=") (display operator-precedence) (newline)
+  (when (not (list? terms))
+    (display "!0-generic : WARNING , terms is not a list, perheaps expander is not psyntax (Portable Syntax)") (newline)
+    (display "!0-generic : terms=") (display terms) (newline))
+
+  (define rv
+    (if (null? terms) ;; i added this null case but with correct input this should not be necessary
+	terms
+	(car (!*-generic (reverse terms) ; for exponentiation evaluated from right to left
+			 operator-precedence
+			 #;#f
+			 creator))))
+
+  (display "!0-generic : rv=") (display rv) (newline)
+  (newline)
+  rv
+
+  )
+
+
+
 
 
 ) ; end module
