@@ -23,7 +23,8 @@
 
   (require (for-syntax Scheme+/n-arity)
 	   (for-syntax Scheme+/infix-with-precedence-to-prefix)
-	   (for-syntax Scheme+/operators-list))
+	   (for-syntax Scheme+/operators-list)
+	   (for-syntax Scheme+/operators))
 
   
   
@@ -47,16 +48,22 @@
        
 	 (with-syntax ;; let
 			 
-		       ((parsed-args
-			 ;; TODO : make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
-			 (n-arity ;; this avoids : '{x <- y <- z <- t <- u <- 3 * 4 + 1}
-			   ;; SRFI-105.scm : !0 result = (<- (<- (<- (<- (<- x y) z) t) u) (+ (* 3 4) 1)) ;; fail set! ...
-			  ;; transform in : '(<- x y z t u (+ (* 3 4) 1))
-			  (car
-			   (!*prec-generic (syntax->list #'(e1 op1 e2 op2 e3 op ...)) ; apply operator precedence rules
-				       infix-operators-lst-for-parser-syntax
-				       ;;(get-infix-operators-lst-for-parser-syntax)
-				       (lambda (op a b) (list op a b)))))))
+	     ((parsed-args
+
+	       (let ((expr (car
+			    (!*prec-generic (syntax->list #'(e1 op1 e2 op2 e3 op ...)) ; apply operator precedence rules
+					    infix-operators-lst-for-parser-syntax
+					    ;;(get-infix-operators-lst-for-parser-syntax)
+					    (lambda (op a b) (list op a b))))))
+
+		 (if (or (isDEFINE? expr)
+			 (isASSIGNMENT? expr))
+		     ;;  make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
+		     (n-arity ;; this avoids : '{x <- y <- z <- t <- u <- 3 * 4 + 1}
+		      ;; SRFI-105.scm : !0 result = (<- (<- (<- (<- (<- x y) z) t) u) (+ (* 3 4) 1)) ;; fail set! ...
+		      ;; transform in : '(<- x y z t u (+ (* 3 4) 1))
+		      expr)
+		     expr))))
 	   
 	   (display "$nfx$ : parsed-args=") (display #'parsed-args) (newline)
 	   #'parsed-args)))))
