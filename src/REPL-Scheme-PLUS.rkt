@@ -3,6 +3,9 @@
 
 ;; in CLI you must (require Scheme+) manually
 
+;; but if you want to have syntax color in CLI start racket yourself and do:
+;; (load "REPL-Scheme-PLUS.rkt")
+
 #lang reader SRFI-105 ; SRFI-105 Curly-infix-expressions
 
 
