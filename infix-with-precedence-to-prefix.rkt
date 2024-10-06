@@ -29,6 +29,7 @@
 	   Scheme+/syntax)
 	  
 
+  ;; procedures work with quoted expression and syntax expressions
 
 
 ;; evaluate one group of operators in the list of terms

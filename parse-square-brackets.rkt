@@ -41,7 +41,7 @@
 
   ;;(display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
 
-  (define operators-lst (apply append operator-precedence))
+  (define operators-lst (apply append operator-precedence)) ; this already exist in operators-list module
   
   (when (null? args-brackets)
 	(return args-brackets))

@@ -24,7 +24,8 @@
   (require (for-syntax Scheme+/n-arity)
 	   (for-syntax Scheme+/infix-with-precedence-to-prefix)
 	   (for-syntax Scheme+/operators-list)
-	   (for-syntax Scheme+/operators))
+	   (for-syntax Scheme+/operators)
+	   (for-syntax Scheme+/infix))
 
   
   
@@ -50,21 +51,36 @@
 			 
 	     ((parsed-args
 
-	       (let ((expr (car
-			    (!*prec-generic (syntax->list #'(e1 op1 e2 op2 e3 op ...)) ; apply operator precedence rules
-					    infix-operators-lst-for-parser-syntax
-					    ;;(get-infix-operators-lst-for-parser-syntax)
-					    (lambda (op a b) (list op a b))))))
+	       (begin
 
-		 (if (or (isDEFINE? expr)
-			 (isASSIGNMENT? expr))
-		     ;;  make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
-		     (n-arity ;; this avoids : '{x <- y <- z <- t <- u <- 3 * 4 + 1}
-		      ;; SRFI-105.scm : !0 result = (<- (<- (<- (<- (<- x y) z) t) u) (+ (* 3 4) 1)) ;; fail set! ...
-		      ;; transform in : '(<- x y z t u (+ (* 3 4) 1))
-		      expr)
-		     expr))))
-	   
+		 (display "$nfx$: #'(e1 op1 e2 op2 e3 op ...)=") (display #'(e1 op1 e2 op2 e3 op ...)) (newline)
+		 (display "$nfx$: (syntax->list #'(e1 op1 e2 op2 e3 op ...))=") (display (syntax->list #'(e1 op1 e2 op2 e3 op ...))) (newline)
+		 		
+		 ;; pre-check we have an infix expression because parser can not do it
+		 (when (not (infix? ;;(list #'e1 #'op1 #'e2 #'op2 #'e3 #'op ...) ; ellipsis imposible
+				    ;;#'(e1 op1 e2 op2 e3 op ...)
+				    (syntax->list #'(e1 op1 e2 op2 e3 op ...))
+				    operators-lst-syntax))
+		   
+		   (error "$nfx$ : arguments do not form an infix expression : here is #'(e1 op1 e2 op2 e3 op ...) and (syntax->list #'(e1 op1 e2 op2 e3 op ...)) for debug:"
+			  #'(e1 op1 e2 op2 e3 op ...)
+			  (syntax->list #'(e1 op1 e2 op2 e3 op ...))
+			  ))
+
+		 (let ((expr (car
+			      (!*prec-generic (syntax->list #'(e1 op1 e2 op2 e3 op ...)) ; apply operator precedence rules
+					      infix-operators-lst-for-parser-syntax
+					      (lambda (op a b) (list op a b))))))
+
+		   (if (or (isDEFINE? expr)
+			   (isASSIGNMENT? expr))
+		       ;;  make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
+		       (n-arity ;; this avoids : '{x <- y <- z <- t <- u <- 3 * 4 + 1}
+			;; SRFI-105.scm : !0 result = (<- (<- (<- (<- (<- x y) z) t) u) (+ (* 3 4) 1)) ;; fail set! ...
+			;; transform in : '(<- x y z t u (+ (* 3 4) 1))
+			expr)
+		       expr)))))
+	      
 	   (display "$nfx$ : parsed-args=") (display #'parsed-args) (newline)
 	   #'parsed-args)))))
 
