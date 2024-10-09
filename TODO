@@ -6,13 +6,4 @@
 
 a ² - 2 a b + b ²
 
-verifier que on a bien une syntaxe infixe avant :	
-> {1 2 + 3 -}
-($nfx$ 1 2 + 3 -)
-$nfx$ : parsed-args=.#<syntax 1>
-1
-#<eof>
-
-(define operators-lst (apply append operator-precedence)) ; this already exist in operators-list module
-dans parse-square-brackets le modifier ,ça iarait plus vite
 

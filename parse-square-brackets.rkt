@@ -37,11 +37,11 @@
 	  
   
 ;; split the expression using slice as separator
-(def (parse-square-brackets-arguments args-brackets creator operator-precedence)
+(def (parse-square-brackets-arguments args-brackets creator operator-precedence operators-lst)
 
   ;;(display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
 
-  (define operators-lst (apply append operator-precedence)) ; this already exist in operators-list module
+  ;;(define operators-lst (apply append operator-precedence)) ; this already exist in operators-list module
   
   (when (null? args-brackets)
 	(return args-brackets))
@@ -141,8 +141,9 @@
 
   (parse-square-brackets-arguments args-brackets ;; generic procedure
 				   (lambda (op a b) (list op a b))
-				   infix-operators-lst-for-parser-syntax)) ;; defined elsewhere
-				   ;;(get-infix-operators-lst-for-parser-syntax)))
+				   infix-operators-lst-for-parser-syntax
+				   operators-lst-syntax)) ;; defined elsewhere
+				
 					    
 
 ;; DEPRECATED
