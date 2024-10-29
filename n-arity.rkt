@@ -112,7 +112,7 @@
 	       append
 	       (map (make-collect-leaves-operator opera) (args expr))))))
      
-     (else ;; safe else, will not touch non associative operators
+     (else ;; safe else, will not touch non always associative operators (- could be or not !) TODO: deal operator like -
       (let ((opera (operator expr)))
 	(cons opera
 	      (map n-arity (args expr)))))))

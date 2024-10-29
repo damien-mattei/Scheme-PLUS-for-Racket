@@ -6,7 +6,7 @@
   (provide while
 	   do)
 
-  (require (only-in racket/base [do do-scheme])) ;; backup original Scheme 'do')
+  (require (only-in racket/base [do do-scheme])) ;; backup original Scheme 'do'
 
 
 

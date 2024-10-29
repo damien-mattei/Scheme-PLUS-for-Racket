@@ -23,11 +23,13 @@
 
 	(provide definition-operator
 		 assignment-operator
+		 exponential-operator
 		 
 		 infix-operators-lst-for-parser
 		 
 		 definition-operator-syntax
 		 assignment-operator-syntax
+		 exponential-operator-syntax
 		 
 		 infix-operators-lst-for-parser-syntax
 		 
@@ -47,12 +49,14 @@
 				  '<v 'v>
 				  '⇜ '⇝))
 
+(define exponential-operator (list 'expt '**))
+
 
 (define infix-operators-lst-for-parser
 
   (list
     
-   (list 'expt '**)
+   exponential-operator
    (list '* '/ '%)
  
    (list '+ '-)
@@ -63,7 +67,7 @@
    (list '^)
    (list '∣)
    
-   (list '< '> '= '≠ '<= '>= '<>)
+   (list '< '> '= '≠ '<= '>= '<> 'equal?)
 
    (list 'and)
    
@@ -91,11 +95,14 @@
 					 #'⇜ #'⇝))
 
 
+(define exponential-operator-syntax (list #'expt #'**))
+
+
 
 (define infix-operators-lst-for-parser-syntax
 
   (list
-    (list #'expt #'**)
+    exponential-operator-syntax
     (list #'* #'/ #'%)
     (list #'+ #'-)
 	
@@ -103,7 +110,7 @@
 
     (list #'& #'∣)
 
-    (list #'< #'> #'= #'≠ #'<= #'>= #'<>)
+    (list #'< #'> #'= #'≠ #'<= #'>= #'<> #'equal?)
 
     (list #'and)
 

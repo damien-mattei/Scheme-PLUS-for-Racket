@@ -9,7 +9,7 @@
 	       "r6rs-lib"
 	       "reprovide-lang-lib"))
 (define pkg-desc "Scheme+ for Racket")
-(define version "9.5")
+(define version "9.7")
 (define pkg-authors '(mattei))
 (define scribblings '(("scribblings/scheme-plus.scrbl" ())))
 (define build-deps '("scribble-lib" "racket-doc" "scribble-code-examples" "scribble-doc"))

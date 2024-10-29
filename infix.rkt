@@ -23,7 +23,8 @@
 
 (module infix racket
 
-  (provide infix?)
+	(provide infix?
+		 simple-infix-list-syntax?)
 
   (require Scheme+/syntax)
 
@@ -48,11 +49,14 @@
 ;; > (infix? '3 operators-lst)
 ;; #t
 
+
+;; Warning: check only infix at the top level of an expression (do not dive in subexpressions)
 (define (infix? expr oper-lst)
 
   ;; (display "infix? : expr=") (display expr) (newline)
   ;; (display "infix? : oper-lst=") (display oper-lst) (newline)
 
+  
   ;; check we have (operator expression ...) recursively
   (define (infix-rec? expr) ; (op1 e1 op2 e2 ...)
 
@@ -77,25 +81,36 @@
 	)) ; continue with (op2 e2 ...) 
 
 
+
+
+  
+
+  
   (define rv
+    
     (cond ((not (list? expr))
 	   ;; (begin
 	   ;;   (display "infix? : not a list") (newline)
 	   ;;   (display "infix? : check not an operator: (not (member-syntax expr oper-lst)):") (display (not (member-syntax expr oper-lst))) (newline)
 	   (not (member-syntax expr oper-lst))
 	  ; ) ;  end begin
-	   ) ; ex: 3 , not an operator ! 
+	   ) ; ex: 3 , not an operator !
+	  
 	  ((null? expr) ;; (begin
 			;;   (display "infix? : null expr") (newline)
 	   #t
-	  ; ) ; end begin
-	  ) ; by definition
+	   ;; ) ; end begin
+	   ) ; by definition
+	  
 	  ((null? (cdr expr)) ;; (begin
 			      ;; 	(display "infix? : (a) not allowed as infix") (newline)
 	   #f
-	 ;  ) ; end begin
+	   ;;  ) ; end begin
 	   ) ; (a) not allowed as infix
+
+	  
 	  (else
+	   
 	   (and ;; (begin
 		;;   (display "infix? : check not start with an operator:")
 		;;   (display (not (member-syntax (car expr) oper-lst)))
@@ -106,10 +121,41 @@
 	    (infix-rec? (cdr expr)))))) ; sublist : (op arg ...) match infix-rec
   
   ;;(display "infix? : rv=") (display rv) (newline)
+
+
   
-  rv
+  rv ; return rv
   
-  )
+  ) ; end define infix?
+
+
+
+
+ ; Return true if lyst has an even # of parameters, and the (alternating)
+  ; first parameters are "op".  Used to determine if a longer lyst is infix.
+  ; If passed empty list, returns true (so recursion works correctly).
+  
+  (define (even-and-op-prefix-syntax? op lyst)
+    (cond
+      ((null? lyst) #t)
+      ((not (pair? lyst)) #f)
+      ((not (datum=? op (car lyst))) #f) ; fail - operators not the same
+      ((not (pair? (cdr lyst)))  #f) ; Wrong # of parameters or improper
+      (#t   (even-and-op-prefix-syntax? op (cddr lyst))))) ; recurse.
+
+  ; Return true if the lyst is in simple infix format
+  ; (and thus should be reordered at read time).
+  
+  (define (simple-infix-list-syntax? lyst)
+    (and
+      (pair? lyst)           ; Must have list;  '() doesn't count.
+      (pair? (cdr lyst))     ; Must have a second argument.
+      (pair? (cddr lyst))    ; Must have a third argument (we check it
+                             ; this way for performance)
+      (even-and-op-prefix-syntax? (cadr lyst) (cdr lyst)))) ; true if rest is simple
+
+ 
+
 
 ) ; end library
 

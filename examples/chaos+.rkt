@@ -1,14 +1,13 @@
-#lang reader "../src/SRFI-105.rkt"
+#lang reader SRFI-105
 
 (module chaos racket
 
-(require Scheme-PLUS-for-Racket)
-
-(require (only-in srfi/41 stream-iterate) plot)
-
-(require racket/gui/base)
-
-(require colors)
+(require Scheme+
+	 (only-in srfi/41 stream-iterate)
+	 plot
+	 racket/gui/base
+	 colors
+	 (only-in racket/base [for for-racket]))
 
 
 ;; ← or <- or := are equivalent to 'define' (or 'set!' if the variable already exist !)
@@ -65,7 +64,7 @@
 ;; remove a gap at minimum and maximum and return a value in [gap,1-gap]
 (define (remove-extrema x)
   (define gap 0.3)
-  {gap + {1.0 - 2 * gap} * x})
+  {gap + (1.0 - 2 * gap) * x})
 
 (define (f x y)
   (abs {sin(x) * cos(y)}))
@@ -96,9 +95,9 @@
 
 ;; get a normalized scalar between [0,1] and return the values of red, green and blue of the color in the long rainbow
 (define (scalar-to-long-rainbow-rgb s)
-  {a := {1 - s} / 0.2} ; invert and group
+  {a := (1 - s) / 0.2} ; invert and group
   {x := (inexact->exact (floor a))} ; this is the integer part
-  {y := (inexact->exact (floor {255 * {a - x}}))} ; fractional part from 0 to 255
+  {y := (inexact->exact (floor {255 * (a - x)}))} ; fractional part from 0 to 255
   (case x
     ((0) (values 255 y 0))
     ((1) (values {255 - y} 255 0))
@@ -136,18 +135,19 @@
 
 (define (chaos p q d x0 y0)
   
-  (define a {2 * cos{2 * pi * p / q}}) ; or {2 * (cos {2 * pi * p / q})} or {2 * cos({2 * pi * p / q})}
-  (define ksx (sqrt {{2 + a} / 2})) ; or sqrt{{2 + a} / 2}
-  {ksy := (sqrt {{2 - a} / 2})} ; or (define ksy (sqrt {{2 - a} / 2}))
+  ;;(define a {2 * cos{2 * pi * p / q}}) ; or {2 * (cos {2 * pi * p / q})} or {2 * cos({2 * pi * p / q})}
+  (define a   2 * (cos {2 * pi * p / q}))
+  (define ksx (sqrt {(2 + a) / 2})) ; or sqrt{{2 + a} / 2}
+  {ksy := (sqrt {(2 - a) / 2})} ; or (define ksy (sqrt {{2 - a} / 2}))
   
   (stream-map (lambda (z)
                 (match-let (((vector x y) z))
-                  (vector {{ksx / (sqrt 2)} * {x + y}}
-			  {{ksy / (sqrt 2)} * {(- x) + y}})))
+                  (vector {(ksx / (sqrt 2)) * (x + y)}
+			  {(ksy / (sqrt 2)) * ((- x) + y)})))
                   (stream-iterate (lambda (z)
                                     (match-let (((vector x y) z))
                                       (vector
-                                       {{a * x} + y + {d * x} / (add1 {x ** 2})} ; infix left to right evaluation avoid extra parenthesis but is hard for humans
+                                       {(a * x) + y + (d * x) / (add1 {x ** 2})} ; infix left to right evaluation avoid extra parenthesis but is hard for humans
                                        (- x))))
 				  (vector x0 y0))))
 
@@ -312,7 +312,7 @@
 			      (send dc set-pen "black" 1 'solid)
 
 			      ;; compute the units of graph
-			      {unit-axis-in-pixel ← (min xws yws) / {2 * (sqrt max-norm-x-y)}}
+			      {unit-axis-in-pixel ← (min xws yws) / (2 * (sqrt max-norm-x-y))}
 			      
 			      ;; display the points
 			      (for-racket ([point lst-points])

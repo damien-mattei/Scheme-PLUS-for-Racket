@@ -1,5 +1,4 @@
 #lang reader SRFI-105
-;;#lang reader "../src/SRFI-105.rkt"
  
 (module zeta racket
 
@@ -7,11 +6,9 @@
 
 (require Scheme+)
 	
-;;(require "../Scheme+.rkt")
-;;(require "../main.rkt")
 
 (require Scheme+/increment)
-;;(include "../src/increment.scm")
+
 
 (require racket/gui/base)
 
@@ -24,13 +21,13 @@
 
 ; Make a frame by instantiating the frame% class
 {frame0 ← (new frame% [label "Example"]
-	               [width xws]
-		       [height yws])}
+	              [width xws]
+		      [height yws])}
 
 
 ; Make a static text message in the frame
 {msg ← (new message% [parent frame0]
-	              [label "No events so far..."])}
+	             [label "No events so far..."])}
  
 ;; Make a button in the frame
 (new button% [parent frame0]
@@ -45,8 +42,7 @@
 {blue-brush ← (new brush% [color "blue"])}
 {yellow-brush ← (new brush% [color "yellow"])}
 
-;;{z ← 0}
-;;{z ← 2+1i}
+
 {z ← 1.13+1.765i}
 
 {unit-axis-in-pixel ← 200}
@@ -160,7 +156,7 @@
 
 
 (define (line-length x0 y0 x1 y1)
-  (sqrt { {x1 - x0} ** 2 + {y1 - y0} ** 2 }))
+  (sqrt { (x1 - x0) ** 2 + (y1 - y0) ** 2 }))
 
 
 ;; (new button% [parent frame0]

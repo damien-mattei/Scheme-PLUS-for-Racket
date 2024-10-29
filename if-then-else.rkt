@@ -35,8 +35,10 @@
    
    (for-syntax
     (rename-in racket (if if-scheme)))
+
    ;;(for (rnrs syntax-case (6)) expand)
    ;;(only-in srfi/1 third)
+   
    Scheme+/declare
    Scheme+/insert
    Scheme+/syntax

@@ -1,0 +1,162 @@
+#! /usr/bin/env racket
+#lang reader SRFI-105
+
+;; parse the Bepi Colombo spacecraft trajectory file text and convert it in XML format
+
+;; Damien MATTEI
+
+;; ./generateXMLfromTrajectory ./BepiColombo-Mio_MSO-orbit_1min_short.txt
+
+(module generateXMLfromTrajectory racket
+	
+	(require Scheme+)
+	
+	(require xml
+		 (except-in 2htdp/batch-io xexpr?)) ; for: read-lines
+	
+	;;(require (only-in racket/base [for for-racket]))
+	
+	(require srfi/19) ; Time Data Types and Procedures
+
+	;; parse the input file from command line
+	(define cmd-ln-vect (current-command-line-arguments))
+
+	(define Rm 2439.7) ; Rayon Mercure (km)
+
+	{src <- cmd-ln-vect[0]}
+	(display "Input file:")
+	(display src)
+	(newline)
+
+	;; check we have a .txt file
+	{ext <- src[-4 :]} ; try to get the .txt extension
+	(display "Extension find:")
+	(display ext)
+	(newline)
+
+	(when (not (equal? ext ".txt"))
+	      (error "Not a text file."))
+
+	;; read all lines
+	{input-lines <- (read-lines src)}
+	{vl <- (list->vector input-lines)}
+
+	;; find the basename
+	{basename <- src[: -4]} ; skip the 4 char of extension
+
+	;; create output file name
+	{data-out <- (string-append "../" basename ".xml")}
+
+	;; create output XML file
+	(define out (open-output-file #:exists 'truncate data-out))
+
+	{tdl <- vl[5 :]}; TABLEDATA lines, skip the header to go to table data lines
+
+	; convert the index (minute) in days hours minutes
+	(define (minutes->days-hours-minutes m) ; minutes
+	  {minutes-in-day <- 60 * 24}
+	  (define days (quotient m minutes-in-day))
+	  {minutes <- m % minutes-in-day} ; partial resting minutes
+	  (define hours (quotient minutes 60))
+	  {minutes <- minutes % 60} ; final resting minutes
+	  (values days hours minutes))
+
+	;; my routine to convert date time in a string using SRFI 19 Time Data Types and Procedures
+	(define (my-time->string d h m)
+	  (define dt19 (make-date 0 0 m h d 1 2021 0))
+	  (string-append (date->string dt19 "~5") ".000")) ; append nanoseconds
+   
+	
+	(define (parse-data-table-lines tdl) ; get a vector of lines
+
+	  (for/list ([tr tdl])
+		    
+		    {(index-minutes xs ys zs) <- (apply values (string-split tr))}
+		    
+		    ;; convert from Rm mercury in km
+		    (define x (string->number xs))
+		    (define y (string->number ys))
+		    (define z (string->number zs))
+		    {x <- x * Rm}
+		    {y <- y * Rm}
+		    {z <- z * Rm}
+		    {xs <- (number->string x)}
+		    {ys <- (number->string y)}
+		    {zs <- (number->string z)}
+		    
+		    {(d h m) <- (minutes->days-hours-minutes (inexact->exact (round (string->number index-minutes))))}
+		    
+		    (define dt-str (my-time->string {d + 1} h m))
+		    
+		    `(TR (TD ,dt-str)
+			  (TD ,xs)
+			  (TD ,ys)
+			  (TD ,zs))))
+
+	
+	
+	(define xexpr `(VOTABLE ((version "1.2")
+				 (xmlns:xsi "http://www.w3.org/2001/XMLSchema-instance")
+				 (xmlns:stc "http://www.ivoa.net/xml/STC/v1.30"))
+				(RESOURCE
+				 (TABLE ((name "getOrbUrl generation"))
+					(DESCRIPTION ,{string-append(vl[0] vl[1] vl[2] vl[3])})
+					(GROUP ((ref "")
+						(ID "PosFrame"))
+					       (FIELDref ((ref "col2")
+							  (utype "stc:AstroCoords.Position3D.Value3.C1")))
+					       (FIELDref ((ref "col3")
+							  (utype "stc:AstroCoords.Position3D.Value3.C2")))
+					       (FIELDref ((ref "col4")
+							  (utype "stc:AstroCoords.Position3D.Value3.C3"))))
+					(FIELD ((name "Time")
+						(ID "col1")
+						(ucd "time.epoch")
+						(xtype "dateTime")
+						(utype "")
+						(datatype "char")
+						(arraysize "*")))
+					(FIELD ((name "X")
+						(ID "col2")
+						(ucd "pos.cartesian.x")
+						(utype "stc:AstroCoords.Position3D.Value3.C1")
+						(datatype "float")
+						(width "10") (unit "km")))
+					(FIELD ((name "Y")
+						(ID "col3")
+						(ucd "pos.cartesian.y")
+						(utype "stc:AstroCoords.Position3D.Value3.C2")
+						(datatype "float")
+						(width "10") (unit "km")))
+					(FIELD ((name "Z")
+						(ID "col4")
+						(ucd "pos.cartesian.z")
+						(utype "stc:AstroCoords.Position3D.Value3.C3")
+						(datatype "float")
+						(width "10") (unit "km")))
+					(DATA
+					 (TABLEDATA ,@(parse-data-table-lines tdl)))))))
+
+
+
+	;; this is the main code
+	
+	(display-xml
+	 (make-document
+	  (make-prolog
+	   ;;(list (make-p-i #f #f 'xml "version=\"1.0\" encoding=\"UTF-8\""))
+	   (list (make-p-i #f #f 'xml "version=\"1.0\""))
+	   ;; (make-document-type
+	   ;;  'plist
+	   ;;  (make-external-dtd/system "http://www.apple.com/DTDs/PropertyList-1.0.dtd")
+	   ;;  #f)
+	   #f
+	   empty)
+	  ;;(xexpr->xml `(plist ((version "0.9")) ,xexpr))
+	  (xexpr->xml xexpr)
+	  null)
+	 out)
+	  
+
+	
+) ; end module

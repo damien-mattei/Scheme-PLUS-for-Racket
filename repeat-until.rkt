@@ -21,7 +21,9 @@
 (module repeat-until racket
 
 
-  (provide repeat)
+	;;(require Scheme+/nfx)
+
+	(provide repeat)
 
   
 
@@ -34,12 +36,20 @@
 ;; 1
 ;; 0
 
-(define-syntax repeat
-  (syntax-rules (until)
-    ((repeat b1 ...
-       until pred)
-     (let loop () b1 ... (when (not pred) (loop))))))
+	(define-syntax repeat
+	  
+	  (syntax-rules (until)
+	    
+	    ((repeat b1 ...
+		     until pred)
+		     ;;until pred e1 ...) ; ellipsis not allowed here ! now we allow direct infix expressions too
+	     
+	     (let loop ()
+	       b1
+	       ...
+	       (when (not pred) ;;(not ($nfx$ pred e1 ...))
+		 (loop))))))
 
 
-) ; end library
+	) ; end library
 

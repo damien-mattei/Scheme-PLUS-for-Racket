@@ -15,7 +15,11 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;; version 9.5
+;; version 9.7
+
+;; use: (require Scheme+)
+
+;; note : seems (require Scheme+/def-nfx) should be required separately in REPL
 
 (module Scheme+ racket
 
@@ -25,6 +29,7 @@
    ;; definition and block
 
    def return return-rec
+   define
    <+ +>
    ⥆ ⥅
    :+ +:
@@ -116,8 +121,11 @@
 
   (require
 
+   (only-in racket/base [define define-scheme])
+   
    ;; definition and block
    Scheme+/def
+   Scheme+/def-nfx ; infix define
    Scheme+/declare
    Scheme+/block
 
