@@ -19,7 +19,7 @@
 ;; code from r6rs version
 
 
-(module slice racket
+(module slice racket/base
 
   (provide :
 	   slice)

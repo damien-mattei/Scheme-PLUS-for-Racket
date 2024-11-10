@@ -19,7 +19,7 @@
 
 
 
-(module range racket
+(module range racket/base
 
 
   (provide in-range

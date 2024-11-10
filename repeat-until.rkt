@@ -18,7 +18,7 @@
 
 
 
-(module repeat-until racket
+(module repeat-until racket/base
 
 
 	;;(require Scheme+/nfx)

@@ -21,7 +21,7 @@
 ;; code from Scheme+R6RS
 
 
-(module infix racket
+(module infix racket/base
 
 	(provide infix?
 		 simple-infix-list-syntax?)

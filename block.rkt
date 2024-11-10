@@ -18,7 +18,7 @@
 
 ;; code from r6rs version
 
-(module block racket
+(module block racket/base
 
   (provide $>
 	   $+>

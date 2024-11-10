@@ -17,7 +17,7 @@
 
 
 
-(module n-arity racket
+(module n-arity racket/base
 
   (provide n-arity)
 

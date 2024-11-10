@@ -1,6 +1,6 @@
 
 
-(module bracket-apply racket
+(module bracket-apply racket/base
 
 
   (provide << >>

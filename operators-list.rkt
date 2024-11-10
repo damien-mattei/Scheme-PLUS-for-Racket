@@ -19,7 +19,7 @@
 ;; code from Scheme+R6RS
 
   
-(module operators-list racket
+(module operators-list racket/base
 
 	(provide definition-operator
 		 assignment-operator

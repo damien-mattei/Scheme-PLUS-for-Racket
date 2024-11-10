@@ -1,10 +1,4 @@
-;;#lang reader "../../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
-
 #lang reader SRFI-105
-
-;;#lang reader "../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
-
-;;#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions
 
 ;; Matrix  based on vector of vectors
 
@@ -38,12 +32,7 @@
 ;;(import (srfi :43)) 
 
 
-;;(require "../../Scheme-PLUS-for-Racket/src/Scheme+.rkt")
 (require Scheme+)
-
-;;(require Scheme-PLUS-for-Racket)
-;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/Scheme+.rkt")
-;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
 
 
 
@@ -51,10 +40,8 @@
 
 (require (rename-in srfi/43 (vector-map vector-map-srfi-43)))  ; vector , warning vector-map has index as extra parameter...
 
-;;(require "../../Scheme-PLUS-for-Racket/src/array.rkt")
+
 (require Scheme+/array)
-;;(require "../Scheme-PLUS-for-Racket/src/array.rkt")
-;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/array.rkt")
 
 (struct matrix-vect (v)) ;; matrix based on vector of vectors
 
@@ -71,14 +58,15 @@
   
   {v <- (matrix-vect-v M)}
   {lin <- (vector-length v)}
-  {col <- (vector-length {v[0]})}
+  ;;{col <- (vector-length {v[0]})}
+  {col <- (vector-length v[0])}
   (values lin col))
 
 
 (define (multiply-matrix-matrix M1 M2)
 
-  {(n1 p1) <+ (dim-matrix-vect M1)}
-  {(n2 p2) <+ (dim-matrix-vect M2)}
+  {(n1 p1) <- (dim-matrix-vect M1)}
+  {(n2 p2) <- (dim-matrix-vect M2)}
   ;; (display "multiply-matrix-matrix : n1=") (display n1) (newline)
   ;; (display "multiply-matrix-matrix : p1=") (display p1) (newline)
   ;; (display "multiply-matrix-matrix : n2=") (display n2) (newline)

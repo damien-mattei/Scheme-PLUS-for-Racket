@@ -20,7 +20,7 @@
 
 
 
-(module def racket
+(module def racket/base
 
 
 	(provide def return return-rec
@@ -30,7 +30,8 @@
 		 if-defined)
 
 	(require srfi/31 ;; for 'rec in def.scm
-		 racket/stxparam)
+		 racket/stxparam
+		 (for-syntax racket/base))
 	  
 
 ; Tests

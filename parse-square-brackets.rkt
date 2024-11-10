@@ -20,7 +20,7 @@
 
 ;; some optimizer procedures that parse square brackets arguments
 
-(module parse-square-brackets racket
+(module parse-square-brackets racket/base
 
   (provide parse-square-brackets-arguments-lister-syntax)
   

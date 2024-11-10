@@ -17,7 +17,7 @@
 
 
 
-(module if-parser racket
+(module if-parser racket/base
 
   (provide then=?
 	   else=?
@@ -26,7 +26,8 @@
   (require (for-meta -1 racket/base)
 	   ;;(for (rnrs base (6)) expand) ; import at expand phase (not run phase)
 	   
-	   ;;(only-in srfi/1 third) ; strangely not required
+	   ;;(only-in srfi/1 third) ; not required with racket
+	   srfi/1 ; with racket/base
 	   Scheme+/declare
 	   Scheme+/insert
 	   Scheme+/syntax)

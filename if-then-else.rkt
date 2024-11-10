@@ -26,15 +26,15 @@
 ;; if : parsed-args=.#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/if-parser.rkt:171:21 (cond (#t (let () 1 2)) (else...>
 ;; 2
 
-(module if-then-else racket
+(module if-then-else racket/base
 
   (provide if)
   
   (require
-   (except-in racket if)
+   (except-in racket/base if)
    
    (for-syntax
-    (rename-in racket (if if-scheme)))
+    (rename-in racket/base (if if-scheme)))
 
    ;;(for (rnrs syntax-case (6)) expand)
    ;;(only-in srfi/1 third)

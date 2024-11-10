@@ -21,7 +21,7 @@
 
 ;; note : seems (require Scheme+/def-nfx) should be required separately in REPL
 
-(module Scheme+ racket
+(module Scheme+ racket/base
 
   (provide
 

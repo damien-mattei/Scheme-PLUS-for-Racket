@@ -1,8 +1,6 @@
-;;#lang reader "../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
-
 #lang reader SRFI-105
 
-;;#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions
+;; SRFI-105 Curly-infix-expressions
 
 
 ; Deep Learning : back propagation, gradient descent, neural network with N hidden layers
@@ -43,8 +41,7 @@
 (require "matrix+.rkt")
 
 (require Scheme+)
-;;(require Scheme-PLUS-for-Racket)
-;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/Scheme+.rkt")
+
 
 (require (only-in racket/base [for for-racket]))
 
@@ -64,7 +61,7 @@
 
 ; return a random number between [inf, sup]
 (define (uniform-interval inf sup)
-  {gap <- {sup - inf}}
+  {gap <- sup - inf}
   {inf + gap * (random)})
 
 (overload-procedure uniform uniform-dummy (number?))
@@ -74,17 +71,17 @@
 
 ; sigmoïde
 (define (σ z̃) 
-  {1 / {1 + (exp (- z̃))}})
+  {1 / (1 + (exp (- z̃)))} )
 
 ; some derivatives
 (define (der_tanh z z̃)
   {1 - z ** 2})	
 
 (define (der_σ z z̃)
-    {z * {1 - z}})
+    {z * (1 - z)})
 
 (define (der_atan z z̃)
-  {1 / {1 + z̃ ** 2}})
+  {1 / (1 + z̃ ** 2)})
 
 
 
@@ -302,16 +299,16 @@ but will it works with Scheme+ parser?
 	  ; the length of output and input layer with coeff. used for bias update
 	  {(len_layer_output len_layer_input_plus1forBias) <- (dim M_i_o)} ; use values and define-values to create bindings
         
-	  {len_layer_input <- {len_layer_input_plus1forBias - 1}}
+	  {len_layer_input <- len_layer_input_plus1forBias - 1}
 
 	  (for-racket ([j (in-range len_layer_output)]) ; line
 		
 		(for-racket ([i (in-range len_layer_input)]) ; column , parcours les colonnes de la ligne sauf le bias
 		    
-		    {M_i_o[j {i + 1}]  <-  M_i_o[j {i + 1}] - {(- η) * z_input[i] * მzⳆმz̃(z_output[j] z̃_output[j]) * ᐁ_i_o[j]}})
+		    {M_i_o[j {i + 1}]  <-  M_i_o[j {i + 1}]  -  (- η) * z_input[i] * მzⳆმz̃(z_output[j] z̃_output[j]) * ᐁ_i_o[j] })
 
 		; and update the bias
-            	{M_i_o[j 0]  <-  M_i_o[j 0] - {(- η) * 1.0 * მzⳆმz̃(z_output[j] z̃_output[j]) * ᐁ_i_o[j]}}))
+            	{M_i_o[j 0]  <-  M_i_o[j 0] - ((- η) * 1.0 * მzⳆმz̃(z_output[j] z̃_output[j]) * ᐁ_i_o[j]) })) ; note the useless (  ) near - ((- η) * ...
 	
 
 	(define/public (test Lexemples)

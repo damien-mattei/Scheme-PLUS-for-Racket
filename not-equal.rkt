@@ -1,6 +1,6 @@
 
 
-(module not-equal racket
+(module not-equal racket/base
 
 
   (provide <>

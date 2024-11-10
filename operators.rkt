@@ -17,7 +17,7 @@
 
 
 
-(module operators racket
+(module operators racket/base
 
 
   (provide operator?

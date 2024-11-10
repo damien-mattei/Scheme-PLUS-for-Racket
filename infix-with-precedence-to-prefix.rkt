@@ -21,7 +21,7 @@
 ;; code from Scheme+R6RS
 
 
-(module infix-with-precedence-to-prefix racket
+(module infix-with-precedence-to-prefix racket/base
 
   (provide !*prec-generic)
 

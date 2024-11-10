@@ -1,8 +1,5 @@
-;;#lang reader "../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
-
 #lang reader SRFI-105
 
-;;#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
 
 ;; Matrix  file
 
@@ -23,8 +20,6 @@
 
 (require Scheme+)
 
-;;(require Scheme-PLUS-for-Racket)
-;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/Scheme+.rkt")
 
 (define-overload-existing-operator *)
 

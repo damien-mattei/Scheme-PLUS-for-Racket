@@ -18,7 +18,7 @@
 
 
 
-(module insert racket
+(module insert racket/base
 
   (provide insert
 	   insert-set!

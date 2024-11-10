@@ -6,9 +6,13 @@
 
 (require Scheme+)
 
+
+(define rnd (make-pseudo-random-generator))
+
 (define (deal)
   ;; assumption: random's performance is mostly uniform
-  (exact->inexact (random -5000 5000)))
+  (exact->inexact (random -5000 5000 rnd)))
+
 (define test-count 5000000)
 
 (define (pair-add a b)

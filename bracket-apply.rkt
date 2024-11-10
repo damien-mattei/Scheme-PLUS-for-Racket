@@ -20,7 +20,7 @@
 
 
 
-(module bracket-apply racket
+(module bracket-apply racket/base
 
 
   (provide $bracket-apply$
@@ -28,13 +28,16 @@
 
   (require
 
+   (for-syntax racket/base)
+   srfi/43
+
    ;;(for (rnrs base (6)) expand) ; import at expand phase (not run phase)
    ;;(for (rnrs syntax-case (6)) expand)
    (only-in srfi/1 first second third fourth fifth)
    ;; (only (rnrs control (6)) when)
    ;; (only (srfi :13) string-set!)
    srfi/25
-   ;; (only (srfi :43) vector-copy)
+   ;;(only (srfi :43) vector-copy)
    srfi/69 ; hash table
    (rename-in flomat
 	      (repeat repeat-flomat)

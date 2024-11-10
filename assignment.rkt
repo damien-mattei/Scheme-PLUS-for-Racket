@@ -19,7 +19,7 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-(module assignment racket
+(module assignment racket/base
 
   (provide  <- ->
 	    ← →
@@ -29,6 +29,9 @@
 
 
   (require (for-syntax Scheme+/parse-square-brackets) ; import at expand phase (not run phase)
+
+	   racket/match
+	   (for-syntax racket/base)
 	   
 	   (only-in srfi/1 first second third fourth fifth)
 	   ;;(only (srfi :13) string-set! string-copy!)

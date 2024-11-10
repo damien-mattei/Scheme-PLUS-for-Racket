@@ -1,5 +1,5 @@
 
-(module exponential racket
+(module exponential racket/base
 
 
   (provide ** )

@@ -18,7 +18,7 @@
 
 ;; code from r6rs version
 
-(module declare racket
+(module declare racket/base
 
   (provide declare)
 

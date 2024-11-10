@@ -28,7 +28,7 @@
 
 ;; the value v should be put before in a let to avoid multiple evaluation after macro expand
 
-(module array racket
+(module array racket/base
 
 	(provide make-array-2d
 		 array-2d-ref

@@ -19,7 +19,7 @@
 
 
 
-(module def-nfx racket
+(module def-nfx racket/base
 
 
 	(provide define)
@@ -43,6 +43,18 @@
 
 	;; x
 	;; 17
+
+	
+	;; > (define x  3 * (5 - 3) + 1)
+	;; (define x 3 * (5 - 3) + 1)
+	;; $nfx$: #'(e1 op1 e2 op ...)=.#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/nfx.rkt:66:69 (3 * (5 - 3) + 1)>
+	;; $nfx$: (syntax->list #'(e1 op1 e2 op ...))=(.#<syntax 3> .#<syntax *> .#<syntax (5 - 3)> .#<syntax +> .#<syntax 1>)
+	;; $nfx$ : parsed-args=.#<syntax (+ (* 3 (- 5 3)) 1)>
+	;; #<eof>
+	;; > x
+	;; x
+	;; 7
+
 
 	(define-syntax define
 

@@ -20,7 +20,7 @@
 
 
 
-(module condx racket
+(module condx racket/base
 
   (provide condx
 	   condx-begin)

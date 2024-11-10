@@ -1,10 +1,6 @@
-;;#lang reader "../../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
-
 #lang reader SRFI-105
 
-;;#lang reader "../Scheme-PLUS-for-Racket/src/SRFI-105.rkt"
-
-;;#lang reader "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/SRFI-105.rkt" ; SRFI-105 Curly-infix-expressions and a few more
+;; SRFI-105 Curly-infix-expressions and a few more
 
 
 ; Deep Learning : back propagation, gradient descent, neural network with N hidden layers
@@ -18,7 +14,7 @@
 ; use MacVim to show ALL the characters of this file (not Emacs, not Aquamacs)
 					; jeu de couleurs: Torte ou Koehler
 					
-; modify it to be recompiled by Racket ? 1 
+; modify it to be recompiled by Racket ? 1 2
 
 
 ;; use in GUI 
@@ -33,9 +29,9 @@
 
 ;; /Applications/Racket\ v8.12/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/matrix-by-vectors+.rkt > ../../../../AI_Deep_Learning/matrix-by-vectors.rkt
 
-;; and you need to modify the code to load the parsed included module files (no + in name: example: matrix-by-vectors.rkt
+;; and you need to modify the code to load the parsed included module files (no + in name: example: matrix-by-vectors.rkt)
 
-;; or : make -f Makefile.Racket
+;; or : make
 
 ;; (require "exo_retropropagationNhidden_layers_matrix_v2_by_vectors.rkt")
 
@@ -59,13 +55,8 @@
 (require (rename-in srfi/42
 		    (: s42:))) ; Eager Comprehensions
 
-;;(require "../../Scheme-PLUS-for-Racket/src/Scheme+.rkt")
 
 (require Scheme+)
-
-;;(require Scheme-PLUS-for-Racket)
-;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/Scheme+.rkt")
-;;(require "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/main.rkt")
 
 (require (only-in racket/base [for for-racket])) ;; backup original Racket 'for'
 
@@ -76,14 +67,15 @@
 
 ; return a random number between [inf, sup]
 (define (uniform-interval inf sup)
-  {gap <- sup - inf}
+  ;;{gap <- sup - inf}
+  (define gap   sup - inf)
   {inf + gap * (random)})
 
 
 ; sigmoïde
 (define (σ z̃) 
   ;(display "σ : z̃ =") (display z̃) (newline)
-  {1 / {1 + (exp (- z̃))}})
+  {1 / (1 + (exp (- z̃)))})
 
 ; some derivatives
 (define (der_tanh z z̃)
@@ -93,7 +85,7 @@
     {z * {1 - z}})
 
 (define (der_atan z z̃)
-  {1 / {1 + z̃ ** 2}})
+  {1 / (1 + z̃ ** 2)})
 
 
 

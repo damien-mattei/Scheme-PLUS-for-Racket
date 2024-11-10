@@ -18,7 +18,7 @@
 
 ;; code from Scheme+R6RS
 
-(module syntax racket
+(module syntax racket/base
   
   (provide datum=?  
 	   member-syntax

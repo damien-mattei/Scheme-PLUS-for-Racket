@@ -16,7 +16,7 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-(module nfx racket
+(module nfx racket/base
 
 
   (provide $nfx$)
@@ -25,7 +25,8 @@
 	   (for-syntax Scheme+/infix-with-precedence-to-prefix)
 	   (for-syntax Scheme+/operators-list)
 	   (for-syntax Scheme+/operators)
-	   (for-syntax Scheme+/infix))
+	   (for-syntax Scheme+/infix)
+	   (for-syntax racket/base))
 
   
   

@@ -18,7 +18,7 @@
 
 
 
-(module for_next_step racket
+(module for_next_step racket/base
 
   (provide for continue break
 	   for-basic
@@ -29,7 +29,8 @@
 	   for-each-in)
 
   (require (only-in racket/base [for for-racket]) ;; backup original Racket 'for'
-	   (for-syntax r6rs/private/base-for-syntax) ; unless :  racket-8.14/share/pkgs/errortrace-lib/errortrace/stacktrace.rkt:709:4: identifier-syntax: undefined; cannot reference an identifier before its definition
+	   (for-syntax racket/base)
+	   ;;(for-syntax r6rs/private/base-for-syntax) ; unless :  racket-8.14/share/pkgs/errortrace-lib/errortrace/stacktrace.rkt:709:4: identifier-syntax: undefined; cannot reference an identifier before its definition
 	   Scheme+/increment
 	   (only-in racket/stxparam define-syntax-parameter syntax-parameterize))
 
