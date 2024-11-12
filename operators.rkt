@@ -43,12 +43,12 @@
 	   DEFINE-op?
 	   ASSIGNMENT-op?
 	   EXPONENTIAL-op?
+	   MULTIPLY-op?
 	   is-associative-operator?
 	   
 
 	   ;; expression tests
-	   isADD?
-	   MULTIPLY-op?
+	   isADD?	   
 	   isMULTIPLY?
 	   isOR?
 	   isAND?

@@ -57,6 +57,7 @@
   (list
     
    exponential-operator
+   
    (list '* '/ '%)
  
    (list '+ '-)

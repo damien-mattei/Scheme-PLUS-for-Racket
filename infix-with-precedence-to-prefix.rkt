@@ -177,6 +177,7 @@
   (if (or (null? operator-groups) ; done evaluating all operators
 	  (null? (cdr terms)))    ; only one term left
       terms ; finished processing operator groups
+      
       ;; evaluate another group -- separating operators into groups allows
       ;; operator precedence
 
