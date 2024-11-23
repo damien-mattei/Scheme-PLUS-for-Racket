@@ -30,6 +30,8 @@
 
    def return return-rec
    define
+   define-infix
+   
    <+ +>
    ⥆ ⥅
    :+ +:

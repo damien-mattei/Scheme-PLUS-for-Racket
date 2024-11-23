@@ -42,8 +42,55 @@
     
     (syntax-case stx ()
 
-      (($nfx$ expr) #'expr)
-      (($nfx$ op1 e1) #'(op1 e1))
+ 
+      (($nfx$ expr) 
+
+       (with-syntax
+			 
+	   ((parsed-args
+
+	     (begin
+	       
+	       (display "$nfx$: #'(expr)=") (display #'(expr)) (newline)
+	       (display "$nfx$: (syntax->list #'(expr))=") (display (syntax->list #'(expr))) (newline)
+
+	       (car ;  probably because the result will be encapsuled in a list !
+		;; apply operator precedence rules
+		(!*prec-generic-infix-parser ;; (list->mlist
+		 (syntax->list ;; no need in R6RS ???
+		  #'(expr));))
+		 infix-operators-lst-for-parser-syntax
+		 (lambda (op a b) (list op a b))))
+
+	       ;; should work
+	       ;; (recall-infix-parser #'expr
+	       ;; 			    infix-operators-lst-for-parser-syntax
+	       ;; 			    (lambda (op a b) (list op a b)))
+	       )))
+	 
+	 #'parsed-args))
+
+      
+
+      ;; (define x  - 4)
+      ;; x
+      ;; -4
+      (($nfx$ op1 e1) ; note : with 2 arg !*-prec-generic-infix-parser could not work , so we use recall-infix-parser
+
+       (with-syntax
+			 
+	   ((parsed-args
+	     
+	     (recall-infix-parser #'(op1 e1)
+				  infix-operators-lst-for-parser-syntax
+				  (lambda (op a b) (list op a b)))
+
+	     ))
+	 
+	 #'parsed-args))
+
+      
+       
       ;; (($nfx$ e1 op1 e2) #'(op1 e1 e2))
       ;; (($nfx$ e1 op1 e2 op2)
 
@@ -61,8 +108,6 @@
 
 	       (begin
 
-		 ;; (display "$nfx$: #'(e1 op1 e2 op2 e3 op ...)=") (display #'(e1 op1 e2 op2 e3 op ...)) (newline)
-		 ;; (display "$nfx$: (syntax->list #'(e1 op1 e2 op2 e3 op ...))=") (display (syntax->list #'(e1 op1 e2 op2 e3 op ...))) (newline)
 		 (display "$nfx$: #'(e1 op1 e2 op ...)=") (display #'(e1 op1 e2 op ...)) (newline)
 		 (display "$nfx$: (syntax->list #'(e1 op1 e2 op ...))=") (display (syntax->list #'(e1 op1 e2 op ...))) (newline)
 		 		
@@ -81,26 +126,45 @@
 		 ;; 	  (syntax->list #'(e1 op1 e2 op ...))))
 
 		 (let ((expr (car ;  probably because the result will be encapsuled in a list !
-			      ;;(!*prec-generic (syntax->list #'(e1 op1 e2 op2 e3 op ...)) ; apply operator precedence rules
-			      (!*prec-generic (syntax->list #'(e1 op1 e2 op ...))
+			      ;;(!*prec-generic-infix-parser (syntax->list #'(e1 op1 e2 op2 e3 op ...)) ; apply operator precedence rules
+			      (!*prec-generic-infix-parser (syntax->list #'(e1 op1 e2 op ...))
 					      infix-operators-lst-for-parser-syntax
 					      (lambda (op a b) (list op a b))))))
 
 		   ;; TODO pass back in n-arity also arithmetic operators (+ , * , ...) note: fail with n-arity
 		   (if ;;(not (isEXPONENTIAL? expr))
-		       (or (isDEFINE? expr)
-		       	   (isASSIGNMENT? expr))
-		       ;;  make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
-		       ;; (begin
-		       ;; 	 (display "$nfx$ : calling n-arity on expr :") (display expr) (newline) 
-			 (n-arity ;; this avoids : '{x <- y <- z <- t <- u <- 3 * 4 + 1}
-			  ;; SRFI-105.scm : !0 result = (<- (<- (<- (<- (<- x y) z) t) u) (+ (* 3 4) 1)) ;; fail set! ...
-			  ;; transform in : '(<- x y z t u (+ (* 3 4) 1))
-			  expr) ;) ; end begin
-		       expr)))))
+		    (or (isDEFINE? expr)
+		       	(isASSIGNMENT? expr))
+		    ;;  make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
+		    ;; (begin
+		    ;; 	 (display "$nfx$ : calling n-arity on expr :") (display expr) (newline) 
+		    (n-arity ;; this avoids : '{x <- y <- z <- t <- u <- 3 * 4 + 1}
+		     ;; SRFI-105.scm : !0 result = (<- (<- (<- (<- (<- x y) z) t) u) (+ (* 3 4) 1)) ;; fail set! ...
+		     ;; transform in : '(<- x y z t u (+ (* 3 4) 1))
+		     expr) ;) ; end begin
+		    expr)))))
 	      
 	   (display "$nfx$ : parsed-args=") (display #'parsed-args) (newline)
 	   #'parsed-args)))))
 
 ) ; end module
 
+
+;; (define (foo) 7)
+
+;; (foo)
+;; 7
+
+;; (define x  - (foo))
+
+;; x
+;; -7
+
+;; (define (bar) -)
+
+;; (bar)
+;; #<procedure:->
+
+;; (define z  (bar) (foo))
+;; z
+;; -7

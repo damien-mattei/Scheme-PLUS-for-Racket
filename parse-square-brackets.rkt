@@ -60,9 +60,9 @@
 	     ($> ; then
 	      ;;(display "infix detected") (newline)
   	      ;;(display "psba : partial-result =") (display partial-result) (newline)
-  	      (append-tail-set! result (!*prec-generic partial-result
-						       operator-precedence
-						       creator))) ;; !*prec-generic is defined in optimize-infix.scm
+  	      (append-tail-set! result (!*prec-generic-infix-parser partial-result
+								    operator-precedence
+								    creator))) 
 	     (begin
 	       ;;(display "NO infix detected") (newline)
   	       (append-tail-set! result partial-result)))  ; not infix
@@ -95,9 +95,9 @@
 		  
   		      (begin ; yes
   			;;(display "infix detected") (newline)
-  			(append-tail-set! result (!*prec-generic partial-result
-								 operator-precedence
-								 creator))) ;; convert to prefix and store the expression
+  			(append-tail-set! result (!*prec-generic-infix-parser partial-result
+									      operator-precedence
+									      creator))) ;; convert to prefix and store the expression
 		      ;; no
 		      (begin
 			;;(display "NO infix detected") (newline)
@@ -145,14 +145,5 @@
 				   operators-lst-syntax)) ;; defined elsewhere
 				
 					    
-
-;; DEPRECATED
-;; (define (parse-square-brackets-arguments-evaluator args-brackets)
-;;   ;;(display "parse-square-brackets-arguments-evaluator : args-brackets=") (display args-brackets) (newline)
-;;   (parse-square-brackets-arguments args-brackets
-;; 					     (lambda (op a b) (op a b))
-;; 					     (get-operator-precedence)))
-
-;;'() ;; why this? statement required
 
 ) ; end module

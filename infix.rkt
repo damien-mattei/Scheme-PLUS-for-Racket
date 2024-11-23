@@ -92,7 +92,7 @@
 	   ;; (begin
 	   ;;   (display "infix? : not a list") (newline)
 	   ;;   (display "infix? : check not an operator: (not (member-syntax expr oper-lst)):") (display (not (member-syntax expr oper-lst))) (newline)
-	   (not (member-syntax expr oper-lst))
+	   (not (member-syntax expr oper-lst)) ;; TODO: pourquoi + ne serait pas une expression infix???
 	  ; ) ;  end begin
 	   ) ; ex: 3 , not an operator !
 	  
@@ -101,12 +101,17 @@
 	   #t
 	   ;; ) ; end begin
 	   ) ; by definition
+
 	  
+	  ;; > (infix? `((,(syntax cos) (,(syntax *) ,(syntax 2) ,(syntax 0.3)))) operators-lst-syntax)
+	  ;; (infix? `((,#'cos (,#'* ,#'2 ,#'0.3))) operators-lst-syntax)
+	  ;; #t
+
 	  ((null? (cdr expr)) ;; (begin
-			      ;; 	(display "infix? : (a) not allowed as infix") (newline)
-	   #f
+			      ;; 	(display "infix? : (a)  allowed or not  as infix ,check code") (newline)
+	   #t ;#f
 	   ;;  ) ; end begin
-	   ) ; (a) not allowed as infix
+	   ) ; (a) allowed or not as infix
 
 	  
 	  (else

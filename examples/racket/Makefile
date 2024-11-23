@@ -26,9 +26,9 @@ MODULE_DIRECTORY=parsed_files_directory
 MODULES_NAME=$(wildcard *+.rkt *+.scm)
 
 # Scheme programs to create by parsing the Scheme+ files
-PROGRAMS_PARSED=$(addprefix $(MODULE_DIRECTORY)/,$(MODULES_NAME))
+OBJECT=$(addprefix $(MODULE_DIRECTORY)/,$(MODULES_NAME))
 
-OBJECT= $(PROGRAMS_PARSED)
+
 
 
 
