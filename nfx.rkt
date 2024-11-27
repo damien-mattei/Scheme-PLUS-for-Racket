@@ -51,8 +51,8 @@
 
 	     (begin
 	       
-	       (display "$nfx$: #'(expr)=") (display #'(expr)) (newline)
-	       (display "$nfx$: (syntax->list #'(expr))=") (display (syntax->list #'(expr))) (newline)
+	       ;;(display "$nfx$: #'(expr)=") (display #'(expr)) (newline)
+	       ;;(display "$nfx$: (syntax->list #'(expr))=") (display (syntax->list #'(expr))) (newline)
 
 	       (car ;  probably because the result will be encapsuled in a list !
 		;; apply operator precedence rules
@@ -108,8 +108,8 @@
 
 	       (begin
 
-		 (display "$nfx$: #'(e1 op1 e2 op ...)=") (display #'(e1 op1 e2 op ...)) (newline)
-		 (display "$nfx$: (syntax->list #'(e1 op1 e2 op ...))=") (display (syntax->list #'(e1 op1 e2 op ...))) (newline)
+		 ;;(display "$nfx$: #'(e1 op1 e2 op ...)=") (display #'(e1 op1 e2 op ...)) (newline)
+		 ;;(display "$nfx$: (syntax->list #'(e1 op1 e2 op ...))=") (display (syntax->list #'(e1 op1 e2 op ...))) (newline)
 		 		
 		 ;; ;; pre-check we have an infix expression because parser can not do it
 		 ;; (when (not (infix? ;;(list #'e1 #'op1 #'e2 #'op2 #'e3 #'op ...) ; ellipsis impossible
@@ -144,7 +144,7 @@
 		     expr) ;) ; end begin
 		    expr)))))
 	      
-	   (display "$nfx$ : parsed-args=") (display #'parsed-args) (newline)
+	   ;;(display "$nfx$ : parsed-args=") (display #'parsed-args) (newline)
 	   #'parsed-args)))))
 
 ) ; end module

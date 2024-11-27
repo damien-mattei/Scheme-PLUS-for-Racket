@@ -59,8 +59,12 @@
    exponential-operator
    
    (list '* '/ '%)
+
+   (list '·) ; symbolic logic And
+
+   (list '⊕) ; symbolic logic Xor
  
-   (list '+ '-)
+   (list '+ '-) ; note + could be used as symbolic logic Or, for this reason and operator precedence i put And and Xor above
    
    (list '<< '>>)
    
@@ -105,6 +109,8 @@
   (list
     exponential-operator-syntax
     (list #'* #'/ #'%)
+    (list #'·) ; symbolic logic And
+    (list #'⊕) ; symbolic logic Xor
     (list #'+ #'-)
 	
     (list #'<< #'>>)

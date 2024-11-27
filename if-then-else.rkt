@@ -59,7 +59,7 @@
 	      
 		      (call-parse-if-args-syntax (syntax->list #'(tst ...)))))
 
-		    (display "if : parsed-args=") (display #'parsed-args) (newline)
+		    ;;(display "if : parsed-args=") (display #'parsed-args) (newline)
        		    #'parsed-args)))))
 		    
 

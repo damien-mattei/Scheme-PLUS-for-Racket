@@ -1,3 +1,7 @@
+{im ← (- {y - yo})} ;; or yo - y
+  ;;TODO : {im ←  - (y - yo)}
+
+
 {-4 sin(x) + x y ² - 5 x / y}
 
 ¹⁰

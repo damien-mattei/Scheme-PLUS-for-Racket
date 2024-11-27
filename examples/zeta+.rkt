@@ -280,6 +280,7 @@
   {re ← x - xo}
   {re ← re / unit-axis-in-pixel}
   {im ← (- {y - yo})} ;; or yo - y
+  ;;TODO : {im ←  - (y - yo)}
   {im ← im / unit-axis-in-pixel}
   (exact->inexact {re + i * im}))
 

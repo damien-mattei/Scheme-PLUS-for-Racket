@@ -135,7 +135,8 @@
 
 ;; test if an operator is AND
 (define (AND-op? oper)
-  (datum=? oper 'and))
+  (or (datum=? oper 'and)
+      (datum=? oper '·)))
   ;;(or (eqv? oper 'and) (check-syntax=? oper #'and)))
   ;;(or (eqv? oper 'and) (eqv? oper 'AND) (eqv? oper '·)))
 
@@ -148,7 +149,8 @@
 (define (XOR-op? oper) ;; note: logxor in Guile, xor in Racket
   (or (datum=? oper 'logxor)
       (datum=? oper 'xor)
-      (datum=? oper '^)))
+      (datum=? oper '^)
+      (datum=? oper '⊕)))
 
   ;;(or (eqv? oper 'xor) (check-syntax=? oper #'xor)))
   ;;(or (eqv? oper 'xor) (eqv? oper 'XOR)  (eqv? oper '⊕))) ;; ⨁
@@ -163,7 +165,12 @@
 (define (ADD-op? oper)
   (or (eqv? oper +)
       (datum=? oper '+)))
-  ;;(or (eqv? oper +) (eqv? oper '+) (check-syntax=? oper #'+)))
+;;(or (eqv? oper +) (eqv? oper '+) (check-syntax=? oper #'+)))
+
+
+(define (MULTIPLY-op? oper)
+  (or (eqv? oper *)
+      (datum=? oper '*)))
 
 (define (IMPLIC-op? oper)
   (or (eqv? oper '⟹) (eqv? oper '=>)))
@@ -218,9 +225,7 @@
 (define (isADD? expr)
   (and (pair? expr) (ADD-op? (car expr))))
 
-(define (MULTIPLY-op? oper)
-  (or (eqv? oper *)
-      (datum=? oper '*)))
+
 
   ;;(or (eqv? oper *) (eqv? oper '*) (check-syntax=? oper #'*)))
 

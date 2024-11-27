@@ -199,13 +199,13 @@
 
     (define expr-inter #f) ; intermediate variable
 
-    (display "recall-infix-parser : expr =") (display expr) (newline)
+    ;;(display "recall-infix-parser : expr =") (display expr) (newline)
 
     (when (syntax? expr)
-      (display "recall-infix-parser : detected syntax,passing from syntax to list (will be used if it is a list)") (newline)
+      ;;(display "recall-infix-parser : detected syntax,passing from syntax to list (will be used if it is a list)") (newline)
       (set! expr-inter (syntax->list expr))
       (when expr-inter
-	(display "recall-infix-parser : got a list") (newline)
+	;;(display "recall-infix-parser : got a list") (newline)
 	(set! expr expr-inter)))
 
     
@@ -214,7 +214,7 @@
 
 
     (cond ((not (list? expr)) ; atom
-	   (display "recall-infix-parser : expr not list.") (newline)
+	   ;;(display "recall-infix-parser : expr not list.") (newline)
 	   expr)
 	  
 	  ((null? expr)
@@ -249,7 +249,7 @@
 ;; this is generally the main entry routine
 (define (!*prec-generic-infix-parser terms  operator-precedence creator)   ;; precursor of !*-generic-infix-parser
 
-  (display "!*prec-generic-infix-parser : terms=") (display terms) (newline)
+  ;;(display "!*prec-generic-infix-parser : terms=") (display terms) (newline)
   ;;(display "!*prec-generic-infix-parser : operator-precedence=") (display operator-precedence) (newline)
 
   (when (not (list? terms))
@@ -265,17 +265,17 @@
   (define rv
 
     (begin
-      (display "!*prec-generic-infix-parser rv : deep-terms:") (display deep-terms) (newline)
+      ;;(display "!*prec-generic-infix-parser rv : deep-terms:") (display deep-terms) (newline)
       ;; test for simple-infix (no operator precedence)
       (if (simple-infix-list-syntax? deep-terms)
 	  (begin
-	    (display "!*prec-generic-infix-parser : deep-terms is a simple infix list") (newline)
-	    (display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
+	    ;;(display "!*prec-generic-infix-parser : deep-terms is a simple infix list") (newline)
+	    ;;(display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
 	    (list
 	     (cons (cadr deep-terms) (alternating-parameters deep-terms)))) ; we put it in a list because nfx take the car...
 
 	  (begin
-	    (display "!*prec-generic-infix-parser : deep-terms is not a simple infix list") (newline)
+	    ;;(display "!*prec-generic-infix-parser : deep-terms is not a simple infix list") (newline)
             (pre-check-!*-generic-infix-parser  deep-terms ;terms
 				   operator-precedence
 				   creator)))))
