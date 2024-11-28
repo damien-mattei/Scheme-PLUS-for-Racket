@@ -103,7 +103,6 @@
 		  
 		  (define a   2 * (cos (2 * pi * p / q)) )
 		  </pre>
-		<div style="margin-left: 40px;"> <br></div>
     <p style="margin-left: 40px;">Assignment from right to left : <b>{y ← 7}</b></p>
     <p style="margin-left: 40px;">Assignment from left to right : <b>{7 → y}</b></p>
 <p><font size="+3">⥆</font>&nbsp; or &lt;+ : Define and assign a
