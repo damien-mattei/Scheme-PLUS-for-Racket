@@ -103,7 +103,6 @@
 		  
 		  (define a   2 * (cos (2 * pi * p / q)) )
 		  </pre>
-		</div>
 		<div style="margin-left: 40px;"> <br></div>
 	<div style="margin-left: 40px;">For debugging a Scheme+ program there is a Makefile in examples/racket that when put in a directory containing Scheme+ files will parse them, the parsed files will be in parsed_files_directory and then you can run those files in Racket that will display the right error lines, matching with source Scheme+ then can be done easily. </div>							<div style="margin-left: 40px;"> </div>
     <p style="margin-left: 40px;">Assignment from right to left : <b>{y ← 7}</b></p>
