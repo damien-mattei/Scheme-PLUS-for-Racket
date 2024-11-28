@@ -19,7 +19,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 9.5 for Racket Scheme<br>
+          style="color: #999999;"> <font size="+2">version 9.7 for Racket Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;">
 	Display options for viewing this documentation:<br>
@@ -86,6 +86,27 @@
   {x - v * t} / (sqrt {1 - v ** 2 / c ** 2})}</b></p>
  <p style="margin-left: 40px;"><b> {M_i_o[j {i + 1}]  <-  M_i_o[j {i + 1}] + η * z_input[i] * მzⳆმz̃(z_output[j] z̃_output[j]) * ᐁ_i_o[j]}</b></p>
     <div style="margin-left: 40px;"> </div>
+    <div style="margin-left: 40px;"> </div>
+	<div style="margin-left: 40px;"> This documentation is sometimes outdated as Scheme+ is updated
+	  , the last versions of Scheme+ allow infix operator precedence using the classic parenthesis ( ) .</div>
+	<div style="margin-left: 40px;"> example: {3 * (3 + 2) + 2} gives the result 17 but beware that now we can no longer write {x <- (cons + arg-list)} but instead (define op+ +) , {x <- (cons op+ arg-list)} , this makes Scheme+ a bit less compatible with Scheme than the previous versions were.</div>
+		<div style="margin-left: 40px;">
+		<pre>
+		  {(a * x) + y + (d * x) / (add1 (x ** 2))}
+		  
+		  {(ksx / (sqrt 2)) * (x + y)}
+		  
+		  (define (σ z̃) 
+		       {1 / (1 + (exp (- z̃)))}
+		  
+		  (define z   3 * 5 + 2)
+		  
+		  (define a   2 * (cos (2 * pi * p / q)) )
+		  
+		</pre>
+	</div>
+		</div>															<div style="margin-left: 40px;"> <br></div>
+	<div style="margin-left: 40px;">For debugging a Scheme+ program there is a Makefile in examples/racket that when put in a directory containing Scheme+ files will parse them, the parsed files will be in parsed_files_directory and then you can run those files in Racket that will display the right error lines, matching with source Scheme+ then can be done easily. </div>							<div style="margin-left: 40px;"> </div>
     <p style="margin-left: 40px;">Assignment from right to left : <b>{y ← 7}</b></p>
     <p style="margin-left: 40px;">Assignment from left to right :
   <b>{7 → y}</b></p>
