@@ -91,6 +91,7 @@
 	  , the last versions of Scheme+ allow infix operator precedence using the classic parenthesis ( ) .</div>
 	<div style="margin-left: 40px;"> example: {3 * (3 + 2) + 2} gives the result 17 but beware that now we can no longer write {x <- (cons + arg-list)} but instead (define op+ +) , {x <- (cons op+ arg-list)} , this makes Scheme+ a bit less compatible with Scheme than the previous versions were.</div>
 	<pre>
+	{(a * x) + y + (d * x) / (add1 (x ** 2))}
 	</pre>
 	<div style="margin-left: 40px;">For debugging a Scheme+ program there is a Makefile in examples/racket that when put in a directory containing Scheme+ files will parse them, the parsed files will be in parsed_files_directory and then you can run those files in Racket that will display the right error lines, matching with source Scheme+ then can be done easily. </div>
     <p style="margin-left: 40px;">Assignment from right to left : <b>{y ← 7}</b></p>
