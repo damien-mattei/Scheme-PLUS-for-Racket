@@ -102,8 +102,7 @@
 		  (define z   3 * 5 + 2)
 		  
 		  (define a   2 * (cos (2 * pi * p / q)) )
-		  
-		</pre>
+		  </pre>
 	</div>
 		</div>
 		<div style="margin-left: 40px;"> <br></div>
