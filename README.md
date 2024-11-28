@@ -90,19 +90,6 @@
 	<div style="margin-left: 40px;"> This documentation is sometimes outdated as Scheme+ is updated
 	  , the last versions of Scheme+ allow infix operator precedence using the classic parenthesis ( ) .</div>
 	<div style="margin-left: 40px;"> example: {3 * (3 + 2) + 2} gives the result 17 but beware that now we can no longer write {x <- (cons + arg-list)} but instead (define op+ +) , {x <- (cons op+ arg-list)} , this makes Scheme+ a bit less compatible with Scheme than the previous versions were.</div>
-		<div style="margin-left: 40px;"></div>
-		<pre>
-		  {(a * x) + y + (d * x) / (add1 (x ** 2))}
-		  
-		  {(ksx / (sqrt 2)) * (x + y)}
-		  
-		  (define (σ z̃) 
-		       {1 / (1 + (exp (- z̃)))}
-		  
-		  (define z   3 * 5 + 2)
-		  
-		  (define a   2 * (cos (2 * pi * p / q)) )
-		  </pre>
     <p style="margin-left: 40px;">Assignment from right to left : <b>{y ← 7}</b></p>
     <p style="margin-left: 40px;">Assignment from left to right : <b>{7 → y}</b></p>
 <p><font size="+3">⥆</font>&nbsp; or &lt;+ : Define and assign a
