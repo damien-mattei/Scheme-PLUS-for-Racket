@@ -92,7 +92,6 @@
 	<div style="margin-left: 40px;"> example: {3 * (3 + 2) + 2} gives the result 17 but beware that now we can no longer write {x <- (cons + arg-list)} but instead (define op+ +) , {x <- (cons op+ arg-list)} , this makes Scheme+ a bit less compatible with Scheme than the previous versions were.</div>
 	<pre>
 	{(a * x) + y + (d * x) / (add1 (x ** 2))}
-	
 	{(ksx / (sqrt 2)) * (x + y)}
 	(define (σ z̃) 
 		{1 / (1 + (exp (- z̃)))}
