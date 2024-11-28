@@ -221,7 +221,7 @@
 	     
 	((equal? (quote $bracket-apply$) (syntax->datum #'brket-aply)) ;; curly-infix
 
-	 (newline)
+	 ;;(newline)
 	 ;; display { } as they are.
 	 ;;(print-mpair-curly-braces #f)
 
