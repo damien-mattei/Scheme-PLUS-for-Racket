@@ -7,7 +7,8 @@
 	       "srfi-lib"
 	       "sci"
 	       "r6rs-lib"
-	       "reprovide-lang-lib"))
+	       "reprovide-lang-lib"
+	       "SRFI-105"))
 (define pkg-desc "Scheme+ for Racket")
 (define version "9.7")
 (define pkg-authors '(mattei))
