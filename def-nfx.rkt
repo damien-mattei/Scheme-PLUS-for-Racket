@@ -49,7 +49,7 @@
 
 	
 	
-	(define-syntax define
+	(define-syntax define 
 
 	  (syntax-rules ()
 
@@ -136,12 +136,12 @@
 
 	  (syntax-rules ()
 
-	    ;; original define for procedures
+	    ;; not original define for procedures
 	    ((define-infix (name arg ...) body ...)
-	     (define-scheme (name arg ...) body ...))
+	     (define-scheme (name arg ...) ($nfx$ body) ...))
 
 	    ((define-infix (name arg ... . rest-id) body ...)
-	       (define-scheme (name arg ... . rest-id) body ...))
+	       (define-scheme (name arg ... . rest-id) ($nfx$ body) ...))
 
 
 	    ;; new define for infix

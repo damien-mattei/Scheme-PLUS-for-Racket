@@ -22,6 +22,7 @@
 
   (provide operator?
 	   operator-syntax?
+	   operator-symbol-or-syntax?
 
 	   operator
 	   arg1
@@ -38,6 +39,7 @@
 	   XOR-op?
 	   NOT-op?
 	   ADD-op?
+	   MINUS-op?
 	   IMPLIC-op?
 	   EQUIV-op?
 	   DEFINE-op?
@@ -84,6 +86,9 @@
 (define (operator-syntax? x)
   (member-syntax x operators-lst-syntax));;operators-lst))
 
+(define (operator-symbol-or-syntax? x)
+  (or (operator? x)
+      (operator-syntax? x)))
 
 
 ;; return the operator of an operation
@@ -166,6 +171,10 @@
   (or (eqv? oper +)
       (datum=? oper '+)))
 ;;(or (eqv? oper +) (eqv? oper '+) (check-syntax=? oper #'+)))
+
+(define (MINUS-op? oper)
+  (or (eqv? oper -)
+      (datum=? oper '-)))
 
 
 (define (MULTIPLY-op? oper)

@@ -1,6 +1,5 @@
-{im ← (- {y - yo})} ;; or yo - y
-  ;;TODO : {im ←  - (y - yo)}
 
+module-infix , module+ ?
 
 {-4 sin(x) + x y ² - 5 x / y}
 
@@ -10,4 +9,5 @@
 
 a ² - 2 a b + b ²
 
+note: ³ could be typed under linux with ^ 3
 

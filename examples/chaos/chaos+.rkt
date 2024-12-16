@@ -33,7 +33,7 @@
 
 
 ;; draw a vector point
-(define (draw-vect-point dc z-vect point-brush)
+(define-infix (draw-vect-point dc z-vect point-brush)
   (send dc set-pen no-pen)
   (send dc set-brush point-brush) ; blue-brush)
   ;; size of the ellipse / point in pixels
@@ -41,21 +41,21 @@
   {pa ← 3} ; petit axe / little axis
   {x ← z-vect[0]}
   {y ← z-vect[1]}
-  {z ← x + i * y} ; complex number
-  {(x y) ← (to-screen-multi-values z)}
+  (z ← x + i * y) ; complex number
+  ((x y) ← (to-screen-multi-values z))
   {x ← x - (quotient ga 2)}
-  {y ← y - (quotient pa 2)}
+  (y ← y - (quotient pa 2))
   (send dc draw-ellipse x y ga pa))
 
 
 ;; convert in screen coordinates
-(define (to-screen-multi-values z0) ; z0 is a complex number
+(define-infix (to-screen-multi-values z0) ; z0 is a complex number
   {re ← (real-part z0)}
   {im ← (imag-part z0)}
   {xs ← re * unit-axis-in-pixel}
   {ys ← im * unit-axis-in-pixel}
-  (values (round {xo + xs})
-	  (round {yo - ys})))
+  (values (round (xo + xs))
+	  (round (yo - ys))))
 
 
 (define (norm x y)
@@ -72,14 +72,20 @@
 (define (f-trunc x y)
   (remove-extrema (f x y)))
 
-(define (g x y)
-  (abs (sin (sqrt {x ** 2 + y ** 2}))))
+(define-infix (g x y)
+  (abs (sin (sqrt (x ** 2 + y ** 2)))))
 
 (define (g-trunc x y)
-  (remove-extrema (g x y)))
+  (remove-extrema (g x y))) 
 
 (define (h x y)
-  (abs {cos{x + y} * sin{x - y}}))
+  ;;(abs {cos{x + y} * sin{x - y}}))
+  ;;{abs {cos{x + y} * sin{x - y}}})
+  ;;{abs(cos{x + y} * sin{x - y})} )
+  ;;{abs (cos{x + y} * sin{x - y})} )
+  {abs ((cos (x + y)) * (sin (x - y))) } )
+
+;;(display "(h .2 .3) = ") (display (h .2 .3)) (newline)
 
 (define (h-trunc x y)
   (remove-extrema (h x y)))
@@ -90,19 +96,24 @@
 (define (green-value x y)
   (g x y))
 
+;;(display "h=") (display h) (newline)
+
 (define (blue-value x y)
+  ;;(display "h=") (display h) (newline)
+  ;;(display "x=") (display x) (newline)
+  ;;(display "y=") (display y) (newline)
   (h x y))
 
 ;; get a normalized scalar between [0,1] and return the values of red, green and blue of the color in the long rainbow
 (define (scalar-to-long-rainbow-rgb s)
   {a := (1 - s) / 0.2} ; invert and group
   {x := (inexact->exact (floor a))} ; this is the integer part
-  {y := (inexact->exact (floor {255 * (a - x)}))} ; fractional part from 0 to 255
+  {y := (inexact->exact (floor (255 * (a - x))))} ; fractional part from 0 to 255
   (case x
     ((0) (values 255 y 0))
-    ((1) (values {255 - y} 255 0))
+    ((1) (values (255 - y) 255 0))
     ((2) (values 0 255 y))
-    ((3) (values 0 {255 - y} 255))
+    ((3) (values 0 (255 - y) 255))
     ((4) (values y 0 255))
     ((5) (values 255 0 255))
     (else
@@ -114,7 +125,8 @@
 
 (define (yellow-to-red s)
   {a := 1 - s}
-  (define y (inexact->exact (floor {255 * a})))
+  ;;(define-infix y (inexact->exact (floor (255 * a))))
+  {y <- (inexact->exact (floor (255 * a)))}
   (values 255 y 0))
 
   
@@ -133,7 +145,7 @@
       (max max-norm-x-y (max-list-norm-x-y (cdr ls)))))
 
 
-(define (chaos p q d x0 y0)
+(define-infix (chaos p q d x0 y0)
   
   ;;(define a {2 * cos{2 * pi * p / q}}) ; or {2 * (cos {2 * pi * p / q})} or {2 * cos({2 * pi * p / q})}
   (define a   2 * (cos (2 * pi * p / q)))
@@ -142,12 +154,12 @@
   
   (stream-map (lambda (z)
                 (match-let (((vector x y) z))
-                  (vector {(ksx / (sqrt 2)) * (x + y)}
+                  (vector ((ksx / (sqrt 2)) * (x + y))
 			  {(ksy / (sqrt 2)) * ((- x) + y)})))
                   (stream-iterate (lambda (z)
                                     (match-let (((vector x y) z))
                                       (vector
-                                       {(a * x) + y + (d * x) / (add1 {x ** 2})} ; infix left to right evaluation avoid extra parenthesis but is hard for humans
+                                       ((a * x) + y + (d * x) / (add1 (x ** 2))) ; infix left to right evaluation avoid extra parenthesis but is hard for humans
                                        (- x))))
 				  (vector x0 y0))))
 
@@ -205,21 +217,23 @@
 ;;                  (8  17 5 0.1 1 60000)))
 
 ;; compute the RGB color from hsv
-(define (compute-rgb-color-from-hsv point max-norm-x-y)
+(define-infix (compute-rgb-color-from-hsv point max-norm-x-y)
 
   ;; extract the coordonates
   {x <- point[0]}
   {y <- point[1]}
 
   ;; with various colormaps
-  (define h (sqrt {(norm x y) / max-norm-x-y})) ; normalized scalar
-  (when (= h 1.0) ;; strange? hue can not be 1.0 when converting to RGB after: it causes a strange error:
+  {h0 <- (sqrt ((norm x y) / max-norm-x-y))} ; normalized scalar
+  ;;(display "compute-rgb-color-from-hsv : h=") (display h) (newline)
+  
+  (when (h0 = 1.0) ;; strange? hue can not be 1.0 when converting to RGB after: it causes a strange error:
                   ;; kw.rkt:1263:25: color-conversion: nonsense hue: 1, internal: 6
     ;;(display h)
     ;;(newline)
-    (set! h 0.999))
+    (h0 <- 0.999))
 
-  (hsv->color (hsv {1 - h} 1 1)))
+  (hsv->color (hsv (1 - h0) 1 1)))
 
 
 
@@ -231,15 +245,16 @@
   {y <- point[1]}
 
   ;; with various functions
-  ;; (define red-val (inexact->exact (abs (round {255 * (red-value x y)}))))
-  ;; (define green-val (inexact->exact (abs (round {255 * (green-value x y)}))))
-  ;; (define blue-val (inexact->exact (abs (round {255 * (blue-value x y)}))))
+  (define red-val (inexact->exact (abs (round {255 * (red-value x y)}))))
+  (define green-val (inexact->exact (abs (round {255 * (green-value x y)}))))
+  (define blue-val (inexact->exact (abs (round {255 * (blue-value x y)}))))
 
   ;; with various colormaps
-  (define s (sqrt {(norm x y) / max-norm-x-y})) ; normalized scalar
+  ;;(define s (sqrt {(norm x y) / max-norm-x-y})) ; normalized scalar
+  {s <- (sqrt ((norm x y) / max-norm-x-y))} ; normalized scalar
 
   ;; rainbow
-  {(red-val green-val blue-val) <- (scalar-to-long-rainbow-rgb s)} ;; multi-values assignment/definition
+  ;;{(red-val green-val blue-val) <- (scalar-to-long-rainbow-rgb s)} ;; multi-values assignment/definition
 
   ;; yellow to red
   ;;{(red-val green-val blue-val) <- (yellow-to-red s)}
@@ -318,8 +333,8 @@
 			      (for-racket ([point lst-points])
 					  
 					  ;; compute the RGB color
-					  ;;(define rgb-color (compute-rgb-color point max-norm-x-y))
-					  (define rgb-color (compute-rgb-color-from-hsv point max-norm-x-y))
+					  (define rgb-color (compute-rgb-color point max-norm-x-y))
+					  ;;(define rgb-color (compute-rgb-color-from-hsv point max-norm-x-y))
 					  
 					  ;; create brush
 					  (define point-brush (new brush% [color rgb-color]))

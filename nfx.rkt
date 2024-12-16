@@ -42,7 +42,13 @@
     
     (syntax-case stx ()
 
- 
+
+      ;; ($nfx$ 3)
+      ;; 3
+
+      ;; ($nfx$ (3 + 2))
+      ;; 5
+
       (($nfx$ expr) 
 
        (with-syntax

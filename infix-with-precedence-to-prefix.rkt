@@ -32,6 +32,8 @@
 	   Scheme+/operators-list
 	   Scheme+/operators
 	   Scheme+/infix
+	   Scheme+/def
+	   ;;Scheme+/nfx ; bug: dépendances circulaires
 	   SRFI-105/SRFI-105-curly-infix) ; for alternating-parameters
 	  
 
@@ -163,8 +165,8 @@
   (if (null? terms) ;; never for infix as there is e1 op1 e2 op2 e3 at least
 	terms
 	(!*-generic-infix-parser (reverse terms) ; start reversed for exponentiation (highest precedence operator)
-		    operator-precedence
-		    creator)))
+				 operator-precedence
+				 creator)))
 
 
 
@@ -194,7 +196,7 @@
 
 
 
-
+;; use in a map to recurse deeply
 (define (recall-infix-parser expr operator-precedence creator)
 
     (define expr-inter #f) ; intermediate variable
@@ -243,11 +245,94 @@
 
 
 
+	 
+;; > {5 - - 2}
+
+
+;; ($nfx$ 5 - - 2)
+;; !*prec-generic-infix-parser : terms=(.#<syntax 5> .#<syntax -> .#<syntax -> .#<syntax 2>)
+;; #<procedure:->
+;; !*prec-generic-infix-parser : deep-terms=(.#<syntax 5> .#<syntax -> (- .#<syntax 2>))
+;; !*prec-generic-infix-parser 2 : deep-terms=(.#<syntax 5> .#<syntax -> (- .#<syntax 2>))
+;; !*prec-generic-infix-parser : rv : deep-terms:(.#<syntax 5> .#<syntax -> (- .#<syntax 2>))
+;; 7
+
+;;  {3 * 5 -  - 2}
+;; 17
+
+;; {5 - - - - + - - 2}
+;; 7
+
+;;(define a 7)
+;;(define b 3)
+
+;;   {a * - b}
+;; -21
+
+
+;; main entry of parsing +- (see parser+-.odg or jpeg image for the schema of automaton)
+;; we want to parse infix expression like: 3 + - 4 and transform it 3 + (- 4)
+;; like other languages, like Python do it for 3+-4 or others, bad but valid syntax as 3+---4 ,etc ....
+(def (start-parse-operators+- lst)
+  ;;(display "start-parse-operators+- : lst=") (display lst) (newline)
+  (when (null? lst)
+    (return lst))
+  (define elem (car lst))
+  (if (operator-symbol-or-syntax? elem)
+      (cons elem ; we keep it in the resulting list
+	    (first-operator (cdr lst))) ; and change to another automaton state
+      (cons elem ; we keep it in the resulting list
+	    (start-parse-operators+- (cdr lst))))) ; and stay in the same automaton state
+
+(define (NO-OP? elem)
+  (not (operator-symbol-or-syntax? elem)))
+
+(define (error+- lst)
+  (error "Error parsing +- : the sequence of operators has no mathematic signification, in the provided list : " lst))
+
+;; we have find an operator and we check possibly another one following
+(def (first-operator lst)
+  (when (null? lst)
+    (return lst))
+  (define elem (car lst))
+  
+  (cond ((ADD-op? elem) ; we drop it from the resulting list
+	 (first-operator (cdr lst))) ; and stay in the same automaton state
+	((NO-OP? elem) ; should be a general sexpr
+	 (cons elem ; we keep it in the resulting list
+	       (start-parse-operators+- (cdr lst)))) ; but go back to the state start of the automaton
+	((MINUS-op? elem) ; we drop it from the resulting infix list (but will be possibly integrated in a prefixed sub sexpr)
+	 (loop-over+- (cdr lst))) ; go to another automaton state
+	(else
+	 (display "first-operator : elem=") (display elem) (newline)
+	 (display "Error in first-operator : ")
+	 (error+- lst))))
+
+;; loop over the + - operators to find the final sub sexpr to create in the infix sequence
+(def (loop-over+- lst)
+  (when (null? lst)
+    (return lst))
+  (define elem (car lst))
+  (cond ((MINUS-op? elem) ; we drop it because we have - - resulting in + which also can be dropped
+	 (first-operator (cdr lst))) ; and we go back to the previous state of the automaton
+	((ADD-op? elem) ; we drop it from the resulting list
+	 (loop-over+- (cdr lst))) ; and stay in the same automaton state
+	((NO-OP? elem) ; should be a general sexpr , so here we change his sign
+	 ;;(display -) (newline)
+	 (cons
+	  (list '- ;(syntax -) ; '- : possible bug if we manipulate syntax object this should be (syntax -) and in R6RS could be also different
+		elem)
+	  (start-parse-operators+- (cdr lst)))) ; continue parsing with the inital automaton state
+	(else
+	 (display "Error in loop-over+- : ")
+	 (error+- lst))))
+
+
 
 
 
 ;; this is generally the main entry routine
-(define (!*prec-generic-infix-parser terms  operator-precedence creator)   ;; precursor of !*-generic-infix-parser
+(def (!*prec-generic-infix-parser terms  operator-precedence creator)   ;; precursor of !*-generic-infix-parser
 
   ;;(display "!*prec-generic-infix-parser : terms=") (display terms) (newline)
   ;;(display "!*prec-generic-infix-parser : operator-precedence=") (display operator-precedence) (newline)
@@ -257,28 +342,49 @@
     (display "!*prec-generic-infix-parser : terms=") (display terms) (newline))
 
 
-  
-  (define deep-terms (map (lambda (x) (recall-infix-parser x operator-precedence creator)) #;recall-infix-parser terms))
+ 
+  ;; if there is (define ... we must not compute deep-terms with recall-infix-parser but simply copy the terms in deep-terms
+  ;; because we do not want to evaluate any ( ... ) as infix but as prefix
+  (define deep-terms (start-parse-operators+- terms)) ;; parse for + -
+  ;;(display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
+
+  ;;  > {- - 2}
+  ;;($nfx$ - - 2)
+  ;;2
+  ;;#<eof>
+  (when (= 2 (length deep-terms)) ; example : syntax something of (- (- 2))
+    (return ; before infix parsing as it is already infix
+     (list ; fuck !!! i put it in a list because it will take the car but i do not even know why?
+      (map (lambda (x)
+	     (recall-infix-parser x operator-precedence creator)) #;recall-infix-parser
+	   deep-terms))))
 
   
+
+  (when (not (datum=? 'define ; define is preserved this way (no infix recursive in define)
+		      (car deep-terms)))
+    (set! deep-terms (map (lambda (x)
+			    (recall-infix-parser x operator-precedence creator)) #;recall-infix-parser
+			  deep-terms)))
+  ;;(display "!*prec-generic-infix-parser 2 : deep-terms=") (display deep-terms) (newline)
   
   (define rv
 
     (begin
-      ;;(display "!*prec-generic-infix-parser rv : deep-terms:") (display deep-terms) (newline)
+      ;;(display "!*prec-generic-infix-parser : rv : deep-terms:") (display deep-terms) (newline)
       ;; test for simple-infix (no operator precedence)
       (if (simple-infix-list-syntax? deep-terms)
 	  (begin
 	    ;;(display "!*prec-generic-infix-parser : deep-terms is a simple infix list") (newline)
 	    ;;(display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
-	    (list
+	    (list ; cadr is op in arg1 op arg2 op ....
 	     (cons (cadr deep-terms) (alternating-parameters deep-terms)))) ; we put it in a list because nfx take the car...
 
 	  (begin
 	    ;;(display "!*prec-generic-infix-parser : deep-terms is not a simple infix list") (newline)
             (pre-check-!*-generic-infix-parser  deep-terms ;terms
-				   operator-precedence
-				   creator)))))
+						operator-precedence
+						creator)))))
 
   ;;(display "!*prec-generic-infix-parser : rv=") (display rv) (newline)
 
