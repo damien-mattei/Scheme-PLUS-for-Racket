@@ -105,7 +105,7 @@
   (h x y))
 
 ;; get a normalized scalar between [0,1] and return the values of red, green and blue of the color in the long rainbow
-(define (scalar-to-long-rainbow-rgb s)
+(define-infix (scalar-to-long-rainbow-rgb s)
   {a := (1 - s) / 0.2} ; invert and group
   {x := (inexact->exact (floor a))} ; this is the integer part
   {y := (inexact->exact (floor (255 * (a - x))))} ; fractional part from 0 to 255
@@ -245,16 +245,16 @@
   {y <- point[1]}
 
   ;; with various functions
-  (define red-val (inexact->exact (abs (round {255 * (red-value x y)}))))
-  (define green-val (inexact->exact (abs (round {255 * (green-value x y)}))))
-  (define blue-val (inexact->exact (abs (round {255 * (blue-value x y)}))))
+  ;; (define-infix red-val (inexact->exact (abs (round (255 * (red-value x y))))))
+  ;; (define green-val (inexact->exact (abs (round {255 * (green-value x y)}))))
+  ;; (define blue-val (inexact->exact (abs (round {255 * (blue-value x y)}))))
 
   ;; with various colormaps
   ;;(define s (sqrt {(norm x y) / max-norm-x-y})) ; normalized scalar
   {s <- (sqrt ((norm x y) / max-norm-x-y))} ; normalized scalar
 
   ;; rainbow
-  ;;{(red-val green-val blue-val) <- (scalar-to-long-rainbow-rgb s)} ;; multi-values assignment/definition
+  {(red-val green-val blue-val) <- (scalar-to-long-rainbow-rgb s)} ;; multi-values assignment/definition
 
   ;; yellow to red
   ;;{(red-val green-val blue-val) <- (yellow-to-red s)}

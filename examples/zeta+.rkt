@@ -155,9 +155,9 @@
 
 
 
-(define (line-length x0 y0 x1 y1)
-  (sqrt { (x1 - x0) ** 2 + (y1 - y0) ** 2 }))
-
+(define-infix (line-length x0 y0 x1 y1)
+  ;;(sqrt { (x1 - x0) ** 2 + (y1 - y0) ** 2 }))
+  (sqrt ((x1 - x0) ** 2 + (y1 - y0) ** 2 )))
 
 ;; (new button% [parent frame0]
 ;;              [label "Pause"]
@@ -279,8 +279,8 @@
   {i ← 0+1i} ;; imaginaire pur
   {re ← x - xo}
   {re ← re / unit-axis-in-pixel}
-  {im ← (- {y - yo})} ;; or yo - y
-  ;;TODO : {im ←  - (y - yo)}
+  ;;{im ← (- {y - yo})} ;; or yo - y
+  {im ←  - (y - yo)}
   {im ← im / unit-axis-in-pixel}
   (exact->inexact {re + i * im}))
 
