@@ -43,13 +43,13 @@
 	    ((null? expr)
 	     #t)
 	    
-	    ((and (syntax? (car expr))
+	    ((and (syntax? (car expr)) ; ex (+ 1 2 3)
 		  (operator-syntax? (car expr)))
 	     #t)
 
-	    ((and (syntax? (cadr expr))
+	    ((and (syntax? (cadr expr)) ; ex: (1 + 2 + 3)
 		  (operator-syntax? (cadr expr))) ; forbid operator in prefix expression at this position argument
-	     ;; it is not true to pass operator you will have to hide them in a variable
+	     ;; it is not true, to pass operator you will have to hide them in a variable
 	     #f)
 
 	    (else (or (operator? (car expr))

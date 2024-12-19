@@ -10,4 +10,11 @@ module-infix , module+ ?
 a ² - 2 a b + b ²
 
 note: ³ could be typed under linux with ^ 3
+Using the text editor vim, one can produce subscripted and superscripted numbers by using the digraphs control-k-ns for subscription and control-k-nS for superscription, where n is an Arabic numeral.
 
+list comme python [ elements ] -> ( elements ) if possible
+
+#`(if (procedure? (car #,expr))
+    #,expr
+    (car ;  probably because the result will be encapsuled in a list !
+	      (!*prec-generic-infix-parser #`expr operator-precedence creator)))

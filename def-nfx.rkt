@@ -141,7 +141,7 @@
 	     (define-scheme (name arg ...) ($nfx$ body) ...))
 
 	    ((define-infix (name arg ... . rest-id) body ...)
-	       (define-scheme (name arg ... . rest-id) ($nfx$ body) ...))
+	     (define-scheme (name arg ... . rest-id) ($nfx$ body) ...))
 
 
 	    ;; new define for infix
