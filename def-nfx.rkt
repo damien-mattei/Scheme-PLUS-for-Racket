@@ -23,7 +23,7 @@
 
 
 	(provide define
-		 define-infix)
+		 define+)
 
 	(require (only-in racket/base [define define-scheme]) ;; backup original Scheme 'define'
 		 Scheme+/nfx)
@@ -46,8 +46,8 @@
 	;; x
 	;; -3
 
-
-	
+	;; (define+ x (5 - 3) ⁴)
+	;; 16
 	
 	(define-syntax define 
 
@@ -120,59 +120,71 @@
 	    ))
 
 
+
+	;; rationale of define+ is ,first for funxtion definitions, and when only one argument (after symbol) that require to be parsed
+	;; (not possible with define without rejecting then a few normal scheme expression)
+	;; see examples below
+
 	
 	;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	;; (define-infix a   (cdr (cons + 1)) + 2)
+	;; (define+ a   (cdr (cons + 1)) + 2)
 	;; ../../../../../../racket/collects/racket/private/kw.rkt:1260:25: +: contract violation
 	;; expected: number?
 	;; given: #<procedure:cons>
 
 	;; (define op+ +)
-	;; (define-infix a   (cdr (cons op+ 1)) + 2)
+	;; (define+ a   (cdr (cons op+ 1)) + 2)
 	;; a
 	;; 3
 
-	(define-syntax define-infix
+	;; (define+ (foo x) ((x - 3) ²))
+	;; (foo 5)
+	;; 4
+
+	;; (define+ (foo x y) ((x - 3) ² + (y - 2) ²))
+
+
+	(define-syntax define+
 
 	  (syntax-rules ()
 
 	    ;; not original define for procedures
-	    ((define-infix (name arg ...) body ...)
+	    ((define+ (name arg ...) body ...)
 	     (define-scheme (name arg ...) ($nfx$ body) ...))
 
-	    ((define-infix (name arg ... . rest-id) body ...)
+	    ((define+ (name arg ... . rest-id) body ...)
 	     (define-scheme (name arg ... . rest-id) ($nfx$ body) ...))
 
 
 	    ;; new define for infix
 	    
-	    ;; (define-infix a  (cos (3 * .3 * 4 / 5)))
+	    ;; (define+ a  (cos (3 * .3 * 4 / 5)))
 	    ;; a
 	    ;; 0.751805729140895
 
-	    ;; (define-infix x   - 3)
+	    ;; (define+ x   - 3)
 	    ;; x
 	    ;; -3
 
-	    ;; (define-infix x (3 + 2 + 1))
+	    ;; (define+ x (3 + 2 + 1))
 	    ;; x
 	    ;; 6
 
-	    ;; (define-infix x   3 + 2 + 1)
+	    ;; (define+ x   3 + 2 + 1)
 	    ;; x
 	    ;; 6
 
-	    ;; (define-infix a  (cos (2 * .3)))
+	    ;; (define+ a  (cos (2 * .3)))
 	    ;; a
 	    ;; 0.8253356149096783
 	   	    
 	    ;; at least 1 arguments
-	    ((define-infix name    arg1 arg2 ...)
+	    ((define+ name    arg1 arg2 ...)
 	     (define-scheme name ($nfx$ arg1 arg2 ...)))
 
 	    
-	    ;; zero argN, juste the name
-	    ((define-infix name)
+	    ;; zero argN, just the name
+	    ((define+ name)
 	     (define-scheme name '()))
 
 	    ))

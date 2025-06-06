@@ -1,6 +1,6 @@
 ;; This file is part of Scheme+
 
-;; Copyright 2023-2024 Damien MATTEI
+;; Copyright 2023-2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -15,11 +15,13 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;; version 9.8 
+;; version 10
 
 ;; use: (require Scheme+)
 
 ;; note : seems (require Scheme+/def-nfx) should be required separately in REPL
+
+
 
 (module Scheme+ racket/base
 
@@ -30,7 +32,7 @@
 
    def return return-rec
    define
-   define-infix
+   define+
    
    <+ +>
    ⥆ ⥅
@@ -82,13 +84,16 @@
    
    ;; operators
    <> ≠
+   ≤ ≥
    **
    %
    << >>
    &
    ∣ ; warning: this pipe could be a special character (different from keyboard stroke)
+   · ; AltGr + Maj (CAPS) + 1 --> · on french keyboard ,Option + h on MacOS
 
-
+   ;; functions
+   √ ∛
    
 
    ;; overloading
@@ -156,6 +161,11 @@
    Scheme+/exponential
    Scheme+/bitwise
    Scheme+/modulo
+   Scheme+/multiply
+   Scheme+/little-greater-or-equal
+
+   ;; functions
+   Scheme+/square-and-cubic-root
 
    ;; overloading
    Scheme+/overload
@@ -163,5 +173,16 @@
 
    ) ; end import
 
+  (newline)
+  (display "Scheme+ v10.0 by Damien Mattei") (newline)
+  (newline)
+
 
   ) ; end library
+
+
+;; note: under Linux and on a PC (french) keyboard superscript characters
+;; can be generated with the keystroke sequence: ^ n where n is  a number or sign
+;; under MacOS the keystroke sequence is : Command Shift + n (you really need to type + key for superscript)
+
+;; Using the text editor vim, one can produce subscripted and superscripted numbers by using the digraphs control-k-ns for subscription and control-k-nS for superscription, where n is an Arabic numeral.

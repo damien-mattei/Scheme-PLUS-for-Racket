@@ -21,61 +21,110 @@
 (module syntax racket/base
   
   (provide datum=?  
-	   member-syntax
-	   ;;member-normal&syntax
-	   )
+	   member-generic
+	   procedure->string
+	   procedure->symbol
+	   var-syntax2list)
 
 
   (require (only-in srfi/1 any member))
+
+
   
+;; (procedure->string +)
+;; "+"
+
+;; (procedure->string foo:3>)
+;; "foo:3>"
+  (define (procedure->string p)
+    (define o (open-output-string))
+    (write p o)
+    (define str (get-output-string o))
+    (substring str
+	       (string-length "#<procedure:")
+	       (- (string-length str) 1)))
+
+
+  (define (procedure->symbol p)
+    (string->symbol (procedure->string p)))
+
+
+
+  ;; (datum=? #'* *)
+  ;; #t
+
+  ;; (define m *)
+  ;; (define sm #'*)
+  ;; (datum=? m sm)
+  ;; #t
+
 
   ;; racket does not allow to syntax->datum an object not being (syntax something)
   (define (datum=? obj1 obj2)
+       ;; (display "datum=? : obj1 =") (display obj1) (newline)
+       ;; (display "datum=? : obj2 =") (display obj2) (newline)
 
-    (cond ((and (syntax? obj1) (syntax? obj2))
-	   (eq? (syntax->datum obj1)
-		(syntax->datum obj2)))
-	  ((and (syntax? obj1) (not (syntax? obj2)))
-	   (eq? (syntax->datum obj1)
-		obj2))
-	  ((and (not (syntax? obj1)) (syntax? obj2))
-	   (eq? obj1
-		(syntax->datum obj2)))
-	  (else
-	   (eq? obj1 obj2))))
-	  
+       (when (syntax? obj1)
+	 (set! obj1 (syntax->datum obj1)))
+
+       (when (syntax? obj2)
+	 (set! obj2 (syntax->datum obj2)))
+
+       (when (procedure? obj1)
+	 (set! obj1 (procedure->symbol obj1)))
+
+       (when (procedure? obj2)
+	 (set! obj2 (procedure->symbol obj2)))
+
+       (equal? obj1 obj2))
+
 
 ;; Welcome to DrRacket, version 8.13 [cs].
 ;; Language: r6rs, with debugging; memory limit: 8192 MB.
 ;; > (define op-lst (list #'* #'+ #'- #'/))
-;; > (member-syntax #'+ op-lst)
+;; > (member-generic #'+ op-lst)
 ;; #t
 
 
 
-;; (member-syntax '+ '(- + / *))
+;; (member-generic '+ '(- + / *))
 ;; #t
-;; (member-syntax + (list - + / *))
+;; (member-generic + (list - + / *))
 ;; #t
-;; (member-syntax + (list - / *))
+;; (member-generic + (list - / *))
 ;; #f
-;; (member-syntax '+ '(- / *))
-  ;; #f
+;; (member-generic '+ '(- / *))
+;; #f
 
- ;; > (member-syntax #'+ (list - + / *))
+;; > (member-generic #'+ (list - + / *))
 ;;#f
 
-  (define (member-syntax x lst)
+  (define (member-generic x lst)
+  ;;  (display "member-generic : x=") (display x) (newline)
+  ;;  (display "member-generic : lst=") (display lst) (newline)
     (any (lambda (y)
 	   (datum=? x y))
 	 lst))
 
 
-  ;; (define (member-normal&syntax x lst)
-  ;; (or (member x lst)
-  ;;     (member-syntax x lst)))
+  
+  ;; transform any syntax in a list if possible
+  ;; note:this macro made a side effect on the input variable, modifying it
+  (define-syntax var-syntax2list
+    (syntax-rules ()
+      ((_ var)
+       
+       (let ((var-inter #f)) ; intermediate variable
 
-
+	 ;;(display "var-syntax2list : var=") (display var) (newline)
+	 (when (syntax? var)
+	       ;; (display "var-syntax2list : detected syntax,passing from syntax to list (will be used if it is a list)")
+	       ;; (display " --> var-syntax2list : var=") (display var) (newline)
+	       (set! var-inter (syntax->list var))
+	       (when var-inter
+		     ;;(display "var-syntax2list : got a list") (display " --> var-syntax2list : var=") (display var)(newline)(newline)
+		     (set! var var-inter)))))))
+      
 
 ) ; end library
 

@@ -19,14 +19,16 @@
 (module nfx racket/base
 
 
-  (provide $nfx$)
+	(provide $nfx$)
 
   (require (for-syntax Scheme+/n-arity)
 	   (for-syntax Scheme+/infix-with-precedence-to-prefix)
-	   (for-syntax Scheme+/operators-list)
 	   (for-syntax Scheme+/operators)
 	   (for-syntax Scheme+/infix)
-	   (for-syntax racket/base))
+	   (for-syntax racket/base)
+	   Scheme+/exponential
+	   Scheme+/multiply
+	   )
 
   
   
@@ -59,21 +61,28 @@
 	       
 	       ;;(display "$nfx$: #'(expr)=") (display #'(expr)) (newline)
 	       ;;(display "$nfx$: (syntax->list #'(expr))=") (display (syntax->list #'(expr))) (newline)
+	       ;; (display "$nfx$: #'expr=") (display #'expr) (newline)
+	       ;; (newline)
 
-	       (car ;  probably because the result will be encapsuled in a list !
+	       ;;(car ;  probably because the result will be encapsuled in a list !
 		;; apply operator precedence rules
 		(!*prec-generic-infix-parser ;; (list->mlist
-		 (syntax->list ;; no need in R6RS ???
-		  #'(expr));))
-		 infix-operators-lst-for-parser-syntax
-		 (lambda (op a b) (list op a b))))
+		 ;;(syntax->list ;; no need in R6RS ???
+						 ;;#'(expr));))
+		 #'expr
+		 ;;) ; end syntax-list
+		 (lambda (op a b) (list op a b)))
+		;;) ; car
 
 	       ;; should work
-	       ;; (recall-infix-parser #'expr
-	       ;; 			    infix-operators-lst-for-parser-syntax
-	       ;; 			    (lambda (op a b) (list op a b)))
-	       )))
-	 
+	       ;;(recall-infix-parser #'expr
+				    ;;;;infix-operators-lst-for-parser-syntax
+				    ;;(lambda (op a b) (list op a b)))
+		) ; begin
+	     ))
+
+	 ;; (display "$nfx$ expr : parsed-args=") (display #'parsed-args) (newline)
+	 ;; (newline)
 	 #'parsed-args))
 
       
@@ -86,13 +95,25 @@
        (with-syntax
 			 
 	   ((parsed-args
-	     
-	     (recall-infix-parser #'(op1 e1)
-				  infix-operators-lst-for-parser-syntax
-				  (lambda (op a b) (list op a b)))
 
-	     ))
-	 
+	     ;(car ;  probably because the result will be encapsuled in a list !
+	     
+	      ;; (recall-infix-parser (superscript-operator-loop (begin-operators+-
+	      ;; 						       (syntax->list
+	      ;; 							#'(op1 e1)
+	      ;; 						       	)
+	      ;; 						       )) ; can not set (list op1 e1) ... see error , try:
+	      ;; 			  ;;(list #'op1 #'e1))) ; works too 
+	     ;; 			   (lambda (op a b) (list op a b)))
+	      ;;) ;  end car
+
+	      ;;(car ;  probably because the result will be encapsuled in a list !
+	       (!*prec-generic-infix-parser (syntax->list #'(op1 e1))
+					    (lambda (op a b) (list op a b)))
+	       ;) ; close car
+
+	      ))
+	 ;;(display "$nfx$ op1 e1 : parsed-args=") (display #'parsed-args) (newline)
 	 #'parsed-args))
 
       
@@ -112,18 +133,16 @@
 			 
 	     ((parsed-args
 
-	       (begin
-
+	      ; (begin
 		 ;;(display "$nfx$: #'(e1 op1 e2 op ...)=") (display #'(e1 op1 e2 op ...)) (newline)
 		 ;;(display "$nfx$: (syntax->list #'(e1 op1 e2 op ...))=") (display (syntax->list #'(e1 op1 e2 op ...))) (newline)
-		 		
+    	 		
 		 ;; ;; pre-check we have an infix expression because parser can not do it
-		 ;; (when (not (infix? ;;(list #'e1 #'op1 #'e2 #'op2 #'e3 #'op ...) ; ellipsis impossible
+		 ;; (when (not (infix-simple? ;;(list #'e1 #'op1 #'e2 #'op2 #'e3 #'op ...) ; ellipsis impossible
 		 ;; 		    ;;#'(e1 op1 e2 op2 e3 op ...)
 		 ;; 	            ;;(syntax->list #'(e1 op1 e2 op2 e3 op ...))
 		 ;; 	     (syntax->list #'(e1 op1 e2 op ...))
 		 ;; 	     operators-lst-syntax))
-		   
 		 ;;       ;; (error "$nfx$ : arguments do not form an infix expression : here is #'(e1 op1 e2 op2 e3 op ...) and (syntax->list #'(e1 op1 e2 op2 e3 op ...)) for debug:"
 		 ;;       (error "$nfx$ : arguments do not form an infix expression : here is #'(e1 op1 e2 op ...) and (syntax->list #'(e1 op1 e2 op ...)) for debug:"
 		 ;; 	  ;;#'(e1 op1 e2 op2 e3 op ...)
@@ -131,11 +150,12 @@
 		 ;; 	  ;;(syntax->list #'(e1 op1 e2 op2 e3 op ...))))
 		 ;; 	  (syntax->list #'(e1 op1 e2 op ...))))
 
-		 (let ((expr (car ;  probably because the result will be encapsuled in a list !
+		 (let ((expr ;(car ;  probably because the result will be encapsuled in a list !
 			      ;;(!*prec-generic-infix-parser (syntax->list #'(e1 op1 e2 op2 e3 op ...)) ; apply operator precedence rules
 			      (!*prec-generic-infix-parser (syntax->list #'(e1 op1 e2 op ...))
-					      infix-operators-lst-for-parser-syntax
-					      (lambda (op a b) (list op a b))))))
+							   (lambda (op a b) (list op a b)))
+			      ;) ; closing car
+			     ))
 
 		   ;; TODO pass back in n-arity also arithmetic operators (+ , * , ...) note: fail with n-arity
 		   (if ;;(not (isEXPONENTIAL? expr))
@@ -148,7 +168,8 @@
 		     ;; SRFI-105.scm : !0 result = (<- (<- (<- (<- (<- x y) z) t) u) (+ (* 3 4) 1)) ;; fail set! ...
 		     ;; transform in : '(<- x y z t u (+ (* 3 4) 1))
 		     expr) ;) ; end begin
-		    expr)))))
+		    expr)); ) ; end begin
+	       ))
 	      
 	   ;;(display "$nfx$ : parsed-args=") (display #'parsed-args) (newline)
 	   #'parsed-args)))))
@@ -174,3 +195,108 @@
 ;; (define z  (bar) (foo))
 ;; z
 ;; -7
+
+
+;; from https://course.dyalog.com/dfns-and-assignment/ :
+
+;; > {2 (lambda (alpha omega) alpha) 3}
+
+
+;; ($nfx$ 2 (lambda (alpha omega) alpha) 3)
+;; 2
+
+
+;; #<eof>
+;; > {2 (lambda (alpha omega) omega) 3}
+
+
+;; ($nfx$ 2 (lambda (alpha omega) omega) 3)
+;; 3
+
+
+;; > {(lambda (alpha omega) omega) 3}
+
+
+;; ((lambda (alpha omega) omega) 3)
+;; . . ../../../../Applications/Racket v8.14/collects/racket/private/kw.rkt:1260:25: arity mismatch;
+;;  the expected number of arguments does not match the given number
+;;   expected: 2
+;;   given: 1
+
+;; > {2 (lambda (alpha omega) omega)}
+
+
+;; (2 (lambda (alpha omega) omega))
+;; . . ../../../../Applications/Racket v8.14/collects/racket/private/kw.rkt:1260:25: application: not a procedure;
+;;  expected a procedure that can be applied to arguments
+;;   given: 2
+;; >
+
+;; > {2 (lambda (alpha omega) omega) "apl"}
+
+
+;; ($nfx$ 2 (lambda (alpha omega) omega) "apl")
+;; "apl"
+
+
+;; #<eof>
+;; > 
+
+
+
+;; https://course.dyalog.com/basic-syntax-and-arithmetic/
+;; > (define-overload-existing-operator -)
+
+
+;; (define-overload-existing-operator -)
+
+
+;; #<eof>
+;; > (define (negate-list L) (map - L))
+
+
+;; (define (negate-list L) (map - L))
+
+
+;; #<eof>
+;; > (negate-list '(1 -2 3))
+
+
+;; (negate-list '(1 -2 3))
+;; '(-1 2 -3)
+
+
+;; #<eof>
+;; > 	(overload-existing-operator - negate-list (list?))
+
+
+;; (overload-existing-operator - negate-list (list?))
+
+
+;; #<eof>
+;; > (- 3)
+
+
+;; (- 3)
+;; -3
+
+
+;; #<eof>
+;; > (- '(1 -2 3))
+
+
+;; (- '(1 -2 3))
+;; '(-1 2 -3)
+
+
+;; #<eof>
+
+;;(define n 7)
+;; {1 * (- 2 · (n - 4))}
+;; -6
+
+
+;;{- 2 * (- 2 · (n - 4))}
+;; 12
+
+;; todo {- 2 * (- 2 · (- n 4))}

@@ -56,9 +56,12 @@
 		    (: s42:))) ; Eager Comprehensions
 
 
+;;(require (rename-in Scheme+ (· ·bak)))
 (require Scheme+)
 
 (require (only-in racket/base [for for-racket])) ;; backup original Racket 'for'
+
+(random-seed 7)
 
 ;; return a number in ]-1,1[
 ;;(define (uniform-dummy dummy1 dummy2) {(random) * (if {(random 2) = 0} 1 -1)})  ; we randomly choose the sign of the random number
@@ -192,7 +195,7 @@ but will it works with Scheme+ parser?
 		;; propagation des entrées vers la sortie
 
 		{n <- vector-length(z)}
-		;(display "n=") (display n) (newline)
+		(display "n=") (display n) (newline)
 
 		;; hidden layers
 		(declare z_1)
@@ -219,7 +222,7 @@ but will it works with Scheme+ parser?
 		    
 		     {z̃[i + 1] <- M[i] * z_1} ; z̃ = matrix * vector , return a vector
 
-		     ; (display "z̃[i + 1] = ") (display {z̃[i + 1]}) (newline)
+		     (display "z̃[i + 1] = ") (display {z̃[i + 1]}) (newline)
 
 		     #| calcul des réponses des neurones cachés
 		     
@@ -235,7 +238,7 @@ but will it works with Scheme+ parser?
 		     
 		     {z[i + 1] <- vector-map(activation_function_hidden_layer z̃[i + 1])}
 
-		     ;;(display "z[i + 1] = ") (display {z[i + 1]}) (newline)
+		     (display "z[i + 1] = ") (display {z[i + 1]}) (newline)
 		     ;{i-body-function <- i}
 
 		  ) ; end for or for-racket
@@ -255,7 +258,7 @@ but will it works with Scheme+ parser?
 
 		;; calcul des réponses des neurones de la couche de sortie
 		{z[i + 1] <- vector-map(activation_function_output_layer z̃[i + 1])}
-		;;(display "z[i + 1] = ") (display {z[i + 1]}) (newline)
+		(display "z[i + 1] = ") (display {z[i + 1]}) (newline)
 		
 	) ; end define
 

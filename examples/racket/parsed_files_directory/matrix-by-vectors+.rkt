@@ -12,12 +12,19 @@
            create-matrix-vect-by-function
            vector->matrix-column
            matrix-column->vector
-           *)
+           display-matrix-vect
+           *
+           ·)
   (require Scheme+)
   (define-overload-existing-operator *)
+  (define-overload-existing-operator · Scheme+/multiply)
   (require (rename-in srfi/43 (vector-map vector-map-srfi-43)))
   (require Scheme+/array)
   (struct matrix-vect (v))
+  (define (display-matrix-vect M)
+    (when (not (matrix-vect? M)) (error "argument is not of type matrix"))
+    (display (matrix-vect-v M))
+    (newline))
   (define (create-matrix-vect-by-function fct lin col)
     (matrix-vect (create-vector-2d fct lin col)))
   (define (dim-matrix-vect M)
@@ -53,24 +60,29 @@
    *
    multiply-matrix-matrix
    (matrix-vect? matrix-vect?))
+  (overload-existing-operator
+   ·
+   multiply-matrix-matrix
+   (matrix-vect? matrix-vect?))
   (define (vector->matrix-column v)
     (matrix-vect (vector-map-srfi-43 (lambda (i x) (make-vector 1 x)) v)))
   (define (matrix-column->vector Mc)
     ($nfx$ v <- (matrix-vect-v Mc))
-    (vector-map-srfi-43 (lambda (i v2) ($bracket-apply$ v2 0)) v))
+    (vector-map-srfi-43 (lambda (i v2) ($nfx$ ($bracket-apply$ v2 0))) v))
   (define (multiply-matrix-vector M v)
     ($nfx$ Mc <- (vector->matrix-column v))
     (matrix-column->vector ($nfx$ M * Mc)))
   (overload-existing-operator * multiply-matrix-vector (matrix-vect? vector?))
+  (overload-existing-operator · multiply-matrix-vector (matrix-vect? vector?))
   (define (matrix-vect-ref M lin col)
     ($nfx$ v <- (matrix-vect-v M))
-    ($bracket-apply$ ($bracket-apply$ v lin) col))
+    ($nfx$ ($bracket-apply$ ($bracket-apply$ v lin) col)))
   (define (matrix-vect-set! M lin col x)
     ($nfx$ v <- (matrix-vect-v M))
     ($nfx$ ($bracket-apply$ ($bracket-apply$ v lin) col) <- x))
   (define (matrix-vect-line-ref M lin)
     ($nfx$ v <- (matrix-vect-v M))
-    ($bracket-apply$ v lin))
+    ($nfx$ ($bracket-apply$ v lin)))
   (define (matrix-vect-line-set! M lin vect-line)
     ($nfx$ v <- (matrix-vect-v M))
     ($nfx$ ($bracket-apply$ v lin) <- vect-line))

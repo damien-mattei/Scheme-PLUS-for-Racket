@@ -26,7 +26,9 @@
 	 create-matrix-vect-by-function
 	 vector->matrix-column
 	 matrix-column->vector
-	 *)
+	 display-matrix-vect
+	 *
+	 ·)
 
 ;;(require srfi/43) ; vector , warning vector-map has index as extra parameter...
 ;;(import (srfi :43)) 
@@ -37,6 +39,7 @@
 
 
 (define-overload-existing-operator *) ;; create a procedure,must be before infix procedures
+(define-overload-existing-operator · Scheme+/multiply)
 
 (require (rename-in srfi/43 (vector-map vector-map-srfi-43)))  ; vector , warning vector-map has index as extra parameter...
 
@@ -44,6 +47,12 @@
 (require Scheme+/array)
 
 (struct matrix-vect (v)) ;; matrix based on vector of vectors
+
+(define (display-matrix-vect M)
+  (when (not (matrix-vect? M))
+	(error "argument is not of type matrix"))
+  (display (matrix-vect-v M))
+  (newline))
 
 ;; (create-matrix-vect-by-function (lambda (i j) (+ i j)) 2 3)
 (define (create-matrix-vect-by-function fct lin col)
@@ -92,6 +101,7 @@
 
 
 (overload-existing-operator * multiply-matrix-matrix (matrix-vect? matrix-vect?))
+(overload-existing-operator · multiply-matrix-matrix (matrix-vect? matrix-vect?))
 
 
 (define (vector->matrix-column v)
@@ -115,7 +125,7 @@
 
 
 (overload-existing-operator * multiply-matrix-vector (matrix-vect? vector?))
-
+(overload-existing-operator · multiply-matrix-vector (matrix-vect? vector?))
 
 
 ;; define getter,setter

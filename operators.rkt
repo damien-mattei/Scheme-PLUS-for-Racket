@@ -23,6 +23,9 @@
   (provide operator?
 	   operator-syntax?
 	   operator-symbol-or-syntax?
+	   not+-?
+	   NO-OP?
+	   arithmetic-operator-syntax?
 
 	   operator
 	   arg1
@@ -40,10 +43,13 @@
 	   NOT-op?
 	   ADD-op?
 	   MINUS-op?
+	   SIGN-op?
 	   IMPLIC-op?
 	   EQUIV-op?
 	   DEFINE-op?
 	   ASSIGNMENT-op?
+	   FLOW-op?
+	   COMPOSITION-op?
 	   EXPONENTIAL-op?
 	   MULTIPLY-op?
 	   is-associative-operator?
@@ -61,16 +67,26 @@
 	   isXOR?
 	   isDEFINE?
 	   isASSIGNMENT?
+	   isFLOW?
+	   isCOMPOSITION?
 	   isEXPONENTIAL?
-	   isASSOCIATIVE?	  
+	   isASSOCIATIVE?
 
-	   )
+	   ;; group test
+	   exponential-operators-group?
+	   strict-precedence-over-minus?
+	   precedence-rank
+	   operator-precedence>?
+	   operator-precedence=?
+
+   )
 
   
   
   (require (only-in srfi/1 first member)
 	   Scheme+/syntax
-	   Scheme+/operators-list)
+	   Scheme+/operators-list
+	   Scheme+/multiply)
 
   
 (define rest cdr)
@@ -78,17 +94,31 @@
 
 
 
-
+;; operators predicates
 (define (operator? x)
   (member x operators-lst))
 
 ;; syntax version
 (define (operator-syntax? x)
-  (member-syntax x operators-lst-syntax));;operators-lst))
+  (member-generic x operators-lst-syntax))
 
 (define (operator-symbol-or-syntax? x)
   (or (operator? x)
       (operator-syntax? x)))
+
+(define (arithmetic-operator-syntax? x)
+  (member-generic x arithmetic-operator-lst-syntax))
+
+
+(define (not+-? x)
+  (not (SIGN-op? x)))
+
+
+(define (NO-OP? elem)
+  (not (operator-symbol-or-syntax? elem)))
+
+
+
 
 
 ;; return the operator of an operation
@@ -176,10 +206,16 @@
   (or (eqv? oper -)
       (datum=? oper '-)))
 
+(define (SIGN-op? oper)
+  (or (ADD-op? oper)
+      (MINUS-op? oper)))
+
 
 (define (MULTIPLY-op? oper)
   (or (eqv? oper *)
-      (datum=? oper '*)))
+      (eqv? oper ·)
+      (datum=? oper '*)
+      (datum=? oper '·)))
 
 (define (IMPLIC-op? oper)
   (or (eqv? oper '⟹) (eqv? oper '=>)))
@@ -195,19 +231,30 @@
   ;;     (eqv? oper '←) (eqv? oper '+>)))
 
   (or (memv oper definition-operator)
-      (member-syntax oper definition-operator-syntax)))
+      (member-generic oper definition-operator-syntax)))
 
 
   
 (define (ASSIGNMENT-op? oper)
   ;;(or (eqv? oper '<-) (eqv? oper '->)))
   (or (memv oper assignment-operator)
-      (member-syntax oper assignment-operator-syntax)))
+      (member-generic oper assignment-operator-syntax)))
+
+(define (FLOW-op? oper)
+  (datum=? oper '~>))
+
+(define (COMPOSITION-op? oper)
+  (datum=? oper '∘))
+
+
 
 
 (define (EXPONENTIAL-op? oper)
   (or (memv oper exponential-operator)
-      (member-syntax oper exponential-operator-syntax)))
+      (member-generic oper exponential-operator-syntax)))
+
+(define (exponential-operators-group? grp)
+  (member-generic 'expt grp)) 
 
 
 (define (is-associative-operator? op)
@@ -217,6 +264,8 @@
       (EQUIV-op? op)
       (ADD-op? op)
       (MULTIPLY-op? op)
+      (FLOW-op? op)
+      (COMPOSITION-op? op)
       (DEFINE-op? op)
       (ASSIGNMENT-op? op)))
 
@@ -274,6 +323,12 @@
 (define (isASSIGNMENT? expr)
   (and (pair? expr) (ASSIGNMENT-op?  (operator expr))))
 
+(define (isFLOW? expr)
+  (and (pair? expr) (FLOW-op?  (operator expr))))
+
+(define (isCOMPOSITION? expr)
+  (and (pair? expr) (COMPOSITION-op?  (operator expr))))
+
 (define (isEXPONENTIAL? expr)
   (and (pair? expr) (ASSIGNMENT-op?  (operator expr))))
 
@@ -281,5 +336,45 @@
 (define (isASSOCIATIVE? expr)
   ;;(display "isASSOCIATIVE?") (newline)
   (is-associative-operator? (first expr)))
+
+
+(define (strict-precedence-over-minus? op)
+  ;;(display "strict-precedence-over-minus? : op =") (display op) (newline)
+  ;;(display "strict-precedence-over-minus? : strict-precedence-over-minus =") (display strict-precedence-over-minus) (newline)
+  (define rv (member-generic op strict-precedence-over-minus))
+  ;;(display "strict-precedence-over-minus? : rv =") (display rv) (newline)
+  rv
+  )
+
+
+;; (precedence-rank '+)
+;; 5
+
+;; (precedence-rank #'**)
+;; 1
+(define (precedence-rank op)
+  (define i -1)
+  (for ([op-group infix-operators-lst-for-parser-syntax])
+       #:final (member-generic op op-group)
+       (set! i (+ i 1)) ; will be computed even when final is true
+       ;;(display "i=") (display i) (newline)
+       ;;(display "op-group=") (display op-group) (newline)
+       )
+  i)
+
+
+(define (operator-precedence>? op1 op2)
+  ;;(display "operator-precedence>? op1=") (display op1) (newline)
+  ;;(display "operator-precedence>? op2=") (display op2) (newline)
+  (> (precedence-rank op2)
+     (precedence-rank op1)))
+
+
+(define (operator-precedence=? op1 op2)
+  (display "operator-precedence>? op1=") (display op1) (newline)
+  (display "operator-precedence>? op2=") (display op2) (newline)
+  (= (precedence-rank op2)
+     (precedence-rank op1)))
+
 
 ) ; end module

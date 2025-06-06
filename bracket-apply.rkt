@@ -148,8 +148,15 @@
       
        (with-syntax ((parsed-args
 
-		      (cons #'list 
-		      	    (parse-square-brackets-arguments-lister-syntax (syntax->list #'(arg-bracket ...)))))) 
+		      (cons #'list
+		     
+		              (parse-square-brackets-arguments-lister-syntax
+			       (syntax->list
+				#'(arg-bracket ...)
+				)
+			      )
+			     )
+		      )) 
 	 
 	 ;;(newline)
 	 ;;(display "bracket-apply : #'parsed-args=") (display #'parsed-args) (newline)
@@ -164,7 +171,8 @@
 
 
   
-;;(display args) (newline)
+  ;;(display "$bracket-apply$next4list-args : ") (display args) (newline)
+  
   (case (length args)
 
     ((0) (apply-square-brackets-argument-0 container))
@@ -353,7 +361,8 @@
 					     (substring container-eval index1-or-keyword-eval)))
 					
 					(else ;; syntax error
-					 (error "apply-square-brackets-argument-2 : bad arguments in string case,expecting $ i2 or i1 $, provided :" index1-or-keyword-eval index2-or-keyword-eval) )))
+					 (error "apply-square-brackets-argument-2 : bad arguments in string case,expecting $ i2 or i1 $, provided :"
+						index1-or-keyword-eval index2-or-keyword-eval) )))
 
 	((flomat? container-eval) (if (or (equal? slice index1-or-keyword-eval)
 					  (equal? slice index2-or-keyword-eval))
@@ -389,7 +398,7 @@
 
   )
 
-;; todo: made one dimension overload too
+;; todo: made one dimension overload too (note: seems already done! -> todo: remove todos)
 
 
 
@@ -541,7 +550,8 @@
 	       
 
 	       (else
-		(error "apply-square-brackets-argument-3 : in string case, provided too much arguments:" index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval))))
+		(error "apply-square-brackets-argument-3 : in string case, provided too much arguments:"
+		       index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval))))
 
 
 	
@@ -784,7 +794,8 @@
 	       
 	       ;; T[i1 i2 i3 i4] vector of vectors of vectors ... but we are in string context !!!
 	       (else	
-		(error "apply-square-brackets-argument-4 : in string case, provided too much arguments:" index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval))))
+		(error "apply-square-brackets-argument-4 : in string case, provided too much arguments:"
+		       index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval))))
 
 	
 	(else ;; T[i1 i2 i3 i4] ,  4 dimension array

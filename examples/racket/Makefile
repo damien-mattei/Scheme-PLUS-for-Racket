@@ -2,11 +2,15 @@
 # generic Makefile for all Scheme and Racket files
 # author: Damien Mattei
 
+# this Makefile parse all the Scheme+ file in the directory
+# the parsed scheme file are in MODULE_DIRECTORY
+
 
 SHELL := /bin/bash
 
 # path to SRFI-105 directory
-SRFI-105=../../SRFI-105-for-Racket
+#SRFI-105=../../SRFI-105-for-Racket
+SRFI-105=../../../../../SRFI-105-for-Racket
 
 # for MacOS:
 #SCHEME_EXEC=/Applications/Racket\ v8.12/bin/racket

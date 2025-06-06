@@ -1,6 +1,6 @@
 ;; This file is part of Scheme+
 
-;; Copyright 2024 Damien MATTEI
+;; Copyright 2024-2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,121 +23,155 @@
 
 	(provide definition-operator
 		 assignment-operator
-		 exponential-operator
-		 
+		 exponential-operator		 
 		 infix-operators-lst-for-parser
 		 
 		 definition-operator-syntax
 		 assignment-operator-syntax
 		 exponential-operator-syntax
-		 
+		 arithmetic-operator-syntax	 
 		 infix-operators-lst-for-parser-syntax
 		 
 		 operators-lst
-		 operators-lst-syntax)
+		 operators-lst-syntax
+		 arithmetic-operator-lst-syntax
+		 strict-precedence-over-minus)
 
+	(require srfi/1 ; take-while
+		 Scheme+/syntax
+		 Scheme+/map-nested)
 
+	
 
-(define definition-operator (list '<+ '+>
-				  '⥆ '⥅
-				  ':+ '+:
-				  ))
+;;  from syntax we create the quoted operators symbols with syntax->datum, but we could have done the reverse (with datum->syntax)
+	
 
-(define assignment-operator (list '<- '->
-				  '← '→
-				  ':=  '=:
-				  '<v 'v>
-				  '⇜ '⇝))
-
-(define exponential-operator (list 'expt '**))
-
-
-(define infix-operators-lst-for-parser
-
-  (list
-    
-   exponential-operator
-   
-   (list '* '/ '%)
-
-   (list '·) ; symbolic logic And
-
-   (list '⊕) ; symbolic logic Xor
- 
-   (list '+ '-) ; note + could be used as symbolic logic Or, for this reason and operator precedence i put And and Xor above
-   
-   (list '<< '>>)
-   
-   (list '&)
-   (list '^)
-   (list '∣)
-   
-   (list '< '> '= '≠ '<= '>= '<> 'equal?)
-
-   (list 'and)
-   
-   (list 'or)
-    
-   (append assignment-operator 
-	   definition-operator)
-     
-   )
-  
-  )
-
-
-
-  
+	
+;; (define definition-operator (list '<+ '+>
+;; 				  '⥆ '⥅
+;; 				  ':+ '+:
+;; 				  ))
+	
 (define definition-operator-syntax (list #'<+ #'+>
 					 #'⥆ #'⥅
 					 #':+ #'+:
 					 ))
 
+;; (define definition-operator-syntax (map (lambda (q-symb) (datum->syntax #'operators-list-rkt-file q-symb))
+;; 					definition-operator))
+
+
+(define definition-operator (map syntax->datum definition-operator-syntax))
+
+;; (define assignment-operator (list '<- '->
+;; 				  '← '→
+;; 				  ':=  '=:
+;; 				  '<v 'v>
+;; 				  '⇜ '⇝))
+
+
 (define assignment-operator-syntax (list #'<- #'->
 					 #'← #'→
-					 #':= '=:
+					 #':= #'=: ;  was '=: ,error?
 					 #'<v #'v>
 					 #'⇜ #'⇝))
+
+(define assignment-operator (map syntax->datum assignment-operator-syntax))
 
 
 (define exponential-operator-syntax (list #'expt #'**))
 
+;;(define exponential-operator (list 'expt '**))
+
+(define exponential-operator (map syntax->datum exponential-operator-syntax))
+
+
+;; precedence lists
+
+(define arithmetic-operator-syntax (list exponential-operator-syntax
+					 (list #'* #'/ #'% #'·)
+					 ;;(list #'·) ; symbolic logic And
+					 (list #'⊕) ; symbolic logic Xor
+					 (list #'- #'+)
+					 
+					 (list #'<< #'>>)
+
+					 (list #'& #'∣)
+
+					 (list #'< #'> #'= #'≠ #'<= #'>= #'<> #'≤ #'≥ #'equal?)
+
+					 (list #'and)
+
+					 (list #'or)))
 
 
 (define infix-operators-lst-for-parser-syntax
 
-  (list
-    exponential-operator-syntax
-    (list #'* #'/ #'%)
-    (list #'·) ; symbolic logic And
-    (list #'⊕) ; symbolic logic Xor
-    (list #'+ #'-)
-	
-    (list #'<< #'>>)
+  `(,(list #'∘)
+    ,@arithmetic-operator-syntax
+    ,(list #'~>) ; for Qi
+    ,assignment-operator-syntax
+    ,definition-operator-syntax))
 
-    (list #'& #'∣)
 
-    (list #'< #'> #'= #'≠ #'<= #'>= #'<> #'equal?)
-
-    (list #'and)
-
-    (list #'or)
-
-    assignment-operator-syntax
-    definition-operator-syntax 
-    )
-
-  )
+(define infix-operators-lst-for-parser (map-nested syntax->datum infix-operators-lst-for-parser-syntax))
 
 
 
 ;; liste à plate des operateurs
+
+(define arithmetic-operator-lst-syntax
+  (apply append arithmetic-operator-syntax))
+
+
 (define operators-lst
   (apply append infix-operators-lst-for-parser))
+
+
+
+
+
 
 (define operators-lst-syntax
   (apply append infix-operators-lst-for-parser-syntax))
 
+(define strict-precedence-over-minus (take-while (lambda (x) (not (datum=? x #'-)))
+						 operators-lst-syntax))
 
+
+;; (define infix-operators-lst-for-parser
+
+;;   (list
+
+;;    (list '∘) ; composition operator (for functions) Option + k  on MacOS
+    
+;;    exponential-operator
+   
+;;    (list '* '/ '% '·) ;; for:a ² + 2 · a · b + b ²      AltGr + Maj + 1 --> · on french keyboard ,Option + h on MacOS
+
+;;    ;;(list '·) ; symbolic logic And   
+
+;;    (list '⊕) ; symbolic logic Xor
+ 
+;;    (list '- '+) ; note + could be used as symbolic logic Or, for this reason and operator precedence i put And and Xor above
+   
+;;    (list '<< '>>)
+   
+;;    (list '&)
+;;    (list '^)
+;;    (list '∣)
+   
+;;    (list '< '> '= '≠ '<= '>= '<> 'equal?)
+
+;;    (list 'and)
+   
+;;    (list 'or)
+    
+;;    (append assignment-operator 
+;; 	   definition-operator)
+     
+;;    )
+  
+;;   )
 
 ) ; end module

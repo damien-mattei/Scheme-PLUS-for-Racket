@@ -75,13 +75,13 @@
 
 ; some derivatives
 (define (der_tanh z z̃)
-  {1 - z ** 2})	
+  {1 - z ²})	
 
 (define (der_σ z z̃)
     {z * (1 - z)})
 
 (define (der_atan z z̃)
-  {1 / (1 + z̃ ** 2)})
+  {1 / (1 + z̃ ²)})
 
 
 
@@ -257,7 +257,7 @@ but will it works with Scheme+ parser?
 		      ;; TEMPS 1. calcul des gradients locaux sur la couche k de sortie (les erreurs commises)
 		      (for-racket ([k (in-range ns)])
 				  {ᐁ[i][k] <- y[k] - z[i][k]}     ; gradient sur un neurone de sortie (erreur locale)
-				  {err <- err + ᐁ[i][k] ** 2})    ; l'erreur quadratique totale
+				  {err <- err + ᐁ[i][k] ²})    ; l'erreur quadratique totale
 
 		      {err <- err * 0.5}
 
@@ -323,7 +323,7 @@ but will it works with Scheme+ parser?
 		(accepte_et_propage entree)
 		(printf "~a --> ~a : on attendait ~a" entree {z[vector-length(z) - 1]} sortie_attendue) (newline)
 		{ᐁ <- sortie_attendue[0] - z[vector-length(z) - 1][0]} ; erreur sur un element
-		{error <- error + ᐁ ** 2})                             ; l'erreur quadratique totale
+		{error <- error + ᐁ ²})                             ; l'erreur quadratique totale
 		
 	  {err <- err * 0.5}
 	  (display "Error on examples=") (display error) (newline))

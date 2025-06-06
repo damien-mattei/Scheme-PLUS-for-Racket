@@ -21,8 +21,7 @@
 
   (provide n-arity)
 
-  (require Scheme+/operators
-	   Scheme+/operators-list)
+  (require Scheme+/operators)
 	  
   
 
@@ -138,6 +137,7 @@
 	  ((ADD-op? oper) isADD?)
 	  ((DEFINE-op? oper) isDEFINE?)
 	  ((ASSIGNMENT-op? oper) isASSIGNMENT?)
+	  ((FLOW-op? oper) isFLOW?)
 
 	  (else ; fonction generique pour tous les operateurs ( non syntaxiques )
 	   (lambda (expr) (and (pair? expr) (equal? (car expr) oper)))))))

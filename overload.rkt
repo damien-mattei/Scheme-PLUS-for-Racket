@@ -5,7 +5,7 @@
 
 ;; This file is part of Scheme+
 
-;; Copyright 2021-2023 Damien MATTEI
+;; Copyright 2021-2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@
 
 ;; Warning: overload is now a module to prevent infinite recursion in case someone overload a scheme procedure used in the implementation of any of the procedures provided by overload.scm (example: length !)
 
-;;(require "infix-operators.rkt")
 
 
 (provide $ovrld-ht$
@@ -495,11 +494,13 @@
 
   (syntax-rules ()
 
-    ((_ proc)
+    ((_ proc) (define-overload-existing-procedure proc racket/base))
+    
+    ((_ proc module-name)
 
      (begin
      
-       (require (rename-in racket/base (proc
+       (require (rename-in module-name (proc
        				        orig-proc)))
 
        (define qproc (quote proc)) 
@@ -676,8 +677,6 @@
 ;; (define-overload-existing-operator +)
 ;; (define-overload-existing-operator *)
 
-;; (include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/required-files/scheme-infix.rkt")
-
 ;; (display infix-operators-lst) (newline)
 
 
@@ -696,11 +695,14 @@
 
   (syntax-rules ()
 
-    ((_ proc)
+    ((_ proc) (define-overload-existing-operator proc racket/base))
+
+    ;; example: (define-overload-existing-operator · Scheme+/multiply)
+    ((_ proc module-name)
 
      (begin
-
-       (require (rename-in racket/base (proc
+     
+       (require (rename-in module-name (proc
        				        orig-proc)))
 
        (define qproc (quote proc)) 
@@ -759,11 +761,13 @@
 
   (syntax-rules ()
 
-    ((_ proc)
+    ((_ proc) (define-overload-existing-n-arity-operator proc racket/base))
+    
+    ((_ proc module-name)
 
      (begin
-
-       (require (rename-in racket/base (proc
+     
+       (require (rename-in module-name (proc
        				        orig-proc)))
 
 
@@ -922,10 +926,6 @@
 ;; ; first stage overloading
 ;; (define-overload-existing-operator +)
 ;; (define-overload-existing-operator *)
-
-;; ; to take in account the new overloaded operators scheme-infix.rkt must be included
-;; ; after the overloading first stage definition of operators
-;; (include "../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/scheme-infix.rkt") ; add operator precedence to infix notation
 
 
 ;; ; second stage overloading

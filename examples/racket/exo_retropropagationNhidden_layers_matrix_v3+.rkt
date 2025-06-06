@@ -31,7 +31,7 @@
 ;(require srfi/42) ; Eager Comprehensions
 
 (require (rename-in srfi/42
-	(: s42:))) ; Eager Comprehensions
+		    (: s42:))) ; Eager Comprehensions
 
 
 (require (rename-in flomat (repeat repeat-flomat)
@@ -39,7 +39,11 @@
 			   (transpose transpose-flomat)))
 
 
+
 (require (rename-in Scheme+ (· ·bak)))
+
+
+
 
 (require "matrix+.rkt")
 
@@ -136,6 +140,9 @@ but will it works with Scheme+ parser?
 	 (display "z̃=") (display z̃) (newline)
 
 	 (define-pointwise-unary uniform) ;; flomat library feature
+	 (display "after define-pointwise-unary") (newline)
+	 
+	 (display (< 4 2)) (newline) ; for debug ?
 
 	 (field (M (vector-ec (s42: n {lnc - 1}) ; vectors by eager comprehension (SRFI 42)
 			  (.uniform! (zeros {nc[n + 1]} {nc[n] + 1}))))) ;; flomat Matrix
@@ -147,7 +154,7 @@ but will it works with Scheme+ parser?
 
 	 ; here ᐁ  is not a field but a variable (could not be accessed outside the class,no getter...)
 	 {ᐁ <- (for/vector ([lg nc])
-			       (make-vector lg 0))}
+			   (make-vector lg 0))}
 
 
 	 
@@ -155,7 +162,7 @@ but will it works with Scheme+ parser?
 
 	 (display "nbiter=") (display nbiter) (newline)
 
-	 (field (error 0))
+	 (field (eror 0))
 
 
 	 ; forward propagation
@@ -172,7 +179,7 @@ but will it works with Scheme+ parser?
 		;; propagation des entrées vers la sortie
 
 		{n <- vector-length(z)}
-		(display "accepte_et_propage : n=") (display n) (newline)
+		;(display "accepte_et_propage : n=") (display n) (newline)
 
 		;; hidden layers
 		(declare z_1)
@@ -191,7 +198,7 @@ but will it works with Scheme+ parser?
 
 		     {z̃[i + 1] <- M[i] · z_1} ; z̃ = matrix * vector , return a vector
 
-		     (display "accepte_et_propage : z̃[i + 1] = ") (display {z̃[i + 1]}) (newline)
+		     ;(display "accepte_et_propage : z̃[i + 1] = ") (display {z̃[i + 1]}) (newline)
 
 		     #| calcul des réponses des neurones cachés
 		     
@@ -206,7 +213,7 @@ but will it works with Scheme+ parser?
 		     the Scheme+ port is below: |#
 		     {z[i + 1] <- vector-map(activation_function_hidden_layer z̃[i + 1])}
 
-		     (display "accepte_et_propage : z[i + 1] = ") (display {z[i + 1]}) (newline)
+		     ;(display "accepte_et_propage : z[i + 1] = ") (display {z[i + 1]}) (newline)
 
 		  ) ; end for
 
@@ -225,7 +232,7 @@ but will it works with Scheme+ parser?
 
 		 ; calcul des réponses des neurones de la couche de sortie
 		 {z[i + 1] <- vector-map(activation_function_output_layer z̃[i + 1])}
-		 (display "accepte_et_propage : z[i + 1] = ") (display {z[i + 1]}) (newline)
+		 ;(display "accepte_et_propage : z[i + 1] = ") (display {z[i + 1]}) (newline)
 	
 	) ; end define
 
@@ -262,13 +269,13 @@ but will it works with Scheme+ parser?
 		      ;; TEMPS 1. calcul des gradients locaux sur la couche k de sortie (les erreurs commises)
 		      (for-racket ([k (in-range ns)])
 				  {ᐁ[i][k] <- y[k] - z[i][k]}     ; gradient sur un neurone de sortie (erreur locale)
-				  (display "apprentissage : ᐁ[i][k] =") (display {ᐁ[i][k]}) (newline)
+				  ;(display "apprentissage : ᐁ[i][k] =") (display {ᐁ[i][k]}) (newline)
 				  {err <- err + ᐁ[i][k] ²})    ; l'erreur quadratique totale
 
 		      {err <- err * 0.5}
 
 		      (when {it = nbiter - 1}
-			{error <- err})               ; mémorisation de l'erreur totale à la dernière itération
+			{eror <- err})               ; mémorisation de l'erreur totale à la dernière itération
 
 
 		      ;; modification des poids de la matrice de transition de la derniére couche de neurones cachés à la couche de sortie
@@ -282,12 +289,12 @@ but will it works with Scheme+ parser?
 		      {მzⳆმz̃ <- activation_function_hidden_layer_derivative}
 
 		      (for-racket ([i (reversed (in-range 1 i_output_layer))])
-				{nc <- vector-length(z[i])}
-				{ns <- vector-length(z[i + 1])}
-				(for-racket ([j (in-range nc)])
-					{ᐁ[i][j] <- (for/sum ([k (in-range ns)])
-							     {მzⳆმz̃(z[i + 1][k] z̃[i + 1][k]) · M[i][k {j + 1}] · ᐁ[i + 1][k]})}
-					(display "apprentissage : ᐁ[i][j] =") (display {ᐁ[i][j]}) (newline))
+				{nc1 <- vector-length(z[i])}
+				{ns1 <- vector-length(z[i + 1])}
+				(for-racket ([j (in-range nc1)])
+					{ᐁ[i][j] <- (for/sum ([k (in-range ns1)])
+							     {მzⳆმz̃(z[i + 1][k] z̃[i + 1][k]) · M[i][k {j + 1}] · ᐁ[i + 1][k]})})
+					;(display "apprentissage : ᐁ[i][j] =") (display {ᐁ[i][j]}) (newline))
 				; modification des poids de la matrice de transition de la couche i-1 à i
          			{modification_des_poids(M[i - 1] ηₛ  z[i - 1] z[i] z̃[i] ᐁ[i] მzⳆმz̃)})
 
@@ -310,14 +317,14 @@ but will it works with Scheme+ parser?
 
 	  (for-racket ([j (in-range len_layer_output)]) ; line
 
-		(newline)
-	        (display "modification_des_poids : j = ") (display j) (newline)
+		;(newline)
+	        ;(display "modification_des_poids : j = ") (display j) (newline)
 		      
 		(for-racket ([i (in-range len_layer_input)]) ; column , parcours les colonnes de la ligne sauf le bias
 
-		       (display "modification_des_poids : i = ") (display i) (newline)
-		       {M_i_o[j {i + 1}]  <-  M_i_o[j {i + 1}]  -  (- η) · z_input[i] · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j]}
-		       (display "modification_des_poids : M_i_o[j {i + 1}] =") (display {M_i_o[j {i + 1}]}) (newline))
+		       ;(display "modification_des_poids : i = ") (display i) (newline)
+		       {M_i_o[j {i + 1}]  <-  M_i_o[j {i + 1}]  -  (- η) · z_input[i] · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j]})
+		       ;(display "modification_des_poids : M_i_o[j {i + 1}] =") (display {M_i_o[j {i + 1}]}) (newline))
 
 		; and update the bias
             	{M_i_o[j 0]  <-  M_i_o[j 0] - ((- η) · 1.0 · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j]) })) ; note the useless (  ) near - ((- η) · ...
@@ -335,10 +342,10 @@ but will it works with Scheme+ parser?
 		(accepte_et_propage entree)
 		(printf "~a --> ~a : on attendait ~a" entree {z[vector-length(z) - 1]} sortie_attendue) (newline)
 		{ᐁ <- sortie_attendue[0] - z[vector-length(z) - 1][0]} ; erreur sur un element
-		{error <- error + ᐁ ²})                             ; l'erreur quadratique totale
+		{eror <- eror + ᐁ ²})                             ; l'erreur quadratique totale
 		
 	  {err <- err * 0.5}
-	  (display "Error on examples=") (display error) (newline))
+	  (display "Error on examples=") (display eror) (newline))
 
 
 	

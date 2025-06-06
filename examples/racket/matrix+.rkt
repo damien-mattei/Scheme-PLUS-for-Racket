@@ -10,7 +10,8 @@
 
 (provide multiply-flomat-vector
 	 dim
-	 *) ; matrix-column->vector) 
+	 *
+	 ·) ; matrix-column->vector) 
 
 (require (rename-in flomat (repeat repeat-flomat)  ; flomat is in package sci
 		           (shape shape-flomat)
@@ -18,16 +19,18 @@
 
 ;; (require (for-syntax r6rs/private/base-for-syntax)) ;; for macro syntax (for ... : identifier-syntax: undefined;
 
+
 (require Scheme+)
 
 
 (define-overload-existing-operator *)
+(define-overload-existing-operator · Scheme+/multiply)
 
 (define (multiply-flomat-vector M v) ;; args: M : flomat, v:vector , return vector
   (flomat->vector (times M (matrix v))))
 
 (overload-existing-operator * multiply-flomat-vector (flomat? vector?))
-
+(overload-existing-operator · multiply-flomat-vector (flomat? vector?))
 
 ;; (define (matrix-column->vector C)
 ;;   {lgC <- (ncols C)}

@@ -139,6 +139,9 @@
 
 
 (define (negative-vector-index index v)
+
+  ;; (display "array.rkt : negative-vector-index : index =") (display index) (newline)
+  ;; (display "array.rkt : negative-vector-index : v =") (display v) (newline)
      
   (if (< index 0)
       (+ (vector-length v) index)
@@ -148,7 +151,7 @@
 
 ;; this one is used by array.scm
 (define (function-array-n-dim-ref array L-reversed-indexes)
-  ;;(display L-reversed-indexes) (newline)
+  ;;(display "array.rkt : negative-vector-index : L-reversed-indexes =") (display L-reversed-indexes) (newline)
   (if (= 1 (length L-reversed-indexes)) ; base case : array of dimension 1 : vector
       ;; vector
       (vector-ref array

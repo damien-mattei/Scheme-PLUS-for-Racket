@@ -237,7 +237,7 @@
 	      ;;#`(list #,@(parse-square-brackets-arguments-lister-syntax #'(index ...))))
 	      ;;(parse-square-brackets-arguments-lister-syntax #'(index ...)))
 
-			    ) ; end definitions
+	      ) ; end definitions
 			   
 	   ;;(display "<- : #'parsed-args=") (display #'parsed-args) (newline)
 	   ;; (display "<- : (list? #'parsed-args)=") (display (list? #'parsed-args)) (newline)

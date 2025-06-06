@@ -31,46 +31,58 @@
 	   Scheme+/slice
 	   Scheme+/infix-with-precedence-to-prefix
 	   Scheme+/infix
-	   Scheme+/operators
-	   Scheme+/operators-list
-	   Scheme+/insert)
+	   Scheme+/insert
+	   Scheme+/infix-prefix
+	   ;;(for-template racket/base)
+	   )
 	  
   
 ;; split the expression using slice as separator
-(def (parse-square-brackets-arguments args-brackets creator operator-precedence operators-lst)
+(def (parse-square-brackets-arguments args-brackets creator)
 
   ;;(display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
 
-  ;;(define operators-lst (apply append operator-precedence)) ; this already exist in operators-list module
-  
-  (when (null? args-brackets)
+  (when (null? args-brackets) ; empty case
 	(return args-brackets))
 
   (declare result partial-result) ; '() at beginning
+
+  
  
   (def (psba args) ;; parse square brackets arguments ,note: it is a tail-recursive function (see end)
 
-       ;;(display "psba : args=") (display args) (newline)
-       ;;(display "psba : partial-result =") (display partial-result) (newline)
-       (when (null? args)
+       ;; (display "psba : args=") (display args) (newline)
+       ;; (display "psba : partial-result =") (display partial-result) (newline)
+
+       
+       (when (null? args) ; end case : we return the result after appending the last partial result
   	 ;;(display "before !*prec") (newline)
 	 ;;(display "null args") (newline)
-  	 (if (infix? partial-result operators-lst)
 
-	     ($> ; then
-	      ;;(display "infix detected") (newline)
-  	      ;;(display "psba : partial-result =") (display partial-result) (newline)
-  	      (append-tail-set! result (!*prec-generic-infix-parser partial-result
-								    operator-precedence
-								    creator))) 
-	     (begin
-	       ;;(display "NO infix detected") (newline)
-  	       (append-tail-set! result partial-result)))  ; not infix
+	 (when (not (null? partial-result)) ;; check infix expression exist really
+	       ;;(display "not null") (newline)
+	       
+	       (if (infix? #;infix-simple? partial-result) ; we test but we do not need to check all the syntax
+
+		   ($> ; then
+		    ;; (display "infix detected") (newline)
+		    ;; (display "psba : partial-result =") (display partial-result) (newline)
+		    (insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser partial-result
+											     creator))) 
+		   (begin
+		     ;;(display "NO infix detected") (newline)
+		     ;; append because the singleton (atom) needs to be exited from the list ,and append make it exited
+		     (#;insert-tail-set! append-tail-set! result partial-result)))  ; not infix
+	       
+	       ;; (display "after !*prec") (newline)
+	       )
 	 
-  	 ;; (display "after !*prec") (newline)
-  	 ;;(display "psba when null args : result =") (display result) (newline)
+  	 ;; (display "psba when null args : result =") (display result) (newline)
   	 ;; (display "return-rec") (newline)
+	 
   	 (return-rec result)) ;; return from all recursive calls, as it is tail recursive
+
+
        
        
        (define fst (car args)) ; get the first token in the infix expression
@@ -90,18 +102,18 @@
 	      
 	      ;;(display "psba : result =") (display result) (newline)
 	      
-	      ;; check it is in infix, not already prefixed (we are in scheme...)
-  	      (if (infix?  partial-result operators-lst) ;;  operateurs quotés ou syntaxés !
+	      ;; check it is in infix, not already prefixed (we are in scheme...) we test but we do not need to check all the syntax
+  	      (if (infix? #;infix-simple?  partial-result) ;;  operateurs quotés ou syntaxés !
 		  
   		      (begin ; yes
   			;;(display "infix detected") (newline)
-  			(append-tail-set! result (!*prec-generic-infix-parser partial-result
-									      operator-precedence
+  			(insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser partial-result
 									      creator))) ;; convert to prefix and store the expression
 		      ;; no
 		      (begin
 			;;(display "NO infix detected") (newline)
-  			(append-tail-set! result partial-result))) ; partial-result already atom, already infix
+			;; append because the singleton (atom) needs to be exited from the list ,and append make it exited
+  			(#;insert-tail-set! append-tail-set! result partial-result))) ; partial-result already atom, already prefix
 
 	      ;;(display "psba : result =") (display result) (newline)
   	      (set! partial-result '())) ;; empty for the next possible portion between slice operator
@@ -113,24 +125,27 @@
 	   ;; construct the list of the infix expression
   	   (insert-tail-set! partial-result fst)) ;; not a slice operator but append it
 
-       ;;(display "psba : result=") (display result) (newline)
-       ;;(display "psba 2 : partial-result=") (display partial-result) (newline)
+
        
-       (psba (cdr args))) ;; end def, recurse (tail recursive) , continue with the rest of the infix token list
+       ;; (display "psba : result=") (display result) (newline)
+       ;; (display "psba 2 : partial-result=") (display partial-result) (newline)
+       
+       (psba (cdr args))) ;; end def psba , recurse (tail recursive) , continue with the rest of the infix token list
+
+  
 
   ;;(display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
+
   (define rs  (psba args-brackets))
+
   ;;(display "parse-square-brackets-arguments : rs=") (display rs) (newline)
+
+  ;;(cons #'list rs)
+  ;; (cons 'list rs)
   rs
   ) ;; initial call
 
 
-
-;; (define (parse-square-brackets-arguments-lister args-brackets)
-;;   ;;(display "parse-square-brackets-arguments-lister : args-brackets=") (display args-brackets) (newline)
-;;   (parse-square-brackets-arguments args-brackets
-;; 					     (lambda (op a b) (list op a b))
-;; 					     infix-operators-lst-for-parser))
 
 
 (define (parse-square-brackets-arguments-lister-syntax args-brackets)
@@ -140,9 +155,7 @@
     (display "parse-square-brackets-arguments-lister-syntax : args-brackets=") (display args-brackets) (newline))
 
   (parse-square-brackets-arguments args-brackets ;; generic procedure
-				   (lambda (op a b) (list op a b))
-				   infix-operators-lst-for-parser-syntax
-				   operators-lst-syntax)) ;; defined elsewhere
+				   (lambda (op a b) (list op a b)))) 
 				
 					    
 

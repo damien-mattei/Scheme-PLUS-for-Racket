@@ -3,6 +3,7 @@
   (require (rename-in srfi/42 (: s42:)))
   (require Scheme+)
   (require (only-in racket/base (for for-racket)))
+  (random-seed 7)
   (define (uniform-dummy dummy1 dummy2) ($nfx$ -1 + (random) * 2))
   (define (uniform-interval inf sup)
     (define gap sup - inf)
@@ -62,18 +63,27 @@
          (exit #f))
        ($nfx$ ($bracket-apply$ z 0) <- x)
        ($nfx$ n <- (vector-length z))
+       (display "n=")
+       (display n)
+       (newline)
        (declare z_1)
        (declare i)
        (for
         (($nfx$ i <- 0) ($nfx$ i < n - 2) ($nfx$ i <- i + 1))
         ($nfx$ z_1 <- #(1) + ($bracket-apply$ z i))
         ($nfx$ ($bracket-apply$ z̃ i + 1) <- ($bracket-apply$ M i) * z_1)
+        (display "z̃[i + 1] = ")
+        (display ($nfx$ ($bracket-apply$ z̃ i + 1)))
+        (newline)
         ($nfx$
          ($bracket-apply$ z i + 1)
          <-
          (vector-map
           activation_function_hidden_layer
-          ($bracket-apply$ z̃ i + 1))))
+          ($bracket-apply$ z̃ i + 1)))
+        (display "z[i + 1] = ")
+        (display ($nfx$ ($bracket-apply$ z i + 1)))
+        (newline))
        ($nfx$ z_1 <- #(1) + ($bracket-apply$ z i))
        ($nfx$ ($bracket-apply$ z̃ i + 1) <- ($bracket-apply$ M i) * z_1)
        ($nfx$
@@ -81,7 +91,10 @@
         <-
         (vector-map
          activation_function_output_layer
-         ($bracket-apply$ z̃ i + 1))))
+         ($bracket-apply$ z̃ i + 1)))
+       (display "z[i + 1] = ")
+       (display ($nfx$ ($bracket-apply$ z i + 1)))
+       (newline))
       (define/public
        (apprentissage Lexemples)
        ($nfx$ ip <- 0)
@@ -103,14 +116,15 @@
           -
           ($bracket-apply$ ($bracket-apply$ z i) k)))
         ($nfx$ მzⳆმz̃ <- activation_function_output_layer_derivative)
-        (modification_des_poids
-         ($bracket-apply$ M i - 1)
-         ηₛ
-         ($bracket-apply$ z i - 1)
-         ($bracket-apply$ z i)
-         ($bracket-apply$ z̃ i)
-         ($bracket-apply$ ᐁ i)
-         მzⳆმz̃)
+        ($nfx$
+         (modification_des_poids
+          ($bracket-apply$ M i - 1)
+          ηₛ
+          ($bracket-apply$ z i - 1)
+          ($bracket-apply$ z i)
+          ($bracket-apply$ z̃ i)
+          ($bracket-apply$ ᐁ i)
+          მzⳆმz̃))
         ($nfx$ მzⳆმz̃ <- activation_function_hidden_layer_derivative)
         (for-racket
          ((i (reversed (in-range 1 i_output_layer))))
@@ -130,14 +144,15 @@
             ($bracket-apply$ ($bracket-apply$ M i) k ($nfx$ j + 1))
             *
             ($bracket-apply$ ($bracket-apply$ ᐁ i + 1) k))))
-         (modification_des_poids
-          ($bracket-apply$ M i - 1)
-          ηₛ
-          ($bracket-apply$ z i - 1)
-          ($bracket-apply$ z i)
-          ($bracket-apply$ z̃ i)
-          ($bracket-apply$ ᐁ i)
-          მzⳆმz̃))
+         ($nfx$
+          (modification_des_poids
+           ($bracket-apply$ M i - 1)
+           ηₛ
+           ($bracket-apply$ z i - 1)
+           ($bracket-apply$ z i)
+           ($bracket-apply$ z̃ i)
+           ($bracket-apply$ ᐁ i)
+           მzⳆმz̃)))
         ($nfx$ ip <- (random (vector-length Lexemples)))))
       (define
        (modification_des_poids M_i_o η z_input z_output z̃_output ᐁ_i_o მzⳆმz̃)
@@ -188,7 +203,7 @@
         (printf
          "~a --> ~a : on attendait ~a"
          entree
-         ($bracket-apply$ z (vector-length z) - 1)
+         ($nfx$ ($bracket-apply$ z (vector-length z) - 1))
          sortie_attendue)
         (newline)
         ($nfx$

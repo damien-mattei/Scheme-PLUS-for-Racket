@@ -2,7 +2,7 @@
  
 (module zeta racket
 
-;; example in Scheme+ that plot the convergence of th ζ Riemann complex serie (without Analytic continuation)
+;; example in Scheme+ that plot the convergence of the ζ Riemann complex serie (without Analytic continuation)
 
 (require Scheme+)
 	
@@ -12,7 +12,9 @@
 
 (require racket/gui/base)
 
+
 {animation-mode ← #t}
+
 
 {xws ← 1000} ;; X window size
 {yws ← 800} ;; Y window size
@@ -86,7 +88,7 @@
   
   {flag-color ← #t}
   ;;(newline)
-  (for ({n ← 1} {n <= nmax} {n ← n + 1})
+  (for ({n ← 1} {n ≤ nmax} {n ← n + 1})
        (if flag-color
 	   (send dc set-pen "blue" 1 'solid)
 	   (send dc set-pen "green" 1 'solid))
@@ -106,8 +108,10 @@
        {y0 ←  (imag-part zie)}
        {x1 ←  (real-part zxtrme)}
        {y1 ←  (imag-part zxtrme)}
-       (when {x0 >= 0 and x0 <= xws  and x1 >= 0 and x1 <= xws and
-	      y0 >= 0 and y0 <= ywsp and y1 >= 0 and y1 <= ywsp}
+
+       ;; we plot only in the window
+       (when {x0 ≥ 0 and x0 ≤ xws  and x1 ≥ 0 and x1 ≤ xws and
+	      y0 ≥ 0 and y0 ≤ ywsp and y1 ≥ 0 and y1 ≤ ywsp}
 	     (send dc draw-line
 		   x0 y0
 		   x1 y1))
@@ -130,14 +134,16 @@
        {flag-color ← (not flag-color)}
        ;;(display "draw-zeta-multi-values : n =") (display n) (newline)
        {zp ← 1.0 / n ** z}
+       ;;{zp ← 1.0 / n ᶻ} ; does not works , will works in external parser
        {zxtrm  ← zi + zp}
        ;;(display "draw-zeta-multi-values : zxtrm =") (display zxtrm) (newline)
  
        {(x0 y0) ← (to-screen-multi-values zi)} 
        {(x1 y1) ← (to-screen-multi-values zxtrm)}
- 
-       (when {x0 >= 0 and x0 <= xws  and x1 >= 0 and x1 <= xws and
-	      y0 >= 0 and y0 <= ywsp and y1 >= 0 and y1 <= ywsp}
+
+       ;; we plot only in the window
+       (when {x0 ≥ 0 and x0 ≤ xws  and x1 ≥ 0 and x1 ≤ xws and
+	      y0 ≥ 0 and y0 ≤ ywsp and y1 ≥ 0 and y1 ≤ ywsp}
 	     (send dc draw-line
 		   x0 y0
 		   x1 y1))
@@ -154,10 +160,10 @@
   )
 
 
-
-(define-infix (line-length x0 y0 x1 y1)
-  ;;(sqrt { (x1 - x0) ** 2 + (y1 - y0) ** 2 }))
-  (sqrt ((x1 - x0) ** 2 + (y1 - y0) ** 2 )))
+;;(sqrt { (x1 - x0) ** 2 + (y1 - y0) ** 2 }))
+  ;;(sqrt ((x1 - x0) ** 2 + (y1 - y0) ** 2 )))
+(define+ (line-length x0 y0 x1 y1)
+  (√ ((x1 - x0) ² + (y1 - y0) ²)))
 
 ;; (new button% [parent frame0]
 ;;              [label "Pause"]
@@ -250,7 +256,7 @@
 (define (draw-units dc)
   ;;X
   {nun ← (quotient xo unit-axis-in-pixel)}
-  (for ({n ← 1} {n <= nun} {n ← n + 1})
+  (for ({n ← 1} {n ≤ nun} {n ← n + 1})
        {xu ← xo + n * unit-axis-in-pixel}
        (send dc draw-line
 	     xu {yo - 3}
@@ -262,7 +268,7 @@
 
   ;; Y
   {nuny ← (quotient yo unit-axis-in-pixel)}
-  (for ({n ← 1} {n <= nuny} {n ← n + 1})
+  (for ({n ← 1} {n ≤ nuny} {n ← n + 1})
        {yu ← yo - n * unit-axis-in-pixel}
        (send dc draw-line
 	     {xo - 3} yu
@@ -276,7 +282,7 @@
 
 ;; return the z complex from canvas plane where is the mouse pointer
 (define (ret-z x y)
-  {i ← 0+1i} ;; imaginaire pur
+  {i ← +1i} ;; imaginaire pur, check +i does not works, only +1i or 0+1i
   {re ← x - xo}
   {re ← re / unit-axis-in-pixel}
   ;;{im ← (- {y - yo})} ;; or yo - y
