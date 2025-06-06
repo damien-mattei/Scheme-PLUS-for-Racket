@@ -30,11 +30,10 @@
 
   (define (map-nested f L)
 
-    (define (map-nested-aux x)
-      (if (list? x)
-	  (map map-nested-aux x)
-	  (f x)))
-
-    (map map-nested-aux L))
+    (if (list? L)
+      (map (lambda (x) (map-nested f x))
+	   L)
+      (f L)))git status
+      
 
 ) 
