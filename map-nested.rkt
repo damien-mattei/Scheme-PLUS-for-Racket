@@ -33,7 +33,7 @@
     (if (list? L)
       (map (lambda (x) (map-nested f x))
 	   L)
-      (f L)))git status
+      (f L)))
       
 
 ) 
