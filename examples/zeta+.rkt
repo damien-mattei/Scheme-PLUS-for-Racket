@@ -79,12 +79,11 @@
 
 
 
-
+{nmax ← 10000000}
 
 (define (draw-zeta dc)
   
   {zi ← 0}
-  {nmax ← 10000000}
   
   {flag-color ← #t}
   ;;(newline)
@@ -118,7 +117,10 @@
        {zi ← zxtrm}))
 
 
-(define (draw-zeta-multi-values dc)
+(def (draw-zeta-multi-values dc)
+
+  (when {(real-part z) ≤ 0.5}
+    (return))
   
   {zi ← 0}
   {flag-color ← #t}
@@ -152,7 +154,7 @@
        {zi ← zxtrm}
        {n ← n + 1}
        
-       until {len-line < dmin})
+       until {len-line < dmin and n < nmax})
 
   (display "draw-zeta-multi-values : z =") (display z) (newline)
   (display "draw-zeta-multi-values : Riemann Zeta(z) = zi =") (display zi) (newline)
