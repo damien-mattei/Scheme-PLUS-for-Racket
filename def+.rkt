@@ -97,7 +97,8 @@
 					  ($nfx$ <body>*)
 					  ...)))))
 			
-			(cons <arg> . L)))))))
+			(cons <arg> . L))))))) ; this way we get the full list of arguments
+	
 
 
 
