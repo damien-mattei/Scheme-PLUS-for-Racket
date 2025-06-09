@@ -1,4 +1,4 @@
-;; TODO: bitwise not ~
+
 
 (module bracket-apply racket/base
 

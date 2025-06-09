@@ -80,7 +80,8 @@
 
 	(provide infix-prefix-test?
 		 infix?
-		 prefix?)
+		 prefix?
+		 simple-infix-list-syntax?)
 
 	(require Scheme+/operators
 		 Scheme+/superscript
@@ -231,4 +232,40 @@
 	      #f))
 	
 
+
+
+	
+
+	;; procedures shared with SRFI 105
+
+; check that we have a simple infix list, i.e an infix list with always the same operator (no precedence needed to parse)
+
+  ; Return true if lyst has an even # of parameters, and the (alternating)
+  ; first parameters are "op".  Used to determine if a longer lyst is infix.
+  ; If passed empty list, returns true (so recursion works correctly).
+  
+  (define (even-and-op-prefix-syntax? op lyst)
+    (cond
+      ((null? lyst) #t)
+      ((not (pair? lyst)) #f)
+      ((not (datum=? op (car lyst))) #f) ; fail - operators not the same
+      ((not (pair? (cdr lyst)))  #f) ; Wrong # of parameters or improper
+      (#t   (even-and-op-prefix-syntax? op (cddr lyst))))) ; recurse.
+
+  ; Return true if the lyst is in simple infix format
+  ; (and thus should be reordered at read time).
+  
+  (define (simple-infix-list-syntax? lyst)
+    (and
+      (pair? lyst)           ; Must have list;  '() doesn't count.
+      (pair? (cdr lyst))     ; Must have a second argument.
+      (pair? (cddr lyst))    ; Must have a third argument (we check it
+                             ; this way for performance)
+      (even-and-op-prefix-syntax? (cadr lyst) (cdr lyst)))) ; true if rest is simple
+
+ 
+
+
+
+	
 ) ; end module

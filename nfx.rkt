@@ -24,7 +24,7 @@
   (require (for-syntax Scheme+/n-arity)
 	   (for-syntax Scheme+/infix-with-precedence-to-prefix)
 	   (for-syntax Scheme+/operators)
-	   (for-syntax Scheme+/infix)
+	   ;;(for-syntax Scheme+/infix)
 	   (for-syntax racket/base)
 	   Scheme+/exponential
 	   Scheme+/multiply
@@ -173,6 +173,13 @@
 	      
 	   ;;(display "$nfx$ : parsed-args=") (display #'parsed-args) (newline)
 	   #'parsed-args)))))
+
+
+
+
+
+
+
 
 ) ; end module
 

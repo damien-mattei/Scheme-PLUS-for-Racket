@@ -58,7 +58,7 @@
 	     (define-scheme (name arg ...) body ...))
 
 	    ((define (name arg ... . rest-id) body ...)
-	       (define-scheme (name arg ... . rest-id) body ...))
+	     (define-scheme (name arg ... . rest-id) body ...))
 
 
 
@@ -121,7 +121,7 @@
 
 
 
-	;; rationale of define+ is ,first for funxtion definitions, and when only one argument (after symbol) that require to be parsed
+	;; rationale of define+ is ,first for function definitions, and when only one argument (after symbol) that require to be parsed
 	;; (not possible with define without rejecting then a few normal scheme expression)
 	;; see examples below
 
@@ -178,7 +178,7 @@
 	    ;; a
 	    ;; 0.8253356149096783
 	   	    
-	    ;; at least 1 arguments
+	    ;; at least 1 arguments, so (define+ name arg1) is parsed here
 	    ((define+ name    arg1 arg2 ...)
 	     (define-scheme name ($nfx$ arg1 arg2 ...)))
 

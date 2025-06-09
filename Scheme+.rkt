@@ -30,7 +30,7 @@
    
    ;; definition and block
 
-   def return return-rec
+   def def+ return return-rec
    define
    define+
    
@@ -132,9 +132,11 @@
    
    ;; definition and block
    Scheme+/def
+   Scheme+/def+
    Scheme+/def-nfx ; infix define
    Scheme+/declare
    Scheme+/block
+   Scheme+/return
 
    
    ;; infix notation,indexing,slicing and assignment

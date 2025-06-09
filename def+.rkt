@@ -61,7 +61,47 @@
 			
 			(list <arg> ...)))))))
 
-	      
+
+
+	;; variadic arguments in list
+	((_ (<name> <arg> . L) <body> <body>* ...)
+	 
+         
+	 #'(define (<name> <arg> . L)
+
+	     (call/cc
+
+	      (lambda (ret-rec-id) ;(#,ret-rec-id)
+		;; In the body we adjust the 'return-rec' keyword so that calls
+		;; to 'return-rec' are replaced with calls to the escape
+		;; continuation.
+
+		(syntax-parameterize
+		 ([return-rec (syntax-rules ()
+				[(return-rec vals (... ...))
+				 (ret-rec-id vals (... ...))])])
+		 
+		 (apply (rec <name> (lambda (<arg> . L)
+				      
+				      (call/cc
+
+				       (lambda (ret-id) ;(#,ret-id)
+					 ;; In the body we adjust the 'return' keyword so that calls
+					 ;; to 'return' are replaced with calls to the escape
+					 ;; continuation.
+					 (syntax-parameterize
+					  ([return (syntax-rules ()
+						     [(return vals (... ...))
+						      (ret-id vals (... ...))])])
+					  ($nfx$ <body>)
+					  ($nfx$ <body>*)
+					  ...)))))
+			
+			(cons <arg> . L)))))))
+
+
+
+	
 
 	;; single definition without a value assigned
 	;; (def x)

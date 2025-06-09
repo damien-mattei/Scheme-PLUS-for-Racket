@@ -23,13 +23,14 @@
 (module def racket/base
 
 
-	(provide def return return-rec
+	(provide def #;def+ return return-rec
 		 <+ +>
 		 ⥆ ⥅
 		 :+ +:
 		 if-defined)
 
-	(require srfi/31 ;; for 'rec in def.scm
+	(require srfi/31 ;; for 'rec in def*
+		 Scheme+/return
 		 racket/stxparam
 		 (for-syntax racket/base))
 	  
@@ -69,14 +70,7 @@
 	   (if exist-id #'iftrue #'iffalse))])))
 
 
-(define-syntax-parameter return-rec
-  (lambda (stx)
-    (raise-syntax-error 'return-rec "can only be used inside def")))
 
-(define-syntax-parameter return
-  (lambda (stx)
-    (raise-syntax-error 'return "can only be used inside def")))
-  
 
 ;; Welcome to DrRacket, version 8.14 [cs].
 ;; Language: racket, with debugging; memory limit: 8192 MB.
@@ -176,7 +170,47 @@
 			
 			(list <arg> ...)))))))
 
-	      
+	
+
+	;; variadic arguments in list
+	;; (def (foo a . L) (when #t (return (cons a L))))
+	;; (foo 1 2 3)
+	;; '(1 2 3)
+	((_ (<name> <arg> . L) <body> <body>* ...)
+	 
+         
+	 #'(define (<name> <arg> . L)
+
+	     (call/cc
+
+	      (lambda (ret-rec-id) ;(#,ret-rec-id)
+		;; In the body we adjust the 'return-rec' keyword so that calls
+		;; to 'return-rec' are replaced with calls to the escape
+		;; continuation.
+
+		(syntax-parameterize
+		 ([return-rec (syntax-rules ()
+				[(return-rec vals (... ...))
+				 (ret-rec-id vals (... ...))])])
+		 
+		 (apply (rec <name> (lambda (<arg> . L)
+				      
+				      (call/cc
+
+				       (lambda (ret-id) ;(#,ret-id)
+					 ;; In the body we adjust the 'return' keyword so that calls
+					 ;; to 'return' are replaced with calls to the escape
+					 ;; continuation.
+					 (syntax-parameterize
+					  ([return (syntax-rules ()
+						     [(return vals (... ...))
+						      (ret-id vals (... ...))])])
+					  <body> <body>* ...)))))
+			
+			(cons <arg> L)))))))
+
+
+	
 
 	;; single definition without a value assigned
 	;; (def x)
@@ -188,6 +222,13 @@
 	((_ err ...) #`(syntax-error "Bad def form"))
 
 	)))
+
+
+
+
+
+
+
 
 
 

@@ -30,7 +30,7 @@
 	   Scheme+/syntax
 	   Scheme+/slice
 	   Scheme+/infix-with-precedence-to-prefix
-	   Scheme+/infix
+	   ;;Scheme+/infix
 	   Scheme+/insert
 	   Scheme+/infix-prefix
 	   ;;(for-template racket/base)
