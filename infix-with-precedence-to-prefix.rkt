@@ -30,7 +30,7 @@
 
   (require ;(only-in srfi/1 any)
 	   Scheme+/syntax
-	   Scheme+/prefix
+	   ;;Scheme+/prefix
 	   Scheme+/operators-list
 	   Scheme+/operators
 	   ;;Scheme+/infix

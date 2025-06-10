@@ -21,11 +21,11 @@
 ;; use in command line (3x faster than in GUI) :
 ;; (base) mattei@pc-mattei:~/Dropbox/git/AI_Deep_Learning$ racket
 ;; Welcome to Racket v8.6 [cs].
-;; > (require "exo_retropropagationNhidden_layers_matrix_v2_by_vectors+.rkt")
+;; > (require "exo_retropropagationNhidden_layers_matrix_v3_by_vectors+.rkt")
 
 ;; or :
 
-;; /Applications/Racket\ v8.12/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors+.rkt > ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors.rkt
+;; /Applications/Racket\ v8.12/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v3_by_vectors+.rkt > ../../../../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v3_by_vectors.rkt
 
 ;; /Applications/Racket\ v8.12/bin/racket curly-infix2prefix4racket.rkt  ../../../../AI_Deep_Learning/matrix-by-vectors+.rkt > ../../../../AI_Deep_Learning/matrix-by-vectors.rkt
 
@@ -33,13 +33,13 @@
 
 ;; or : make
 
-;; (require "exo_retropropagationNhidden_layers_matrix_v2_by_vectors.rkt")
+;; (require "exo_retropropagationNhidden_layers_matrix_v3_by_vectors.rkt")
 
 
 
 
 
-(module exo_retropropagationNhidden_layers_matrix_v2_by_vectors racket
+(module exo_retropropagationNhidden_layers_matrix_v3_by_vectors racket
 
 (provide (all-defined-out)) 
 
