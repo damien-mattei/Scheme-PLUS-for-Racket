@@ -127,3 +127,49 @@ Scheme+ v10.0 by Damien Mattei
 
 
 ```
+
+
+Here is a few more syntax available in this version of Scheme+ with SRFI-105 reader: 
+
+```
+#lang SRFI-105
+(require Scheme+)
+```
+
+```
+(define (foo x y) {-4 · sin(x) + x · y ² - 5 · x / y})
+(foo 1.23 3.4)
+8.640021262861444
+
+{2 ³}
+8
+
+{3 · (2 ³ - 1)}
+21
+
+{(2 ³) ⁴}
+4096
+
+(define+ (chaos p q d x0 y0)
+  
+  ;;(define a {2 * cos{2 * pi * p / q}}) ; or {2 * (cos {2 * pi * p / q})} or {2 * cos({2 * pi * p / q})}
+  (define a   2 * (cos (2 * pi * p / q)))
+  (define+ ksx  (√ ((2 + a) / 2)) ) ;; (sqrt {(2 + a) / 2})) ; or sqrt{{2 + a} / 2}
+  {ksy := (√ ((2 - a) / 2))}    ; (sqrt {(2 - a) / 2})} ; or (define ksy (sqrt {{2 - a} / 2}))
+  
+  (stream-map (lambda (z)
+                (match-let (((vector x y) z))
+                  (vector ((ksx / (√ 2)) * (x + y))
+			  {(ksy / (√ 2)) * ((- x) + y)})))
+                  (stream-iterate (lambda (z)
+                                    (match-let (((vector x y) z))
+                                      (vector
+                                       ;;((a * x) + y + (d * x) / (add1 (x ** 2))) ; infix left to right evaluation avoid extra parenthesis but is hard for humans
+				       ((a * x) + y + (d * x) / (add1 (x ²)))
+				       (- x))))
+				  (vector x0 y0))))
+
+
+(define+ (line-length x0 y0 x1 y1)
+  (√ ((x1 - x0) ² + (y1 - y0) ²)))
+```
