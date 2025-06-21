@@ -131,12 +131,12 @@ Scheme+ v10.0 by Damien Mattei
 
 Here is a few more syntax available in this version of Scheme+ with SRFI-105 reader: 
 
-```
+```scheme
 #lang SRFI-105
 (require Scheme+)
 ```
 
-```
+```scheme
 (define (foo x y) {-4 · sin(x) + x · y ² - 5 · x / y})
 (foo 1.23 3.4)
 8.640021262861444
