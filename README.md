@@ -26,9 +26,7 @@ Again you will have all the information about errors with the true line number d
 Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile) provided (see docs).
 
 
-Hi "[Racketeers](https://www.youtube.com/watch?v=MBB-hMt9240)" :slight_smile: , 
-
-i present the lastest feature of scheme+ for racket that allow the melting in an expression of both infix and prefix sub-expressions. 
+I present some features of scheme+ for racket that allow the melting in an expression of both infix and prefix sub-expressions. 
 There is a disambiguating algorithm based on a finite state machine. 
 Note that some expression would need to be detected not only at the syntax parsing but at the execution stage.(which is not yet implemented,will be in future version).
 
