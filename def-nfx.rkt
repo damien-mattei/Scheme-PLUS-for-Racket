@@ -182,8 +182,7 @@
 	    ;; 0.8253356149096783
 	   	    
 	    ;; at least 1 arguments, so (define+ name arg1) is parsed here
-	    ((define+ name    arg1 arg2 ...)
-	     (define-scheme name ($nfx$ arg1 arg2 ...)))
+	    ((define+ name    arg1 arg2 ...)    (define-scheme name ($nfx$ arg1 arg2 ...)))
 
 	    
 	    ;; zero argN, just the name
