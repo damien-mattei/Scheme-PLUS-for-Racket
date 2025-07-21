@@ -26,9 +26,9 @@ Again you will have all the information about errors with the true line number d
 Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile) provided (see docs).
 
 
-New feateurs of version 10.3:
+New feature of version 10.3:
 
-Allow In/equalities in expression the way Python do it , examples:
+Allow multiples In/equalities in expression, examples:
 
 
 ```scheme
