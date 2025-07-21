@@ -1,4 +1,4 @@
-;; This file is part of Scheme
+;; This file is part of Scheme+
 
 ;; Copyright 2024 Damien MATTEI
 
@@ -25,7 +25,8 @@
 	   operator-symbol-or-syntax?
 	   not+-?
 	   NO-OP?
-	   arithmetic-operator-syntax?
+	   arithmetic-operator?
+	   in/equalities-operator?
 
 	   operator
 	   arg1
@@ -36,11 +37,25 @@
 	   function-without-parameters?
 	   unary-operation?
 	   binary-operation?
+	   
 
+	   EQUAL-op?
+	   NOT-EQUAL-op?
+	   LESS-op?
+	   GREATER-op?
+	   LESS-OR-EQUAL-op?
+	   GREATER-OR-EQUAL-op?
+	   IN-EQUALITY-op?
+
+	   ;; logic operators
 	   AND-op?
 	   OR-op?
-	   XOR-op?
 	   NOT-op?
+	   LOGIC-N-ARY-op?
+	   
+	   XOR-op? ; Warning: Bitwise operator
+	   
+	   
 	   ADD-op?
 	   MINUS-op?
 	   SIGN-op?
@@ -52,6 +67,7 @@
 	   COMPOSITION-op?
 	   EXPONENTIAL-op?
 	   MULTIPLY-op?
+	   
 	   is-associative-operator?
 	   
 
@@ -86,7 +102,9 @@
   (require (only-in srfi/1 first member)
 	   Scheme+/syntax
 	   Scheme+/operators-list
-	   Scheme+/multiply)
+	   Scheme+/multiply
+	   Scheme+/not-equal
+	   Scheme+/little-greater-or-equal)
 
   
 (define rest cdr)
@@ -99,6 +117,18 @@
   (member x operators-lst))
 
 ;; syntax version
+;; works with any (procedure,symbol,syntax)
+
+;; (operator-syntax? +)
+;; #t
+
+;; (operator-syntax? '+)
+;; #t
+
+
+;; (operator-syntax? #'+)
+;; #t
+
 (define (operator-syntax? x)
   (member-generic x operators-lst-syntax))
 
@@ -106,8 +136,25 @@
   (or (operator? x)
       (operator-syntax? x)))
 
-(define (arithmetic-operator-syntax? x)
+(define (arithmetic-operator? x)
   (member-generic x arithmetic-operator-lst-syntax))
+
+
+
+
+;; (in/equalities-operator? <)
+;; #t
+
+;; (in/equalities-operator? '<=)
+;; #t
+
+;; (in/equalities-operator? #'<=)
+;; #t
+
+;; (in/equalities-operator? #'+)
+;; #f
+(define (in/equalities-operator? x)
+  (member-generic x in/equalities-operator-syntax))
 
 
 (define (not+-? x)
@@ -179,7 +226,13 @@
 (define (OR-op? oper)
   (datum=? oper 'or))
   ;;(or (eqv? oper 'or) (check-syntax=? oper #'or)))
-  ;;(or (eqv? oper 'or) (eqv? oper 'OR)  (eqv? oper '➕))) ;; middle dot
+;;(or (eqv? oper 'or) (eqv? oper 'OR)  (eqv? oper '➕))) ;; middle dot
+
+
+(define (LOGIC-N-ARY-op? oper)
+  (or (AND-op? oper)
+      (OR-op? oper)))
+
 
 (define (XOR-op? oper) ;; note: logxor in Guile, xor in Racket
   (or (datum=? oper 'logxor)
@@ -196,6 +249,50 @@
   (datum=? oper 'not))
   ;;(or (eqv? oper 'not) (check-syntax=? oper #'not))) ; not sure it is usefull in syntax 
   ;;(or (eqv? oper 'not) (eqv? oper 'NOT)))
+
+
+(define (EQUAL-op? oper)
+  (or (eqv? oper =)
+      (eqv? oper equal?)
+      (datum=? oper '=)
+      (datum=? oper 'equal?)))
+
+(define (NOT-EQUAL-op? oper)
+  (or (eqv? oper ≠)
+      (eqv? oper <>)
+      (datum=? oper '≠)
+      (datum=? oper '<>)))
+
+
+(define (LESS-op? oper)
+  (or (eqv? oper <)
+      (datum=? oper '<)))
+
+(define (GREATER-op? oper)
+  (or (eqv? oper >)
+      (datum=? oper '>)))
+
+(define (LESS-OR-EQUAL-op? oper)
+  (or (eqv? oper <=)
+      (datum=? oper '<=)
+      (eqv? oper ≤)
+      (datum=? oper '≤)))
+
+(define (GREATER-OR-EQUAL-op? oper)
+  (or (eqv? oper >=)
+      (datum=? oper '>=)
+      (eqv? oper ≥)
+      (datum=? oper '≥)))
+
+
+(define (IN-EQUALITY-op? oper)
+  (or (EQUAL-op? oper)
+      (NOT-EQUAL-op? oper)
+      (LESS-op? oper)
+      (GREATER-op? oper)
+      (LESS-OR-EQUAL-op? oper)
+      (GREATER-OR-EQUAL-op? oper)))
+
 
 (define (ADD-op? oper)
   (or (eqv? oper +)
@@ -279,6 +376,8 @@
 
 
 ;; expression tests
+
+;; test for prefix expression only
 
 (define (isADD? expr)
   (and (pair? expr) (ADD-op? (car expr))))

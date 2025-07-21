@@ -35,7 +35,8 @@
 		 operators-lst
 		 operators-lst-syntax
 		 arithmetic-operator-lst-syntax
-		 strict-precedence-over-minus)
+		 strict-precedence-over-minus
+		 in/equalities-operator-syntax)
 
 	(require srfi/1 ; take-while
 		 Scheme+/syntax
@@ -86,23 +87,25 @@
 (define exponential-operator (map syntax->datum exponential-operator-syntax))
 
 
+
+
+
 ;; precedence lists
 
-(define arithmetic-operator-syntax (list exponential-operator-syntax
-					 (list #'* #'/ #'% #'·)
-					 ;;(list #'·) ; symbolic logic And
-					 (list #'⊕) ; symbolic logic Xor
-					 (list #'- #'+)
-					 
-					 (list #'<< #'>>)
+(define calculus-operator-syntax (list (list #'* #'/ #'% #'·)
+				       ;;(list #'·) ; symbolic logic And
+				       (list #'⊕) ; bitwise Xor
+				       (list #'- #'+)
+				       (list #'<< #'>>)
+				       (list #'& #'∣)))
 
-					 (list #'& #'∣)
+(define in/equalities-operator-syntax (list #'< #'> #'= #'≠ #'<= #'>= #'<> #'≤ #'≥ #'equal?))
 
-					 (list #'< #'> #'= #'≠ #'<= #'>= #'<> #'≤ #'≥ #'equal?)
-
-					 (list #'and)
-
-					 (list #'or)))
+(define arithmetic-operator-syntax (append (list exponential-operator-syntax)
+					   calculus-operator-syntax
+					   (list in/equalities-operator-syntax)
+					   (list (list #'and))
+					   (list (list #'or))))
 
 
 (define infix-operators-lst-for-parser-syntax
@@ -126,8 +129,6 @@
 
 (define operators-lst
   (apply append infix-operators-lst-for-parser))
-
-
 
 
 

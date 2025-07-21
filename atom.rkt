@@ -18,7 +18,6 @@
 
 (module atom racket/base
 
-
   (provide atom?)
 
   (define (atom? x)

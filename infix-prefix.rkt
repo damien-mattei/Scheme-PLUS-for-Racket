@@ -172,7 +172,7 @@
 	  (var-syntax2list f)
 	  
 	  (cond ((NO-OP? f) 'prefix)
-		((or (arithmetic-operator-syntax? f) 
+		((or (arithmetic-operator? f) 
 		     (superscript? f)) 'infix)
 		(else (error "infix-prefix : state-2 : unknow case in parsing the remaining list: " L))))
 

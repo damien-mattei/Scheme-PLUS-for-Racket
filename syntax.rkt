@@ -61,8 +61,8 @@
 
   ;; racket does not allow to syntax->datum an object not being (syntax something)
   (define (datum=? obj1 obj2)
-       ;; (display "datum=? : obj1 =") (display obj1) (newline)
-       ;; (display "datum=? : obj2 =") (display obj2) (newline)
+       ;;(display "datum=? : obj1 =") (display obj1) (newline)
+       ;;(display "datum=? : obj2 =") (display obj2) (newline)
 
        (when (syntax? obj1)
 	 (set! obj1 (syntax->datum obj1)))
@@ -76,8 +76,9 @@
        (when (procedure? obj2)
 	 (set! obj2 (procedure->symbol obj2)))
 
-       (equal? obj1 obj2))
-
+       (define rv (equal? obj1 obj2))
+       ;;(display "datum=? rv =") (display rv) (newline)
+       rv)
 
 ;; Welcome to DrRacket, version 8.13 [cs].
 ;; Language: r6rs, with debugging; memory limit: 8192 MB.
@@ -100,8 +101,8 @@
 ;;#f
 
   (define (member-generic x lst)
-  ;;  (display "member-generic : x=") (display x) (newline)
-  ;;  (display "member-generic : lst=") (display lst) (newline)
+    ;;(display "member-generic : x=") (display x) (newline)
+    ;;(display "member-generic : lst=") (display lst) (newline)
     (any (lambda (y)
 	   (datum=? x y))
 	 lst))

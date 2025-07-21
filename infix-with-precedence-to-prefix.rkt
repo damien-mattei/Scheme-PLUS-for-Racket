@@ -30,17 +30,17 @@
 
   (require ;(only-in srfi/1 any)
 	   Scheme+/syntax
-	   ;;Scheme+/prefix
 	   Scheme+/operators-list
 	   Scheme+/operators
-	   ;;Scheme+/infix
 	   Scheme+/def
 	   SRFI-105/SRFI-105-curly-infix ; for alternating-parameters
 	   Scheme+/superscript-parser
 	   Scheme+/block
 	   Scheme+/infix-prefix
 	   Scheme+/plus-minus-parser
-	   Scheme+/atom) 
+	   Scheme+/atom
+	   Scheme+/in-equalities
+	   ) 
 	  
 
   ;; procedures work with quoted expression and syntax expressions
@@ -317,7 +317,7 @@
 ;; (this is generally the main entry routine of this module)
 (def (!*prec-generic-infix-parser terms creator)   ;; precursor of !*-generic-infix-parser
 
-  ;; (display "!*prec-generic-infix-parser : start terms=") (display terms) (newline)
+  ;;(display "!*prec-generic-infix-parser : start terms=") (display terms) (newline)
   ;; (newline)
 
   (var-syntax2list terms)
@@ -335,24 +335,11 @@
   ;;   (display "!*prec-generic-infix-parser : WARNING , terms is not a list, perheaps expander is not psyntax (Portable Syntax)") (newline)
   ;;   (display "!*prec-generic-infix-parser : WARNING , terms=") (display terms) (newline))
 
-
-
-
-
-
   
- 
   (when (atom? terms)
     ;;(display "!*prec-generic-infix-parser returning early") (newline)
     (return terms))
 
-  ;; if we already have prefix (and already recall on the deep terms) then why continuing?
-  ;; (when (prefix? terms) 
-  ;; 	(display "!*prec-generic-infix-parser returning early 0") (newline)
-  ;; 	(return terms))
- 
- 
- 
  
   ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponential versus signs)
   (define parsed-superscript (superscript-operator-loop terms))
@@ -390,35 +377,53 @@
 	     (= 2 (length deep-terms))) ; example : syntax something of (- (- 2))
     ;;(display "!*prec-generic-infix-parser : length = 2") (newline)
     (return ; before infix parsing as it is already infix
-       (map (lambda (x)
+       (map (lambda (x) ; mapping in infix the deep terms
 	     (!*prec-generic-infix-parser x creator)) 
 	   deep-terms)))
 
-  ;; (display "!*prec-generic-infix-parser 1 : deep-terms=") (display deep-terms) (newline)
+  ;;(display "!*prec-generic-infix-parser 1 before in/equalities : deep-terms=") (display deep-terms) (newline)
   ;; (newline)
 
+  ;; (when (not (list? deep-terms))
+  ;;   (display "!*prec-generic-infix-parser deep-terms is NOT a list") (newline))
 
-  ;; general case of mapping in infix deep terms
+  ;;(display "!*prec-generic-infix-parser (length deep-terms) :") (display (length deep-terms)) (newline)
+
+
+  ;; deal with in/equalities
+  (when (and (list? deep-terms)
+	     (>= (length deep-terms) 5)) ; length of a < b < c
+    ;;(display "!*prec-generic-infix-parser launching in/equalities-state-1") (newline)
+    (set! deep-terms (in/equalities-state-1 deep-terms '() '() '() '())))
+
+  ;;(display "!*prec-generic-infix-parser after in/equalities : deep-terms=") (display deep-terms) (newline)
+  ;; (newline)
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; general case of mapping in infix the deep terms
   ;; if there is (define ... we must not compute deep-terms with !*prec-generic-infix-parser but simply copy the terms in deep-terms
   ;; because we do not want to evaluate any ( ... ) as infix but as prefix
 
   (when (and (list? deep-terms)
 	     (not (datum=? 'define ; define is preserved this way (no infix recursive in define)
 			   (car deep-terms))))
-	;;(display "!*prec-generic-infix-parser : recalling !*prec-generic-infix-parser via map") (newline) (newline)
-	(set! deep-terms (map (lambda (x)
-				(!*prec-generic-infix-parser x creator))
-			      deep-terms)))
+    ;;(display "!*prec-generic-infix-parser : recalling !*prec-generic-infix-parser via map") (newline) (newline)
+    (set! deep-terms (map (lambda (x) (!*prec-generic-infix-parser x creator))
+			  deep-terms)))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   
   ;; (display "!*prec-generic-infix-parser 2 : deep-terms=") (display deep-terms) (newline)
   ;; (newline)
 
+  
   ;; if we already have prefix (and already recall on the deep terms) then why continuing?
   (when (prefix? deep-terms) 
-  	;;(display "!*prec-generic-infix-parser returning early 2") (newline)
-  	(return deep-terms))
+    ;;(display "!*prec-generic-infix-parser returning early 2") (newline)
+    (return deep-terms))
  
 
+  ;; we can check for expressions like 2<3<=3 here or later in the 'else of next 'if
   
   (define rv
 
@@ -426,19 +431,27 @@
       ;;(display "!*prec-generic-infix-parser : rv : deep-terms:") (display deep-terms) (newline)
       ;; test for simple-infix (no operator precedence)
       (if (simple-infix-list-syntax? deep-terms)
+	  
 	  (begin
-	    ;;(display "!*prec-generic-infix-parser : deep-terms is a simple infix list") (newline)
-	    ;;(display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
-	    (list ; cadr is op in arg1 op arg2 op ....
-	     (cons (cadr deep-terms) (alternating-parameters deep-terms)))) ; we put it in a list because rv2 take the car...
+	    ;; (display "!*prec-generic-infix-parser : deep-terms is a simple infix list") (newline)
+	    ;; (display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
+	    (return ;; list ; we put it in a list because rv2 take the car... or use return to skip list decapsulation
+	     (cons (cadr deep-terms) ; cadr is op in arg1 op arg2 op ....
+		   (alternating-parameters deep-terms)))) 
 
 	  (begin
 	    ;; (display "!*prec-generic-infix-parser : deep-terms is not a simple infix list") (newline)
+	    ;; (display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
 	    ;; (newline)
-            (pre-check-!*-generic-infix-parser  deep-terms
-						creator)))))
+	    
+	    ;; we can check for expressions like 2<3<=3 here
+	    (when (multiple-in-equalities? deep-terms)
+	      (return (infix->prefix-in-equality deep-terms)))
+	    
+            (pre-check-!*-generic-infix-parser deep-terms creator)))))
 
-  ;;(display "!*prec-generic-infix-parser : rv=") (display rv) (newline)
+  
+  ;; (display "!*prec-generic-infix-parser : rv=") (display rv) (newline)
 
   ;; (newline)
   ;; (newline)
@@ -664,3 +677,16 @@
 ;; {(- 7 (3 * (+ 2 4) - 1)) + 3}
 ;; -7
 
+;; {(+ 2 3) * 4}
+;; 20
+
+
+;; (define x 2)
+;; (define y 4)
+;; (define z 4)
+;; {x < 3 < y <= z}
+;; #t
+
+;; (define y 1)
+;; {x < 3 < y <= z}
+;; #f

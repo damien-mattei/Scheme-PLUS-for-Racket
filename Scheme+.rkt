@@ -172,11 +172,19 @@
    ;; overloading
    Scheme+/overload
 
+   setup/getinfo ; for parsing info.rkt
+
 
    ) ; end import
 
+
+
+  (define info-getter (get-info '("Scheme+")))
+  (define version (cond ((procedure? info-getter) (info-getter 'version))
+			(else info-getter)))
+  
   (newline)
-  (display "Scheme+ v10.0 by Damien Mattei") (newline)
+  (display (string-append "Scheme+ v" version " by Damien Mattei")) (newline)
   (newline)
 
 

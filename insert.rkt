@@ -45,7 +45,22 @@
   (define (insert-tail lst elem)
     (append lst (list elem)))
 
+
+
+  
   ;; insert at the tail of a list and set it to the new result list
+  ;; (define L '())
+
+  ;; (insert-tail-set! L 'A)
+
+  ;; L
+  ;; '(A)
+
+  ;; (insert-tail-set! L 'B)
+
+  ;; L
+  ;; '(A B)
+
   (define-syntax insert-tail-set!
     (syntax-rules ()
       ((_ lst elem)

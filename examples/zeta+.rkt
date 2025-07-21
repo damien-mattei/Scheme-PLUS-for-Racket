@@ -144,8 +144,14 @@
        {(x1 y1) ← (to-screen-multi-values zxtrm)}
 
        ;; we plot only in the window
-       (when {x0 ≥ 0 and x0 ≤ xws  and x1 ≥ 0 and x1 ≤ xws and
-	      y0 ≥ 0 and y0 ≤ ywsp and y1 ≥ 0 and y1 ≤ ywsp}
+       ;; (when {x0 ≥ 0 and x0 ≤ xws  and x1 ≥ 0 and x1 ≤ xws and
+       ;; 	      y0 ≥ 0 and y0 ≤ ywsp and y1 ≥ 0 and y1 ≤ ywsp}
+       ;; 	     (send dc draw-line
+       ;; 		   x0 y0
+       ;; 		   x1 y1))
+
+       (when {0 ≤ x0 ≤ xws  and 0 ≤ x1 ≤ xws and
+	      0 ≤ y0 ≤ ywsp and 0 ≤ y1 ≤ ywsp}
 	     (send dc draw-line
 		   x0 y0
 		   x1 y1))
