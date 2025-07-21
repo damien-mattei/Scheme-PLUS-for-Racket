@@ -8,7 +8,7 @@ https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/gh-pages/README.md
 
 Designed to use with [SRFI 105 Curly Infix reader for Racket](https://github.com/damien-mattei/SRFI-105-for-Racket).
 
-![Scheme+ schema](schema-scheme+.jpg "Scheme+ schema")
+![Scheme+ schema](https://github.com/damien-mattei/Scheme-PLUS-for-Kawa/blob/main/schema-scheme%2B.jpg "Scheme+ schema")
 
 
 With Racket you do not need to define/declare a variable with the
