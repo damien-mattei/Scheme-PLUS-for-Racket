@@ -191,6 +191,7 @@
 	  (var-syntax2list f)
 	  
 	  (cond ((COMPOSITION-op? f) 'infix)
+		((SINGLE-VARIABLE-ASSIGNMENT-op? f) 'infix)
 		((superscript? f) (error "infix-prefix : state-3 : SYNTAX ERROR ,find superscript in parsing the remaining list: " L))
 		(else 'prefix)))
 	

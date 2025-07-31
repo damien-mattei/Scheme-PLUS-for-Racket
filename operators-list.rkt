@@ -27,6 +27,7 @@
 		 infix-operators-lst-for-parser
 		 
 		 definition-operator-syntax
+		 single-variable-assignment-operator-syntax
 		 assignment-operator-syntax
 		 exponential-operator-syntax
 		 arithmetic-operator-syntax	 
@@ -48,41 +49,32 @@
 	
 
 	
-;; (define definition-operator (list '<+ '+>
-;; 				  '⥆ '⥅
-;; 				  ':+ '+:
-;; 				  ))
-	
+
 (define definition-operator-syntax (list #'<+ #'+>
 					 #'⥆ #'⥅
 					 #':+ #'+:
 					 ))
 
-;; (define definition-operator-syntax (map (lambda (q-symb) (datum->syntax #'operators-list-rkt-file q-symb))
-;; 					definition-operator))
 
 
 (define definition-operator (map syntax->datum definition-operator-syntax))
 
-;; (define assignment-operator (list '<- '->
-;; 				  '← '→
-;; 				  ':=  '=:
-;; 				  '<v 'v>
-;; 				  '⇜ '⇝))
+
+(define single-variable-assignment-operator-syntax (list #'<- #'->))
 
 
-(define assignment-operator-syntax (list #'<- #'->
-					 #'← #'→
-					 #':= #'=: ;  was '=: ,error?
-					 #'<v #'v>
-					 #'⇜ #'⇝))
-
+(define assignment-operator-syntax (append single-variable-assignment-operator-syntax
+					   (list ;;#'<- #'->
+					         #'← #'→
+					         #':= #'=: 
+					         #'<v #'v>
+					         #'⇜ #'⇝)))
+  
 (define assignment-operator (map syntax->datum assignment-operator-syntax))
 
 
 (define exponential-operator-syntax (list #'expt #'**))
 
-;;(define exponential-operator (list 'expt '**))
 
 (define exponential-operator (map syntax->datum exponential-operator-syntax))
 
