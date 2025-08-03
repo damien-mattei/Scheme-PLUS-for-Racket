@@ -26,7 +26,8 @@ Again you will have all the information about errors with the true line number d
 Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile) provided (see docs).
 
 
-Changes of version 10.4:
+
+**Changes of version 10.4:**
 
 Correct a bug that ommiting assignment operators (```<- := -> =:```) from being correctly detected as infix in the case the first argument is a procedure which is arising with Racket's contracts.
 
@@ -58,7 +59,8 @@ Deprecate ```range.rkt``` module providing ```in-range``` and ```reversed``` as 
 Added some more examples and update code examples according to this release.
 
 
-New feature of version 10.3:
+
+**New feature of version 10.3:**
 
 Allow multiples In/equalities in expression, examples:
 
