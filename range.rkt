@@ -16,7 +16,7 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-
+;; this whole module is DEPRECATED for Racket as already exists 'range'  
 
 
 (module range racket/base

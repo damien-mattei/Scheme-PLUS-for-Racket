@@ -91,7 +91,7 @@
     (for ({k <- 0} {k < p1} {k <- k + 1})
     	 {sum <- sum + v1[i][k] * v2[k][j]})
     sum)
-    ;; (for/sum ([k (in-range p1)])
+    ;; (for/sum ([k (range p1)])
     ;; 	     {v1[i][k] * v2[k][j]}))
 
   {v <- (create-vector-2d res n1 p2)}

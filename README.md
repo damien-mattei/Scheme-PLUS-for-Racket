@@ -26,6 +26,38 @@ Again you will have all the information about errors with the true line number d
 Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile) provided (see docs).
 
 
+Changes of version 10.4:
+
+Correct a bug that ommiting assignment operators (```<- := -> =:```) from being correctly detected as infix in the case the first argument is a procedure which is arising with Racket's contracts.
+
+Example:
+
+```
+{positive-integer? -> (listof positive-integer-triplet?)}
+```
+
+The bug was also preventing a known scheme procedure to be re-assigned (note that by definition procedure are immutable in a Racket module), example now working:
+
+```
+(define (my-cons a b) (display "hello from my-cons") (newline) (cons a b))
+(declare a-new-cons)
+{a-new-cons := my-cons}
+(a-new-cons "hello" "world")
+```
+
+```
+hello from my-cons
+'("hello" . "world")
+```
+
+Note for reader: i apologize because perheaps this summary is not clear. At least for Racket's contract i have to update Scheme+ and the pragmas code of SRFI-105.
+
+
+Deprecate ```range.rkt``` module providing ```in-range``` and ```reversed``` as ```in-range``` is already existing for stream in Racket and was conflicting and used as list which is already done by ```range``` from ```racket/list```. ```reversed``` was just ```reverse``` and was just named the same way as in Python for porting code.
+
+Added some more examples and update code examples according to this release.
+
+
 New feature of version 10.3:
 
 Allow multiples In/equalities in expression, examples:

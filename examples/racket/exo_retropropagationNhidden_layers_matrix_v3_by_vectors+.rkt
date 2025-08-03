@@ -207,7 +207,7 @@
 		;(declare i-body-function)
 
 		;; warning if declaring i '() it cause a problem in for-racket, i being not a real
-		;(for-racket ([i (in-range {n - 2})]) ; warning : in Racket the variable 'i' 
+		;(for-racket ([i (range {n - 2})]) ; warning : in Racket the variable 'i' 
 		; is only seen inside the 'for' but i need it ouside too
 		(for ({i <- 0} {i < n - 2} {i <- i + 1}) ; personnal 'for' definition as in Javascript,C,C++,Java
 
@@ -272,7 +272,7 @@
 	  {ip <- 0} ; numéro de l'exemple courant
 
 	  (declare x y)
-	  (for-racket ([it (in-range nbiter)]) ; le nombre d'itérations est fixé !
+	  (for-racket ([it (range nbiter)]) ; le nombre d'itérations est fixé !
 
 		      (when {it % 1000 = 0}
 			(display "it=") (display it)(newline))
@@ -295,7 +295,7 @@
 		     
 
 		      ;; TEMPS 1. calcul des gradients locaux sur la couche k de sortie (les erreurs commises)
-		      (for-racket ([k (in-range ns)])
+		      (for-racket ([k (range ns)])
 				  {ᐁ[i][k] <- y[k] - z[i][k]})
 				  ;(display "apprentissage : ᐁ[i][k] =") (display {ᐁ[i][k]}) (newline))     ; gradient sur un neurone de sortie (erreur locale)
 				  ;{err <- err + ᐁ[i][k] ** 2})    ; l'erreur quadratique totale
@@ -316,11 +316,11 @@
 
 		      {მzⳆმz̃ <- activation_function_hidden_layer_derivative}
 
-		      (for-racket ([i (reversed (in-range 1 i_output_layer))])
+		      (for-racket ([i (reverse (range 1 i_output_layer))])
 				{nc <- vector-length(z[i])}
 				{ns <- vector-length(z[i + 1])}
-				(for-racket ([j (in-range nc)])
-					{ᐁ[i][j] <- (for/sum ([k (in-range ns)])
+				(for-racket ([j (range nc)])
+					{ᐁ[i][j] <- (for/sum ([k (range ns)])
 							     (მzⳆმz̃(z[i + 1][k] z̃[i + 1][k]) · M[i][k (j + 1)] · ᐁ[i + 1][k]))})
 					;(display "apprentissage : ᐁ[i][j] =") (display {ᐁ[i][j]}) (newline))
 				; modification des poids de la matrice de transition de la couche i-1 à i
@@ -346,12 +346,12 @@
 	  ;(display "modification_des_poids : len_layer_input = ") (display len_layer_input) (newline)
 	  ;(display "modification_des_poids : len_layer_output = ") (display len_layer_output) (newline)
 
-	  (for-racket ([j (in-range len_layer_output)]) ; line
+	  (for-racket ([j (range len_layer_output)]) ; line
 
 		;(newline)
 		;(display "modification_des_poids : j = ") (display j) (newline)
 
-		(for-racket ([i (in-range len_layer_input)]) ; column , parcours les colonnes de la ligne sauf le bias
+		(for-racket ([i (range len_layer_input)]) ; column , parcours les colonnes de la ligne sauf le bias
 		    
 		    ;(display "modification_des_poids : i = ") (display i) (newline)
 		    ;{M_i_o[j {i + 1}]  <-  M_i_o[j {i + 1}] - (- η) * z_input[i] * მzⳆმz̃(z_output[j] z̃_output[j]) * ᐁ_i_o[j]})

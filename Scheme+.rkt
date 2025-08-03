@@ -69,8 +69,10 @@
    for-each-in
 
    ;; sequence
-   in-range
-   reversed
+   ;; DEPRECATED for Racket as already exists 'range'  and 'reversed' is simply 'reverse'
+   ;; also 'in-range' in Racket already exists for streams, etc
+   ;;in-range
+   ;;reversed
 
    
    ;; control
@@ -150,7 +152,7 @@
 
    ;; iteration
    Scheme+/for_next_step
-   Scheme+/range
+   ;;Scheme+/range
 
    ;; control
    Scheme+/condx

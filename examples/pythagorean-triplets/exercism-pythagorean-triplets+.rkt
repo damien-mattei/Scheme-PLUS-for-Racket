@@ -145,7 +145,7 @@ obtained by scaling up the primitive triplets for some divisor of p.
       (for/list ([m (divisors s)]
 		 #:when {√ (s / 2)  <  m  <  √ s} ;; here i use a feature of the special in/equalities parser grouping each sub expressions elements in lists : √ s will become (√ s),etc , but really this is a secret hack ! :-) i had originally written: {(√ (s / 2)) < m < (√ s)}
                  ;;#:do [(define n (- (/ s m) m))]
-		 #:do [(define n  s / m - m)] ; !!! here i use the special 'define' of Scheme+ which is redefined almost as define+ and fully backward compatible with the classic 'define' of R*RS !!!
+		 #:do [(define n  s / m - m)] ; !!! here i use the special 'define' of Scheme+ which is redefined almost as define+ of scheme+and fully backward compatible with the classic 'define' of R*RS !!!
                  #:when (m-and-n-valid? m n)
                  #:do [(define a  m * m - n * n) ; but instead of the modified 'define' i could have used <- or := 
                        (define b  2 * m * n) ; or define+ which us used when there is a single infix expression 
@@ -177,13 +177,15 @@ obtained by scaling up the primitive triplets for some divisor of p.
 
 #|
 
+(require (only-in racket range))
+
 Use something like this to compare times:
 
-: (time (for-each (lambda (_) (triplets-with-sum-brute-force p)) (range (expt 10 3))))
+: (time (for-each (lambda (p) (triplets-with-sum-brute-force p)) (range 1 (expt 10 3))))
 
 Some results from doing
 
-: (time (for-each (lambda (_) (triplets-with-sum p)) (range (expt 10 4))))
+: (time (for-each (lambda (p) (triplets-with-sum p)) (range 1 (expt 10 4))))
 
 for various values of p. Milliseconds of CPU time on my machine:
 
@@ -220,7 +222,7 @@ computation early.
 			     #:do [(define primitive-triples (primitive-triples-with-perimeter d))
 				   (define scale  p / d)])
 			    (append (for/list ([triple primitive-triples])
-					      (for/list ([leg triple]) {scale * leg}))
+					      (for/list ([leg triple]) (scale * leg)))
 				    triples))}
       (sort triples #:key first <)))
 
