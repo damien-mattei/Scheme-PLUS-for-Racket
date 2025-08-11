@@ -447,6 +447,9 @@
 	    ;; we can check for expressions like 2<3<=3 here
 	    (when (multiple-in-equalities? deep-terms)
 	      (return (infix->prefix-in-equality deep-terms)))
+
+	    (when (not (infix-canonical? deep-terms))
+	      (error "infix-with-precedence-to-prefix.rkt : !*prec-generic-infix-parser : not a canonical infix expression: " deep-terms))
 	    
             (pre-check-!*-generic-infix-parser deep-terms creator)))))
 

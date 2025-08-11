@@ -81,7 +81,8 @@
 	(provide infix-prefix-test?
 		 infix?
 		 prefix?
-		 simple-infix-list-syntax?)
+		 simple-infix-list-syntax?
+		 infix-canonical?)
 
 	(require Scheme+/operators
 		 Scheme+/superscript
@@ -235,6 +236,32 @@
 
 
 
+	;; this procedure check that we have a canonical infix expression
+	;; i call 'canonical' an expression such as 3 * 5 + 2
+	;; in contrary an equivalent expression such as this one: - - 3 * 5 + 2 is not 'canonical',etc
+	;; conditions to be 'canonical' will be to have :
+	;; * at least 3 terms in expression
+	;; * odd number of terms
+	;; * operators between terms
+
+	;;{2 * 3 4}
+	;;($nfx$ 2 * 3 4)
+	;;. . ../infix-with-precedence-to-prefix.rkt:452:14: infix-with-precedence-to-prefix.rkt : !*prec-generic-infix-parser : not a canonical infix expression:  '(#<syntax 2> #<syntax *> #<syntax 3> #<syntax 4>)
+	(def (infix-canonical? L)
+	  ;;(display "infix-canonical? : L =")(display L)(newline)	  
+	  (define lgt (length L))
+	  ;;(display "infix-canonical? : lgt =")(display lgt)(newline)
+	  (when (or (< lgt 3)
+		    (not (odd? lgt)))
+	    (return #f))
+	  (def (check-operators? L2)
+	    ;;(display "check-operators? : L2=")(display L2)(newline)   
+	    (when (null? L2)
+	      (return #t))
+	    (if (not (operator-syntax? (car L2)))
+		#f
+		(check-operators? (cddr L2))))
+	  (check-operators? (cdr L)))
 	
 
 	;; procedures shared with SRFI 105

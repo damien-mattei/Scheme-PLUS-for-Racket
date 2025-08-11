@@ -64,7 +64,7 @@
 
 
 (define assignment-operator-syntax (append single-variable-assignment-operator-syntax
-					   (list ;;#'<- #'->
+					   (list #'<- #'->
 					         #'← #'→
 					         #':= #'=: 
 					         #'<v #'v>
