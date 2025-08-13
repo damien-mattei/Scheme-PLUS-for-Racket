@@ -23,11 +23,11 @@
 		 infix->prefix-in-equality
 		 in/equalities-state-1)
 
-	(require SRFI-105/SRFI-105-curly-infix ; for alternating-parameters
+	(require Scheme+/alternating-parameters
+	         ;;SRFI-105/SRFI-105-curly-infix ; for alternating-parameters
 		 Scheme+/operators
 		 Scheme+/insert
 		 Scheme+/def
-		 ;;Scheme+/declare
 		 Scheme+/list)
 
 

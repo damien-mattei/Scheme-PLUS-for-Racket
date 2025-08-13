@@ -33,7 +33,8 @@
 	   Scheme+/operators-list
 	   Scheme+/operators
 	   Scheme+/def
-	   SRFI-105/SRFI-105-curly-infix ; for alternating-parameters
+	   ;;SRFI-105/SRFI-105-curly-infix ; for alternating-parameters
+	   Scheme+/alternating-parameters
 	   Scheme+/superscript-parser
 	   Scheme+/block
 	   Scheme+/infix-prefix
