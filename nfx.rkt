@@ -21,7 +21,7 @@
 
 	(provide $nfx$)
 
-  (require (for-syntax Scheme+/n-arity)
+  (require ;(for-syntax Scheme+/n-arity)
 	   (for-syntax Scheme+/infix-with-precedence-to-prefix)
 	   (for-syntax Scheme+/operators)
 	   ;;(for-syntax Scheme+/infix)
@@ -90,7 +90,7 @@
       ;; (define x  - 4)
       ;; x
       ;; -4
-      (($nfx$ op1 e1) ; note : with 2 arg !*-prec-generic-infix-parser could not work , so we use recall-infix-parser
+      (($nfx$ op1 e1) ; deprecated note : with 2 arg !*-prec-generic-infix-parser could not work , so we use recall-infix-parser
 
        (with-syntax
 			 
@@ -108,7 +108,8 @@
 	      ;;) ;  end car
 
 	      ;;(car ;  probably because the result will be encapsuled in a list !
-	       (!*prec-generic-infix-parser (syntax->list #'(op1 e1))
+	     (!*prec-generic-infix-parser (list #'op1 #'e1)
+					;(syntax->list #'(op1 e1))
 					    (lambda (op a b) (list op a b)))
 	       ;) ; close car
 
@@ -150,25 +151,12 @@
 		 ;; 	  ;;(syntax->list #'(e1 op1 e2 op2 e3 op ...))))
 		 ;; 	  (syntax->list #'(e1 op1 e2 op ...))))
 
-		 (let ((expr ;(car ;  probably because the result will be encapsuled in a list !
-			      ;;(!*prec-generic-infix-parser (syntax->list #'(e1 op1 e2 op2 e3 op ...)) ; apply operator precedence rules
-			      (!*prec-generic-infix-parser (syntax->list #'(e1 op1 e2 op ...))
-							   (lambda (op a b) (list op a b)))
-			      ;) ; closing car
-			     ))
+		 
+	       (!*prec-generic-infix-parser  (syntax->list #'(e1 op1 e2 op ...))
+					     (lambda (op a b) (list op a b)))
+			    
 
-		   ;; TODO pass back in n-arity also arithmetic operators (+ , * , ...) note: fail with n-arity
-		   (if ;;(not (isEXPONENTIAL? expr))
-		    (or (isDEFINE? expr)
-		       	(isASSIGNMENT? expr))
-		    ;;  make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
-		    ;; (begin
-		    ;; 	 (display "$nfx$ : calling n-arity on expr :") (display expr) (newline) 
-		    (n-arity ;; this avoids : '{x <- y <- z <- t <- u <- 3 * 4 + 1}
-		     ;; SRFI-105.scm : !0 result = (<- (<- (<- (<- (<- x y) z) t) u) (+ (* 3 4) 1)) ;; fail set! ...
-		     ;; transform in : '(<- x y z t u (+ (* 3 4) 1))
-		     expr) ;) ; end begin
-		    expr)); ) ; end begin
+	       ;; ) ; end begin
 	       ))
 	      
 	   ;;(display "$nfx$ : parsed-args=") (display #'parsed-args) (newline)

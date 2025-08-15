@@ -41,6 +41,7 @@
 	   Scheme+/plus-minus-parser
 	   Scheme+/atom
 	   Scheme+/in-equalities
+	   Scheme+/n-arity
 	   ) 
 	  
 
@@ -426,33 +427,27 @@
 
   ;; we can check for expressions like 2<3<=3 here or later in the 'else of next 'if
   
-  (define rv
+  ;;(display "!*prec-generic-infix-parser : rv : deep-terms:") (display deep-terms) (newline)
+  ;; test for simple-infix (no operator precedence)
+  (when (simple-infix-list-syntax? deep-terms)
+    ;; (display "!*prec-generic-infix-parser : deep-terms is a simple infix list") (newline)
+    ;; (display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
+    (return ;; list ; we put it in a list because rv2 take the car... or use return to skip list decapsulation
+     (cons (cadr deep-terms) ; cadr is op in arg1 op arg2 op ....
+	   (alternating-parameters deep-terms)))) 
+  
+  ;; (display "!*prec-generic-infix-parser : deep-terms is not a simple infix list") (newline)
+  ;; (display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
+  ;; (newline)
+	
+  ;; we can check for expressions like 2<3<=3 here
+  (when (multiple-in-equalities? deep-terms)
+    (return (infix->prefix-in-equality deep-terms)))
 
-    (begin
-      ;;(display "!*prec-generic-infix-parser : rv : deep-terms:") (display deep-terms) (newline)
-      ;; test for simple-infix (no operator precedence)
-      (if (simple-infix-list-syntax? deep-terms)
-	  
-	  (begin
-	    ;; (display "!*prec-generic-infix-parser : deep-terms is a simple infix list") (newline)
-	    ;; (display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
-	    (return ;; list ; we put it in a list because rv2 take the car... or use return to skip list decapsulation
-	     (cons (cadr deep-terms) ; cadr is op in arg1 op arg2 op ....
-		   (alternating-parameters deep-terms)))) 
-
-	  (begin
-	    ;; (display "!*prec-generic-infix-parser : deep-terms is not a simple infix list") (newline)
-	    ;; (display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
-	    ;; (newline)
+  (when (not (infix-canonical? deep-terms))
+    (error "infix-with-precedence-to-prefix.rkt : !*prec-generic-infix-parser : not a canonical infix expression: " deep-terms))
 	    
-	    ;; we can check for expressions like 2<3<=3 here
-	    (when (multiple-in-equalities? deep-terms)
-	      (return (infix->prefix-in-equality deep-terms)))
-
-	    (when (not (infix-canonical? deep-terms))
-	      (error "infix-with-precedence-to-prefix.rkt : !*prec-generic-infix-parser : not a canonical infix expression: " deep-terms))
-	    
-            (pre-check-!*-generic-infix-parser deep-terms creator)))))
+  (define rv (pre-check-!*-generic-infix-parser deep-terms creator))
 
   
   ;; (display "!*prec-generic-infix-parser : rv=") (display rv) (newline)
@@ -460,10 +455,27 @@
   ;; (newline)
   ;; (newline)
 
-  (define rv2 (car rv))
-  ;;(display "!*prec-generic-infix-parser : (car rv) = rv2 =") (display rv2) (newline)
+  (define expr (car rv))
+  ;;(display "!*prec-generic-infix-parser : (car rv) = expr =") (display expr) (newline)
+
+  ;; TODO pass to n-arity also arithmetic expressions (+ , * , ...) note: fail with n-arity
+  ;; note: some overloaded arithmetic operator could not have implemented the n-arity
+  ;; perheaps write this in another module ,sort of !*post-generic-infix-parser
+  (if ;;(not (isEXPONENTIAL? expr))
+   (or (isDEFINE? expr)
+       (isASSIGNMENT? expr))
+   
+   ;;  make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
+   ;; (begin
+   ;; 	 (display "!*prec-generic-infix-parser : calling n-arity on expr :") (display expr) (newline) 
+   (n-arity ;; this avoids : '{x <- y <- z <- t <- u <- 3 * 4 + 1}
+    ;; SRFI-105.scm : !0 result = (<- (<- (<- (<- (<- x y) z) t) u) (+ (* 3 4) 1)) ;; fail set! ...
+    ;; transform in : '(<- x y z t u (+ (* 3 4) 1))
+            expr) ;) ; end begin
+   
+   expr)
   
-  rv2)
+  ) ; end def
 
 
 
