@@ -40,7 +40,7 @@
 ;; split the expression using slice as separator
 (def (parse-square-brackets-arguments args-brackets creator)
 
-  ;;(display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
+  (display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
 
   (when (null? args-brackets) ; empty case
 	(return args-brackets))
@@ -61,14 +61,17 @@
 
 	 (when (not (null? partial-result)) ;; check infix expression exist really
 	       ;;(display "not null") (newline)
-	       
+
+	       ;;(display "psba 1 : partial-result =") (display partial-result) (newline)
 	       (if (infix? #;infix-simple? partial-result) ; we test but we do not need to check all the syntax
 
 		   ($> ; then
-		    ;; (display "infix detected") (newline)
-		    ;; (display "psba : partial-result =") (display partial-result) (newline)
-		    (insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser partial-result
-											     creator))) 
+		    ;;(display "psba 1 : infix detected ") (newline)
+		    
+		    (insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser;-classic
+								                             partial-result
+											     creator
+											     ))) 
 		   (begin
 		     ;;(display "NO infix detected") (newline)
 		     ;; append because the singleton (atom) needs to be exited from the list ,and append make it exited
@@ -101,14 +104,18 @@
   	      ;;(display "not null") (newline)
 	      
 	      ;;(display "psba : result =") (display result) (newline)
+	      ;;(display "psba 2 : partial-result =") (display partial-result) (newline)
 	      
 	      ;; check it is in infix, not already prefixed (we are in scheme...) we test but we do not need to check all the syntax
   	      (if (infix? #;infix-simple?  partial-result) ;;  operateurs quotés ou syntaxés !
 		  
   		      (begin ; yes
-  			;;(display "infix detected") (newline)
-  			(insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser partial-result
-									      creator))) ;; convert to prefix and store the expression
+  			;;(display "psba 2 : infix detected ") (newline)
+			
+  			(insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser;-classic
+								                                 partial-result
+												 creator
+		       									    	 ))) ;; convert to prefix and store the expression
 		      ;; no
 		      (begin
 			;;(display "NO infix detected") (newline)

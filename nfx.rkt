@@ -19,15 +19,16 @@
 (module nfx racket/base
 
 
-	(provide $nfx$)
+	(provide $nfx$
+		 nfx)
 
-  (require ;(for-syntax Scheme+/n-arity)
-	   (for-syntax Scheme+/infix-with-precedence-to-prefix)
-	   (for-syntax Scheme+/operators)
-	   ;;(for-syntax Scheme+/infix)
+  (require (for-syntax Scheme+/infix-with-precedence-to-prefix)
+	   ;;(for-syntax Scheme+/operators)
 	   (for-syntax racket/base)
-	   Scheme+/exponential
-	   Scheme+/multiply
+	   Scheme+/infix-with-precedence-to-prefix
+	   Scheme+/exponential ; ???? why 
+	   Scheme+/multiply ; ???? but errors without : unbound **
+	   Scheme+/def
 	   )
 
   
@@ -66,12 +67,13 @@
 
 	       ;;(car ;  probably because the result will be encapsuled in a list !
 		;; apply operator precedence rules
-		(!*prec-generic-infix-parser ;; (list->mlist
+		(!*prec-generic-infix-parser;-classic ;; (list->mlist
 		 ;;(syntax->list ;; no need in R6RS ???
-						 ;;#'(expr));))
+		 ;;#'(expr));))
 		 #'expr
 		 ;;) ; end syntax-list
-		 (lambda (op a b) (list op a b)))
+		 (lambda (op a b) (list op a b))
+		 )
 		;;) ; car
 
 	       ;; should work
@@ -108,9 +110,11 @@
 	      ;;) ;  end car
 
 	      ;;(car ;  probably because the result will be encapsuled in a list !
-	     (!*prec-generic-infix-parser (list #'op1 #'e1)
+	     (!*prec-generic-infix-parser;-classic
+	                                 (list #'op1 #'e1)
 					;(syntax->list #'(op1 e1))
-					    (lambda (op a b) (list op a b)))
+					  (lambda (op a b) (list op a b))
+					  )
 	       ;) ; close car
 
 	      ))
@@ -152,8 +156,10 @@
 		 ;; 	  (syntax->list #'(e1 op1 e2 op ...))))
 
 		 
-	       (!*prec-generic-infix-parser  (syntax->list #'(e1 op1 e2 op ...))
-					     (lambda (op a b) (list op a b)))
+	       (!*prec-generic-infix-parser;-classic
+		                                   (syntax->list #'(e1 op1 e2 op ...))
+						     (lambda (op a b) (list op a b))
+						     )
 			    
 
 	       ;; ) ; end begin
@@ -165,6 +171,18 @@
 
 
 
+(def (nfx f . r)
+
+  ;; 1 argument
+  (when (null? r)
+    (return (!*prec-generic-infix-parser f
+					 (lambda (op a b) (list op a b))
+					 )))
+
+  ;; 2 arguments or more
+  (!*prec-generic-infix-parser (cons f r)
+			       (lambda (op a b) (list op a b))
+			       ))
 
 
 

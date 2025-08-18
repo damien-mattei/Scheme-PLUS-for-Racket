@@ -355,7 +355,7 @@
      ;; return case
      (when (string-null? ss-tok)
        (display "superscript-parser : state-1-symbol : return case") (newline)
-       (return (cons (datum->syntax #'$nfx$ (string->symbol p-tok))
+       (return (cons (datum->syntax #'nfx #; #'$nfx$ (string->symbol p-tok)) ; seems we can put anything as lexical context
 		     '()))) ; create the NIL of list expression
      
      
@@ -517,4 +517,11 @@
 
 ;; (define n 3)
 ;; {3 ⁻²·⁽ⁿ⁻⁴⁾}
+;; 9
+
+
+;;(define (foo) (define n 3) {3 ⁻²·⁽ⁿ⁻⁴⁾})
+;;(define (foo) (define n 3) (** 3 (- (· 2 (- n 4)))))
+;;#<eof>
+;;(foo)
 ;; 9

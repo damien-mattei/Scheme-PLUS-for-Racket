@@ -26,12 +26,24 @@ Again you will have all the information about errors with the true line number d
 Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile) provided (see docs).
 
 
+**Changes of version 11.0:**
+
+Less syntax transformers used.Infix to prefix with operator precedence is now done by default in the reader parser stage. This result in better compatiblity with other language that change the syntax, for example it should be compatible with Qi (even if not tested).Also the external parsing allows extended features with superscripted syntax with not only constants but variables too.
+Example:
+```scheme
+(define (foo) (define n 3) {3 ⁻²·⁽ⁿ⁻⁴⁾})
+(foo)
+9
+```
+
+
+<br>
+
 **Changes of version 10.8:**
 
 Only internal changes in code. Prepare for a greater upgrade.Moved some n-arity code use from nfx to infix-with-precedence-to-prefix module.
 Updated relatively with the code changes the personal internal documentation design of Scheme+ which is hosted in the Kawa Scheme+ project for historical reason.
 
-<br>
 
 **Changes of version 10.7:**
 
