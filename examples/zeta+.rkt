@@ -93,7 +93,7 @@
 	   (send dc set-pen "green" 1 'solid))
        {flag-color ← (not flag-color)}
        ;;(display "draw-zeta : n =") (display n) (newline)
-       {zp ← 1.0 / n ** z}
+       {zp ← 1.0 / n ᶻ} ; ** z}
        ;; (display "draw-zeta : z =") (display z) (newline)
        ;; (display "draw-zeta : zp =") (display zp) (newline)
        ;; (display "draw-zeta : zi =") (display zi) (newline)
@@ -135,8 +135,8 @@
 	   (send dc set-pen "green" 1 'solid))
        {flag-color ← (not flag-color)}
        ;;(display "draw-zeta-multi-values : n =") (display n) (newline)
-       {zp ← 1.0 / n ** z}
-       ;;{zp ← 1.0 / n ᶻ} ; does not works , will works in external parser
+       {zp ← 1.0 / n ᶻ} ; ** z} ;  try a power in superscript
+       ;;{zp ← 1.0 / n ᶻ} ; does not works with syntax transformers only flag set, works in external parser
        {zxtrm  ← zi + zp}
        ;;(display "draw-zeta-multi-values : zxtrm =") (display zxtrm) (newline)
  

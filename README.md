@@ -26,6 +26,36 @@ Again you will have all the information about errors with the true line number d
 Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile) provided (see docs).
 
 
+
+**Changes of version 11.3:**
+
+Remove the need of pragma for strict SRFI-105 mode by autodetecting the strict syntax and the required application in context.
+Example:
+```scheme
+(define (cinque) 5)
+(define (minus) -)
+{(cinque) + {(cinque) (minus) 3}}
+(+ (cinque) ((minus) (cinque) 3)) ; parsed result displayed
+7
+```
+
+Better detection of infix mode allowing some sort of expressions to be detected as infix even if we have procedures as operands:
+
+```scheme
+(define (cinque) 5)
+(define (tre) 3)
+(define (due) 2)
+{(cinque) * (tre) - (due)}
+
+(- (* (cinque) (tre)) (due)) ; parsed result displayed
+13
+
+#<eof>
+```
+
+
+<br>
+
 **Changes of version 11.0:**
 
 Less syntax transformers used.Infix to prefix with operator precedence is now done by default in the reader parser stage. This result in better compatiblity with other language that change the syntax, for example it should be compatible with Qi (even if not tested).Also the external parsing allows extended features with superscripted syntax with not only constants but variables too.
@@ -37,7 +67,7 @@ Example:
 ```
 
 
-<br>
+
 
 **Changes of version 10.8:**
 

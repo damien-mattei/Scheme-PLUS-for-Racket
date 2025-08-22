@@ -40,14 +40,14 @@
 ;; split the expression using slice as separator
 (def (parse-square-brackets-arguments args-brackets creator)
 
-  (display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
+  ;;(display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
 
   (when (null? args-brackets) ; empty case
 	(return args-brackets))
 
   (declare result partial-result) ; '() at beginning
 
-  
+  ;; note: example that needs to be between { } : {#(1 2 3 4)[{cinque minus 3}]}
  
   (def (psba args) ;; parse square brackets arguments ,note: it is a tail-recursive function (see end)
 
@@ -66,10 +66,9 @@
 	       (if (infix? #;infix-simple? partial-result) ; we test but we do not need to check all the syntax
 
 		   ($> ; then
-		    ;;(display "psba 1 : infix detected ") (newline)
+		    (display "psba 1 : infix detected ") (newline)
 		    
-		    (insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser;-classic
-								                             partial-result
+		    (insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser partial-result
 											     creator
 											     ))) 
 		   (begin
@@ -103,17 +102,16 @@
   	    (when (not (null? partial-result)) ;; check infix expression exist really
   	      ;;(display "not null") (newline)
 	      
-	      ;;(display "psba : result =") (display result) (newline)
-	      ;;(display "psba 2 : partial-result =") (display partial-result) (newline)
+	      (display "psba : result =") (display result) (newline)
+	      (display "psba 2 : partial-result =") (display partial-result) (newline)
 	      
 	      ;; check it is in infix, not already prefixed (we are in scheme...) we test but we do not need to check all the syntax
   	      (if (infix? #;infix-simple?  partial-result) ;;  operateurs quotés ou syntaxés !
 		  
   		      (begin ; yes
-  			;;(display "psba 2 : infix detected ") (newline)
+  			(display "psba 2 : infix detected ") (newline)
 			
-  			(insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser;-classic
-								                                 partial-result
+  			(insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser partial-result
 												 creator
 		       									    	 ))) ;; convert to prefix and store the expression
 		      ;; no

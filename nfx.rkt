@@ -20,7 +20,8 @@
 
 
 	(provide $nfx$
-		 nfx)
+		 nfx
+		 $nfx$-rec)
 
   (require (for-syntax Scheme+/infix-with-precedence-to-prefix)
 	   ;;(for-syntax Scheme+/operators)
@@ -67,7 +68,7 @@
 
 	       ;;(car ;  probably because the result will be encapsuled in a list !
 		;; apply operator precedence rules
-		(!*prec-generic-infix-parser;-classic ;; (list->mlist
+		(!*prec-generic-infix-parser ;; (list->mlist
 		 ;;(syntax->list ;; no need in R6RS ???
 		 ;;#'(expr));))
 		 #'expr
@@ -110,8 +111,7 @@
 	      ;;) ;  end car
 
 	      ;;(car ;  probably because the result will be encapsuled in a list !
-	     (!*prec-generic-infix-parser;-classic
-	                                 (list #'op1 #'e1)
+	     (!*prec-generic-infix-parser (list #'op1 #'e1)
 					;(syntax->list #'(op1 e1))
 					  (lambda (op a b) (list op a b))
 					  )
@@ -156,9 +156,8 @@
 		 ;; 	  (syntax->list #'(e1 op1 e2 op ...))))
 
 		 
-	       (!*prec-generic-infix-parser;-classic
-		                                   (syntax->list #'(e1 op1 e2 op ...))
-						     (lambda (op a b) (list op a b))
+	       (!*prec-generic-infix-parser (syntax->list #'(e1 op1 e2 op ...))
+					    (lambda (op a b) (list op a b))
 						     )
 			    
 
@@ -173,16 +172,127 @@
 
 (def (nfx f . r)
 
+  
+     
   ;; 1 argument
+
+  ;; {list(1 2 3)}
+  ;; nfx.rkt : nfx : r null , f = (list 1 2 3)
+  ;; (list 1 2 3)
+  ;; '(1 2 3)
+
+  ;; {(list 1 2 3)}
+  ;; nfx.rkt : nfx : r null , f = (list 1 2 3)
+  ;; (list 1 2 3)
+  ;; '(1 2 3)
+  ;; #<eof>
+
+  ;; {#(1 2 3 4)[2]}
+  ;; nfx.rkt : nfx : r null , f = ($bracket-apply$ #(1 2 3 4) 2)
+  ;; ($bracket-apply$ #(1 2 3 4) 2)
+  ;; parse-square-brackets-arguments : args-brackets=(.#<syntax 2>)
+  ;; 3
+  ;; #<eof>
   (when (null? r)
-    (return (!*prec-generic-infix-parser f
-					 (lambda (op a b) (list op a b))
-					 )))
+    ;;(display "nfx.rkt : nfx : r null , f = ") (display f) (newline)
+    (return (!*prec-generic-infix-parser-rec f ; usefull also for neoteric expressions , see above example
+					     (lambda (op a b) (list op a b))
+					     )))
 
   ;; 2 arguments or more
+  ;;(display "nfx.rkt : nfx : (cons f r) = ") (display (cons f r)) (newline)
   (!*prec-generic-infix-parser (cons f r)
 			       (lambda (op a b) (list op a b))
 			       ))
+
+
+
+;; this is a version of $nfx$ that call the recursive version of infix/prefix perser of expressions, this is usefull for define+/define
+(define-syntax $nfx$-rec
+
+  (lambda (stx)
+    
+    (syntax-case stx ()
+
+      (($nfx$-rec expr) 
+
+       (with-syntax
+			 
+	   ((parsed-args
+
+	     (begin
+	       
+	       ;;(display "$nfx$-rec: #'(expr)=") (display #'(expr)) (newline)
+	       ;;(display "$nfx$-rec: (syntax->list #'(expr))=") (display (syntax->list #'(expr))) (newline)
+	       ;; (display "$nfx$-rec: #'expr=") (display #'expr) (newline)
+	       ;; (newline)
+
+	       ;;(car ;  probably because the result will be encapsuled in a list !
+		;; apply operator precedence rules
+		(!*prec-generic-infix-parser-rec ;; (list->mlist
+		 ;;(syntax->list ;; no need in R6RS ???
+		 ;;#'(expr));))
+		 #'expr
+		 ;;) ; end syntax-list
+		 (lambda (op a b) (list op a b))
+		 )
+		;;) ; car
+	      
+		) ; begin
+	     ))
+
+	 ;; (display "$nfx$-rec expr : parsed-args=") (display #'parsed-args) (newline)
+	 ;; (newline)
+	 #'parsed-args))
+
+      
+
+      ;; (define x  - 4)
+      ;; x
+      ;; -4
+      (($nfx$-rec op1 e1)
+
+       (with-syntax
+			 
+	   ((parsed-args
+
+	      ;;(car ;  probably because the result will be encapsuled in a list !
+	     (!*prec-generic-infix-parser-rec (list #'op1 #'e1)
+					;(syntax->list #'(op1 e1))
+					  (lambda (op a b) (list op a b))
+					  )
+	       ;) ; close car
+
+	      ))
+	 ;;(display "$nfx$-rec op1 e1 : parsed-args=") (display #'parsed-args) (newline)
+	 #'parsed-args))
+
+          
+      (($nfx$-rec e1 op1 e2 op ...)
+       
+	 (with-syntax ;; let
+			 
+	     ((parsed-args
+
+	      ; (begin
+		 ;;(display "$nfx$-rec: #'(e1 op1 e2 op ...)=") (display #'(e1 op1 e2 op ...)) (newline)
+		 ;;(display "$nfx$-rec: (syntax->list #'(e1 op1 e2 op ...))=") (display (syntax->list #'(e1 op1 e2 op ...))) (newline)
+    	 		
+		 ;; 	  #'(e1 op1 e2 op ...)
+		 ;; 	  ;;(syntax->list #'(e1 op1 e2 op2 e3 op ...))))
+		 ;; 	  (syntax->list #'(e1 op1 e2 op ...))))
+
+		 
+	       (!*prec-generic-infix-parser-rec (syntax->list #'(e1 op1 e2 op ...))
+						(lambda (op a b) (list op a b))
+						)
+			    
+
+	       ;; ) ; end begin
+	       ))
+	      
+	   ;;(display "$nfx$-rec : parsed-args=") (display #'parsed-args) (newline)
+	   #'parsed-args)))))
 
 
 

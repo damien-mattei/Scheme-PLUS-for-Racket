@@ -34,7 +34,7 @@
 	;; > (define z  3 * 5 + 2)
 
 	;; (define z 3 * 5 + 2)
-	;; $nfx$ : parsed-args=(.#<syntax +> (.#<syntax *> .#<syntax 3> .#<syntax 5>) .#<syntax 2>)
+	;; $nfx$-rec : parsed-args=(.#<syntax +> (.#<syntax *> .#<syntax 3> .#<syntax 5>) .#<syntax 2>)
 
 	;; #<eof>
 	;; > z
@@ -76,7 +76,7 @@
 	    ;; do not work for unknown reason (in R6RS, will check in Racket)
 	    ;; ((define name expr)
 	    ;;  ;;(define-scheme name expr))
-	    ;;  (define-scheme name ($nfx$ expr)))
+	    ;;  (define-scheme name ($nfx$-rec expr)))
 	    ;;  ;; (define-scheme name (recall-infix-parser expr
 	    ;;  ;; 					      infix-operators-lst-for-parser
 	    ;;  ;; 					      (lambda (op a b) (list op a b)))))
@@ -84,7 +84,7 @@
 
 	    ;; infix define
 	    ;; ((define name arg1 arg2 arg3 ...)
-	    ;;  (define-scheme name ($nfx$ arg1 arg2 arg3 ...)))))
+	    ;;  (define-scheme name ($nfx$-rec arg1 arg2 arg3 ...)))))
 
 	    ;; (define x   3 + 2 + 1)
 	    ;; x
@@ -110,7 +110,7 @@
 	    
 	    ;; at least 2 arguments
 	    ((define name   arg1 arg2 arg3 ...)
-	     (define-scheme name ($nfx$ arg1 arg2 arg3 ...)))
+	     (define-scheme name ($nfx$-rec arg1 arg2 arg3 ...)))
 
 	    ;; recall the 'define' of Scheme RNRS
 	    ((define name arg1)
@@ -153,10 +153,10 @@
 
 	    ;; not original define for procedures
 	    ((define+ (name arg ...) body ...)
-	     (define-scheme (name arg ...) ($nfx$ body) ...))
+	     (define-scheme (name arg ...) ($nfx$-rec body) ...))
 
 	    ((define+ (name arg ... . rest-id) body ...)
-	     (define-scheme (name arg ... . rest-id) ($nfx$ body) ...))
+	     (define-scheme (name arg ... . rest-id) ($nfx$-rec body) ...))
 
 
 	    ;; new define for infix
@@ -182,7 +182,7 @@
 	    ;; 0.8253356149096783
 	   	    
 	    ;; at least 1 arguments, so (define+ name arg1) is parsed here
-	    ((define+ name    arg1 arg2 ...)    (define-scheme name ($nfx$ arg1 arg2 ...)))
+	    ((define+ name    arg1 arg2 ...)    (define-scheme name ($nfx$-rec arg1 arg2 ...)))
 
 	    
 	    ;; zero argN, just the name
