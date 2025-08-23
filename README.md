@@ -26,6 +26,27 @@ Again you will have all the information about errors with the true line number d
 Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile) provided (see docs).
 
 
+**Changes of version 11.4:**
+
+Correct a bug introduced in v11.3 by commenting 2 lines of code that where indeed usefull for in/equalities, now works again.
+
+Examples:
+
+```scheme
+{#t and (#f or 1 < 2 <= 2)}
+(and #t (or #f (and (< 1 2) (<= 2 2)))) ; displayed parsed code
+#t
+
+#<eof>
+
+{0 ≤ 1 ≤ 2 and #f}
+(and (≤ 0 1 2) #f)
+#f
+
+``` 
+
+<br>
+
 
 **Changes of version 11.3:**
 

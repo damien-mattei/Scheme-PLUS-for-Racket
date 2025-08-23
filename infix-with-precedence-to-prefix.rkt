@@ -406,8 +406,8 @@
   ;; (newline)
 	
   ;; we can check for expressions like 2<3<=3 here
-  ;; can not remember why we should deal twice with in/equalities (also above in the code) seems to be a 'relicat' of ancient too simple version
-  #;(when (multiple-in-equalities? deep-terms)
+  ;; can not remember why we should deal twice with in/equalities (also above in the code) seems parsing is in 2 stage
+  (when (multiple-in-equalities? deep-terms)
     (return (infix->prefix-in-equality deep-terms)))
 
   
@@ -587,7 +587,7 @@
 	
   ;; we can check for expressions like 2<3<=3 here
   ;; twice: same comment as for non recursiver version
-  #;(when (multiple-in-equalities? deep-terms)
+  (when (multiple-in-equalities? deep-terms)
       (return (infix->prefix-in-equality deep-terms)))
 
   
