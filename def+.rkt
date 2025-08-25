@@ -6,6 +6,7 @@
 	(require srfi/31 ;; for 'rec in def*
 		 Scheme+/return
 		 racket/stxparam
+		 Scheme+/nfx
 		 (for-syntax racket/base))
 
 
@@ -55,8 +56,9 @@
 					  ([return (syntax-rules ()
 						     [(return vals (... ...))
 						      (ret-id vals (... ...))])])
-					  ($nfx$ <body>)
-					  ($nfx$ <body>*)
+					  ;;(display "def+.rkt : def+ : <body> =") (display <body>) (newline)
+					  ($nfx$-rec <body>)
+					  ($nfx$-rec <body>*)
 					  ...)))))
 			
 			(list <arg> ...)))))))
@@ -93,8 +95,8 @@
 					  ([return (syntax-rules ()
 						     [(return vals (... ...))
 						      (ret-id vals (... ...))])])
-					  ($nfx$ <body>)
-					  ($nfx$ <body>*)
+					  ($nfx$-rec <body>)
+					  ($nfx$-rec <body>*)
 					  ...)))))
 			
 			(cons <arg> . L))))))) ; this way we get the full list of arguments

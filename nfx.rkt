@@ -63,7 +63,9 @@
 	       
 	       ;;(display "$nfx$: #'(expr)=") (display #'(expr)) (newline)
 	       ;;(display "$nfx$: (syntax->list #'(expr))=") (display (syntax->list #'(expr))) (newline)
-	       ;; (display "$nfx$: #'expr=") (display #'expr) (newline)
+
+	       ;; the one below is currently in use with the code
+	       ;;(display "$nfx$: #'expr=") (display #'expr) (newline)
 	       ;; (newline)
 
 	       ;;(car ;  probably because the result will be encapsuled in a list !
@@ -84,7 +86,7 @@
 		) ; begin
 	     ))
 
-	 ;; (display "$nfx$ expr : parsed-args=") (display #'parsed-args) (newline)
+	 ;;(display "$nfx$ expr : parsed-args=") (display #'parsed-args) (newline)
 	 ;; (newline)
 	 #'parsed-args))
 

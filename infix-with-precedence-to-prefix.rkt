@@ -211,7 +211,7 @@
 
 
 
-;; deal with simple infix with same operator n-arity
+;; deal with simple infix with same operator n-arity,why same operator ???
 ;; check we really have infix expression before
 ;; wrap a null test
 (define (pre-check-!*-generic-infix-parser terms creator )
@@ -373,15 +373,6 @@
 	(display "!*prec-generic-infix-parser PREFIX NOT DETECTED")
 	(newline)))
 
-
-  ;; $bracket-apply$ case from {array[index]} is in the { } infix expressions !
-  ;; but we are in an infix expression between { } or 'define+ or 'define with multiple terms forming an infix expression 
-  #;(when (and infx-init ; started with an almost sure infix expression , except for $bracket-apply$ resulting from {array[index]} and for neoteric expressions !!!
-	     (prefix? deep-terms) ; could be prefix
-	     (datum=? '$bracket-apply$ ; 
-		      (car deep-terms))) 
-    ;;(display "!*prec-generic-infix-parser returning early PREFIX DETECTED EARLY $bracket-apply$") (newline)
-    (return deep-terms))
   
   ;; commented it as we must be infix : if we already have prefix (and already recall on the deep terms) then why continuing?
   #;(when (prefix? deep-terms) ; could be prefix
@@ -397,7 +388,7 @@
 	    (simple-infix-list-syntax? deep-terms))
     ;;(display "!*prec-generic-infix-parser : deep-terms is a simple infix list") (newline)
     ;;(display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
-    (return ;; list ; we put it in a list because rv2 take the car... or use return to skip list decapsulation
+    (return 
      (cons (cadr deep-terms) ; cadr is op in arg1 op arg2 op ....
 	   (alternating-parameters deep-terms)))) 
   
@@ -554,15 +545,6 @@
 	(display "!*prec-generic-infix-parser-rec PREFIX NOT DETECTED")
 	(newline)))
 
-
-  ;; $bracket-apply$ case from {array[index]} is in the { } infix expressions !
-  ;; but we are in an infix expression between { } or 'define+ or 'define with multiple terms forming an infix expression 
-  #;(when (and infx-init ; started with an almost sure infix expression , except for $bracket-apply$ resulting from {array[index]} and for neoteric expressions !!!
-	     (prefix? deep-terms) ; could be prefix
-	     (datum=? '$bracket-apply$ ; 
-		      (car deep-terms))) 
-    ;;(display "!*prec-generic-infix-parser-rec returning early PREFIX DETECTED EARLY $bracket-apply$") (newline)
-    (return deep-terms))
   
   ;; if we already have prefix (and already recall on the deep terms) then why continuing?
   (when (prefix? deep-terms) ; could be prefix
@@ -577,7 +559,7 @@
   (when (simple-infix-list-syntax? deep-terms)
     ;;(display "!*prec-generic-infix-parser-rec : deep-terms is a simple infix list") (newline)
     ;;(display "!*prec-generic-infix-parser-rec : deep-terms=") (display deep-terms) (newline)
-    (return ;; list ; we put it in a list because rv2 take the car... or use return to skip list decapsulation
+    (return
      (cons (cadr deep-terms) ; cadr is op in arg1 op arg2 op ....
 	   (alternating-parameters deep-terms)))) 
   
