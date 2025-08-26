@@ -1,4 +1,6 @@
-#lang reader SRFI-105
+#reader SRFI-105
+
+;;#lang reader SRFI-105
 
 ;; SRFI-105 Curly-infix-expressions and a few more
 

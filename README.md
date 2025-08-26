@@ -28,12 +28,20 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 <br>
 
 
+
+
+**Changes of version 11.7:**
+
+Removed debug info display that should have been commented before releasing the previous version.
+Some new doc will be commited, but it should not be as it is work in progress.
+
+<br>
+
 **Changes of version 11.5:**
 
 Correct a bug introduced in v11.3: in ```def+``` source code it is no more ```$nfx$``` that should be used but instead ```$nfx$-rec```.
 Rationale: ```def+``` allows both infix and prefix expression in normal parenthesis ( ) by autodetection and this feature is mainly done by ```$nfx$-rec```, at contrary ```$nfx$``` is now generally preferred for expressions that should be only infix,for example the ones in curly parenthesis { }.
 
-<br>
 
 **Changes of version 11.4:**
 

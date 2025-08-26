@@ -66,7 +66,7 @@
 	       (if (infix? #;infix-simple? partial-result) ; we test but we do not need to check all the syntax
 
 		   ($> ; then
-		    (display "psba 1 : infix detected ") (newline)
+		    ;;(display "psba 1 : infix detected ") (newline)
 		    
 		    (insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser partial-result
 											     creator
@@ -102,14 +102,14 @@
   	    (when (not (null? partial-result)) ;; check infix expression exist really
   	      ;;(display "not null") (newline)
 	      
-	      (display "psba : result =") (display result) (newline)
-	      (display "psba 2 : partial-result =") (display partial-result) (newline)
+	      ;;(display "psba : result =") (display result) (newline)
+	      ;;(display "psba 2 : partial-result =") (display partial-result) (newline)
 	      
 	      ;; check it is in infix, not already prefixed (we are in scheme...) we test but we do not need to check all the syntax
   	      (if (infix? #;infix-simple?  partial-result) ;;  operateurs quotés ou syntaxés !
 		  
   		      (begin ; yes
-  			(display "psba 2 : infix detected ") (newline)
+  			;;(display "psba 2 : infix detected ") (newline)
 			
   			(insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser partial-result
 												 creator

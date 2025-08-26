@@ -613,11 +613,11 @@
 
 ;; Welcome to DrRacket, version 8.13 [cs].
 ;; Language: r6rs, with debugging; memory limit: 8192 MB.
-;; > (!*prec-generic-infix-parser '(x <- 10.0 - 3.0 - 4.0 + 1 - 5.0 * 2.0 ** 3.0 / 7.0 ** 3.0)   infix-operators-lst-for-parser (lambda (op a b) (list op a b)))
+;; (!*prec-generic-infix-parser '(x <- 10.0 - 3.0 - 4.0 + 1 - 5.0 * 2.0 ** 3.0 / 7.0 ** 3.0)   infix-operators-lst-for-parser (lambda (op a b) (list op a b)))
 ;; ((<- x (- (+ (- (- 10.0 3.0) 4.0) 1) (/ (* 5.0 (** 2.0 3.0)) (** 7.0 3.0)))))
-;; > (- (+ (- (- 10.0 3.0) 4.0) 1) (/ (* 5.0 (** 2.0 3.0)) (** 7.0 3.0)))
-;; > (define ** expt)
-;; > (- (+ (- (- 10.0 3.0) 4.0) 1) (/ (* 5.0 (** 2.0 3.0)) (** 7.0 3.0)))
+;; (- (+ (- (- 10.0 3.0) 4.0) 1) (/ (* 5.0 (** 2.0 3.0)) (** 7.0 3.0)))
+;; (define ** expt)
+;; (- (+ (- (- 10.0 3.0) 4.0) 1) (/ (* 5.0 (** 2.0 3.0)) (** 7.0 3.0)))
 ;; 3.883381924198251
 
 ;; Python:
@@ -625,10 +625,10 @@
 ;; 3.883381924198251
 
 
-;; > (!*prec-generic-infix-parser '(a ** b ** c)  infix-operators-lst-for-parser (lambda (op a b) (list op a b)))
+;; (!*prec-generic-infix-parser '(a ** b ** c)  infix-operators-lst-for-parser (lambda (op a b) (list op a b)))
 ;; ((** a (** b c)))
 
-;; >  (!*prec-generic-infix-parser '(a - b - c) infix-operators-lst-for-parser (lambda (op a b) (list op a b)))
+;;  (!*prec-generic-infix-parser '(a - b - c) infix-operators-lst-for-parser (lambda (op a b) (list op a b)))
 ;; ((- (- a b) c))
 
 
@@ -654,7 +654,7 @@
 ;; $nfx$ : parsed-args=.#<syntax (- (+ (* 3 5) (* 2 (sin 0.5))...>
 ;; -4.041148922791594
 
-;; > {(3 + 1) * (2 * (2 + 1) - 1) + (2 * 5 - 5)}
+;; {(3 + 1) * (2 * (2 + 1) - 1) + (2 * 5 - 5)}
 
 
 ;; ($nfx$ (3 + 1) * (2 * (2 + 1) - 1) + (2 * 5 - 5))
@@ -675,7 +675,7 @@
 
 
 
-;; > x
+;; x
 ;; x
 ;; 3
 
@@ -700,7 +700,7 @@
 ;; {2 ¹⁰}
 ;; 1024
 
-;; > {5 -  - 2}
+;; {5 -  - 2}
 
 
 ;; ($nfx$ 5 - - 2)
