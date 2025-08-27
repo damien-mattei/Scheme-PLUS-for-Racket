@@ -8,10 +8,10 @@
 	       "sci"
 	       "r6rs-lib"
 	       "reprovide-lang-lib"
-	       ;"SRFI-105-for-Racket"
+	       "SRFI-105-for-Racket"
 	       "try-catch"))
 (define pkg-desc "Scheme+ for Racket")
-(define version "11.9")
+(define version "12.0")
 (define pkg-authors '(mattei))
 (define scribblings '(("scribblings/scheme-plus.scrbl" ())))
 (define build-deps '("scribble-lib" "racket-doc" "scribble-code-examples" "scribble-doc"))
