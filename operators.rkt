@@ -20,7 +20,7 @@
 (module operators racket/base
 
 
-  (provide operator?
+  (provide operator? ; for symbols
 	   operator-syntax?
 	   operator-symbol-or-syntax?
 	   not+-?

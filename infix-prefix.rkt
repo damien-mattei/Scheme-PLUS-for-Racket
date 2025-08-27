@@ -264,7 +264,7 @@
 	  (check-operators? (cdr L)))
 	
 
-	;; procedures shared with SRFI 105
+	;; procedures adapted from SRFI 105 for syntax
 
 ; check that we have a simple infix list, i.e an infix list with always the same operator (no precedence needed to parse)
 

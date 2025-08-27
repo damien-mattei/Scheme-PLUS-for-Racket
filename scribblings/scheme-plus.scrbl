@@ -8,9 +8,6 @@
 source code: @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket"]
 
 
-@defmodule[SRFI-105 #:reader]{
-This reader package provides the SRFI-105 Curly Infix reader/parser.
-}
 
 
 
@@ -27,7 +24,7 @@ Scheme+ is to Scheme what a concept-car is to automobile.Scheme+ is a concept-la
 
 Scheme+ makes it easy the assignment of Scheme objects in infix (works also in prefix) notation with a few new operators <- (or: ← , :=),⥆ (or <+) for definitions.
 
-Scheme+ makes it easy the access and assignment for arrays,strings,hash tables,etc by allowing the classic square brackets [ ] of others languages.
+Scheme+ makes it easy the access and assignment for arrays,strings,hash tables,etc by allowing the classic square brackets [ ] of other languages.
 
 
 @table-of-contents[]
@@ -41,7 +38,7 @@ Scheme+ is designed to be used with the package SRFI-105 for Racket which is a c
 @section[#:tag "syntax"]{Scheme+ Syntax and Conventions}
 
 In general Scheme+ use the same convention for infix expression than SRFI-105 Curly Infix that is an infix expression is between curly parenthesis { }.
-But infix sub-expressions are allowed to be between normal parenthesis ( ). Infix or prefix is then autodetected,in cas of ambiguities { } force infix mode.
+But infix sub-expressions are allowed to be between normal parenthesis ( ). Infix or prefix is then autodetected.In case of ambiguities { } force infix mode.
 
 @codeblock|{
 #reader SRFI-105
@@ -72,9 +69,8 @@ Note: this is rarely used,instead assignment macros are used but could be useful
 
 @subsection[#:tag "definitions"]{Definitions}
 
-@defthing[⥆ macro]{}
 
-@defform[{name <+ value}]{
+@defform[#:id <+ {name <+ value}]{
 Define new variable @racket[name] and assign value @racket[value].
 }
 
@@ -82,17 +78,16 @@ Note: this is almost never used in Racket,because Scheme+ for Racket as a specia
 
 There is some alias of this:
 
-@defform[{name ⥆ value}]{}
+@defform[#:id ⥆ {name ⥆ value}]{}
 
-Note: a lot of operators of Scheme+ that works left to right exist in the opposite sense, i will document them as it is obvious,example:
+Note: a lot of operators of Scheme+ that works left to right exist in the opposite sense, i will not document them as it is obvious,example:
 
-@defform[{value ⥅ name}]{}
+@defform[#:id ⥅ {value ⥅ name}]{}
 
 @subsection[#:tag "assignment"]{Assignments}
 
-@defthing[← macro]{}
 
-@defform[{name <- value}]{
+@defform[#:id <- {name <- value}]{
 Assign to the variable @racket[name] the value @racket[value].
 }
 
@@ -104,16 +99,28 @@ Assign to the variable @racket[name] the value @racket[value].
 
 There is some alias of this:
 
-@defform[{name := value}]{}
+@defform[#:id := {name := value}]{}
+
+@codeblock|{
+{index := index + 1}
+}|
 
 
-@defform[{name ← value}]{}
+@defform[#:id ← {name ← value}]{}
+
+@codeblock|{
+{z ← 1.13+1.765i}
+}|
+
+Example:
 
 @codeblock{
 {M_i_o[j {i + 1}]  <-  M_i_o[j {i + 1}] + η · z_input[i] · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j]}
 }
 
+DOCUMENTATION TO BE CONTINUED...
 
-The documentation is hosted on Github:
+
+Another documentation is hosted on Github:
 
 @hyperlink["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/gh-pages/README.md"]{Documentation of Scheme+ for Racket on Github pages}
