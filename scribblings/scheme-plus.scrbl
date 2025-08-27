@@ -41,7 +41,6 @@ In general Scheme+ use the same convention for infix expression than SRFI-105 Cu
 But infix sub-expressions are allowed to be between normal parenthesis ( ). Infix or prefix is then autodetected.In case of ambiguities { } force infix mode.
 
 @codeblock|{
-#reader SRFI-105
 (require Scheme+)
 {3 * 5 + 2}
 17
@@ -49,7 +48,7 @@ But infix sub-expressions are allowed to be between normal parenthesis ( ). Infi
 
 
 @codeblock|{
-#lang reader SRFI-105
+
 (require Scheme+)
 {3 · 5 + 2 ³}
 23
@@ -92,7 +91,6 @@ Assign to the variable @racket[name] the value @racket[value].
 }
 
 @codeblock|{
-#lang reader SRFI-105
 (require Scheme+)
 {x <- 7}
 }|
