@@ -3,11 +3,14 @@
 	   
 @title[#:style '(toc)]{Scheme+ for Racket}
 
-@author[(author+email "Damien Mattei" "damien.mattei@gmail.com")]
+@author[(author+email "Damien MATTEI" "Damien.MATTEI@univ-cotedazur.fr")]
 
 source code: @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket"]
 
 
+@defmodule[SRFI-105 #:reader]{
+This reader package provides the SRFI-105 Curly Infix reader/parser.
+}
 
 
 
@@ -41,6 +44,7 @@ In general Scheme+ use the same convention for infix expression than SRFI-105 Cu
 But infix sub-expressions are allowed to be between normal parenthesis ( ). Infix or prefix is then autodetected.In case of ambiguities { } force infix mode.
 
 @codeblock|{
+#reader SRFI-105
 (require Scheme+)
 {3 * 5 + 2}
 17
@@ -48,11 +52,13 @@ But infix sub-expressions are allowed to be between normal parenthesis ( ). Infi
 
 
 @codeblock|{
-
+#lang reader SRFI-105
 (require Scheme+)
 {3 · 5 + 2 ³}
 23
 }|
+
+In the following sections i will omit to rewrite the directives about lang or reader and the requirement in each example to keep the code and the web page compact.
 
 
 @section[#:tag "reference"]{Scheme+ Reference}
@@ -91,8 +97,9 @@ Assign to the variable @racket[name] the value @racket[value].
 }
 
 @codeblock|{
-(require Scheme+)
 {x <- 7}
+x
+7
 }|
 
 There is some alias of this:
