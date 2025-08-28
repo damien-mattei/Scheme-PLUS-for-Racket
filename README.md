@@ -29,7 +29,7 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 **Changes of version 12.1:**
 
-Package require now SRFI-105 for Racket for the scribble documentation that contains macro that check the dependancies and fail otherwise.
+Package requires now SRFI-105 for Racket for the scribble documentation that contains macro that check the dependancies and fail otherwise.
 This should solve the problem of compilation on the Racket Package Server that failed just because of the documentation.
 
 <br>
