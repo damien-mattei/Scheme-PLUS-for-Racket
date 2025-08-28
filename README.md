@@ -29,8 +29,9 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 **Changes of version 12.1:**
 
-Package requires now SRFI-105 for Racket for the scribble documentation that contains macros that check the dependancies and fail otherwise.
+Package requires now SRFI-105 for Racket for the scribble documentation that contains macros that check the dependancies and make the build process fail otherwise on the Racket Package Server.
 This should solve the problem of compilation on the Racket Package Server that failed just because of the documentation.
+This problem was not impacting a manual installation from Github source code in the DrRacket GUI Package Manager.
 
 <br>
 
