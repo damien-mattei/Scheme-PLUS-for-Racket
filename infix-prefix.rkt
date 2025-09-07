@@ -82,7 +82,8 @@
 		 infix?
 		 prefix?
 		 simple-infix-list-syntax?
-		 infix-canonical?)
+		 infix-canonical?
+		 two-symbols-or-list-following?)
 
 	(require Scheme+/operators
 		 Scheme+/superscript
@@ -292,7 +293,23 @@
       (even-and-op-prefix-syntax? (cadr lyst) (cdr lyst)))) ; true if rest is simple
 
  
+  ;; check if there is at least one operator in 2 following tokens
+  ;; if not then the infix expression will require evaluation before
+  ;; operator precedence application
+  (define (two-symbols-or-list-following? L)
+    
+    (define (rec-2? L p) ; p : previous find of not a known operator
+      ;;(display "rec-2? : L=") (display L) (newline)
+      ;;(display "rec-2? : p=") (display p) (newline)
+      (cond ((null? L) #f)
+	    ((operator? (car L))
+	     (rec-2? (cdr L) #f))
+	    (p #t)
+	    (else
+	     (rec-2? (cdr L) #t))))
 
+    (rec-2? L #f))
+	      
 
 
 	

@@ -110,7 +110,7 @@
 	    
 	    ;; at least 2 arguments
 	    ((define name   arg1 arg2 arg3 ...)
-	     (define-scheme name ($nfx$-rec arg1 arg2 arg3 ...)))
+	     (define-scheme name ($nfx$-rec arg1 arg2 arg3 ...)))  ; call the recursive version of infix/prefix parser of expressions
 
 	    ;; recall the 'define' of Scheme RNRS
 	    ((define name arg1)

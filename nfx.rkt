@@ -159,8 +159,7 @@
 
 		 
 	       (!*prec-generic-infix-parser (syntax->list #'(e1 op1 e2 op ...))
-					    (lambda (op a b) (list op a b))
-						     )
+					    (lambda (op a b) (list op a b)))
 			    
 
 	       ;; ) ; end begin
@@ -171,7 +170,7 @@
 
 
 
-
+;; this version is mainly call from SRFI-105
 (def (nfx f . r)
 
   
@@ -198,18 +197,18 @@
   (when (null? r)
     ;;(display "nfx.rkt : nfx : r null , f = ") (display f) (newline)
     (return (!*prec-generic-infix-parser-rec f ; usefull also for neoteric expressions , see above example
-					     (lambda (op a b) (list op a b))
-					     )))
+					     (lambda (op a b) (list op a b)))))
 
   ;; 2 arguments or more
   ;;(display "nfx.rkt : nfx : (cons f r) = ") (display (cons f r)) (newline)
-  (!*prec-generic-infix-parser (cons f r)
-			       (lambda (op a b) (list op a b))
-			       ))
+
+  ;; changed this one for runtime too
+  (!*prec-generic-infix-parser-prepare-runtime (cons f r)
+					       (lambda (op a b) (list op a b))))
 
 
 
-;; this is a version of $nfx$ that call the recursive version of infix/prefix perser of expressions, this is usefull for define+/define
+;; this is a version of $nfx$ that call the recursive version of infix/prefix parser of expressions, this is usefull for define+/define
 (define-syntax $nfx$-rec
 
   (lambda (stx)

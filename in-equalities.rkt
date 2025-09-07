@@ -21,6 +21,7 @@
 	(provide in-equality?
 		 multiple-in-equalities?
 		 infix->prefix-in-equality
+		 infix->prefix-in-equality-runtime
 		 in/equalities-state-1)
 
 	(require Scheme+/alternating-parameters
@@ -28,7 +29,8 @@
 		 Scheme+/operators
 		 Scheme+/insert
 		 Scheme+/def
-		 Scheme+/list)
+		 Scheme+/list
+		 Scheme+/conjonction)
 
 
 	;; this module implements a FSM (Finite State Machine) described in the file in-equality (.odg)
@@ -56,21 +58,24 @@
 	 (> (length s) 3)))
 
 
-  ;; (infix->prefix-in-equality '(x < 3 < y <= z))
-  ;; '(and (< x 3) (< 3 y) (<= y z))
-  (define (infix->prefix-in-equality x) ; multiple in/equalities in infix expression, ex: (x < 3 < y <= z)
-
-    (define (get-in-equalities x)
+  (define (get-in-equalities x)
       (if (null? (cdr x))
 	  '()
 	  (cons (list (cadr x)
 		      (car x)
 		      (caddr x))
 		(get-in-equalities (cddr x)))))
+  
+  
+  ;; (infix->prefix-in-equality '(x < 3 < y <= z))
+  ;; '(and (< x 3) (< 3 y) (<= y z))
+  (define (infix->prefix-in-equality x) ; multiple in/equalities in infix expression, ex: (x < 3 < y <= z)
 
     (cons 'and (get-in-equalities x)))
 
+  (define (infix->prefix-in-equality-runtime x) ; multiple in/equalities in infix expression, ex: (x < 3 < y <= z)
 
+    (cons && (get-in-equalities x)))
 
   
 

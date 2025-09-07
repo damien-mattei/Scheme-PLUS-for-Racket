@@ -96,7 +96,7 @@
 
    ;; functions
    √ ∛
-   
+   && ; procedure and
 
    ;; overloading
    define-overload-procedure
@@ -121,7 +121,12 @@
 
    find-getter-for-overloaded-square-brackets
    find-setter-for-overloaded-square-brackets
-	 
+
+   ;;!*-generic-infix-parser
+   !*prec-generic-infix-parser-runtime
+
+   infix-operators-lst-for-parser
+   
    
    )
 
@@ -167,12 +172,16 @@
    Scheme+/modulo
    Scheme+/multiply
    Scheme+/little-greater-or-equal
+   Scheme+/conjonction
 
    ;; functions
    Scheme+/square-and-cubic-root
 
    ;; overloading
    Scheme+/overload
+   
+   Scheme+/infix-with-precedence-to-prefix
+   Scheme+/operators-list
 
    setup/getinfo ; for parsing info.rkt
 

@@ -142,7 +142,6 @@ but will it works with Scheme+ parser?
 	 (define-pointwise-unary uniform) ;; flomat library feature
 	 (display "after define-pointwise-unary") (newline)
 	 
-	 (display (< 4 2)) (newline) ; for debug ?
 
 	 (field (M (vector-ec (s42: n {lnc - 1}) ; vectors by eager comprehension (SRFI 42)
 			  (.uniform! (zeros {nc[n + 1]} {nc[n] + 1}))))) ;; flomat Matrix

@@ -94,7 +94,7 @@
   (cond ((operator-symbol-or-syntax? elem) (cons elem ; we keep it in the resulting list
 						 (superscript-operator-loop (cdr lst)))) ; and loop in the superscript-operator-loop state
 
-	;; todo call parse-superscript-token
+	;; call parse-superscript-token
 	((superscript? elem) (cons '** ;'expt ;(syntax **) ;'** ; ** with superscript
 				   (cons (parse-superscript-token elem) ; (generic-superscript-number->number elem) ; number
 					 
