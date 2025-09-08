@@ -65,8 +65,8 @@
 ;; note that slicing separator is now : , no more $ (see slice.scm)
 
 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
-;;> {v[7 $ 3 $ -2] <- (vector -1 -2 -3)}
-;;. . ../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/assignment.rkt:103:38: $: undefined;
+;;> {v[7 : 3 : -2] <- (vector -1 -2 -3)}
+;;. . ../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/src/assignment.rkt:103:38: :: undefined;
 ;; cannot reference an identifier before its definition
 ;;> {v[7 : 3 : -2] <- (vector -1 -2 -3)}
 ;;> v
@@ -113,7 +113,7 @@
 
 ;; {s <+ (string-append "abcdefgh")}
 ;; "abcdefgh"
-;; > {s[2 * 3 - 4 $ 2 * 3 + 1 $ 2 * 4 - 6] <- "0000"}
+;; > {s[2 * 3 - 4 : 2 * 3 + 1 : 2 * 4 - 6] <- "0000"}
 ;; "ab0d0f0h"
 
 
@@ -942,7 +942,7 @@
 	   (<- i (+ (container-length container-eval) i))))))
 
 
-;; T[$]
+;; T[:]
 (define (assignment-argument-1-slice container-eval expr-eval)
 
   (cond ((vector? container-eval)
@@ -1022,7 +1022,7 @@
 
   ;;(display "assignment.sls : assignment-argument-1") (newline)
   
-  (if (equal? index-eval slice)  ;; T[$]
+  (if (equal? index-eval slice)  ;; T[:]
       
       (assignment-argument-1-slice container-eval expr-eval)
 
@@ -1072,7 +1072,7 @@
 	 
 	 ;;  {a <+ (make-vector 7 0)}
 	 ;; '#(0 0 0 0 0 0 0)
-	 ;; > {a[$ $] <- #(1 2 3)}
+	 ;; > {a[: :] <- #(1 2 3)}
 	 ;; > a
 	 ;; '#(1 2 3 0 0 0 0)
 
@@ -1082,7 +1082,7 @@
 	 ;; ['a', 'b', 'c', 'd']
 
 	 ;; > {a <+ (make-vector 7 0)}
-	 ;; > {a[$ $] <- "abcd"}
+	 ;; > {a[: :] <- "abcd"}
 	 ;; > a
 	 ;; '#(#\a #\b #\c #\d 0 0 0)
 
@@ -1100,7 +1100,7 @@
 	 ;;  {s <+ (string-append "abcdefgh")}
 	 ;; s
 	 ;; "abcdefgh"
-	 ;; > {s[3 $] <- "zob"}
+	 ;; > {s[3 :] <- "zob"}
 	 ;; > s
 	 ;; "abczobgh"
 	 ;; >
@@ -1108,7 +1108,7 @@
 	 ;; > {a <+ (make-vector 7 0)}
 	 ;; > a
 	 ;; '#(0 0 0 0 0 0 0)
-	 ;; > {a[3 $] <- "zob"}
+	 ;; > {a[3 :] <- "zob"}
 	 ;; > a
 	 ;; '#(0 0 0 #\z #\o #\b 0)
 	 ((list i1 (== slice))
@@ -1127,7 +1127,7 @@
 	 ;; > {a <+ (make-vector 7 0)}
 	 ;; > a
 	 ;; '#(0 0 0 0 0 0 0)
-	 ;; > {a[$ 3] <- (vector 1 2 3 4 5)}
+	 ;; > {a[: 3] <- (vector 1 2 3 4 5)}
 	 ;; > a
 	 ;; '#(1 2 3 0 0 0 0)
 	 ((list (== slice) i2)
@@ -1203,12 +1203,12 @@
   (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-or-step-eval-pos)
 	 
 
-	 ;; T[$ i2 $]
+	 ;; T[: i2 :]
 	 ;;  make it work between vector and string
 	 ;; > {a <+ (make-vector 7 0)}
 	 ;; > a
 	 ;; '#(0 0 0 0 0 0 0)
-	 ;; > {a[$ 3 $] <- (vector 1 2 3 4 5)}
+	 ;; > {a[: 3 :] <- (vector 1 2 3 4 5)}
 	 ;; > a
 	 ;; '#(1 2 3 0 0 0 0)
 	 ((list (== slice) i2 (== slice))  (copy-slice-starting-at-zero-with-positive-step container-eval
@@ -1224,10 +1224,10 @@
 	 ;; 		  i2))
 
 	 
-	 ;; T[i1 $ $]
+	 ;; T[i1 : :]
 	 ;; make it work between vector and string
 	 ;; > {a <+ (make-vector 7 0)}
-	 ;; > {a[3 $ $] <- "zob"}
+	 ;; > {a[3 : :] <- "zob"}
 	 ;; > a
 	 ;; '#(0 0 0 #\z #\o #\b 0)
 	 ((list i1 (== slice) (== slice))  (copy-slice-with-positive-step container-eval
@@ -1242,17 +1242,17 @@
 	  ;; 		   expr-eval))
 	 
 	 
-	 ;; T[$ $ s3]
+	 ;; T[: : s3]
 	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
 	 ;; '#(1 2 3 4 5 6 7 8 9)
-	 ;; > {v[$ $ 2] <- (vector -1 -2 -3 -4 -5)}
+	 ;; > {v[: : 2] <- (vector -1 -2 -3 -4 -5)}
 	 ;;> v
 	 ;;'#(-1 2 -2 4 -3 6 -4 8 -5)
 
 
 	
 	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
-	 ;; >  {v[$ $ -2] <- (vector -1 -2 -3 -4 -5)}
+	 ;; >  {v[: : -2] <- (vector -1 -2 -3 -4 -5)}
 	 ;; > v
 	 ;; '#(-5 2 -4 4 -3 6 -2 8 -1)
 
@@ -1263,17 +1263,17 @@
 	 ;; [-5, 2, -4, 4, -3, 6, -2, 8, -1]
 
 	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
-	 ;; > {v[$ $ -2] <- "abcde"}
+	 ;; > {v[: : -2] <- "abcde"}
 	 ;; > v
 	 ;; '#(#\e 2 #\d 4 #\c 6 #\b 8 #\a)
 
 	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
-	 ;; > {v[$ $ -2] <- (vector -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13)[$ $ 2]}
+	 ;; > {v[: : -2] <- (vector -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13)[: : 2]}
 	 ;; > v
 	 ;; '#(-9 2 -7 4 -5 6 -3 8 -1)
 
 	 ;;> {v <+ (vector 1 2 3 4 5 6 7 8 9)}
-	 ;; > {v[$ $ -2] <- "abcdefghijklmnop"[$ $ 2]}
+	 ;; > {v[: : -2] <- "abcdefghijklmnop"[: : 2]}
 	 ;; > v
 	 ;; '#(#\i 2 #\g 4 #\e 6 #\c 8 #\a)
 	 ((list (== slice) (== slice) step-not-used)
@@ -1293,7 +1293,7 @@
 
 		;; > {s <+ (string-append "abcdefgh")}
 		;; "abcdefgh"
-		;;> {s[$ $ 2] <- "ABCD"}
+		;;> {s[: : 2] <- "ABCD"}
 		;;> s
 		;;"AbBdCfDh"
 		((string? container-eval)
@@ -1315,20 +1315,20 @@
 	 
 
 
-	 ;; T[i1 $ i3]
+	 ;; T[i1 : i3]
 	 ;; {s <+ (string-append "abcdefgh")}
 	 ;; s
 	 ;; "abcdefgh"
-	 ;; > {s[2 $ 4] <- "zob"}
+	 ;; > {s[2 : 4] <- "zob"}
 	 ;; > s
 	 ;; "abzoefgh"
-	 ;; > {s[2 $ 4] <- "zo"}
+	 ;; > {s[2 : 4] <- "zo"}
 	 ;; > s
 	 ;; "abzoefgh"
 
 
 	 ;; 	 > {v <+ (vector 1 2 3 4)}
-	 ;; > {v[1 $ 3] <- "abcdef"[2 $ 4]}
+	 ;; > {v[1 : 3] <- "abcdef"[2 : 4]}
 	 ;; > v
 	 ;; '#(1 #\c #\d 4)
 	 
@@ -1395,19 +1395,19 @@
   
   (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-eval-pos index4-or-step-eval-pos)
 
-	 ;; T[i1 $ i2 $]  i1 start , i2 end
+	 ;; T[i1 : i2 :]  i1 start , i2 end
 	 ;;((list i1 (== slice) i2 (== slice)) (<- ($bracket-apply$next container-eval (list i1 slice i2)) expr-eval))
 	 ((list i1 (== slice) i2 (== slice)) (assignment-argument-3 container-eval i1 slice i2 expr-eval))
 	 
-	 ;; T[$ i2 $ s3]
+	 ;; T[: i2 : s3]
 	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
 	 ;; '#(1 2 3 4 5 6 7 8 9)
-	 ;; > {v[$ 6 $ 2] <- (vector -1 -2 -3 -4 -5)}
+	 ;; > {v[: 6 : 2] <- (vector -1 -2 -3 -4 -5)}
 	 ;; > v
 	 ;; '#(-1 2 -2 4 -3 6 7 8 9)
 
 	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
-	 ;; > {v[$ 6 $ -2] <- (vector -1 -2 -3 -4 -5)}
+	 ;; > {v[: 6 : -2] <- (vector -1 -2 -3 -4 -5)}
 	 ;; > v
 	 ;; '#(1 2 3 4 5 6 7 8 -1)
 	 ((list (== slice) i2 (== slice) step-not-used)
@@ -1450,7 +1450,7 @@
 	 
 	 
 	 
-	 ;; T[i1 $ $ s3]
+	 ;; T[i1 : : s3]
 	 ((list i1 (== slice) (== slice) step-not-used)
 
 	  ;;(display "critical zone") (newline)
@@ -1459,26 +1459,26 @@
 
 	  ;; > {s <+ (string-append "abcdefgh")}
 	  ;; "abcdefgh"
-	  ;; {s[3 $ $ 2] <- "0000"}
+	  ;; {s[3 : : 2] <- "0000"}
 	  ;; > s
 	  ;; "abc0e0g0"
 
-	  ;; {s[5 $ $ -2] <- "0000"}
+	  ;; {s[5 : : -2] <- "0000"}
 	  ;; s
 	  ;; "a0c0e0gh"
 
 	  ;; > {v <+ (vector 1 2 3 4 5 6 7 8)}
-	  ;; > {v[3 $ $ 2] <- (vector -1 -2 -3 -4)}
+	  ;; > {v[3 : : 2] <- (vector -1 -2 -3 -4)}
 	  ;; > v
 	  ;; '#(1 2 3 -1 5 -2 7 -3)
 	  
 	  ;; > {v <+ (vector 1 2 3 4 5 6 7 8)}
-	  ;; > {v[3 $ $ 2] <- (vector -1 -2 -3)}
+	  ;; > {v[3 : : 2] <- (vector -1 -2 -3)}
 	  ;; > v
 	  ;; '#(1 2 3 -1 5 -2 7 -3)
 
 	  ;; > {v <+ (vector 1 2 3 4 5 6 7 8)}
-	  ;; > {v[5 $ $ -2] <- (vector -1 -2 -3)}
+	  ;; > {v[5 : : -2] <- (vector -1 -2 -3)}
 	  ;; > v
 	  ;; '#(1 -3 3 -2 5 -1 7 8)
 
@@ -1571,7 +1571,7 @@
   
   (match (list index1-eval-pos index2-or-keyword-eval-pos index3-eval-pos index4-or-keyword-eval-pos index5-or-step-eval-pos)
 
-	 ;; T[i1 $ i2 $ step]	 	 
+	 ;; T[i1 : i2 : step]	 	 
 	 ;; > {s <+ (string-append "abcdefgh")}
 	 ;; > {s[2 : 7 : 2] <- "1234"}
 	 ;; > s

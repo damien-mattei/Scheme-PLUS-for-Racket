@@ -636,8 +636,8 @@
 ;; note: i removed all syntax stuff as this routine should be only call from external parser (SRFI-105), not by the Scheme+ syntax transformers
 (def (!*prec-generic-infix-parser-prepare-runtime terms creator )   ;; precursor of !*-generic-infix-parser
 
-  (display "!*prec-generic-infix-parser-prepare-runtime : start terms=") (display terms) (newline)
-  (newline)
+  ;; (display "!*prec-generic-infix-parser-prepare-runtime : start terms=") (display terms) (newline)
+  ;; (newline)
 
   (when (null? terms) ; special case ?
 	;;(display "!*prec-generic-infix-parser-prepare-runtime returning early 0 : null terms") (newline)

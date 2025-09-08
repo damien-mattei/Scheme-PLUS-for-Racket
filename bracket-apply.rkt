@@ -92,10 +92,10 @@
 ;;(include "../included-files/assignment-light.scm")
 
 
-;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 $ 3 * 5 - 10]}
+;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 : 3 * 5 - 10]}
 ;; '#(3 4 5)
 
-;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 $ 3 * 5 - 10 $ 2 * 4 - 6]}
+;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 : 3 * 5 - 10 : 2 * 4 - 6]}
 ;; '#(3 5)
 
 ;; (define ($bracket-apply$ container . args-brackets)   ;;  this implements a possible $bracket-apply$ as proposed in SRFI-105
@@ -242,7 +242,7 @@
  
 
 
-;; {T[$]}
+;; {T[:]}
 ;; '#(1 2 3)
 (define (apply-square-brackets-argument-1 container-eval index-eval)
   
@@ -257,7 +257,7 @@
   ;; 7
   ;; > T
   ;; '#(1 7 3)
-  ;; > {T2 <+ T[$]}
+  ;; > {T2 <+ T[:]}
   ;; '#(1 7 3)
   ;; > {T2[1] <- 0}
   ;; 0
@@ -267,7 +267,7 @@
   ;; '#(1 0 3)
   (cond ((vector? container-eval)
 
-	 (if (equal? slice index-eval) ;; T[$] 
+	 (if (equal? slice index-eval) ;; T[:] 
 	     (vector-copy container-eval) ;; return a copy of vector
 	     (if (< index-eval 0) ;; negative index as in Python
 		 (vector-ref container-eval (+ (vector-length container-eval) index-eval)) ;; negative indexing
@@ -280,13 +280,13 @@
 	;; #\t
 	;; {"toto"[-1]}
 	;; #\o
-	((string? container-eval) (if (equal? slice index-eval) ;; T[$] 
+	((string? container-eval) (if (equal? slice index-eval) ;; T[:] 
 				      (string-copy container-eval) ;; return a copy of the string
 				      (if (< index-eval 0) ;; negative index as in Python
 					  (string-ref container-eval (+ (string-length container-eval) index-eval)) ;; negative indexing
 					  (string-ref container-eval index-eval)))) ;; return an element of the string
 
-	((flomat? container-eval) (if (equal? slice index-eval) ;; T[$] 
+	((flomat? container-eval) (if (equal? slice index-eval) ;; T[:] 
 				      (error "apply-square-brackets.* : assignment : slice not allowed with flomat")
 				      (row container-eval index-eval)))
 
@@ -309,25 +309,25 @@
 
 (define (apply-square-brackets-argument-2 container-eval index1-or-keyword-eval index2-or-keyword-eval)
 
-  (cond ((vector? container-eval) ;; 2 dimension vector ? or 1 dimension vector : T[i1 $] , T[$ i2]
+  (cond ((vector? container-eval) ;; 2 dimension vector ? or 1 dimension vector : T[i1 :] , T[: i2]
 
 
-	 ;; {#(1 2 3 4 5)[2 $]}
+	 ;; {#(1 2 3 4 5)[2 :]}
 	 ;; '#(3 4 5)
 	 ;;
-	 ;; {#(1 2 3 4 5)[$ 3]}
+	 ;; {#(1 2 3 4 5)[: 3]}
 	 ;; '#(1 2 3)
 	 
-	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[$ $]
+	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[: :]
 		     (equal? slice index2-or-keyword-eval))
 		container-eval)
 	       
-	       ((equal? slice index1-or-keyword-eval) ;; T[$ i2]
+	       ((equal? slice index1-or-keyword-eval) ;; T[: i2]
 		(if (< index2-or-keyword-eval 0) ;; negative index
 		    (vector-copy container-eval 0 (+ (vector-length container-eval) index2-or-keyword-eval))
 		    (vector-copy container-eval 0 index2-or-keyword-eval)))
 	       
-	       ((equal? slice index2-or-keyword-eval) ;; T[i1 $]
+	       ((equal? slice index2-or-keyword-eval) ;; T[i1 :]
 		(if (< index1-or-keyword-eval 0) ;; negative index
 		    (vector-copy container-eval (+ (vector-length container-eval) index1-or-keyword-eval))
 		    (vector-copy container-eval index1-or-keyword-eval)))
@@ -337,31 +337,31 @@
 	;;(array-n-dim-ref container index1-or-keyword-eval index2-or-keyword-eval)
 
 
-	;; {"hello"[$ 2]}
+	;; {"hello"[: 2]}
 	;; "he"
-	;; {"hello"[3 $]}
+	;; {"hello"[3 :]}
 	;; "lo"
 
-	;; {"hello"[$ $]}
+	;; {"hello"[: :]}
 	;; "hello"
-	;; {"hello"[$]}
+	;; {"hello"[:]}
 	;; "hello"
-	((string? container-eval) (cond ((and (equal? slice index1-or-keyword-eval) ;; T[$ $]
+	((string? container-eval) (cond ((and (equal? slice index1-or-keyword-eval) ;; T[: :]
 					      (equal? slice index2-or-keyword-eval))
 					 container-eval)
 					
-					((equal? slice index1-or-keyword-eval) ;; T[$ i2]
+					((equal? slice index1-or-keyword-eval) ;; T[: i2]
 					 (if (< index2-or-keyword-eval 0) ;; negative index
 					     (substring container-eval 0 (+ (string-length container-eval) index2-or-keyword-eval))
 					     (substring container-eval 0 index2-or-keyword-eval)))
 
-					((equal? slice index2-or-keyword-eval) ;; T[i1 $]
+					((equal? slice index2-or-keyword-eval) ;; T[i1 :]
 					 (if (< index1-or-keyword-eval 0) ;; negative index
 					     (substring container-eval (+ (string-length container-eval) index1-or-keyword-eval))
 					     (substring container-eval index1-or-keyword-eval)))
 					
 					(else ;; syntax error
-					 (error "apply-square-brackets-argument-2 : bad arguments in string case,expecting $ i2 or i1 $, provided :"
+					 (error "apply-square-brackets-argument-2 : bad arguments in string case,expecting : i2 or i1 :, provided :"
 						index1-or-keyword-eval index2-or-keyword-eval) )))
 
 	((flomat? container-eval) (if (or (equal? slice index1-or-keyword-eval)
@@ -404,18 +404,18 @@
 
 (define (apply-square-brackets-argument-3 container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval)
 
-  ;; {#(1 2 3 4 5 6 7)[2 $ 5]}
+  ;; {#(1 2 3 4 5 6 7)[2 : 5]}
   ;; '#(3 4 5)
-  ;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 $ 3 * 5 - 10]}
+  ;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 : 3 * 5 - 10]}
   ;; '#(3 4 5)
-  (cond ((vector? container-eval) ;; 3 dimension vector T[i1 i2 i3]? or T[i1 $ i3] or T[$ $ step] or  T[$ i2 $] or  T[i1 $ $]
+  (cond ((vector? container-eval) ;; 3 dimension vector T[i1 i2 i3]? or T[i1 : i3] or T[: : step] or  T[: i2 :] or  T[i1 : :]
 
-	 ;; {#(1 2 3 4 5 6 7 8)[$ $ 3]}
+	 ;; {#(1 2 3 4 5 6 7 8)[: : 3]}
 	 ;; '#(1 4 7)
 
-	 ;; {#(1 2 3 4 5 6 7 8)[$ $ -2]}
+	 ;; {#(1 2 3 4 5 6 7 8)[: : -2]}
 	 ;; '#(8 6 4 2)
-	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[$ $ step]
+	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[: : step]
 		     (equal? slice index2-or-keyword-eval))
 
 		(when (= 0 index3-or-keyword-or-step-eval)
@@ -445,7 +445,7 @@
 		  result))
 	       
 
-	       ((equal? slice index2-or-keyword-eval) ;; T[i1 $ i3]
+	       ((equal? slice index2-or-keyword-eval) ;; T[i1 : i3]
 		
 		(when (< index1-or-keyword-eval 0) ;; negative index
 		      (set! index1-or-keyword-eval (+ (vector-length container-eval) index1-or-keyword-eval)))
@@ -456,7 +456,7 @@
 		(vector-copy container-eval index1-or-keyword-eval index3-or-keyword-or-step-eval))
 
 
-	       ((equal? slice index2-or-keyword-eval) ;; T[i1 $ $]
+	       ((equal? slice index2-or-keyword-eval) ;; T[i1 : :]
 		
 		(when (< index1-or-keyword-eval 0) ;; negative index
 		      (set! index1-or-keyword-eval (+ (vector-length container-eval) index1-or-keyword-eval)))
@@ -464,7 +464,7 @@
 		(vector-copy container-eval index1-or-keyword-eval))
 	       
 	       
-	       ((and (equal? slice index1-or-keyword-eval)  (equal? slice index3-or-keyword-or-step-eval)) ;; T[$ i2 $]
+	       ((and (equal? slice index1-or-keyword-eval)  (equal? slice index3-or-keyword-or-step-eval)) ;; T[: i2 :]
 		
 		(when (< index2-or-keyword-eval 0) ;; negative index
 		      (set! index2-or-keyword-eval (+ (vector-length container-eval) index2-or-keyword-eval)))
@@ -479,17 +479,17 @@
 	;;or use array-n-dim-ref macro
 
 
-	;; {"elephant"[2 $ 5]}
+	;; {"elephant"[2 : 5]}
 	;; "eph"
-	;;  {"abcdefghijkl"[$ $ 2]}
+	;;  {"abcdefghijkl"[: : 2]}
 	;; "acegik"
-	;; {"abcdefghijkl"[$ $ -3]}
+	;; {"abcdefghijkl"[: : -3]}
 	;; "lifc"
-	;; {"123456789"[ $  $ -1]}
+	;; {"123456789"[ :  : -1]}
 	;; "987654321"
-	((string? container-eval) ;;  T[$ $ step] or T[i1 $ i3] or error
+	((string? container-eval) ;;  T[: : step] or T[i1 : i3] or error
 	 
-	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[$ $ step]
+	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[: : step]
 		     (equal? slice index2-or-keyword-eval))
 
 		(when (= 0 index3-or-keyword-or-step-eval)
@@ -519,7 +519,7 @@
 		  
 		  result))
 	       
-	       ((equal? slice index2-or-keyword-eval) ;; T[i1 $ i3]
+	       ((equal? slice index2-or-keyword-eval) ;; T[i1 : i3]
 		
 		(when (< index1-or-keyword-eval 0) ;; negative index
 		      (set! index1-or-keyword-eval (+ (vector-length container-eval) index1-or-keyword-eval)))
@@ -531,7 +531,7 @@
 
 
 	       
-	       ((equal? slice index2-or-keyword-eval) ;; T[i1 $ $]
+	       ((equal? slice index2-or-keyword-eval) ;; T[i1 : :]
 		
 		(when (< index1-or-keyword-eval 0) ;; negative index
 		      (set! index1-or-keyword-eval (+ (string-length container-eval) index1-or-keyword-eval)))
@@ -540,7 +540,7 @@
 	       
 	       
 
-	       ((and (equal? slice index1-or-keyword-eval)  (equal? slice index3-or-keyword-or-step-eval)) ;; T[$ i2 $]
+	       ((and (equal? slice index1-or-keyword-eval)  (equal? slice index3-or-keyword-or-step-eval)) ;; T[: i2 :]
 		
 		(when (< index2-or-keyword-eval 0) ;; negative index
 		      (set! index2-or-keyword-eval (+ (string-length container-eval) index2-or-keyword-eval)))
@@ -561,26 +561,26 @@
 
 
 
-;; {"123456789"[3 $  $ -2]}
+;; {"123456789"[3 :  : -2]}
 ;; "42"
-;; {(vector 1 2 3 4 5)[2 $ $ -1]}
+;; {(vector 1 2 3 4 5)[2 : : -1]}
 ;;'#(3 2 1)
-;; {(vector 1 2 3 4 5)[2 $ $ 1]}
+;; {(vector 1 2 3 4 5)[2 : : 1]}
 ;;'#(3 4 5)
 (define (apply-square-brackets-argument-4 container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval)
 
   
   (cond ((vector? container-eval)
 
-	 ;; {#(1 2 3 4 5 6 7 8 9)[$ 7 $ 2]}
+	 ;; {#(1 2 3 4 5 6 7 8 9)[: 7 : 2]}
 	 ;; '#(1 3 5 7)
-	 ;; {#(1 2 3 4 5 6 7 8 9)[$ 6 $ -1]}
+	 ;; {#(1 2 3 4 5 6 7 8 9)[: 6 : -1]}
 	 ;; '#(6 5 4 3 2 1)
-	 ;; {#(1 2 3 4 5 6 7 8 9)[$ 6 $ -2]}
+	 ;; {#(1 2 3 4 5 6 7 8 9)[: 6 : -2]}
 	 ;; '#(6 4 2)
-	 ;; {#(1 2 3 4 5 6 7 8 9)[$ -3 $ -2]}
+	 ;; {#(1 2 3 4 5 6 7 8 9)[: -3 : -2]}
 	 ;; '#(6 4 2)
-	 (cond ((and (equal? slice index1-or-keyword-eval)  ;; T[$ i2 $ s]
+	 (cond ((and (equal? slice index1-or-keyword-eval)  ;; T[: i2 : s]
 		     (equal? slice index3-or-keyword-eval))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
@@ -620,15 +620,15 @@
 
 
 
-	       ;; {#(1 2 3 4 5 6 7 8 9)[3 $ $ 2]}
+	       ;; {#(1 2 3 4 5 6 7 8 9)[3 : : 2]}
 	       ;; '#(4 6 8)
-	       ;; > {#(1 2 3 4 5 6 7 8 9)[3 $ $ -2]}
+	       ;; > {#(1 2 3 4 5 6 7 8 9)[3 : : -2]}
 	       ;; '#(4 2)
-	       ;; > {#(1 2 3 4 5 6 7 8 9)[-3 $ $ 2]}
+	       ;; > {#(1 2 3 4 5 6 7 8 9)[-3 : : 2]}
 	       ;; '#(7 9)
-	       ;; {#(1 2 3 4 5 6 7 8 9)[-3 $ $ -2]}
+	       ;; {#(1 2 3 4 5 6 7 8 9)[-3 : : -2]}
 	       ;; '#(7 5 3 1)
-	       ((and (equal? index2-or-keyword-eval slice)  ;; T[i1 $ $ s]
+	       ((and (equal? index2-or-keyword-eval slice)  ;; T[i1 : : s]
 		     (equal? index3-or-keyword-eval slice))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
@@ -667,7 +667,7 @@
 		  result))
 
 
-	       ((and (equal? index2-or-keyword-eval slice) ;; T[i1 $ i3 $]
+	       ((and (equal? index2-or-keyword-eval slice) ;; T[i1 : i3 :]
 		     (equal? index4-or-keyword-or-step-eval slice))
 
 		(let ((i1 index1-or-keyword-eval)
@@ -686,15 +686,15 @@
 
 	
 	
-	;; {"123456789"[$ -3 $ -2]}
+	;; {"123456789"[: -3 : -2]}
 	;; "642"
 	((string? container-eval) 
 
-	 ;; {"abcdefghijklmno"[$ 7 $ 2]}
+	 ;; {"abcdefghijklmno"[: 7 : 2]}
 	 ;; "aceg"
-	 ;; > {"123456789"[$ -3 $ -2]}
+	 ;; > {"123456789"[: -3 : -2]}
 	 ;; "642"
-	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[$ i2 $ s]
+	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[: i2 : s]
 		     (equal? slice index3-or-keyword-eval))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
@@ -731,17 +731,17 @@
 		  result))
 
 
-	       ;; {"abcdefghijklmno"[3 $ $ 2]}
+	       ;; {"abcdefghijklmno"[3 : : 2]}
 	       ;; "dfhjln"
-	       ;; > {"123456789"[3 $  $ 2]}
+	       ;; > {"123456789"[3 :  : 2]}
 	       ;; "468"
-	       ;; > {"123456789"[3 $  $ -2]}
+	       ;; > {"123456789"[3 :  : -2]}
 	       ;; "42"
-	       ;; > {"123456789"[-3 $  $ -2]}
+	       ;; > {"123456789"[-3 :  : -2]}
 	       ;; "7531"
-	       ;; > {"123456789"[-3 $  $ 2]}
+	       ;; > {"123456789"[-3 :  : 2]}
 	       ;; "79"
-	       ((and (equal? index2-or-keyword-eval slice)  ;; T[i1 $ $ s]
+	       ((and (equal? index2-or-keyword-eval slice)  ;; T[i1 : : s]
 		     (equal? index3-or-keyword-eval slice))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
@@ -780,7 +780,7 @@
 		  result))
 	       
 	       
-	       ((and (equal? slice index2-or-keyword-eval) ;; T[i1 $ i3 $] 
+	       ((and (equal? slice index2-or-keyword-eval) ;; T[i1 : i3 :] 
 		     (equal? slice index4-or-keyword-or-step-eval))
 
 		(let ((i1  index1-or-keyword-eval)
@@ -807,19 +807,19 @@
 
 (define (apply-square-brackets-argument-5 container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval)
 
-  ;; {#(1 2 3 4 5 6 7 8 9)[2 $ 5 $ 1]}
+  ;; {#(1 2 3 4 5 6 7 8 9)[2 : 5 : 1]}
   ;; '#(3 4 5)
-  ;; {#(1 2 3 4 5 6 7 8 9)[5 $ 2 $ -1]}
+  ;; {#(1 2 3 4 5 6 7 8 9)[5 : 2 : -1]}
   ;; '#(6 5 4)
-  ;; {#(1 2 3 4 5 6 7 8 9)[2 $ 5 $ -1]}
+  ;; {#(1 2 3 4 5 6 7 8 9)[2 : 5 : -1]}
   ;; '#()
-  ;; {#(1 2 3 4 5 6 7 8 9)[-1 $ 5 $ -1]}
+  ;; {#(1 2 3 4 5 6 7 8 9)[-1 : 5 : -1]}
   ;; '#(9 8 7)
-  ;; {#(1 2 3 4 5 6 7 8 9)[-0 $ 5 $ -1]}
+  ;; {#(1 2 3 4 5 6 7 8 9)[-0 : 5 : -1]}
   ;; '#()
   (cond ((vector? container-eval)
 	 
-	 (if (and (equal? index2-or-keyword-eval slice)  ;; T[i1 $ i3 $ s]
+	 (if (and (equal? index2-or-keyword-eval slice)  ;; T[i1 : i3 : s]
 		  (equal? index4-or-keyword-eval slice))
 
 	     (begin
@@ -887,15 +887,15 @@
 
 	
 	
-	;; {"0123456789"[5 $ 2 $ -1]}
+	;; {"0123456789"[5 : 2 : -1]}
 	;; "543"
-	;; {"0123456789"[5 $  $ -1]}
+	;; {"0123456789"[5 :  : -1]}
 	;; "543210"
-	;; {"0123456789"[5 $ 0 $ -1]}
+	;; {"0123456789"[5 : 0 : -1]}
 	;; "54321"
 	((string? container-eval) 
 
-	 (if (and (equal? index2-or-keyword-eval slice)  ;; T[i1 $ i3 $ s]
+	 (if (and (equal? index2-or-keyword-eval slice)  ;; T[i1 : i3 : s]
 		  (equal? index4-or-keyword-eval slice))
 
 	     (begin
