@@ -87,7 +87,9 @@ This version do a runtime evaluation of operators,signs,in/equalities symbols wh
   (lambda (op a b) (op a b)))
 
 #t ; the result
+
 <br>
+
 ```scheme
 > {2 (inferior) (three) (inferior-strict-or-equal) 4 = 2}
 
@@ -108,11 +110,15 @@ This version do a runtime evaluation of operators,signs,in/equalities symbols wh
 ;; #<eof>
 
 ```
+
 <br>
+
 Note in the debug info the ```&&``` procedure that replace the ```and``` macro because we are at runtime,we ```apply``` recursively and we can not do this on a macro,thus the need of a procedure.
+
 <br>
 
 Complex number superscripted: as ```i``` does not exist in superscript and ```I``` exist but is not mathematical convention we also can use ```j``` which exist in superscript set char and  which is electrical convention for pure imaginary number ```i```.
+
 <br>
 The examples have been updated.
 <br>
