@@ -28,7 +28,7 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 <br>
 
-**Changes of version 12.3:**
+**Changes of version 12.4:**
 
 Infix expression parsing is enhanced.When the parser is not able to know all the operators for precedence at parser stage it passes the job to the runtime stage.
 Rationale: when an operator is not directly readable but results of the evaluation at runtime of a procedure result or a symbol then the infix to prefix with operator precedence can not do the job at pre-parsing stage in SRFI-105 ,it is then forced to prepare the job and pass it at runtime. This is done by inserting in the code a sequence of instructions that will be evaluated at runtime at a moment when more syntax is evaluated.
