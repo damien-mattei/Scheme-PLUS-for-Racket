@@ -87,6 +87,8 @@ This version do a runtime evaluation of operators,signs,in/equalities symbols wh
   (lambda (op a b) (op a b)))
 
 #t ; the result
+```
+
 
 <br>
 
