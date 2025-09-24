@@ -109,7 +109,7 @@ This version do a runtime evaluation of operators,signs,in/equalities symbols wh
 
 #f ; result
 
-;; #<eof>
+#<eof>
 
 ```
 
