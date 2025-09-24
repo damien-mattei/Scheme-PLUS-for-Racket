@@ -213,6 +213,20 @@
 	     (loop))))))
 
 
+;; note: as 'do' already exist in scheme it is not possible to define this:
+
+;; (define-syntax while
+
+;;   (syntax-rules (do)
+    
+;;     ((while condition do body ...)
+  
+;;      (let loop ()
+;;        (when condition
+;; 	     body ...
+;; 	     (loop))))))
+
+
 
 ) ; end library
 

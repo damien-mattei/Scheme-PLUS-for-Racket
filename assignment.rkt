@@ -51,7 +51,8 @@
 	   Scheme+/slice
 	   Scheme+/declare
 	   Scheme+/block
-	   Scheme+/def
+	   Scheme+/defun
+	   Scheme+/defvar
 	   Scheme+/bracket-apply
 	   Scheme+/overload)
 
@@ -320,8 +321,9 @@
 	   ;; 		     (else ; case
 	   ;; 		      #'(assignment-argument-6-and-more container parsed-args expr)))))
 
-      
 
+	;; i suppose the example below is done in the 'else' of 'cond'
+	;; {(x y z) <- (values 1 2 3)}
 	     (else ; cond
 	      #'(define-or/and-set!-values (brket-aply container index ...) expr)))) ;; the argument's names does not match the use
     
@@ -518,9 +520,9 @@
 
 ;; > (define T (make-vector 5))
 ;; > {T[3] <- 7}
-;; 7
+
 ;; > {T[3] -> T[7 2 4]}
-;; 7
+
 ;; > {T[7 2 4]}
 ;; 7
 (define-syntax ->
@@ -1064,7 +1066,6 @@
   ;; > {a[1 2]}
   ;; 0
   ;; > {a[1 2] <- 7}
-  ;; 7
   ;; > {a[1 2]}
   ;; 7
   
@@ -1327,7 +1328,7 @@
 	 ;; "abzoefgh"
 
 
-	 ;; 	 > {v <+ (vector 1 2 3 4)}
+	 ;; > {v <+ (vector 1 2 3 4)}
 	 ;; > {v[1 : 3] <- "abcdef"[2 : 4]}
 	 ;; > v
 	 ;; '#(1 #\c #\d 4)

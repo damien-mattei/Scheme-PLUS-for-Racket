@@ -8,14 +8,11 @@
 
 #lang reader SRFI-105 ; SRFI-105 Curly-infix-expressions
 
-
 (module repl racket
 
   (provide (all-defined-out)) 
   (require Scheme+)
   
   ;; put your code here or simply use the REPL
-
-
-
+  "GREETINGS SCHEMER. SHALL WE PLAY A GAME?"
   )

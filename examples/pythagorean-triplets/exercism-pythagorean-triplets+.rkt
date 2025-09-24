@@ -5,7 +5,7 @@
 ;;
 ;; Posted this: https://gist.github.com/dandrake/d9a3e20021a68ed16bce6f5dc79e62eb
 
-
+(module pythagorean racket/base
 
 (require ;(rename-in racket/contract (-> C>))
          racket/contract
@@ -143,13 +143,13 @@ obtained by scaling up the primitive triplets for some divisor of p.
   (if (even? p) then ; then .... else replace a (begin ....) block or a (let .....) one
       {s := p / 2} ; note i could have used <- instead of := as it is the exactly the same thing
       (for/list ([m (divisors s)]
-		 #:when {√ (s / 2)  <  m  <  √ s} ;; here i use a feature of the special in/equalities parser grouping each sub expressions elements in lists : √ s will become (√ s),etc , but really this is a secret hack ! :-) i had originally written: {(√ (s / 2)) < m < (√ s)}
+		 #:when {(√ (s / 2))  <  m  <  (√ s)} ;;ERROR: secret hack no more working in Scheme+ v12.3 , here i use a feature of the special in/equalities parser grouping each sub expressions elements in lists : √ s will become (√ s),etc , but really this is a secret hack ! :-) i had originally written: {(√ (s / 2)) < m < (√ s)}
                  ;;#:do [(define n (- (/ s m) m))]
-		 #:do [(define n  s / m - m)] ; !!! here i use the special 'define' of Scheme+ which is redefined almost as define+ of scheme+and fully backward compatible with the classic 'define' of R*RS !!!
+		 #:do [(def n  s / m - m)] ; !!! here i use the special 'define' of Scheme+ which is redefined almost as define+ of scheme+and fully backward compatible with the classic 'define' of R*RS !!!
                  #:when (m-and-n-valid? m n)
-                 #:do [(define a  m * m - n * n) ; but instead of the modified 'define' i could have used <- or := 
-                       (define b  2 * m * n) ; or define+ which us used when there is a single infix expression 
-                       (define c  p - (a + b))]) ; that could be ambiguous with a classic prefix define expression
+                 #:do [(def a  m * m - n * n) ; but instead of the modified 'define' i could have used <- or := 
+                       (def b  2 * m * n) ; or define+ which us used when there is a single infix expression 
+                       (def c  p - (a + b))]) ; that could be ambiguous with a classic prefix define expression
 		(list (min a b) (max a b) c))
      else '()))
 
@@ -208,9 +208,10 @@ computation early.
   ;;BEGIN-STRICT-SRFI-105-REGION
   ;;{positive-integer? C> (listof positive-integer-triplet?)}
   ;;END-STRICT-SRFI-105-REGION
-
+ 
   {positive-integer? -> (listof positive-integer-triplet?)}
 
+  ;;(display "triplets-with-sum") (newline)
   ;; here you will see that in 'if then else' the 'then' could be ommited !
   ;; as 'else' is enougth to mark the end of the 'then' block and the beginning of the 'else' block too
   (if (odd? p) 
@@ -220,7 +221,7 @@ computation early.
       {triples := (for/fold ([triples '()])
 			    ([d (divisors p)]
 			     #:do [(define primitive-triples (primitive-triples-with-perimeter d))
-				   (define scale  p / d)])
+				   (def scale  p / d)])
 			    (append (for/list ([triple primitive-triples])
 					      (for/list ([leg triple]) (scale * leg)))
 				    triples))}
@@ -260,3 +261,6 @@ computation early.
   (check-exn exn:fail?
              (λ () (triplets-with-sum 1.23))
              "not an integer -> BOOM"))
+
+
+)

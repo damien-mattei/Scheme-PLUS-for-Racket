@@ -28,9 +28,9 @@
 	         ;;SRFI-105/SRFI-105-curly-infix ; for alternating-parameters
 		 Scheme+/operators
 		 Scheme+/insert
-		 Scheme+/def
+		 Scheme+/defun
 		 Scheme+/list
-		 Scheme+/conjonction)
+		 Scheme+/conjunction)
 
 
 	;; this module implements a FSM (Finite State Machine) described in the file in-equality (.odg)

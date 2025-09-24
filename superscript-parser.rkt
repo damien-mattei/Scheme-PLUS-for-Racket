@@ -23,7 +23,7 @@
 		 parse-superscript-token) ; for debug
 
 	(require Scheme+/superscript
-		 Scheme+/def
+		 Scheme+/defun
 		 Scheme+/operators
 		 srfi/13
 		 (for-template racket/base))
@@ -329,6 +329,11 @@
      (when (or (char=? c #\i)
 	       (char=? c #\I))
        (return (state-3-pure-imaginary-number (string-append p-tok (string c))
+					      nxt)))
+
+     ;; Electrical convention for (pure) imaginary number
+     (when (char=? c #\j)
+       (return (state-3-pure-imaginary-number (string-append p-tok (string #\i))
 					      nxt)))
      
      ;; symbol

@@ -18,17 +18,14 @@
 
 
 
+;; for internal use only , see def for the extern use
 
-
-(module def racket/base
+(module defun racket/base
 
 
 	(provide def #;def+ return return-rec)
-
+	
 	(require srfi/31 ;; for 'rec in def*
-		 ;;(only-in racket/base [define define-scheme]) ;; backup original Scheme 'define' in case of need
-		 ;;Scheme+/def-nfx ; bring the new 'define
-		 Scheme+/nfx
 		 Scheme+/return
 		 racket/stxparam
 		 (for-syntax racket/base))
@@ -39,7 +36,7 @@
 
 ;; Welcome to DrRacket, version 8.14 [cs].
 ;; Language: racket, with debugging; memory limit: 8192 MB.
-;; > (require Scheme+/def)
+;; > (require Scheme+/defun)
 ;; > (def (foo) (display "hello") (newline) (return) (display "world") (newline))
 ;; > (foo)
 ;; hello
@@ -181,49 +178,12 @@
 	;; (def x)
 	((_ var) #`(define var '()))
 
-	;; (def s  3 ² + 2 * 3 * 5 + 5 ²)
-	;; 64
-	((_ var expr expr-optional ...) #`(define var ($nfx$-rec expr expr-optional ...))) ; expr expr-optional ...))
-
-	((_) #`(syntax-error "Bad def form"))
-	
 	;; (def x 7)
-	;;((_ var expr) #`(define var expr))
+	((_ var expr) #`(define var expr))
 
-	;;((_ err ...) #`(syntax-error "Bad def form"))
+	((_ err ...) #`(syntax-error "Bad def form"))
 
 	)))
-
-
-
-
-;; (def t 3 * (+ 2 4) - 1)
-;; t
-;; 17
-
-
-;; (def z (3 + 1) * (2 * (+ 2 1) - (sin 0.3)) + ((* 2 5) - 5))
-;; z
-;; 27.817919173354642
-
-
-;; (def x 1 + 2 + 3)
-;; x
-;; 6
-
-
-;; (def k 10.0 - 3.0 - 4.0 + 1 - 5.0 * 2.0 ** 3.0 / 7.0 ** 3.0)
-;; k
-;; 3.883381924198251
-
-
-;; (def s 3 ² + 2 * 3 * 5 + 5 ²)
-;; s
-;; 64
-
-
-
-
 
 
 

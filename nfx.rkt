@@ -29,7 +29,7 @@
 	   Scheme+/infix-with-precedence-to-prefix
 	   Scheme+/exponential ; ???? why 
 	   Scheme+/multiply ; ???? but errors without : unbound **
-	   Scheme+/def
+	   Scheme+/defun
 	   )
 
   
@@ -40,6 +40,7 @@
 ;; $nfx$ : parsed-args={.#<syntax:15-interactions from an unsaved editor:3:15 +> {.#<syntax:15-interactions from an unsaved editor:3:11 *> .#<syntax:15-interactions from an unsaved editor:3:9 3> .#<syntax:15-interactions from an unsaved editor:3:13 5>} .#<syntax:15-interactions from an unsaved editor:3:17 2>}
 ;; 17
 
+;; DEPRECATED ?
 (define-syntax $nfx$
 
   (lambda (stx)
@@ -170,11 +171,12 @@
 
 
 
+
+
+
 ;; this version is mainly call from SRFI-105
 (def (nfx f . r)
-
-  
-     
+    
   ;; 1 argument
 
   ;; {list(1 2 3)}

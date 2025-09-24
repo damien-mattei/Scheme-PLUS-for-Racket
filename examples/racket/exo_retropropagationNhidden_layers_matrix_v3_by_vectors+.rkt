@@ -45,13 +45,6 @@
 
 (provide (all-defined-out)) 
 
-#| this file must now be included in your main project file like this:
-   at the beginning of your main file add
-  for infix operator precedence WITHOUT optimizations those definitions are MANDATORY:
- (define-namespace-anchor ankh)
- (define bsns (namespace-anchor->namespace ankh))
- (current-namespace bsns)
-|#
 
 
 (require (rename-in srfi/42
@@ -74,7 +67,7 @@
 ; return a random number between [inf, sup]
 (define (uniform-interval inf sup)
   ;;{gap <- sup - inf}
-  (define gap   sup - inf)
+  (def gap  sup - inf)
   {inf + gap · (random)})
 
 
@@ -357,7 +350,7 @@
 		    
 		    ;(display "modification_des_poids : i = ") (display i) (newline)
 		    ;{M_i_o[j {i + 1}]  <-  M_i_o[j {i + 1}] - (- η) * z_input[i] * მzⳆმz̃(z_output[j] z̃_output[j]) * ᐁ_i_o[j]})
-		    {M_i_o[j {i + 1}]  <-  M_i_o[j {i + 1}] + η · z_input[i] · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j]})
+		    {M_i_o[j (i + 1)]  <-  M_i_o[j (i + 1)] + η · z_input[i] · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j]})
 		    ;(display "modification_des_poids : M_i_o[j {i + 1}] =") (display {M_i_o[j {i + 1}]}) (newline))
 
 

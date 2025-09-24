@@ -88,7 +88,7 @@
 	(require Scheme+/operators
 		 Scheme+/superscript
 		 Scheme+/condx
-		 Scheme+/def
+		 Scheme+/defun
 		 Scheme+/program-type
 		 Scheme+/syntax)
 

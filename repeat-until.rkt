@@ -20,12 +20,10 @@
 
 (module repeat-until racket/base
 
-
-	;;(require Scheme+/nfx)
-
 	(provide repeat)
 
-  
+  	(require Scheme+/nfx)
+
 
 ;; scheme@(guile-user)> (define i 5)
 ;; scheme@(guile-user)> (repeat (display i) (newline) (set! i (- i 1)) until (< i 0))
@@ -42,7 +40,8 @@
 	    
 	    ((repeat b1 ...
 		     until pred)
-		     ;;until pred e1 ...) ; ellipsis not allowed here ! now we allow direct infix expressions too
+	     ;;until pred e1 ...) ; ellipsis not allowed here ! was to try to allow direct infix expressions too
+	     ;; this can only be done the way i made it for 'if' : with-syntax and parser
 	     
 	     (let loop ()
 	       b1
@@ -50,6 +49,10 @@
 	       (when (not pred) ;;(not ($nfx$ pred e1 ...))
 		 (loop))))))
 
+
+	
+	    
+	    
 
 	) ; end library
 

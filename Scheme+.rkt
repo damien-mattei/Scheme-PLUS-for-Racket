@@ -31,7 +31,7 @@
    ;; definition and block
 
    def def+ return return-rec
-   define
+   ;;define
    define+
    
    <+ +>
@@ -79,7 +79,7 @@
    condx
    repeat
    do
-   unless
+   ;;unless
    while
 
 
@@ -135,10 +135,11 @@
 
   (require
 
-   (only-in racket/base [define define-scheme])
+   ;;(only-in racket/base [define define-scheme])
    
    ;; definition and block
    Scheme+/def
+   Scheme+/defvar
    Scheme+/def+
    Scheme+/def-nfx ; infix define
    Scheme+/declare
@@ -161,7 +162,7 @@
 
    ;; control
    Scheme+/condx
-   Scheme+/when-unless
+   ;;Scheme+/when-unless
    Scheme+/while-do
    Scheme+/repeat-until
 
@@ -172,7 +173,7 @@
    Scheme+/modulo
    Scheme+/multiply
    Scheme+/little-greater-or-equal
-   Scheme+/conjonction
+   Scheme+/conjunction
 
    ;; functions
    Scheme+/square-and-cubic-root

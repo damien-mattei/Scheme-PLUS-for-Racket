@@ -29,32 +29,31 @@
     (matrix-vect (create-vector-2d fct lin col)))
   (define (dim-matrix-vect M)
     (when (not (matrix-vect? M)) (error "argument is not of type matrix"))
-    ($nfx$ v <- (matrix-vect-v M))
-    ($nfx$ lin <- (vector-length v))
-    ($nfx$ col <- (vector-length ($bracket-apply$ v 0)))
+    (<- v (matrix-vect-v M))
+    (<- lin (vector-length v))
+    (<- col (vector-length ($bracket-apply$ v 0)))
     (values lin col))
   (define (multiply-matrix-matrix M1 M2)
-    ($nfx$ (n1 p1) <- (dim-matrix-vect M1))
-    ($nfx$ (n2 p2) <- (dim-matrix-vect M2))
-    (when ($nfx$ p1 ≠ n2)
+    (<- (n1 p1) (dim-matrix-vect M1))
+    (<- (n2 p2) (dim-matrix-vect M2))
+    (when (≠ p1 n2)
       (error
        "matrix-by-vectors.* : matrix product impossible, incompatible dimensions"))
-    ($nfx$ v1 <- (matrix-vect-v M1))
-    ($nfx$ v2 <- (matrix-vect-v M2))
+    (<- v1 (matrix-vect-v M1))
+    (<- v2 (matrix-vect-v M2))
     (define (res i j)
-      ($nfx$ sum <- 0)
+      (<- sum 0)
       (for
-       (($nfx$ k <- 0) ($nfx$ k < p1) ($nfx$ k <- k + 1))
-       ($nfx$
+       ((<- k 0) (< k p1) (<- k (+ k 1)))
+       (<-
         sum
-        <-
-        sum
-        +
-        ($bracket-apply$ ($bracket-apply$ v1 i) k)
-        *
-        ($bracket-apply$ ($bracket-apply$ v2 k) j)))
+        (+
+         sum
+         (*
+          ($bracket-apply$ ($bracket-apply$ v1 i) k)
+          ($bracket-apply$ ($bracket-apply$ v2 k) j)))))
       sum)
-    ($nfx$ v <- (create-vector-2d res n1 p2))
+    (<- v (create-vector-2d res n1 p2))
     (matrix-vect v))
   (overload-existing-operator
    *
@@ -67,25 +66,25 @@
   (define (vector->matrix-column v)
     (matrix-vect (vector-map-srfi-43 (lambda (i x) (make-vector 1 x)) v)))
   (define (matrix-column->vector Mc)
-    ($nfx$ v <- (matrix-vect-v Mc))
-    (vector-map-srfi-43 (lambda (i v2) ($nfx$ ($bracket-apply$ v2 0))) v))
+    (<- v (matrix-vect-v Mc))
+    (vector-map-srfi-43 (lambda (i v2) ($bracket-apply$ v2 0)) v))
   (define (multiply-matrix-vector M v)
-    ($nfx$ Mc <- (vector->matrix-column v))
-    (matrix-column->vector ($nfx$ M * Mc)))
+    (<- Mc (vector->matrix-column v))
+    (matrix-column->vector (* M Mc)))
   (overload-existing-operator * multiply-matrix-vector (matrix-vect? vector?))
   (overload-existing-operator · multiply-matrix-vector (matrix-vect? vector?))
   (define (matrix-vect-ref M lin col)
-    ($nfx$ v <- (matrix-vect-v M))
-    ($nfx$ ($bracket-apply$ ($bracket-apply$ v lin) col)))
+    (<- v (matrix-vect-v M))
+    ($bracket-apply$ ($bracket-apply$ v lin) col))
   (define (matrix-vect-set! M lin col x)
-    ($nfx$ v <- (matrix-vect-v M))
-    ($nfx$ ($bracket-apply$ ($bracket-apply$ v lin) col) <- x))
+    (<- v (matrix-vect-v M))
+    (<- ($bracket-apply$ ($bracket-apply$ v lin) col) x))
   (define (matrix-vect-line-ref M lin)
-    ($nfx$ v <- (matrix-vect-v M))
-    ($nfx$ ($bracket-apply$ v lin)))
+    (<- v (matrix-vect-v M))
+    ($bracket-apply$ v lin))
   (define (matrix-vect-line-set! M lin vect-line)
-    ($nfx$ v <- (matrix-vect-v M))
-    ($nfx$ ($bracket-apply$ v lin) <- vect-line))
+    (<- v (matrix-vect-v M))
+    (<- ($bracket-apply$ v lin) vect-line))
   (overload-square-brackets
    matrix-vect-ref
    matrix-vect-set!

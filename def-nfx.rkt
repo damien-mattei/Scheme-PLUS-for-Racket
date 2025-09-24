@@ -22,14 +22,14 @@
 (module def-nfx racket/base
 
 
-	(provide define
+	(provide ;;define
 		 define+)
 
 	(require (only-in racket/base [define define-scheme]) ;; backup original Scheme 'define'
 		 Scheme+/nfx)
 
 
-		
+	;; TODO remove define
 
 	;; > (define z  3 * 5 + 2)
 
@@ -90,20 +90,7 @@
 	    ;; x
 	    ;; 6
 
-	    ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	    ;; (define a  (cdr (cons + 1)) + 2)
-	    ;; exception raised by error display handler: srcloc: contract violation
-	    ;;   expected: (or/c exact-positive-integer? #f)
-	    ;;   given: 0; original exception raised: +: contract violation
-	    ;;   expected: number?
-	    ;;   given: #<procedure:mcons>
-
-	    ;; instead use:
-	    ;;  (define a  (+ (cdr (cons + 1)) 2))
-	    ;; a
-	    ;; 3
-
-	    ;; !!!!!!!!!!!!!!!!!!!
+	    
 	    ;; (define y sin 0.34)
 	    ;; y
 	    ;; 0.3334870921408144
@@ -112,7 +99,7 @@
 	    ((define name   arg1 arg2 arg3 ...)
 	     (define-scheme name ($nfx$-rec arg1 arg2 arg3 ...)))  ; call the recursive version of infix/prefix parser of expressions
 
-	    ;; recall the 'define' of Scheme RNRS
+	    ;; recall the 'define' of Scheme RnRS for staying 100% compatible with the old school syntax
 	    ((define name arg1)
 	     (define-scheme name arg1))
 	    
@@ -123,22 +110,16 @@
 	    ))
 
 
+	;; TODO: keep it undocumented
 
 	;; rationale of define+ is ,first for function definitions, and when only one argument (after symbol) that require to be parsed
-	;; (not possible with define without rejecting then a few normal scheme expression)
-	;; see examples below
+	;; (not possible with define without rejecting perheaps a few normal scheme expression)
 
-	
-	;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	;; (define+ a   (cdr (cons + 1)) + 2)
-	;; ../../../../../../racket/collects/racket/private/kw.rkt:1260:25: +: contract violation
-	;; expected: number?
-	;; given: #<procedure:cons>
-
-	;; (define op+ +)
-	;; (define+ a   (cdr (cons op+ 1)) + 2)
+	;; (define+ a (cdr (cons + 1))) ; ok now
 	;; a
-	;; 3
+	;; 1
+	
+
 
 	;; (define+ (foo x) ((x - 3) ²))
 	;; (foo 5)
@@ -153,10 +134,10 @@
 
 	    ;; not original define for procedures
 	    ((define+ (name arg ...) body ...)
-	     (define-scheme (name arg ...) ($nfx$-rec body) ...))
+	     (define (name arg ...) ($nfx$-rec body) ...))
 
 	    ((define+ (name arg ... . rest-id) body ...)
-	     (define-scheme (name arg ... . rest-id) ($nfx$-rec body) ...))
+	     (define (name arg ... . rest-id) ($nfx$-rec body) ...))
 
 
 	    ;; new define for infix
@@ -182,12 +163,12 @@
 	    ;; 0.8253356149096783
 	   	    
 	    ;; at least 1 arguments, so (define+ name arg1) is parsed here
-	    ((define+ name    arg1 arg2 ...)    (define-scheme name ($nfx$-rec arg1 arg2 ...)))
+	    ((define+ name    arg1 arg2 ...)    (define name ($nfx$-rec arg1 arg2 ...)))
 
 	    
 	    ;; zero argN, just the name
 	    ((define+ name)
-	     (define-scheme name '()))
+	     (define name '()))
 
 	    ))
 

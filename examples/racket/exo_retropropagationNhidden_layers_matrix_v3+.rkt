@@ -321,8 +321,9 @@ but will it works with Scheme+ parser?
 		      
 		(for-racket ([i (range len_layer_input)]) ; column , parcours les colonnes de la ligne sauf le bias
 
-		       ;(display "modification_des_poids : i = ") (display i) (newline)
-		       {M_i_o[j {i + 1}]  <-  M_i_o[j {i + 1}]  -  (- η) · z_input[i] · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j]})
+			    ;;(display "modification_des_poids : i = ") (display i) (newline)
+			    ;; {M_i_o[j (i + 1)]  <-  M_i_o[j (i + 1)] + η · z_input[i] · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j]}
+		       {M_i_o[j (i + 1)]  <-  M_i_o[j (i + 1)]  -  (- η) · z_input[i] · (მzⳆმz̃ z_output[j] z̃_output[j]) · ᐁ_i_o[j]})
 		       ;(display "modification_des_poids : M_i_o[j {i + 1}] =") (display {M_i_o[j {i + 1}]}) (newline))
 
 		; and update the bias

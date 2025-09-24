@@ -35,7 +35,8 @@
 	 Scheme+/syntax
 	 Scheme+/operators-list
 	 Scheme+/operators
-	 Scheme+/def
+	 Scheme+/defun
+	 Scheme+/defvar
 	 ;;SRFI-105/SRFI-105-curly-infix ; for alternating-parameters
 	 Scheme+/alternating-parameters
 	 Scheme+/superscript-parser
@@ -45,7 +46,7 @@
 	 Scheme+/atom
 	 Scheme+/in-equalities
 	 Scheme+/n-arity
-	 Scheme+/conjonction ; perheaps useless TODO test
+	 Scheme+/conjunction ; perheaps useless TODO test
 	 Scheme+/recursive-apply
 	 ) 
 	  
@@ -454,7 +455,7 @@
 
 
 
-
+;; i suppose this version called in a recursive way will parse both infix and prefix as it is for nested terms
 (def (!*prec-generic-infix-parser-rec terms creator )   ;; precursor of !*-generic-infix-parser
 
   ;;(display "!*prec-generic-infix-parser-rec : start terms=") (display terms) (newline)
@@ -1404,3 +1405,41 @@
 ;; (define (cinque) 5)
 ;; {str[{(tre) (multiply) (due) (minus) (quattro)}]}
 ;; #\c
+
+
+;; weird example:
+
+;; > {sin (.1 + .2)}
+
+;; (!*prec-generic-infix-parser-runtime
+;;  (list sin (+ 0.1 0.2))
+;;  (lambda (op a b) (op a b)))
+;; 0.2955202066613396
+
+
+;; #<eof>
+
+;;  error is normal:
+;; > {sin(.1 + .2)}
+
+
+;;
+;; (sin 0.1 + 0.2)
+;; . . ../../../../../../../../usr/racket-8.18.0.13/collects/racket/private/kw.rkt:1263:25: sin: arity mismatch;
+;;  the expected number of arguments does not match the given number
+;;   expected: 1
+;;   given: 3
+;; > {(sin (.1 + .2))}
+
+
+;; (sin (+ 0.1 0.2))
+;; 0.2955202066613396
+
+
+;; #<eof>
+
+
+;; > {3 * 7 + 2 - 12 / 3 + -2}
+;; (+ (- (+ (* 3 7) 2) (/ 12 3)) -2)
+;; 17
+;; #<eof>

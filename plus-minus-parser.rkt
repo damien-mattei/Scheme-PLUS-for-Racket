@@ -21,7 +21,7 @@
 
 	(provide begin-operators+-)
 
-	(require Scheme+/def
+	(require Scheme+/defun
 		 Scheme+/operators
 		 Scheme+/condx)
 

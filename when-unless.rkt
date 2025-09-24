@@ -35,6 +35,7 @@
 ;; 	 ;;(let () result1 result2 ...)))))
 ;; 	 (let () result1 ...)))))
 
+;; deprecated ,seems to exist already now in Racket
 (define-syntax unless
   (syntax-rules ()
     ;;((unless test result1 result2 ...)

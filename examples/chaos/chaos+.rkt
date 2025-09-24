@@ -152,7 +152,8 @@
 (define+ (chaos p q d x0 y0)
   
   ;;(define a {2 * cos{2 * pi * p / q}}) ; or {2 * (cos {2 * pi * p / q})} or {2 * cos({2 * pi * p / q})}
-  (define a   2 * (cos (2 * pi * p / q)))
+  ;;(define a   2 * (cos (2 * pi * p / q)))
+  (def a   2 * (cos (2 * pi * p / q)))
   (define+ ksx  (√ ((2 + a) / 2)) ) ;; (sqrt {(2 + a) / 2})) ; or sqrt{{2 + a} / 2}
   {ksy := (√ ((2 - a) / 2))}    ; (sqrt {(2 - a) / 2})} ; or (define ksy (sqrt {{2 - a} / 2}))
   

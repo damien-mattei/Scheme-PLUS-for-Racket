@@ -104,16 +104,22 @@
 
 
 
-	
+	;; same as def.rkt
 
 	;; single definition without a value assigned
 	;; (def x)
 	((_ var) #`(define var '()))
 
-	;; (def x 7)
-	((_ var expr) #`(define var expr))
+	;; (def s  3 ² + 2 * 3 * 5 + 5 ²)
+	;; 64
+	((_ var expr expr-optional ...) #`(define var ($nfx$-rec expr expr-optional ...)))
 
-	((_ err ...) #`(syntax-error "Bad def+ form"))
+	((_) #`(syntax-error "Bad def form"))
+
+	;; (def x 7)
+	;; ((_ var expr) #`(define var expr))
+
+	;; ((_ err ...) #`(syntax-error "Bad def+ form"))
 
 	)))
 
