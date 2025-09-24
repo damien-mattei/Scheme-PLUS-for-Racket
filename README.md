@@ -53,9 +53,11 @@ Example,in this simple code the ```sign1``` and ```(sign2)``` are not know at pa
  
 -7 ; the result
 ```
+
 <br>
 This version do a runtime evaluation of operators,signs,in/equalities symbols when needed at runtime.
 <br>
+
 ```scheme
 (define (tre) 3)
 (define (due) 2)
@@ -70,6 +72,7 @@ This version do a runtime evaluation of operators,signs,in/equalities symbols wh
 
 2 ;  the result
 ```
+
 <br>
 
 ```scheme
