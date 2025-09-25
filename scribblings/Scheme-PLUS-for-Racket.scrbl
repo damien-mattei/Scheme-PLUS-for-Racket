@@ -932,6 +932,8 @@ As being procedurals @racket[&&] and @racket[∣∣] are not short-circuited.
 
 @defform[#:id · {n · m}]{Same as @racket[*]}
 
+Note: some Qi operators not documented here (see Qi documentation for them) are recognized, for example @racket[~>] should immediately work in infix.
+
 @subsection[#:tag "superscript"]{Superscript}
 Superscript characters can be used to form numbers, variable or expressions forming an exponent,thus defining an exponentiation without the need of @racket[**] operator:
 @codeblock|{

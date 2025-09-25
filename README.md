@@ -28,7 +28,11 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 <br>
 
-**Changes of version 12.7:**
+**Changes of version 12.8:**
+
+Added negative index for [ ] in the documentation.
+
+Added Qi operator in the documentation.
 
 Debugged online doc of racket package system.
 
