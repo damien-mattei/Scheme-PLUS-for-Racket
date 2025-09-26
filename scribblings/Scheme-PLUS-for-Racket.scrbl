@@ -1187,6 +1187,26 @@ Another method is to use the Makefile provided:
 Put the Makefile in the same place of your Scheme+ program and type in the terminal @bold{make}.
 The Makefile will parse all Scheme+ program in the same directory and generate the scheme version in @bold{MODULE_DIRECTORY=parsed_files_directory}.You can then just load and run the parsed files in Racket GUI to use all the Racket features and tools (macro stepper,etc) for debugging.
 
+Example:
+
+@verbatim|{
+mattei@acer:~/Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/examples/chaos$ ls -la
+total 28K
+drwxrwxr-x 3 mattei mattei 4,0K sept. 21 17:42 .
+drwxrwxr-x 7 mattei mattei 4,0K sept. 26 22:06 ..
+-rw-r--r-- 1 mattei mattei  12K sept. 21 17:42 chaos+.rkt
+-rw-rw-r-- 1 mattei mattei 1,5K nov.  23  2024 Makefile
+drwxrwxr-x 2 mattei mattei 4,0K déc.  16  2024 parsed_files_directory
+mattei@acer:~/Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/examples/chaos$ make
+PARSING chaos+.rkt :
+../../../../../SRFI-105-for-Racket/src/curly-infix2prefix4racket.rkt chaos+.rkt > parsed_files_directory/chaos+.rkt
+
+mattei@acer:~/Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/examples/chaos$ ls -la parsed_files_directory/
+total 16
+drwxrwxr-x 2 mattei mattei 4096 déc.  16  2024 .
+drwxrwxr-x 3 mattei mattei 4096 sept. 21 17:42 ..
+-rw-r--r-- 1 mattei mattei 6032 sept. 26 22:23 chaos+.rkt
+}|
 
 @section[#:tag "example"]{Place to find Scheme+ programs and examples}
 

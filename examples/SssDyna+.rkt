@@ -136,6 +136,8 @@
   ;;(def ls (length L))
   ;;(def dyn {dyna[ls t]})
 
+  (def (ls dyn)) ;; declare multiple variables WARNING: ls is global !!! so i force it a local one here
+
   {ls <- (length L)}
 
   ;;(display "ls=") (display ls) (display " ") (display "t=") (display t) (newline)
@@ -145,11 +147,12 @@
   (def c)
   (def R)
 
-  
+  ;;(display "ls=") (display ls) (display " ") (display "dyn=") (display dyn) (newline)
   
   ;; TODO: write this code simplier
   ;; dyna[ls t] means 0: unknown solution, 1: solution found, 2: no solution
   (one?
+   
     (if (not (zero? dyn))
 	
 	dyn
@@ -168,8 +171,9 @@
 				      ;; c is part of the solution or his approximation
 				      ;; or c is not part of solution or his approximation
 				      [ else {(ssigma-dyna-define-anywhere R {t - c}) or (ssigma-dyna-define-anywhere R t)} ] )))) }
-	 { dyna[ls t] })
-	 )))
+	 ;; (display "one? ls=") (display ls) (display " ") (display "t=") (display t) (newline)
+	 ;; (display "dyna[ls t] =") (display {dyna[ls t]}) (newline)
+	 { dyna[ls t] }))))
 
 
 
@@ -179,9 +183,11 @@
 ;; $2 = 147801
 (define (ssigma-dyna-def L t)
 
-  (display L) (newline)
-  (display t) (newline)
-  (newline)
+  ;;(display L) (display " ") (display t) (newline)
+  
+  ;; (display L) (newline)
+  ;; (display t) (newline)
+  ;; (newline)
  
   
   {cpt <- cpt + 1} ;; cpt is defined at toplevel
@@ -189,15 +195,20 @@
   (def (ls dyn)) ;; declare multiple variables 
   
   {ls <- (length L)}
+
+  ;; (display "ls=") (display ls) (display " ") (display "t=") (display t) (newline)
   {dyn <- dyna[ls t]}
 
   ;; declare one variable at a time
   (def c)
   (def R)
 
+  ;;(display "ls=") (display ls) (display " ") (display "dyn=") (display dyn) (newline)
+
   ;; TODO: write this code simplier
   ;; dyna[ls t] means 0: unknown solution, 1: solution found, 2: no solution
   (one? ; 1: solution found ?
+  
    (if (not (zero? dyn)) ; we already know the solution
        
        dyn ; 1: solution found, 2: no solution
@@ -208,7 +219,6 @@
 	{ dyna[ls t] <- (tf->12
 			 (if (null? L)
 			    #f
-			    ;; TODO: rename $ which is already used by SRFI-9 record utiliser  § ou | (option shift L sur mac)
 			    ($> ;;(display "assignment") (newline)
 			     {c <- (first L)}
 			     {R <- (rest L)}
@@ -218,6 +228,8 @@
 				   ;; c is part of the solution or his approximation
 				   ;; or c is not part of solution or his approximation
 				   [ else {(ssigma-dyna-def R {t - c}) or (ssigma-dyna-def R t)} ] )))) }
+	;; (display "one? ls=") (display ls) (display " ") (display "t=") (display t) (newline)
+	;; (display "dyna[ls t] =") (display {dyna[ls t]}) (newline)
 	{ dyna[ls t] }))))
 
 
