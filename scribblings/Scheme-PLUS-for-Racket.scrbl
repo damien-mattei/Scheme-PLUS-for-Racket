@@ -1158,7 +1158,7 @@ Example for accessing and modifying a line of a matrix:
   {v <- (matrix-vect-v M)}
   {v[lin][col] <- x})
 
-(overload-square-brackets matrix-vect-line-ref matrix-vect-line-set! (matrix-vect? number?))
+(overload-square-brackets matrix-vect-ref matrix-vect-set!  (matrix-vect? number? number?))
 
 {Mv[1][0]}
 4

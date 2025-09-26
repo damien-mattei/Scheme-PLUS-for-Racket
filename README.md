@@ -28,13 +28,9 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 <br>
 
-**Changes of version 12.8:**
+**Changes of version 14.0:**
 
-Added negative index for [ ] in the documentation.
 
-Added Qi operator in the documentation.
-
-Debugged online doc of racket package system.
 
 Infix expression parsing is enhanced.When the parser is not able to know all the operators for precedence at parser stage it passes the job to the runtime stage.
 Rationale: when an operator is not directly readable but results of the evaluation at runtime of a procedure result or a symbol then the infix to prefix with operator precedence can not do the job at pre-parsing stage in SRFI-105 ,it is then forced to prepare the job and pass it at runtime. This is done by inserting in the code a sequence of instructions that will be evaluated at runtime at a moment when more syntax is evaluated.
@@ -129,6 +125,13 @@ Complex number superscripted: as ```i``` does not exist in superscript and ```I`
 
 <br>
 The examples have been updated.
+<br>
+Correct error in documentation about overloading [ ].
+
+Added Qi operator in the documentation.
+
+Debugged online doc of racket package system.
+
 <br>
 <br>
 
