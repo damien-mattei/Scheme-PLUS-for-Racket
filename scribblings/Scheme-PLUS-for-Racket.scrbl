@@ -484,7 +484,7 @@ The assignment operator is a macro that works in taking in account the square br
 7
 }|
 
-Remember @racket[:=],for Pascal language fan, is exactly the same as @racket[<-].
+Remember @racket[:=],for Pascal language fans, is exactly the same as @racket[<-].
 
 @codeblock|{
 (require srfi/25)
