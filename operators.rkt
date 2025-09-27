@@ -62,7 +62,7 @@
 	   IMPLIC-op?
 	   EQUIV-op?
 	   DEFINE-op?
-	   SINGLE-VARIABLE-ASSIGNMENT-op?
+	   ;;SINGLE-VARIABLE-ASSIGNMENT-op?
 	   ASSIGNMENT-op?
 	   FLOW-op?
 	   COMPOSITION-op?
@@ -344,8 +344,8 @@
 (define (COMPOSITION-op? oper)
   (datum=? oper '∘))
 
-(define (SINGLE-VARIABLE-ASSIGNMENT-op? oper)
-  (member-generic oper single-variable-assignment-operator-syntax))
+;; (define (SINGLE-VARIABLE-ASSIGNMENT-op? oper)
+;;   (member-generic oper single-variable-assignment-operator-syntax))
 
 
 (define (EXPONENTIAL-op? oper)

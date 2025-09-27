@@ -1,4 +1,4 @@
-#lang reader "../src/SRFI-105.rkt"
+#lang reader SRFI-105
 
 (module example-scheme-plus racket
 
@@ -35,6 +35,7 @@
   ;;{arg <+ c * angle(z1) + d * log(sqr(a) + sqr(b)) / 2}
   
   {arg <+ c * angle(z1) + d * log(sqr(magnitude(z1))) / 2}
+  ;;{arg <- c * angle(z1) + d * log(sqr(magnitude(z1))) / 2}
 
   {i <+ 0+1i} ;; imaginaire pur
   
@@ -63,7 +64,8 @@
   {nmax <+ 1000000000}
   {r <+ 1.0}
   (for ({n <+ 2} {n <= nmax} {n <- n + 1})
-    {v <+ 1.0 / n ** z}    
+    {v <+ 1.0 / n ** z}
+    ;;{v <- 1.0 / n ** z}   
     {r <- r + v}
     ;;(display v)
     ;;(newline)

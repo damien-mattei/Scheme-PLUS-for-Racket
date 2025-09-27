@@ -24,7 +24,6 @@
   (require Scheme+/operators)
 	  
   
-
   
 ;; initially written for logical expression of OR / AND
 ;; should works for every associative operator

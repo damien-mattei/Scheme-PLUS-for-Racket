@@ -26,13 +26,14 @@
 (module sssdyna racket
 
 
-;;(require "../main.rkt")
+
 (require Scheme+
 	 "best-solution+.rkt")
 	
 (require srfi/25) ;; Multi-dimensional Array Primitives
 
 ;;(provide (all-defined-out)) ;; export all bindings
+
 
 (define (one? n)
   (= n 1))
@@ -45,8 +46,8 @@
 ;;{t-init <- 21}
 
 {ls <- (length L-init)}
-{dyna <- (make-array (shape 0 {ls + 1}
-			    0 {t-init + 1})
+{dyna <- (make-array (shape 0 (ls + 1)
+			    0 (t-init + 1))
 		     0)}
 
 (define (tf->12 b)
@@ -149,7 +150,6 @@
 
   ;;(display "ls=") (display ls) (display " ") (display "dyn=") (display dyn) (newline)
   
-  ;; TODO: write this code simplier
   ;; dyna[ls t] means 0: unknown solution, 1: solution found, 2: no solution
   (one?
    
@@ -170,7 +170,7 @@
 				      ;; c < t at this point
 				      ;; c is part of the solution or his approximation
 				      ;; or c is not part of solution or his approximation
-				      [ else {(ssigma-dyna-define-anywhere R {t - c}) or (ssigma-dyna-define-anywhere R t)} ] )))) }
+				      [ else {(ssigma-dyna-define-anywhere R (t - c)) or (ssigma-dyna-define-anywhere R t)} ] )))) }
 	 ;; (display "one? ls=") (display ls) (display " ") (display "t=") (display t) (newline)
 	 ;; (display "dyna[ls t] =") (display {dyna[ls t]}) (newline)
 	 { dyna[ls t] }))))
@@ -181,56 +181,55 @@
 ;; $1 = #t
 ;; scheme@(guile-user)> cpt
 ;; $2 = 147801
-(define (ssigma-dyna-def L t)
+;; (define (ssigma-dyna-def L t)
 
-  ;;(display L) (display " ") (display t) (newline)
+;;   ;;(display L) (display " ") (display t) (newline)
   
-  ;; (display L) (newline)
-  ;; (display t) (newline)
-  ;; (newline)
+;;   ;; (display L) (newline)
+;;   ;; (display t) (newline)
+;;   ;; (newline)
  
   
-  {cpt <- cpt + 1} ;; cpt is defined at toplevel
+;;   {cpt <- cpt + 1} ;; cpt is defined at toplevel
   
-  (def (ls dyn)) ;; declare multiple variables 
+;;   (def (ls dyn)) ;; declare multiple variables 
   
-  {ls <- (length L)}
+;;   {ls <- (length L)}
 
-  ;; (display "ls=") (display ls) (display " ") (display "t=") (display t) (newline)
-  {dyn <- dyna[ls t]}
+;;   ;; (display "ls=") (display ls) (display " ") (display "t=") (display t) (newline)
+;;   {dyn <- dyna[ls t]}
 
-  ;; declare one variable at a time
-  (def c)
-  (def R)
+;;   ;; declare one variable at a time
+;;   (def c)
+;;   (def R)
 
-  ;;(display "ls=") (display ls) (display " ") (display "dyn=") (display dyn) (newline)
+;;   ;;(display "ls=") (display ls) (display " ") (display "dyn=") (display dyn) (newline)
 
-  ;; TODO: write this code simplier
-  ;; dyna[ls t] means 0: unknown solution, 1: solution found, 2: no solution
-  (one? ; 1: solution found ?
+;;   ;; dyna[ls t] means 0: unknown solution, 1: solution found, 2: no solution
+;;   (one? ; 1: solution found ?
   
-   (if (not (zero? dyn)) ; we already know the solution
+;;    (if (not (zero? dyn)) ; we already know the solution
        
-       dyn ; 1: solution found, 2: no solution
+;;        dyn ; 1: solution found, 2: no solution
 
-       ;; 0: unknown solution
-       ;; set the array but return the variable
-       ($>
-	{ dyna[ls t] <- (tf->12
-			 (if (null? L)
-			    #f
-			    ($> ;;(display "assignment") (newline)
-			     {c <- (first L)}
-			     {R <- (rest L)}
-			     (cond [ {c = t} #t ] ;; c is the solution
-				   [ {c > t} (ssigma-dyna-def R t) ] ;; c is to big to be a solution but can be an approximation
-				   ;; c < t at this point
-				   ;; c is part of the solution or his approximation
-				   ;; or c is not part of solution or his approximation
-				   [ else {(ssigma-dyna-def R {t - c}) or (ssigma-dyna-def R t)} ] )))) }
-	;; (display "one? ls=") (display ls) (display " ") (display "t=") (display t) (newline)
-	;; (display "dyna[ls t] =") (display {dyna[ls t]}) (newline)
-	{ dyna[ls t] }))))
+;;        ;; 0: unknown solution
+;;        ;; set the array but return the variable
+;;        ($>
+;; 	{ dyna[ls t] <- (tf->12
+;; 			 (if (null? L)
+;; 			    #f
+;; 			    ($> ;;(display "assignment") (newline)
+;; 			     {c <- (first L)}
+;; 			     {R <- (rest L)}
+;; 			     (cond [ {c = t} #t ] ;; c is the solution
+;; 				   [ {c > t} (ssigma-dyna-def R t) ] ;; c is to big to be a solution but can be an approximation
+;; 				   ;; c < t at this point
+;; 				   ;; c is part of the solution or his approximation
+;; 				   ;; or c is not part of solution or his approximation
+;; 				   [ else {(ssigma-dyna-def R {t - c}) or (ssigma-dyna-def R t)} ] )))) }
+;; 	;; (display "one? ls=") (display ls) (display " ") (display "t=") (display t) (newline)
+;; 	;; (display "dyna[ls t] =") (display {dyna[ls t]}) (newline)
+;; 	{ dyna[ls t] }))))
 
 
 
@@ -295,8 +294,8 @@
   (define dyn (array-ref dyna ls t))
 
 
-  (display L) (newline)
-  (display t) (newline)
+  ;; (display L) (newline)
+  ;; (display t) (newline)
  
     
   ;; dyna[ls t] means 0: unknown solution, 1: solution found, 2: no solution
@@ -336,7 +335,7 @@
 
 (def (subset-sum-dyna L t)
 
-  ;;(declare ls dyn) ;; declare multiple variables
+  (declare ls) ;; declare a ls local as it exists too in global
 
   {ls <- (length L)}
   {dyn <- dyna[ls t]}
@@ -360,9 +359,9 @@
 
   (declare s)
   (if {c > t}  ;; c is to big to be a solution
-    {s <- (subset-sum-dyna R t)}
+    {s <- (subset-sum-dyna R t)}                              ; those calls can modify ls (which exist global and must exist local)
     ;; c is part of the solution or c is not part of solution
-    {s <- (subset-sum-dyna R {t - c}) or (subset-sum-dyna R t)})
+    {s <- (subset-sum-dyna R (t - c)) or (subset-sum-dyna R t)})
 
   {dyna[ls t] <- (tf->12 s)}
   s) ;; return boolean value
@@ -397,7 +396,7 @@
   (if {c > t}  ;; c is to big to be a solution
     {s <- (subset-sum-dynamic R t)}
     ;; c is part of the solution or c is not part of solution
-    {s <- (subset-sum-dynamic R {t - c}) or (subset-sum-dynamic R t)})
+    {s <- (subset-sum-dynamic R (t - c)) or (subset-sum-dynamic R t)})
 
   {dyna[ls t] <- (tf->12 s)}
   s) ;; return boolean value
@@ -408,7 +407,7 @@
 
 (define (subset-sum-condx L t)
 
-  (declare ls dyn) ;; declare multiple variables or use <- instead of <- below
+  (declare ls) ;;  ls is also GLOBAL,when i declare it here the procedure will modify its own ls variable, not the global one. 
 
   {ls <- (length L)}
   {dyn <- dyna[ls t]}
@@ -430,41 +429,10 @@
 			
 	 ;; else : c < t at this point
 	 ;; c is part of a solution OR not part of a solution
-	 [else {s <- (subset-sum-condx R {t - c}) or (subset-sum-condx R t)}
+	 [else {s <- (subset-sum-condx R (t - c)) or (subset-sum-condx R t)}
 	       {dyna[ls t] <- (tf->12 s)}
 	       s])) ;; return boolean value
 
-
-;;  (subset-sum L-init t-init)
-;;$1 = #t
-
-(define (subset-sum L t)
-
-  {ls <- (length L)}
-  {dyn <- dyna[ls t]}
-
-  {cpt <- cpt + 1} ;; cpt has been already defined at toplevel
-  
-  ;; dyna[ls t] means 0: unknown solution, 1: solution found, 2: no solution
-  
-  (condx [{dyn <> 0} (one? dyn)]
-	 [(null? L) {dyna[ls t] <- 2}  #f] ;; return #f
-	 
-	 [exec {c <- (first L)}]	 
-	 ;; c is the solution
-	 [{c = t} {dyna[ls t] <- 1}  #t]  ;; return #t
-	 
-	 [exec {R <- (rest L)}]	 
-	 ;; continue searching a solution in the rest
-	 [{c > t} {s <- (subset-sum R t)}
-	          {dyna[ls t] <- (tf->12 s)}
-		  s] ;; return boolean value
-			
-	 ;; else : c < t at this point
-	 ;; c is part of a solution OR not part of a solution
-	 [else {s <- (subset-sum R {t - c}) or (subset-sum R t)}
-	       {dyna[ls t] <- (tf->12 s)}
-	       s])) ;; return boolean value
 
 
 

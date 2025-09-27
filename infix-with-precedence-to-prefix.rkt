@@ -178,9 +178,9 @@
   ;;(display "!*-generic-infix-parser : terms = ") (display terms) (newline)
   ;;(display "!*-generic-infix-parser : operator-groups = ") (display operator-groups) (newline) (newline)
 
-  ;; should not be reached as there is a check of canonical infix expression, TODO: check this for a long time
-  (when (null? operator-groups) ; done evaluating all operators
-    (error "!*-generic-infix-parser : no more operator precedence groups , resting terms to parse:" terms))
+  ;; should not be reached as there is a check of canonical infix expression, TODO: check this for a long time HAS BUGGED on {x <+ 2 * 3} !!! because 'define' was last operator group
+  ;; (when (null? operator-groups) ; done evaluating all operators
+  ;;   (error "!*-generic-infix-parser : no more operator precedence groups , resting terms to parse:" terms))
   
   (if ;(or
        ;(null? operator-groups) ; done evaluating all operators
@@ -190,28 +190,32 @@
       
       ;; evaluate another group -- separating operators into groups allows
       ;; operator precedence
+      ($>
 
-      ;; recursive tail call
-      (let* ((current-operator-group (car operator-groups))
-	     (rv-tms (if (exponential-operators-group? current-operator-group) ; testing for exponential (expt or **)
-			 (begin
-			   ;;(display  "!*-generic-infix-parser : expo detected") (newline)
-			   ;;(display "!*-generic-infix-parser : current-operator-group = ") (display current-operator-group) (newline)
-			   (!**-generic-infix-parser (reverse terms) '() current-operator-group #;odd? creator)  ; start reversed for exponentiation (highest precedence operator)
-			   )
-			 (begin
-			   ;;(display  "!*-generic-infix-parser : expo NOT detected") (newline)
-			   ;;(display "!*-generic-infix-parser : current-operator-group = ") (display current-operator-group) (newline)
-			   (!**-generic-infix-parser terms '() current-operator-group #;odd? creator)))))  ; this forward in terms
-	     
-	;; (display "!*-generic-infix-parser : rv-tms =")
-	;; (display rv-tms)
-	;; (newline)
-	
-	(!*-generic-infix-parser rv-tms
-				 (cdr operator-groups) ;  rest of precedence list , this forward in operator groups of precedence ,check another group
-				 ;;(not odd?)
-				 creator))))
+       ;; recursive tail call
+       (when (null? operator-groups) ; done evaluating all operators ,note: no more bug {x <+ 2 * 3} 
+	 (error "!*-generic-infix-parser : no more operator precedence groups , resting terms to parse:" terms))
+       
+       (let* ((current-operator-group (car operator-groups))
+	      (rv-tms (if (exponential-operators-group? current-operator-group) ; testing for exponential (expt or **)
+			  (begin
+			    ;;(display  "!*-generic-infix-parser : expo detected") (newline)
+			    ;;(display "!*-generic-infix-parser : current-operator-group = ") (display current-operator-group) (newline)
+			    (!**-generic-infix-parser (reverse terms) '() current-operator-group #;odd? creator)  ; start reversed for exponentiation (highest precedence operator)
+			    )
+			  (begin
+			    ;;(display  "!*-generic-infix-parser : expo NOT detected") (newline)
+			    ;;(display "!*-generic-infix-parser : current-operator-group = ") (display current-operator-group) (newline)
+			    (!**-generic-infix-parser terms '() current-operator-group #;odd? creator)))))  ; this forward in terms
+	 
+	 ;; (display "!*-generic-infix-parser : rv-tms =")
+	 ;; (display rv-tms)
+	 ;; (newline)
+	 
+	 (!*-generic-infix-parser rv-tms
+				  (cdr operator-groups) ;  rest of precedence list , this forward in operator groups of precedence ,check another group
+				  ;;(not odd?)
+				  creator)))))
 
 
 
@@ -754,6 +758,9 @@
   (when (multiple-in-equalities? deep-terms)
     (return (infix->prefix-in-equality deep-terms)))
 
+  ;;(display "!*prec-generic-infix-parser-prepare-runtime : general case :  deep-terms=") (display deep-terms) (newline)
+  ;;(newline)
+  
   ;; general case (when no other 'return' has happened on simplier things
   (define rv (pre-check-!*-generic-infix-parser deep-terms creator ))
 

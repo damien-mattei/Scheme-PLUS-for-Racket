@@ -27,7 +27,7 @@
 		 infix-operators-lst-for-parser
 		 
 		 definition-operator-syntax
-		 single-variable-assignment-operator-syntax
+		 ;;single-variable-assignment-operator-syntax
 		 assignment-operator-syntax
 		 exponential-operator-syntax
 		 arithmetic-operator-syntax	 
@@ -59,16 +59,16 @@
 
 (define definition-operator (map syntax->datum definition-operator-syntax))
 
+;; ???????? a quoi ça devait servir ?
+;;(define single-variable-assignment-operator-syntax (list #'<- #'->))
 
-(define single-variable-assignment-operator-syntax (list #'<- #'->))
 
-
-(define assignment-operator-syntax (append single-variable-assignment-operator-syntax
+(define assignment-operator-syntax ;;(append single-variable-assignment-operator-syntax
 					   (list #'<- #'->
 					         #'← #'→
 					         #':= #'=: 
 					         #'<v #'v>
-					         #'⇜ #'⇝)))
+					         #'⇜ #'⇝));)
   
 (define assignment-operator (map syntax->datum assignment-operator-syntax))
 

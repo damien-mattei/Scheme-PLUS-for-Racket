@@ -86,7 +86,7 @@ The parsing is the result of sometimes up to 3 stages of parsing:
 @itemlist[#:style'ordered
           @item{SRFI 105 Curly Infix is an external parser necessary for the curly brackets { } syntax which is not in the base of scheme language.}
           @item{Syntax transformers are sometimes used at a "compile" stage before the code run.}
-	  @item{Parsing at runtime is rarely done but can be necessary when the parsed expression or some of her subexpressions remain ambiguous at prior parsing stage about being infix or prefix expressions.}]
+	  @item{Parsing at runtime is rarely done but can be necessary when the parsed expression or some of her subexpressions remain ambiguous at prior parsing stages about being infix or prefix expressions.}]
 
 Here the parsing process is activated by the encountering of curly parenthesis { } in the expressions (there exist also other ways to force the parsing):
 
