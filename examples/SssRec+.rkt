@@ -409,6 +409,9 @@
   (newline))
 
 
+;; (ssigma-fast-approx-solution-condx-list L-init t-init)
+;; exact solution found
+;; (1 3 4 16 17 24 45 64 197 256 275 323 540 889 915 1040 1041 1093 1099 1111 1344 1520 2027 2500 2734 3267 3610 4285 5027)
 (define (ssigma-fast-approx-solution-condx-list L t)
   
   ;; warning this function returns 2 values : a boolean and the solution
@@ -427,9 +430,9 @@
 			       (cons c s))] ;; c is the solution and should be the shortest solution as we insert only one element
 
 	      ;; otherwise we test for approximative or exact solution with or without c
-	      [exec {rs := (ssigma-fast-solution-approx R (t - c) s)} ; with c
-		    {c-sol := (car rs)}
-		    {sol-c-sol := (cadr rs)}]
+	      [exec {rv <- (ssigma-fast-solution-approx R (t - c) s)} ; with c
+		    {c-sol := (car rv)}
+		    {sol-c-sol := (cadr rv)}]
 	     
 	      ;; is this one an exact solution? with c in solution
 	      [c-sol {sol-c-sol := (cons c sol-c-sol)} ; we add c to the solution of t - c to get the solution c + (t - c) = t
@@ -437,9 +440,9 @@
 			   (append sol-c-sol
 				   s))]
 
-	      [exec {rs := (ssigma-fast-solution-approx R t s)} ;  without c
-		    {c-not-sol := (car rs)}
-		    {sol-c-not-sol := (cadr rs)}]
+	      [exec {rv := (ssigma-fast-solution-approx R t s)} ;  without c
+		    {c-not-sol := (car rv)}
+		    {sol-c-not-sol := (cadr rv)}]
 
 	      ;; is this one an exact solution? without c in solution
 	      [c-not-sol (list #t
@@ -457,9 +460,9 @@
        ;; end of internal procedure
 
   ;; initial start
-  {rs := (ssigma-fast-solution-approx L t '())}
-  {sf := (car rs)}
-  {sol := (cadr rs)}
+  {rv2 := (ssigma-fast-solution-approx L t '())}
+  {sf := (car rv2)}
+  {sol := (cadr rv2)}
    
   (if sf 
       (display "exact solution found")

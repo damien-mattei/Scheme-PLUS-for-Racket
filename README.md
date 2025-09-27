@@ -27,6 +27,13 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 <br>
 
+**Changes of version 14.5:**
+
+Example updated.(ssigma-fast-approx-solution-condx-list in SssRec+.rkt)
+
+
+<br>
+
 **Changes of version 14.3:**
 
 Examples updated.
