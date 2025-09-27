@@ -29,6 +29,8 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 **Changes of version 14.3:**
 
+Examples updated.
+
 Bug correction: <+ which is almost never used with Racket was no more working at least since version 14.2, this would have above all be a problem when upgrading other Scheme+ implementation other than Scheme+ for Racket.
 
 <br>
