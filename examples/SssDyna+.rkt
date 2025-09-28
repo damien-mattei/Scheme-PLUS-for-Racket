@@ -5,7 +5,7 @@
 ;; Dynamic solution
 ;; Racket version
 
-;; Copyright 2021-2024 Damien MATTEI
+;; Copyright 2021-2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -21,14 +21,13 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-;; if necessary some files can be retrieved here: https://github.com/damien-mattei/library-FunctProg
-
 (module sssdyna racket
 
 
 
 (require Scheme+
-	 "best-solution+.rkt")
+	 "best-solution+.rkt"
+	 memo)
 	
 (require srfi/25) ;; Multi-dimensional Array Primitives
 
@@ -527,71 +526,161 @@
 
 
 
+;; (ssigma-approx-solution-list-memo L-init t-init)
+;; exact solution found
+;; (275 723 915 1040 1041 1093 1099 1111 1520 2027 2500 2734 3000 3267 3610 4285 5027)
+;; note: ultra fast !!!
+
+(define (ssigma-approx-solution-list-memo L t)
+
+  ;; intermediate memoization function
+  ;; because we have not yet lambda-return+ and rec+ 
+  (define/memoize (ssigma-solution-approx-memo L t s)
+    (ssigma-solution-approx L t s))
+        
+  ;; warning this function returns 2 values : a boolean and the solution
+  (def (ssigma-solution-approx L t s) ; s : searched solution
+
+       {cpt := cpt + 1}
+       ;;(display L) (display " ") (display t) (newline)
+       
+       (when (null? L) 
+	 
+ 	 ;; (display "null L")
+	 ;; (newline)
+	 ;; (newline)
+	 
+	 (return (list #f s)))
+       
+       {c := (first L)}
+       {R := (rest L)}
+
+       ;; c = t
+       (when {c = t} (return (list #t
+			     (cons c s)))) ;; c is the solution and should be the shortest solution as we insert only one element
+
+       ;; otherwise we test for approximative or exact solution with or without c
+       {rv0 := (ssigma-solution-approx-memo R (t - c) s)} ; with c
+       {c-sol := (car rv0)}
+       {sol-c-sol := (cadr rv0)}
+       
+       {rv1 := (ssigma-solution-approx-memo R t s)} ; without c
+       {c-not-sol := (car rv1)}
+       {sol-c-not-sol := (cadr rv1)}
+       
+       (when c-sol
+	 {sol-c-sol := (cons c sol-c-sol)}) ; we add c to the solution of t - c to get the solution c + (t - c) = t
+
+       (when {c-sol and c-not-sol} ; both are exact solutions
+	 (if {(length sol-c-sol) < (length sol-c-not-sol)} ; get the shortest exact solution
+	     (return (list #t
+			   (append sol-c-sol
+				   s)))
+	     (return (list #t
+			   (append sol-c-not-sol
+				   s)))))
+       
+       ;; is this one an exact solution?
+       (when c-not-sol ; without c in solution
+	 (return (list #t
+		       (append sol-c-not-sol
+			       s))))
+
+       ;; is this one an exact solution?
+       (when c-sol ; with c in solution
+	 (return (list #t
+		       (append sol-c-sol
+			       s))))
+       
+       ;; no exact solution , we take the best approximation, first in distance, and if distance equal in length of list
+       {best-approx := (best-sol t
+				 sol-c-not-sol
+				 sol-c-sol)}
+       
+       (return (list #f
+		     (append best-approx
+			     s))))
+  
+       ;; end internal definition
+       
+
+  {rv2 := (ssigma-solution-approx-memo L t '())}
+  {sf := (car rv2)}
+  {sol := (cadr rv2)}
+  
+  (if sf 
+      (display "exact solution found")
+      (display "no exact solution found"))
+
+  (newline)
+  (display sol)
+  (newline))
+
 
 
 
 
 ;; WARNING :functions below are not good
 
-(define (start-ssigma-sol-approx-dyna L t)
-  ;; (display "start-ssigma-sol-approx")
-  ;; (newline)
-  ;; (display "L=") (display L)
-  ;; (newline)
-  ;; (display "t=") (display t)
-  ;; (newline)
-  ;; (newline)
+;; (define (start-ssigma-sol-approx-dyna L t)
+;;   ;; (display "start-ssigma-sol-approx")
+;;   ;; (newline)
+;;   ;; (display "L=") (display L)
+;;   ;; (newline)
+;;   ;; (display "t=") (display t)
+;;   ;; (newline)
+;;   ;; (newline)
   
 
 
-  (let [(ls (length L))
-  	(dyn (array-ref dyna ls t))]
-    (if (not (null? dyn))
-  	dyn
-	(ssigma-sol-approx-dyna L t '() t '()))))
+;;   (let [(ls (length L))
+;;   	(dyn (array-ref dyna ls t))]
+;;     (if (not (null? dyn))
+;;   	dyn
+;; 	(ssigma-sol-approx-dyna L t '() t '()))))
 
-;; TODO try to get out function constant parameters (if there are)
-(define (ssigma-sol-approx-dyna L t S t-init AS) ;; AS:approximative solution
+;; ;; TODO try to get out function constant parameters (if there are)
+;; (define (ssigma-sol-approx-dyna L t S t-init AS) ;; AS:approximative solution
 
-  ;; (display "L=") (display L)
-  ;; (newline)
-  ;; (display "S=") (display S)
-  ;; (newline)
-  ;; (display "AS=") (display AS)
-  ;; (newline)
-  ;; (newline)
+;;   ;; (display "L=") (display L)
+;;   ;; (newline)
+;;   ;; (display "S=") (display S)
+;;   ;; (newline)
+;;   ;; (display "AS=") (display AS)
+;;   ;; (newline)
+;;   ;; (newline)
   
-  (if (null? L)
+;;   (if (null? L)
       
-      (begin
-	;; (display "null L")
-	;; (newline)
-	;; (display "S=") (display S)
-	;; (newline) 
-	;; (display "AS=") (display AS)
-	;; (newline)
-	;; (display "return best-sol")
-	;; (newline)
-	(best-sol t-init AS S)) ;; must return S or AS and save it in dyna
+;;       (begin
+;; 	;; (display "null L")
+;; 	;; (newline)
+;; 	;; (display "S=") (display S)
+;; 	;; (newline) 
+;; 	;; (display "AS=") (display AS)
+;; 	;; (newline)
+;; 	;; (display "return best-sol")
+;; 	;; (newline)
+;; 	(best-sol t-init AS S)) ;; must return S or AS and save it in dyna
       
-      (let [ (c (first L))
-	     (R (rest L)) ]
-	(cond [ {c = t} (best-sol t-init AS (cons c S)) ] ;; c is the solution and save the best in dyna
-	      [ {c > t} (ssigma-sol-approx-dyna R t S t-init (best-sol t-init
-								  AS
-								  (list c))) ] ;; c is to big to be a solution but can be an approximation 
-	      ;; c < t at this point
-	      ;; c is part of the solution or his approximation
-	      ;; or c is not part of solution or his approximation
-	      [ else (best-sol3 t-init AS
+;;       (let [ (c (first L))
+;; 	     (R (rest L)) ]
+;; 	(cond [ {c = t} (best-sol t-init AS (cons c S)) ] ;; c is the solution and save the best in dyna
+;; 	      [ {c > t} (ssigma-sol-approx-dyna R t S t-init (best-sol t-init
+;; 								  AS
+;; 								  (list c))) ] ;; c is to big to be a solution but can be an approximation 
+;; 	      ;; c < t at this point
+;; 	      ;; c is part of the solution or his approximation
+;; 	      ;; or c is not part of solution or his approximation
+;; 	      [ else (best-sol3 t-init AS
 				
-				       (begin
-					 ;;(display "append c=") (display c) (newline)
+;; 				       (begin
+;; 					 ;;(display "append c=") (display c) (newline)
 
-					 (append (cons c S)
-						 (start-ssigma-sol-approx-dyna R {t - c}))) ;; we have to find a solution for t-c now
+;; 					 (append (cons c S)
+;; 						 (start-ssigma-sol-approx-dyna R {t - c}))) ;; we have to find a solution for t-c now
 
-				       (ssigma-sol-approx-dyna R t S t-init AS))])))) ;;  we must save the best in dyna (TODO : where? verify)
+;; 				       (ssigma-sol-approx-dyna R t S t-init AS))])))) ;;  we must save the best in dyna (TODO : where? verify)
 
 
 

@@ -21,8 +21,6 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-;; if necessary some files can be retrieved here: https://github.com/damien-mattei/library-FunctProg
-
 ;; note := and <- are strictly equivalent
 
 (module sssrec racket
@@ -278,6 +276,96 @@
   (newline))
 
 
+
+
+;; (ssigma-approx-solution-list L-init t-init)
+
+(define (ssigma-approx-solution-list L t)
+  
+  ;; warning this function returns 2 values : a boolean and the solution
+  (def (ssigma-solution-approx L t s) ; s : searched solution
+
+       {cpt := cpt + 1}
+       ;;(display L) (display " ") (display t) (newline)
+       
+       (when (null? L) 
+	 
+ 	 ;; (display "null L")
+	 ;; (newline)
+	 ;; (newline)
+	 
+	 (return (list #f s)))
+       
+       {c := (first L)}
+       {R := (rest L)}
+
+       ;; c = t
+       (when {c = t} (return (list #t
+			     (cons c s)))) ;; c is the solution and should be the shortest solution as we insert only one element
+
+       ;; otherwise we test for approximative or exact solution with or without c
+       {rv0 := (ssigma-solution-approx R (t - c) s)} ; with c
+       {c-sol := (car rv0)}
+       {sol-c-sol := (cadr rv0)}
+       
+       {rv1 := (ssigma-solution-approx R t s)} ; without c
+       {c-not-sol := (car rv1)}
+       {sol-c-not-sol := (cadr rv1)}
+       
+       (when c-sol
+	 {sol-c-sol := (cons c sol-c-sol)}) ; we add c to the solution of t - c to get the solution c + (t - c) = t
+
+       (when {c-sol and c-not-sol} ; both are exact solutions
+	 (if {(length sol-c-sol) < (length sol-c-not-sol)} ; get the shortest exact solution
+	     (return (list #t
+			   (append sol-c-sol
+				   s)))
+	     (return (list #t
+			   (append sol-c-not-sol
+				   s)))))
+       
+       ;; is this one an exact solution?
+       (when c-not-sol ; without c in solution
+	 (return (list #t
+		       (append sol-c-not-sol
+			       s))))
+
+       ;; is this one an exact solution?
+       (when c-sol ; with c in solution
+	 (return (list #t
+		       (append sol-c-sol
+			       s))))
+       
+
+       ;; no exact solution , we take the best approximation, first in distance, and if distance equal in length of list
+       {best-approx := (best-sol t
+				 sol-c-not-sol
+				 sol-c-sol)}
+       
+       (return (list #f
+		     (append best-approx
+			     s))))
+  
+       ;; end internal definition
+       
+
+  {rv2 := (ssigma-solution-approx L t '())}
+  {sf := (car rv2)}
+  {sol := (cadr rv2)}
+  
+  (if sf 
+      (display "exact solution found")
+      (display "no exact solution found"))
+
+  (newline)
+  (display sol)
+  (newline))
+
+
+
+
+
+ 
 ;; (ssigma-fast-approx-solution L-init t-init)
 ;; exact solution found
 ;; (1 3 4 16 17 24 45 64 197 256 275 323 540 889 915 1040 1041 1093 1099 1111 1344 1520 2027 2500 2734 3267 3610 4285 5027)
@@ -407,6 +495,8 @@
   (newline)
   (display sol)
   (newline))
+
+
 
 
 ;; (ssigma-fast-approx-solution-condx-list L-init t-init)

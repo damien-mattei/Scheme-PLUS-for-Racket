@@ -27,6 +27,13 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 <br>
 
+**Changes of version 14.7:**
+
+Example updated.(ssigma-approx-solution-list-memo in SssDyna+.rkt use memoization)
+
+
+<br>
+
 **Changes of version 14.5:**
 
 Example updated.(ssigma-fast-approx-solution-condx-list in SssRec+.rkt)
