@@ -3,7 +3,11 @@ Scheme+ for DrRacket by Damien Mattei.
 
 Install as a package with the [package manager](https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket) (could be a 24 hours delay from github.com to pkgs.racket-lang.org) or from Github source code.
 
-The documentation is here, but is a bit outdated:
+The documentation is here (for Racket but generally works also for other Scheme implementations):
+
+https://docs.racket-lang.org/Scheme-PLUS-for-Racket/index.html
+
+An other but a bit outdated documentation is here:
 https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/gh-pages/README.md
 
 Designed to use with [SRFI 105 Curly Infix reader for Racket](https://github.com/damien-mattei/SRFI-105-for-Racket).

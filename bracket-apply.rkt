@@ -160,6 +160,7 @@
 	 
 	 ;;(newline)
 	 ;;(display "bracket-apply : #'parsed-args=") (display #'parsed-args) (newline)
+	 ;;(display #'($bracket-apply$next4list-args container parsed-args)) (newline)
 	 
 	 #'($bracket-apply$next4list-args container parsed-args))))))
 
