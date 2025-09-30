@@ -3,7 +3,7 @@
 
 ;; This file is part of Scheme+
 
-;; Copyright 2021-2024 Damien MATTEI
+;; Copyright 2021-2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,7 +24,9 @@
 
 
   (provide $bracket-apply$
-	   $bracket-apply$next)
+	   apply-square-brackets-argument-1
+	   ;;$bracket-apply$next
+	   )
 
   (require
 
@@ -160,14 +162,64 @@
 	 
 	 ;;(newline)
 	 ;;(display "bracket-apply : #'parsed-args=") (display #'parsed-args) (newline)
-	 ;;(display #'($bracket-apply$next4list-args container parsed-args)) (newline)
-	 
-	 #'($bracket-apply$next4list-args container parsed-args))))))
+	 ;;(display "bracket-apply : (syntax->datum #'parsed-args)=") (display (syntax->datum #'parsed-args)) (newline)
+
+	 ;;(display #'($bracket-apply$next4list-args container parsed-args)) (newline) ;; old version	 
+	 ;;#'($bracket-apply$next4list-args container parsed-args) ;; old version
+
+	 ;; when trying to put this 'case in a subroutine Racket complains of #'parsed-args being outside templates.
+	 (case (length
+		(cdr
+		 (syntax->datum #'parsed-args))) ; we remove 'list from the length of syntax list (list arg1 arg2 ...) to get (arg1 arg2 ...)
+
+	   ((0) #'(apply-square-brackets-argument-0 container))
+	   
+	   ;; 1 argument in [ ]
+	   ;; T[index]
+	   ((1) #'(apply-square-brackets-argument-1 container
+						    (first parsed-args)))
+	   ;; 2 arguments in [ ]
+	   ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
+	   
+	   ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
+	   ;; '#(3 4 5)
+	   ((2) #'(apply-square-brackets-argument-2 container
+						    (first parsed-args)
+						    (second parsed-args)))
+
+	   ;; 3 arguments in [ ]
+	   ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
+	   ((3) #'(apply-square-brackets-argument-3 container
+						    (first parsed-args)
+						    (second parsed-args)
+						    (third parsed-args)))
+
+	   ;; 4 arguments in [ ]
+	   ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
+	   ((4) #'(apply-square-brackets-argument-4 container
+						    (first parsed-args)
+						    (second parsed-args)
+						    (third parsed-args)
+						    (fourth parsed-args)))
+
+	   ;; 5 arguments in [ ]
+	   ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
+	   ((5) #'(apply-square-brackets-argument-5 container
+						    (first parsed-args)
+						    (second parsed-args)
+						    (third parsed-args)
+						    (fourth parsed-args)
+						    (fifth parsed-args)))
+	   ;; more than 5 arguments in [ ]
+	   ;; T[i1 i2 i3 i4 i5 i6 ...]
+	   (else #'(apply-square-brackets-argument-6-and-more container parsed-args)))
+
+	 )))))
 
 
 
 
-
+;; DEPRECATED
 (define ($bracket-apply$next4list-args container args) 
 
 
@@ -220,9 +272,13 @@
      (apply-square-brackets-argument-6-and-more container args))))
 
 
-(define ($bracket-apply$next container . args)   ;; optimized version
+
+;; DEPRECATED
+(define ($bracket-apply$next container . args)   ;; optimized version, used by assignment.rkt
 
   ($bracket-apply$next4list-args container args))
+
+
 
 
 

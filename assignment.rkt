@@ -3,7 +3,7 @@
 
 ;; This file is part of Scheme+
 
-;; Copyright 2023-2024 Damien MATTEI
+;; Copyright 2023-2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -245,88 +245,90 @@
 	   ;; (display "<- : (mlist? #'parsed-args)=") (display (mlist? #'parsed-args)) (newline)
 	   ;; (display "<- : (length #'parsed-args)=") (display (length #'parsed-args)) (newline)
 
-	   #'(assignment-next4list-args container parsed-args expr)))
+	   ;;#'(assignment-next4list-args container parsed-args expr)))
 
 	   ;; we parse arguments at posteriori
-	   ;;(case (length (cdr #'parsed-args)) ; putting code here optimise run-time
-	   ;;(case (length (syntax->datum #'parsed-args))
-	   ;; (case (length #'parsed-args)
-			       
-	   ;; 		     ;; 0 argument in []
-	   ;; 		     ;; T[]
-	   ;; 		     ;; {v[] <- #(1 2 3)}
-	   ;; 		     ;; > v
-	   ;; 		     ;;'#(1 2 3)
-	   ;; 		     ((0) 
-	   ;; 		      ;;#'(begin
-	   ;; 		      ;; 	  (display "<- case 0 : parsed-args=") (display parsed-args) (newline)
-	   ;; 			  #'(assignment-argument-0 container expr));)  ; possible to have NO index
+	   ;; putting code here optimise run-time
+	   (case (length
+		  (cdr
+		   (syntax->datum #'parsed-args)))
+	     
+	     
+	     ;; 0 argument in []
+	     ;; T[]
+	     ;; {v[] <- #(1 2 3)}
+	     ;; > v
+	     ;;'#(1 2 3)
+	     ((0) 
+	      ;;#'(begin
+	      ;; 	  (display "<- case 0 : parsed-args=") (display parsed-args) (newline)
+	      #'(assignment-argument-0 container expr));)  ; possible to have NO index
 
-	   ;; 		     ;; 1 argument in [ ]
-	   ;; 		     ;; T[index]
-	   ;; 		     ((1)
-	   ;; 		      ;;(begin
-	   ;; 		       	;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
-	   ;; 			  #'(assignment-argument-1 container
-	   ;; 						   (first parsed-args)
-	   ;; 						   expr));)
+	     ;; 1 argument in [ ]
+	     ;; T[index]
+	     ((1)
+	      ;;(begin
+	      ;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
+	      #'(assignment-argument-1 container
+				       (first parsed-args)
+				       expr));)
 
-	   ;; 		     ;; 2 arguments in [ ]
-	   ;; 		     ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]   
-	   ;; 		     ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
-	   ;; 		     ;; '#(3 4 5)
-	   ;; 		     ((2)
-	   ;; 		      ;; #'(begin
-	   ;; 		      ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
-	   ;; 			  #'(assignment-argument-2 container
-	   ;; 						   (first parsed-args)
-	   ;; 						   (second parsed-args)
-	   ;; 						   expr));)
+	     ;; 2 arguments in [ ]
+	     ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]   
+	     ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
+	     ;; '#(3 4 5)
+	     ((2)
+	      ;; #'(begin
+	      ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
+	      #'(assignment-argument-2 container
+				       (first parsed-args)
+				       (second parsed-args)
+				       expr));)
 
-	   ;; 		     ;; 3 arguments in [ ]
-	   ;; 		     ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
-	   ;; 		     ((3)
-	   ;; 		      ;; #'(begin
-	   ;; 		      ;; 	  (display  "<- case 3 : 'parsed-args=") (display 'parsed-args) (newline)
-	   ;; 			  ;;#'parsed-args);)
-	   ;; 			  #'(assignment-argument-3 container					  
-	   ;; 			  			 (first parsed-args)
-	   ;; 			  			 (second parsed-args)
-	   ;; 			  			 (third parsed-args)
-	   ;; 			  			 expr));)
-			     
-	   ;; 		     ;; 4 arguments in [ ]
-	   ;; 		     ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
-	   ;; 		     ((4)
-	   ;; 		      #'(assignment-argument-4 container
-	   ;; 					       (first parsed-args)
-	   ;; 					       (second parsed-args)
-	   ;; 					       (third parsed-args)
-	   ;; 					       (fourth parsed-args)
-	   ;; 					       expr))
+	     ;; 3 arguments in [ ]
+	     ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
+	     ((3)
+	      ;; #'(begin
+	      ;; 	  (display  "<- case 3 : 'parsed-args=") (display 'parsed-args) (newline)
+	      ;;#'parsed-args);)
+	      #'(assignment-argument-3 container					  
+				       (first parsed-args)
+				       (second parsed-args)
+				       (third parsed-args)
+				       expr));)
+	     
+	     ;; 4 arguments in [ ]
+	     ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
+	     ((4)
+	      #'(assignment-argument-4 container
+				       (first parsed-args)
+				       (second parsed-args)
+				       (third parsed-args)
+				       (fourth parsed-args)
+				       expr))
 
-	   ;; 		     ;; 5 arguments in [ ]
-	   ;; 		     ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
-	   ;; 		     ((5)
-	   ;; 		      #'(assignment-argument-5 container
-	   ;; 					       (first parsed-args)
-	   ;; 					       (second parsed-args)
-	   ;; 					       (third parsed-args)
-	   ;; 					       (fourth parsed-args)
-	   ;; 					       (fifth parsed-args)
-	   ;; 					       expr))
+	     ;; 5 arguments in [ ]
+	     ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
+	     ((5)
+	      #'(assignment-argument-5 container
+				       (first parsed-args)
+				       (second parsed-args)
+				       (third parsed-args)
+				       (fourth parsed-args)
+				       (fifth parsed-args)
+				       expr))
 
-	   ;; 		     ;; more than 5 arguments in [ ]
-	   ;; 		     ;; T[i1 i2 i3 i4 i5 i6 ...]
-	   ;; 		     (else ; case
-	   ;; 		      #'(assignment-argument-6-and-more container parsed-args expr)))))
+	     ;; more than 5 arguments in [ ]
+	     ;; T[i1 i2 i3 i4 i5 i6 ...]
+	     (else ; case
+	      #'(assignment-argument-6-and-more container parsed-args expr)))))
 
 
 	;; i suppose the example below is done in the 'else' of 'cond'
 	;; {(x y z) <- (values 1 2 3)}
-	     (else ; cond
-	      #'(define-or/and-set!-values (brket-aply container index ...) expr)))) ;; the argument's names does not match the use
-    
+	(else ; cond
+	 #'(define-or/and-set!-values (brket-aply container index ...) expr)))) ;; the argument's names does not match the use
+      
 
     
     ;;  special form like : (<- ($bracket-apply$ T 3) ($bracket-apply$ T 4))
@@ -419,7 +421,7 @@
 
     )))
 
-
+;; DEPRECATED
 (define (assignment-next4list-args container parsed-args expr) 
 
   	   (case (length parsed-args)
@@ -698,7 +700,7 @@
 
 
 
-
+;; DEPRECATED
 (define-syntax assignmentnext
   
   (lambda (stx)
@@ -748,166 +750,30 @@
       )))
 
 
-;; (define-syntax assignmentnext
 
-;;   (lambda (stx)
-    
-;;     (syntax-case stx ()
-
-;;     ((_ container expr args)
-
-;;      ;; (begin
-;;      ;;   (display "assignmentnext : (syntax->list #'args)=")
-;;      ;;   (display (syntax->list #'args))
-;;      ;;   (newline)
-	
-;;      (case (length (syntax->list #'args)) ;  TODO begin (possibly implicit) -> replace by 'cond'
-
-;;        ;; 0 argument in []
-;;        ;; T[]
-;;        ;; {v[] <- #(1 2 3)}
-;;        ;;
-;;        ((1)
-;; 	;;(display "assignmentnext : container =") (display container) (newline)
-;; 	#'(assignment-argument-0 container expr))
-       
-;;        ;; 1 argument in [ ]
-;;        ;; T[index]
-;;        ((2) #'(assignment-argument-1 container (first args) expr))
-       
-;;        ;; 2 arguments in [ ]
-;;        ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
-       
-;;        ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
-;;        ;; '#(3 4 5)
-;;        ((3) #'(assignment-argument-2 container
-;; 				   (first args)
-;; 				   (second args)
-;; 				   expr))
-
-;;        ;; 3 arguments in [ ]
-;;        ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
-;;        ((4) #'(assignment-argument-3 container
-;; 				   (first args)
-;; 				   (second args)
-;; 				   (third args)
-;; 				   expr))
-
-
-;;        ;; 4 arguments in [ ]
-;;        ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
-;;        ((5) #'(assignment-argument-4 container
-;; 				   (first args)
-;; 				   (second args)
-;; 				   (third args)
-;; 				   (fourth args)
-;; 				   expr))
-
-       
-
-;;        ;; 5 arguments in [ ]
-;;        ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
-;;        ((6) #'(assignment-argument-5 container
-;; 				   (first args)
-;; 				   (second args)
-;; 				   (third args)
-;; 				   (fourth args)
-;; 				   (fifth args)
-;; 				   expr))
-
-
-;;        ;; more than 5 arguments in [ ]
-;;        ;; T[i1 i2 i3 i4 i5 i6 ...]
-;;        (else
-;; 	#'(assignment-argument-6-and-more container expr args)))))));) ;one parenthesis for 'begin'
-
-
-
-
-;; > (declare x y z)
-;; > (assign-var (x y z) (1 2 3))
-;; > x
-;; 1
-;; > y
-;; 2
-;; > z
-;; 3
-;; USELESS
-;; (define-syntax assign-var
-;;   (syntax-rules ()
-
-;;     ((_ (var ...) (exp ...)) (begin (set! var exp) ...))))
-
-
-
-;; DEPRECATED : incompatible with both string and vector 
-;; (define (vector-copy-slice-with-negative-step container-eval expr-eval i1 i2 step)
-;;   (for (($> (<+ k i1) (<+ i 0)) (> k i2) (<- k (+ k step)))
-;;        (vector-set! container-eval
-;; 		  k
-;; 		  (vector-ref expr-eval i))
-;;        (<- i (+ i 1))))
-
-;; (define (vector-copy-slice-starting-at-zero-with-negative-step container-eval expr-eval i1 step)
-;;   (for (($> (<+ k i1) (<+ i 0)) (>= k 0) (<- k (+ k step)))
-;;        (vector-set! container-eval
-;; 		  k
-;; 		  (vector-ref expr-eval i))
-;;        (<- i (+ i 1))))
-
-
-;; (define (vector-copy-slice-with-positive-step container-eval expr-eval i1 i2 step)
-;;   (for (($> (<+ k i1) (<+ i 0)) (< k i2) (<- k (+ k step)))
-;;        (vector-set! container-eval
-;; 		  k
-;; 		  (vector-ref expr-eval i))
-;;        (<- i (+ i 1))))
-
-
-
-;; (define (string-copy-slice-with-negative-step container-eval expr-eval i1 i2 step)
-;;   (for (($> (<+ k i1) (<+ i 0)) (> k i2) (<- k (+ k step)))
-;;        (string-set! container-eval
-;; 		  k
-;; 		  (string-ref expr-eval i))
-;;        (<- i (+ i 1))))
-
-;; (define (string-copy-slice-starting-at-zero-with-negative-step container-eval expr-eval i1 step)
-;;   (for (($> (<+ k i1) (<+ i 0)) (>= k 0) (<- k (+ k step)))
-;;        (string-set! container-eval
-;; 		  k
-;; 		  (string-ref expr-eval i))
-;;        (<- i (+ i 1))))
-
-
-;; (define (string-copy-slice-with-positive-step container-eval expr-eval i1 i2 step)
-;;   (for (($> (<+ k i1) (<+ i 0)) (< k i2) (<- k (+ k step)))
-;;        (string-set! container-eval
-;; 		  k
-;; 		  (string-ref expr-eval i))
-;;        (<- i (+ i 1))))
-
-;; end DEPRECATED
 
 
 
 (define (copy-slice-with-negative-step container-eval expr-eval i1 i2 step)
   (for (($> (<+ k i1) (<+ i 0)) (> k i2) (<- k (+ k step)))
        ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
-       (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
+       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
+       (assignment-argument-1-index container-eval k (apply-square-brackets-argument-1 expr-eval i))
        (<- i (+ i 1))))
 
 (define (copy-slice-starting-at-zero-with-negative-step container-eval expr-eval i1 step)
   (for (($> (<+ k i1) (<+ i 0)) (>= k 0) (<- k (+ k step)))
        ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
-       (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
+       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
+       (assignment-argument-1-index container-eval k (apply-square-brackets-argument-1 expr-eval i))
        (<- i (+ i 1))))
 
 
 (define (copy-slice-with-positive-step container-eval expr-eval i1 i2 step)
   (for (($> (<+ k i1) (<+ i 0)) (< k i2) (<- k (+ k step)))
        ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
-       (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
+       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
+       (assignment-argument-1-index container-eval k (apply-square-brackets-argument-1 expr-eval i))
        (<- i (+ i 1))))
 
 
@@ -915,7 +781,8 @@
   ;;(display "copy-slice-starting-at-zero-with-positive-step : container-eval=") (display container-eval) (newline)
   (for (($> (<+ k 0) (<+ i 0)) (< k i2) (<- k (+ k step)))
        ;;(<+ bkt ($bracket-apply$next expr-eval (list i)))
-       (<+ bkt ($bracket-apply$next expr-eval i))
+       ;;(<+ bkt ($bracket-apply$next expr-eval i))
+       (<+ bkt (apply-square-brackets-argument-1 expr-eval i))
        ;;(display "bkt=") (display bkt) (newline)
        (assignment-argument-1-index container-eval k bkt)
        (<- i (+ i 1))))

@@ -111,6 +111,7 @@
   
   ;; transform any syntax in a list if possible
   ;; note:this macro made a side effect on the input variable, modifying it
+  ;; note: why not use syntax->datum ???
   (define-syntax var-syntax2list
     (syntax-rules ()
       ((_ var)
