@@ -33,6 +33,7 @@
    def def+ return return-rec
    ;;define
    define+
+   lambda+
    
    <+ +>
    ⥆ ⥅
@@ -145,7 +146,7 @@
    Scheme+/declare
    Scheme+/block
    Scheme+/return
-
+   Scheme+/lambda+
    
    ;; infix notation,indexing,slicing and assignment
    Scheme+/slice

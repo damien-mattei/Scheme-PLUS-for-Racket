@@ -587,13 +587,13 @@ Example:
 "empty list"
 }|
 
-Note: @racket[return] can only be used inside a @racket[def] :
+Note: @racket[return] can only be used inside specific macros :
 
 	 
 @codeblock|{
 (return 7)
 }|
-@elem[#:style (style #f (list (color-property "red")))]{return: can only be used inside def and def+}
+@elem[#:style (style #f (list (color-property "red")))]{return: can only be used inside def,def+ and lambda+}
 
 Another example:
 
@@ -648,6 +648,35 @@ z
 @defform[#:link-target? #f (def name)]{Like @racket[declare].}
 
 @defform[(def+ (name args ...) body ...+)]{Same as @racket[def] but all @racket[body ...] will be analyzed as possibly infix or still prefix.}
+
+@defform[(lambda+ (args ...) body ...+)]{Same as @racket[lambda] but all @racket[body ...] will be analyzed as possibly infix or still prefix.@racket[return] and @racket[return-rec] are allowed in @racket[lambda+].}
+
+@codeblock|{
+(define foo (lambda+ () (return (3 * 5 + 2))
+	    	     	'not_good))
+(foo)
+17
+}|
+
+@codeblock|{
+(require srfi/31) ; for 'rec
+
+(define x 3)
+
+(define foo (rec bar (lambda+ ()
+                                (when (x < 5)
+                                  {x := x + 1}
+                                  (display "super!")(newline)
+                                  (bar))
+                                (return-rec (3 * 5 + 2))
+                                'not_good)))
+
+(foo)
+super!
+super!
+17
+}|
+
 
 @subsection[#:tag "control"]{Control flow : Conditionals and Loops}
 

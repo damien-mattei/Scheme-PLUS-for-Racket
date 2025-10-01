@@ -30,6 +30,68 @@ Again you will have all the information about errors with the true line number d
 Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile) provided (see docs).
 <br>
 
+**Changes of version 15.1:**
+
+Add lambda+ :
+
+```scheme
+
+(define foo (lambda+ () 7))
+	(foo)
+	7
+
+> (define foo (lambda+ () (return (3 * 5 + 2))
+	                       'not_good))
+(define foo (lambda+ () (return (3 * 5 + 2)) 'not_good))
+#<eof>
+> (foo)
+(foo)
+17
+#<eof>
+
+
+
+
+(define x 3)
+
+
+#<eof>
+> (define foo (rec bar (lambda+ ()
+                                (when (x = 3)
+                                  {x := x + 1}
+                                  (display "super!")(newline)
+                                  (bar))
+                                (return (3 * 5 + 2))
+                                'not_good)))
+
+
+(define foo
+  (rec
+   bar
+   (lambda+
+    ()
+    (when (x = 3) (:= x (+ x 1)) (display "super!") (newline) (bar))
+    (return (3 * 5 + 2))
+    'not_good)))
+
+
+#<eof>
+> (foo)
+
+
+(foo)
+super!
+17
+
+
+#<eof>
+>
+```
+
+
+<br>
+<br>
+
 **Changes of version 15.0:**
 
 A few optimization on [ ] and assignment of containers (vectors,...).
