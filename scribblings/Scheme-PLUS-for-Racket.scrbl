@@ -649,12 +649,25 @@ z
 
 @defform[(def+ (name args ...) body ...+)]{Same as @racket[def] but all @racket[body ...] will be analyzed as possibly infix or still prefix.}
 
-@defform[(lambda+ (args ...) body ...+)]{Same as @racket[lambda] but all @racket[body ...] will be analyzed as possibly infix or still prefix.@racket[return] and @racket[return-rec] are allowed in @racket[lambda+].}
+@defform[(lambda+ (args ...) body ...+)]{Same as @racket[lambda] but all @racket[body ...] will be analyzed as possibly infix or still prefix.Only @racket[return] is allowed in @racket[lambda+].}
 
 @codeblock|{
-(define foo (lambda+ () (return (3 * 5 + 2))
-	    	     	'not_good))
+(define x 3)
+(define foo (rec bar (lambda+ ()
+                     (when (< x 5)
+                       (set! x (+ x 1))
+                       (display "super!")(newline)
+                       (bar))
+                     (display "returning") (newline)
+                     (return 17)
+                     'not_good)))
+
 (foo)
+super!
+super!
+returning
+returning
+returning
 17
 }|
 

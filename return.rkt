@@ -11,14 +11,14 @@
   ;;(lambda (stx)
   (syntax-rules ()
      ((_ . _)
-      (raise-syntax-error 'return-rec err-string)))
+      (raise-syntax-error 'return-rec "can only be used inside def,def+")))
   )
 
 (define-syntax-parameter return
   ;;(lambda (stx)
   (syntax-rules ()
      ((_ . _)
-    (raise-syntax-error 'return err-string)))
+    (raise-syntax-error 'return "can only be used inside def,def+,lambda+")))
   )
 
 )

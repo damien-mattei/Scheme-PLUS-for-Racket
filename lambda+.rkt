@@ -6,6 +6,7 @@
 		 Scheme+/return
 		 racket/stxparam
 		 Scheme+/nfx
+		 Scheme+/def+
 		 (for-syntax racket/base))
 
 
@@ -22,86 +23,42 @@
 	;; 17
 	;; #<eof>
 	(define-syntax lambda+
-
 	  (lambda (stx)
-    
-	    (syntax-case stx ()
-
+  	    (syntax-case stx ()
 	      ((_ (<arg> ...) <body> <body>* ...)
-	 
-         
-	       #'(lambda (<arg> ...)
 
+	       #'(lambda (<arg> ...)			    
 		   (call/cc
-
-		    (lambda (ret-rec-id) ;(#,ret-rec-id)
-		      ;; In the body we adjust the 'return-rec' keyword so that calls
-		      ;; to 'return-rec' are replaced with calls to the escape
+		    (lambda (ret-id) ;(#,ret-id)
+		      ;; In the body we adjust the 'return' keyword so that calls
+		      ;; to 'return' are replaced with calls to the escape
 		      ;; continuation.
-
 		      (syntax-parameterize
-		       ([return-rec (syntax-rules ()
-				      [(return-rec vals (... ...))
-				       (ret-rec-id vals (... ...))])])
-		       
-		       (apply (rec <name> (lambda (<arg> ...)
-					    
-					    (call/cc
-
-					     (lambda (ret-id) ;(#,ret-id)
-					       ;; In the body we adjust the 'return' keyword so that calls
-					       ;; to 'return' are replaced with calls to the escape
-					       ;; continuation.
-					       (syntax-parameterize
-						([return (syntax-rules ()
-							   [(return vals (... ...))
-							    (ret-id vals (... ...))])])
-						;;(display "def+.rkt : def+ : <body> =") (display <body>) (newline)
-						($nfx$-rec <body>)
-						($nfx$-rec <body>*)
-						...)))))
-			      
-			      (list <arg> ...)))))))
-
-
+		       ([return (syntax-rules ()
+				  [(_ vals (... ...))
+				   (ret-id vals (... ...))])])
+		       ($nfx$-rec <body>)
+		       ($nfx$-rec <body>*)
+		       ...)))))			      
 
 	      ;; variadic arguments in list
 	      ((_ (<arg> . L) <body> <body>* ...)
-	       
-               
+         
 	       #'(lambda (<arg> . L)
-
 		   (call/cc
-
-		    (lambda (ret-rec-id) ;(#,ret-rec-id)
-		      ;; In the body we adjust the 'return-rec' keyword so that calls
-		      ;; to 'return-rec' are replaced with calls to the escape
+		    (lambda (ret-id) ;(#,ret-id)
+		      ;; In the body we adjust the 'return' keyword so that calls
+		      ;; to 'return' are replaced with calls to the escape
 		      ;; continuation.
-
 		      (syntax-parameterize
-		       ([return-rec (syntax-rules ()
-				      [(return-rec vals (... ...))
-				       (ret-rec-id vals (... ...))])])
-		       
-		       (apply (rec <name> (lambda (<arg> . L)
-					    
-					    (call/cc
+		       ([return (syntax-rules ()
+				  [(return vals (... ...))
+				   (ret-id vals (... ...))])])
+		       ($nfx$-rec <body>)
+		       ($nfx$-rec <body>*)
+		       ...))))))))
 
-					     (lambda (ret-id) ;(#,ret-id)
-					       ;; In the body we adjust the 'return' keyword so that calls
-					       ;; to 'return' are replaced with calls to the escape
-					       ;; continuation.
-					       (syntax-parameterize
-						([return (syntax-rules ()
-							   [(return vals (... ...))
-							    (ret-id vals (... ...))])])
-						($nfx$-rec <body>)
-						($nfx$-rec <body>*)
-						...)))))
-			      
-			      (cons <arg> . L))))))) ; this way we get the full list of arguments
-	      
-	))))
+	) ; end module
 
 
 ;; > (define loo (lambda+ ()
@@ -112,24 +69,19 @@
 ;; (loo)
 ;; 3
 
-
-
-
-
 ;; > (define x 3)
-
 
 ;; (define x 3)
 
-
 ;; #<eof>
 ;; > (define foo (rec bar (lambda+ ()
-;;                                 (when (x = 3)
-;;                                   {x := x + 1}
-;;                                   (display "super!")(newline)
-;;                                   (bar))
-;;                                 (return (3 * 5 + 2))
-;;                                 'not_good)))
+;;                     (when (< x 5)
+;;                       (set! x (+ x 1))
+;;                       (display "super!")(newline)
+;;                       (bar))
+;;                     (display "returning") (newline)
+;;                     (return 17)
+;;                     'not_good)))
 
 
 ;; (define foo
@@ -137,8 +89,10 @@
 ;;    bar
 ;;    (lambda+
 ;;     ()
-;;     (when (x = 3) (:= x (+ x 1)) (display "super!") (newline) (bar))
-;;     (return (3 * 5 + 2))
+;;     (when (< x 5) (set! x (+ x 1)) (display "super!") (newline) (bar))
+;;     (display "returning")
+;;     (newline)
+;;     (return 17)
 ;;     'not_good)))
 
 
@@ -148,25 +102,11 @@
 
 ;; (foo)
 ;; super!
+;; super!
+;; returning
+;; returning
+;; returning
 ;; 17
-
 
 ;; #<eof>
 ;; > 
-
-
- ;; (define x 3)
-
- ;; (define foo (rec bar (lambda+ ()
- ;;                                (when (x < 5)
- ;;                                  {x := x + 1}
- ;;                                  (display "super!")(newline)
- ;;                                  (bar))
- ;;                                (return-rec (3 * 5 + 2))
- ;;                                'not_good)))
-
-
-;;(foo)
-;;super!
-;;super!
-;;17

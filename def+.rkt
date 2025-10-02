@@ -44,7 +44,9 @@
 				[(return-rec vals (... ...))
 				 (ret-rec-id vals (... ...))])])
 		 
-		 (apply (rec <name> (lambda (<arg> ...)
+		 (apply (rec <name>
+
+			     (lambda (<arg> ...)
 				      
 				      (call/cc
 

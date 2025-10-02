@@ -30,6 +30,12 @@ Again you will have all the information about errors with the true line number d
 Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile) provided (see docs).
 <br>
 
+**Changes of version 15.2:**
+
+lambda+ allows return but not return-rec.
+
+<br>
+
 **Changes of version 15.1:**
 
 Add lambda+ :

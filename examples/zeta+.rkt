@@ -78,7 +78,6 @@
 	  (round {yo - ys})))
 
 
-
 {nmax ← 10000000}
 
 (define (draw-zeta dc)
