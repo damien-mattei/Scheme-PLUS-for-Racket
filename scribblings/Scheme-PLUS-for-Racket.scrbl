@@ -661,6 +661,11 @@ z
 Examples:
 
 @codeblock|{
+(def+ (g x y)
+  (abs (sin (√ (x ² + y ²)))))
+}|
+
+@codeblock|{
 ;; draw a vector point
 (def+ (draw-vect-point dc z-vect point-brush)
   (send dc set-pen no-pen)
@@ -689,10 +694,7 @@ Examples:
 	  (round (yo - ys))))
 }|
 
-@codeblock|{
-(def+ (g x y)
-  (abs (sin (√ (x ² + y ²)))))
-}|
+
 
 @codeblock|{
 ;; get a normalized scalar between [0,1] and return the values of red, green and blue of the color in the long rainbow
