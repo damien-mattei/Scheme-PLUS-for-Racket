@@ -33,7 +33,7 @@
 
 
 ;; draw a vector point
-(define+ (draw-vect-point dc z-vect point-brush)
+(def+ (draw-vect-point dc z-vect point-brush)
   (send dc set-pen no-pen)
   (send dc set-brush point-brush) ; blue-brush)
   ;; size of the ellipse / point in pixels
@@ -51,7 +51,7 @@
 
 
 ;; convert in screen coordinates
-(define+ (to-screen-multi-values z0) ; z0 is a complex number
+(def+ (to-screen-multi-values z0) ; z0 is a complex number
   {re ← (real-part z0)}
   {im ← (imag-part z0)}
   {xs ← re * unit-axis-in-pixel}
@@ -75,7 +75,7 @@
 (define (f-trunc x y)
   (remove-extrema (f x y)))
 
-(define+ (g x y)
+(def+ (g x y)
   ;;(abs (sin (sqrt (x ** 2 + y ** 2)))))
   (abs (sin (√ (x ² + y ²)))))
 
@@ -109,7 +109,7 @@
   (h x y))
 
 ;; get a normalized scalar between [0,1] and return the values of red, green and blue of the color in the long rainbow
-(define+ (scalar-to-long-rainbow-rgb s)
+(def+ (scalar-to-long-rainbow-rgb s)
   {a := (1 - s) / 0.2} ; invert and group
   {x := (inexact->exact (floor a))} ; this is the integer part
   {y := (inexact->exact (floor (255 * (a - x))))} ; fractional part from 0 to 255
@@ -149,18 +149,18 @@
       (max max-norm-x-y (max-list-norm-x-y (cdr ls)))))
 
 
-(define+ (chaos p q d x0 y0)
+(def+ (chaos p q d x0 y0)
   
   ;;(define a {2 * cos{2 * pi * p / q}}) ; or {2 * (cos {2 * pi * p / q})} or {2 * cos({2 * pi * p / q})}
   ;;(define a   2 * (cos (2 * pi * p / q)))
   (def a   2 * (cos (2 * pi * p / q)))
-  (define+ ksx  (√ ((2 + a) / 2)) ) ;; (sqrt {(2 + a) / 2})) ; or sqrt{{2 + a} / 2}
+  (def+ ksx  (√ ((2 + a) / 2)) ) ;; (sqrt {(2 + a) / 2})) ; or sqrt{{2 + a} / 2}
   {ksy := (√ ((2 - a) / 2))}    ; (sqrt {(2 - a) / 2})} ; or (define ksy (sqrt {{2 - a} / 2}))
   
   (stream-map (lambda (z)
                 (match-let (((vector x y) z))
                   (vector ((ksx / (√ 2)) * (x + y))
-			  {(ksy / (√ 2)) * ((- x) + y)})))
+			  {(ksy / (√ 2)) * ((- x) + y)}))) ; here { } could be replaced by ( )
                   (stream-iterate (lambda (z)
                                     (match-let (((vector x y) z))
                                       (vector
@@ -223,7 +223,7 @@
 ;;                  (8  17 5 0.1 1 60000)))
 
 ;; compute the RGB color from hsv
-(define+ (compute-rgb-color-from-hsv point max-norm-x-y)
+(def+ (compute-rgb-color-from-hsv point max-norm-x-y)
 
   ;; extract the coordonates
   {x <- point[0]}

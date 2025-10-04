@@ -50,6 +50,14 @@ What Scheme+ is not: Scheme+ is not a DSL (Domain Specific Language) a contrario
 @section[#:tag "both"]{Both prefix and infix expressions in the same world}
 
 You can mix infix sub-expressions and prefix sub-expressions in the same expression:
+
+@codeblock|{
+{3 * (- 9 4) + 2}
+17
+}|
+
+In Scheme+, in an expression surrounded by @racket[{ }] curly brackets,the sub-expressions using @racket[( )] round brackets can contains prefix or infix expressions.The parser will automatically detect the infix or prefix and parse it accordingly.
+
 @codeblock|{
 {(3 + 1) * (2 * (+ 2 1) - (sin 0.3)) + ((* 2 5) - 5)}
 27.817919173354642
@@ -65,6 +73,7 @@ The above expression is automatically parsed and converted in a classic scheme p
 }|
 
 Other examples:
+
 
 @codeblock|{
 (define (fib n)
@@ -647,9 +656,85 @@ z
 
 @defform[#:link-target? #f (def name)]{Like @racket[declare].}
 
-@defform[(def+ (name args ...) body ...+)]{Same as @racket[def] but all @racket[body ...] will be analyzed as possibly infix or still prefix.}
+@defform[(def+ (name args ...) body ...+)]{Same as @racket[def] but all @racket[body ...] will be parsed as possibly infix or still prefix.}
 
-@defform[(lambda+ (args ...) body ...+)]{Same as @racket[lambda] but all @racket[body ...] will be analyzed as possibly infix or still prefix.Only @racket[return] is allowed in @racket[lambda+].}
+Examples:
+
+@codeblock|{
+;; draw a vector point
+(def+ (draw-vect-point dc z-vect point-brush)
+  (send dc set-pen no-pen)
+  (send dc set-brush point-brush) ; blue-brush)
+  ;; size of the ellipse / point in pixels
+  {ga ← 3} ; grand axe / big axis
+  {pa ← 3} ; petit axe / little axis
+  {x ← z-vect[0]}
+  {y ← z-vect[1]}
+  ;;(display "before (z ← x + i * y)") (newline)
+  (z ← x + i * y) ; complex number
+  ;;(display "after (z ← x + i * y)") (newline)
+  ((x y) ← (to-screen-multi-values z))
+  {x ← x - (quotient ga 2)}
+  (y ← y - (quotient pa 2))
+  (send dc draw-ellipse x y ga pa))
+
+
+;; convert in screen coordinates
+(def+ (to-screen-multi-values z0) ; z0 is a complex number
+  {re ← (real-part z0)}
+  {im ← (imag-part z0)}
+  {xs ← re * unit-axis-in-pixel}
+  {ys ← im * unit-axis-in-pixel}
+  (values (round (xo + xs))
+	  (round (yo - ys))))
+}|
+
+@codeblock|{
+(def+ (g x y)
+  (abs (sin (√ (x ² + y ²)))))
+}|
+
+@codeblock|{
+;; get a normalized scalar between [0,1] and return the values of red, green and blue of the color in the long rainbow
+(def+ (scalar-to-long-rainbow-rgb s)
+  {a := (1 - s) / 0.2} ; invert and group
+  {x := (inexact->exact (floor a))} ; this is the integer part
+  {y := (inexact->exact (floor (255 * (a - x))))} ; fractional part from 0 to 255
+  (case x
+    ((0) (values 255 y 0))
+    ((1) (values (255 - y) 255 0))
+    ((2) (values 0 255 y))
+    ((3) (values 0 (255 - y) 255))
+    ((4) (values y 0 255))
+    ((5) (values 255 0 255))
+    (else
+     (display "s=") (display s) (newline)
+     (display "a=") (display a) (newline)
+     (display "x=") (display x) (newline)
+     (error "else in scalar-to-long-rainbow-rgb"))))
+}|
+
+@codeblock|{
+(def+ (chaos p q d x0 y0)
+  
+  (def a   2 * (cos (2 * pi * p / q)))
+  (def+ ksx  (√ ((2 + a) / 2)) )
+  {ksy := (√ ((2 - a) / 2))} 
+  
+  (stream-map (lambda (z)
+                (match-let (((vector x y) z))
+                  (vector ((ksx / (√ 2)) * (x + y))
+			  {(ksy / (√ 2)) * ((- x) + y)}))) ; here { } could be replaced by ( )
+                  (stream-iterate (lambda (z)
+                                    (match-let (((vector x y) z))
+                                      (vector
+				       ((a * x) + y + (d * x) / (add1 (x ²))) ; infix left to right evaluation avoid extra parenthesis but is hard for humans
+				       (- x))))
+				  (vector x0 y0))))
+}|
+
+
+@defform[(lambda+ (args ...) body ...+)]{Same as @racket[lambda] but all @racket[body ...] will be parsed as possibly infix or still prefix.Only @racket[return] is allowed in @racket[lambda+].}
 
 @codeblock|{
 (define x 3)

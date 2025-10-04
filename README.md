@@ -31,11 +31,17 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 <br>
 
-**Changes of version 15.2:**
+**Changes of version 15.4:**
 
-Example of documentation updated about lambda+.
+Example of documentation updated about ```def+``` and in introduction.
 
 <br>
+
+<br>
+
+**Changes of version 15.3:**
+
+Example of documentation updated about lambda+.
 
 <br>
 
