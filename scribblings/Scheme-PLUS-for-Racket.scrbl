@@ -671,24 +671,7 @@ returning
 17
 }|
 
-@codeblock|{
-(require srfi/31) ; for 'rec
 
-(define x 3)
-
-(define foo (rec bar (lambda+ ()
-                                (when (x < 5)
-                                  {x := x + 1}
-                                  (display "super!")(newline)
-                                  (bar))
-                                (return-rec (3 * 5 + 2))
-                                'not_good)))
-
-(foo)
-super!
-super!
-17
-}|
 
 
 @subsection[#:tag "control"]{Control flow : Conditionals and Loops}

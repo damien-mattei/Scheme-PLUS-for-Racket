@@ -5,11 +5,7 @@
 ;; example in Scheme+ that plot the convergence of the ζ Riemann complex serie (without Analytic continuation)
 
 (require Scheme+)
-	
-
 (require Scheme+/increment)
-
-
 (require racket/gui/base)
 
 

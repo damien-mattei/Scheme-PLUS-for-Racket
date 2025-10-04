@@ -27,19 +27,19 @@
   	    (syntax-case stx ()
 	      ((_ (<arg> ...) <body> <body>* ...)
 
-	       #'(lambda (<arg> ...)			    
+	       #'(lambda (<arg> ...)
 		   (call/cc
-		    (lambda (ret-id) ;(#,ret-id)
-		      ;; In the body we adjust the 'return' keyword so that calls
-		      ;; to 'return' are replaced with calls to the escape
-		      ;; continuation.
-		      (syntax-parameterize
-		       ([return (syntax-rules ()
-				  [(_ vals (... ...))
-				   (ret-id vals (... ...))])])
-		       ($nfx$-rec <body>)
-		       ($nfx$-rec <body>*)
-		       ...)))))			      
+			(lambda (ret-id) ;(#,ret-id)
+			  ;; In the body we adjust the 'return' keyword so that calls
+			  ;; to 'return' are replaced with calls to the escape
+			  ;; continuation.
+			  (syntax-parameterize
+			   ([return (syntax-rules ()
+				      [(_ vals (... ...))
+				       (ret-id vals (... ...))])])
+			   ($nfx$-rec <body>)
+			   ($nfx$-rec <body>*)
+			   ...)))))	      
 
 	      ;; variadic arguments in list
 	      ((_ (<arg> . L) <body> <body>* ...)
