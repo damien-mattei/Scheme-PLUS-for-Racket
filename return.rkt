@@ -5,7 +5,7 @@
 	(require racket/stxparam
 		 (for-syntax racket/base))
 
-(define err-string "can only be used inside def,def+,lambda+ and defun (defun being only used internally in Scheme+ source code)")
+(define err-string "can only be used inside def,def+,lambda+")
 	
 (define-syntax-parameter return-rec
   ;;(lambda (stx)

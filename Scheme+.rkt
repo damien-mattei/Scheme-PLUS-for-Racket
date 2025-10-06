@@ -15,11 +15,10 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;; version 10
+;; version 15
 
 ;; use: (require Scheme+)
 
-;; note : seems (require Scheme+/def-nfx) should be required separately in REPL
 
 
 
@@ -31,9 +30,10 @@
    ;; definition and block
 
    def def+ return return-rec
-   ;;define
+   define
    define+
    lambda+
+   defun
    
    <+ +>
    ⥆ ⥅
@@ -147,6 +147,7 @@
    Scheme+/block
    Scheme+/return
    Scheme+/lambda+
+   Scheme+/defun
    
    ;; infix notation,indexing,slicing and assignment
    Scheme+/slice

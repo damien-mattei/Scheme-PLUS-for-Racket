@@ -22,7 +22,7 @@
 (module def-nfx racket/base
 
 
-	(provide ;;define
+	(provide define
 		 define+)
 
 	(require (only-in racket/base [define define-scheme]) ;; backup original Scheme 'define'

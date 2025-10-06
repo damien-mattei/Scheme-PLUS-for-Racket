@@ -23,7 +23,7 @@
 		 parse-superscript-token) ; for debug
 
 	(require Scheme+/superscript
-		 Scheme+/defun
+		 Scheme+/def-function
 		 Scheme+/operators
 		 srfi/13
 		 (for-template racket/base))

@@ -23,7 +23,7 @@
 
 (require (rename-in srfi/13 (string-hash string-hash-srfi13))) ;; strings
 
-(require Scheme+/defun)
+(require Scheme+/def-function)
 
 ;; note: under Linux and on a PC (french) keyboard superscript characters
 ;; can be generated with the keystroke sequence: ^ n where n is  a number or sign

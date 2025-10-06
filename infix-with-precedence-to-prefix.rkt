@@ -35,7 +35,7 @@
 	 Scheme+/syntax
 	 Scheme+/operators-list
 	 Scheme+/operators
-	 Scheme+/defun
+	 Scheme+/def-function
 	 Scheme+/defvar
 	 ;;SRFI-105/SRFI-105-curly-infix ; for alternating-parameters
 	 Scheme+/alternating-parameters

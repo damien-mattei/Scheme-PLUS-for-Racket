@@ -735,6 +735,8 @@ Examples:
 				  (vector x0 y0))))
 }|
 
+@racket[define], which has been extended, and @racket[define+] respectively work as @racket[def] and @racket[def+] but without the @racket[return] and @racket[return-rec] features. They could be usefull as their implementation give faster execution.
+
 
 @defform[(lambda+ (args ...) body ...+)]{Same as @racket[lambda] but all @racket[body ...] will be parsed as possibly infix or still prefix.Only @racket[return] is allowed in @racket[lambda+].}
 

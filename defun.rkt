@@ -18,14 +18,17 @@
 
 
 
-;; for internal use only , see def for the extern use
+
 
 (module defun racket/base
 
 
-	(provide def #;def+ return return-rec)
-	
-	(require srfi/31 ;; for 'rec in def*
+	(provide defun #;def+ return return-rec)
+
+	(require srfi/31 ;; for 'rec in defun*
+		 ;;(only-in racket/base [define define-scheme]) ;; backup original Scheme 'define' in case of need
+		 ;;Scheme+/def-nfx ; bring the new 'define
+		 Scheme+/nfx
 		 Scheme+/return
 		 racket/stxparam
 		 (for-syntax racket/base))
@@ -37,105 +40,71 @@
 ;; Welcome to DrRacket, version 8.14 [cs].
 ;; Language: racket, with debugging; memory limit: 8192 MB.
 ;; > (require Scheme+/defun)
-;; > (def (foo) (display "hello") (newline) (return) (display "world") (newline))
+;; > (defun (foo) (display "hello") (newline) (return) (display "world") (newline))
 ;; > (foo)
 ;; hello
 ;; > (return)
-;; return: can only be used inside def
+;; return: can only be used inside defun
 
 
-;; scheme@(guile-user)> (def (foo) (when #t (return "hello") "bye"))
+;; scheme@(guile-user)> (defun (foo) (when #t (return "hello") "bye"))
 ;; scheme@(guile-user)> (foo)
 ;;  "hello"
 
-;; (def x)
+;; (defun x)
 
 ;;(define return '()) ;; for debug of Typed Racket
 
 
-;;(def (foo) (return 1 2 3))
+;;(defun (foo) (return 1 2 3))
 
 ;; (foo)
 ;; 1
 ;; 2
 ;; 3
 
-(define-syntax def
+(define-syntax defun
 
   (lambda (stx)
     
       (syntax-case stx ()
 
 	;; multiple definitions without values assigned
-	;; (def (x y z))
+	;; (defun (x y z))
 	;; TODO: remove? redundant with (declare x y z)
 	((_ (var1 ...)) #`(begin (define var1 '()) ...))
-	
-	;;  (def (foo) (when #t (return "hello") "bye"))
-        ;; ((_ (<name> <arg> ...) <body> <body>* ...)
-        ;;  (let ((ret-id (datum->syntax stx 'return)))
-        ;;    #`(define (<name> <arg> ...)
-        ;;        (call/cc (lambda (#,ret-id) <body> <body>* ...)))))
 
-
-	;; ((_ (<name> <arg> ...) <body> <body>* ...)
-	 
-        ;;  (with-syntax ((ret-id (datum->syntax stx 'return))
-	;; 	       (ret-rec-id (datum->syntax stx 'return-rec)))
-
-	;; 	      (display "def.scm : def : ret-id = ") (display #'ret-id) (newline)
-	;; 	      (display "def.scm : def : ret-rec-id = ") (display #'ret-rec-id) (newline)
-
-	;; 	      #'(define (<name> <arg> ...)
-
-	;; 		  (call/cc (lambda (ret-rec-id) ;(#,ret-rec-id)
-				     
-	;; 			     (apply (rec <name> (lambda (<arg> ...)
-							  
-	;; 						  (call/cc
-	;; 						   (lambda (ret-id) ;(#,ret-id)
-	;; 							     <body> <body>* ...))))
-					    
-	;; 				    (list <arg> ...)))))))
-  
 
 	((_ (<name> <arg> ...) <body> <body>* ...)
 	 
          
 	 #'(define (<name> <arg> ...)
-
-	     (call/cc
-
-	      (lambda (ret-rec-id) ;(#,ret-rec-id)
-		;; In the body we adjust the 'return-rec' keyword so that calls
-		;; to 'return-rec' are replaced with calls to the escape
-		;; continuation.
-
-		(syntax-parameterize
-		 ([return-rec (syntax-rules ()
-				[(return-rec vals (... ...))
-				 (ret-rec-id vals (... ...))])])
 		 
-		 (apply (rec <name> (lambda (<arg> ...)
-				      
-				      (call/cc
+	     (#;apply (rec <name> (lambda (<arg> ...)
+				  
+				  (call/cc
 
-				       (lambda (ret-id) ;(#,ret-id)
-					 ;; In the body we adjust the 'return' keyword so that calls
-					 ;; to 'return' are replaced with calls to the escape
-					 ;; continuation.
-					 (syntax-parameterize
-					  ([return (syntax-rules ()
-						     [(return vals (... ...))
-						      (ret-id vals (... ...))])])
-					  <body> <body>* ...)))))
-			
-			(list <arg> ...)))))))
+				   (lambda (ret-id) ;(#,ret-id)
+				     ;; In the body we adjust the 'return' keyword so that calls
+				     ;; to 'return' are replaced with calls to the escape
+				     ;; continuation.
+				     (syntax-parameterize
+				      ([return (syntax-rules ()
+						 [(return vals (... ...))
+						  (ret-id vals (... ...))])])
+				      <body>
+				      <body>*
+				      ...)))))
+		    
+		      ;;(list
+		            <arg>
+			    ...;)
+			    )))
 
 	
 
 	;; variadic arguments in list
-	;; (def (foo a . L) (when #t (return (cons a L))))
+	;; (defun (foo a . L) (when #t (return (cons a L))))
 	;; (foo 1 2 3)
 	;; '(1 2 3)
 	((_ (<name> <arg> . L) <body> <body>* ...)
@@ -143,47 +112,75 @@
          
 	 #'(define (<name> <arg> . L)
 
-	     (call/cc
+	     
+	     (apply (rec <name> (lambda (<arg> . L)
+				  
+				  (call/cc
 
-	      (lambda (ret-rec-id) ;(#,ret-rec-id)
-		;; In the body we adjust the 'return-rec' keyword so that calls
-		;; to 'return-rec' are replaced with calls to the escape
-		;; continuation.
-
-		(syntax-parameterize
-		 ([return-rec (syntax-rules ()
-				[(return-rec vals (... ...))
-				 (ret-rec-id vals (... ...))])])
-		 
-		 (apply (rec <name> (lambda (<arg> . L)
-				      
-				      (call/cc
-
-				       (lambda (ret-id) ;(#,ret-id)
-					 ;; In the body we adjust the 'return' keyword so that calls
-					 ;; to 'return' are replaced with calls to the escape
-					 ;; continuation.
-					 (syntax-parameterize
-					  ([return (syntax-rules ()
-						     [(return vals (... ...))
-						      (ret-id vals (... ...))])])
-					  <body> <body>* ...)))))
-			
-			(cons <arg> L)))))))
+				   (lambda (ret-id) ;(#,ret-id)
+				     ;; In the body we adjust the 'return' keyword so that calls
+				     ;; to 'return' are replaced with calls to the escape
+				     ;; continuation.
+				     (syntax-parameterize
+				      ([return (syntax-rules ()
+						 [(return vals (... ...))
+						  (ret-id vals (... ...))])])
+				      <body>
+				      <body>*
+				      ...)))))
+		    
+		    (cons <arg> L))))
 
 
 	
 
 	;; single definition without a value assigned
-	;; (def x)
+	;; (defun x)
 	((_ var) #`(define var '()))
 
-	;; (def x 7)
-	((_ var expr) #`(define var expr))
+	;; (defun s  3 ² + 2 * 3 * 5 + 5 ²)
+	;; 64
+	((_ var expr expr-optional ...) #`(define var ($nfx$-rec expr expr-optional ...))) ; expr expr-optional ...))
 
-	((_ err ...) #`(syntax-error "Bad def form"))
+	((_) #`(error "Bad defun form"))
+	
+	;; (def x 7)
+	;;((_ var expr) #`(define var expr))
+
+	;;((_ err ...) #`(syntax-error "Bad def form"))
 
 	)))
+
+
+
+
+;; (defun t 3 * (+ 2 4) - 1)
+;; t
+;; 17
+
+
+;; (defun z (3 + 1) * (2 * (+ 2 1) - (sin 0.3)) + ((* 2 5) - 5))
+;; z
+;; 27.817919173354642
+
+
+;; (defun x 1 + 2 + 3)
+;; x
+;; 6
+
+
+;; (defun k 10.0 - 3.0 - 4.0 + 1 - 5.0 * 2.0 ** 3.0 / 7.0 ** 3.0)
+;; k
+;; 3.883381924198251
+
+
+;; (defun s 3 ² + 2 * 3 * 5 + 5 ²)
+;; s
+;; 64
+
+
+
+
 
 
 

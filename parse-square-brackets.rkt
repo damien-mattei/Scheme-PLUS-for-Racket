@@ -24,7 +24,7 @@
 
   (provide parse-square-brackets-arguments-lister-syntax)
   
-  (require Scheme+/defun
+  (require Scheme+/def-function
 	   Scheme+/declare
 	   Scheme+/block
 	   Scheme+/syntax

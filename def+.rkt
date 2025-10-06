@@ -116,7 +116,7 @@
 	;; 64
 	((_ var expr expr-optional ...) #`(define var ($nfx$-rec expr expr-optional ...)))
 
-	((_) #`(syntax-error "Bad def form"))
+	((_) #`(error "Bad def form"))
 
 	;; (def x 7)
 	;; ((_ var expr) #`(define var expr))

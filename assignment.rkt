@@ -51,7 +51,7 @@
 	   Scheme+/slice
 	   Scheme+/declare
 	   Scheme+/block
-	   Scheme+/defun
+	   Scheme+/def-function
 	   Scheme+/defvar
 	   Scheme+/bracket-apply
 	   Scheme+/overload)

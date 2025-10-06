@@ -29,7 +29,7 @@
 	   Scheme+/infix-with-precedence-to-prefix
 	   Scheme+/exponential ; ???? why 
 	   Scheme+/multiply ; ???? but errors without : unbound **
-	   Scheme+/defun
+	   Scheme+/def-function
 	   )
 
   
