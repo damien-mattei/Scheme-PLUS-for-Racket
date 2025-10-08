@@ -33,6 +33,7 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 **Changes of version 15.7:**
 
 Documented  ```define+``` and ```define```.
+Updated documentation according to SRFI 105 REPL removal of ```#<eof>``` display.
 
 <br>
 <br>

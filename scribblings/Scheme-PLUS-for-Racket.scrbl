@@ -185,7 +185,7 @@ But infix sub-expressions are allowed to be between normal parenthesis ( ) like 
 17
 }|
 
-In the examples the display of the REPL/parser in prefix will generally be removed from examples for clarity, also the prompt > and the displayed #<eof> (end of file) printed by the SRFI-105 parser.
+In the examples the display of the REPL/parser in prefix will generally be removed from examples for clarity, also the prompt > and the displayed #<eof> (end of file) printed by some ancient versions of the SRFI-105 parser.
 
 @codeblock|{
 #lang reader SRFI-105
