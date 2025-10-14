@@ -25,6 +25,7 @@
 
 	(provide !*prec-generic-infix-parser
 		 !*prec-generic-infix-parser-rec
+		 !*prec-generic-infix-parser-rec-prepare
 		 !*prec-generic-infix-parser-prepare-runtime
 		 !*prec-generic-infix-parser-runtime
 		 !*-generic-infix-parser
@@ -666,7 +667,7 @@
 				     (!*prec-generic-infix-parser-rec-prepare x creator)) 
 				   parsed-superscript))
 
-    (return `(!*prec-generic-infix-parser-runtime ,(cons 'list parsed-deep-terms) ; ah ah ! not only terms
+    (return `(!*prec-generic-infix-parser-runtime ,(cons 'list parsed-deep-terms) ; ah ah ! not only terms but 'list before
 						  (lambda (op a b) (op a b))))) ; end when
 
   

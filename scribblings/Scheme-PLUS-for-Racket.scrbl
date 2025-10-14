@@ -86,6 +86,7 @@ Other examples:
 }|
 
 
+
 @codeblock|{
 {(- 7 (3 * (+ 2 4) - 1)) + 3}
 -7
@@ -225,6 +226,41 @@ Other examples:
 13
 }|
 
+Curly infix can also be used in some macro definitions:
+
+@codeblock|{
+(define-syntax +=
+    (syntax-rules ()
+      ({var1 _ var2} {var1 := var1 + var2})))
+
+(define-syntax += (syntax-rules () ((_ var1 var2) (:= var1 (+ var1 var2))))) ; parsed result
+
+{x := 3}
+{x += 7}
+x
+
+10
+}|
+
+
+@codeblock|{
+(define-syntax plus
+    (syntax-rules ()
+      ({var1 _ ...} {var1 + ...})))
+
+(define-syntax plus (syntax-rules () ((_ var1 ...) (+ var1 ...)))) ; parsed result
+
+{2 plus 3}
+(plus 2 3) ; parsed result
+5
+
+{2 plus 3 plus 4 plus 5 plus 6}
+(plus 2 3 4 5 6)  ; parsed result
+20
+}|
+
+
+
 @codeblock|{
 {3 ² + 2 · 3 · 5 + 5 ²}
 64
@@ -361,6 +397,9 @@ Generally a Scheme+ program file is named with a + symbol before the normal sche
 
 @section[#:tag "reference"]{Scheme+ Reference}
 
+This sections describe the macros,operators and procedures that are the core of Scheme+.
+
+From subsections 1 to 6 what are described are almost every time macros.
 
 @subsection[#:tag "declarations"]{Declarations}
 
@@ -1280,7 +1319,13 @@ Example for accessing and modifying a line of a matrix:
 
 See the full example at @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/matrix-by-vectors+.rkt"]
 
-@section[#:tag "makefile"]{Using Makefile and debugging Scheme+ program}
+
+@section[#:tag "makefile"]{Pragmas}
+
+There is currently no need of pragmas with Scheme+. The very few pragmas that can be used are the few ones of SRFI 105 Curly infix reader described in the doc: @other-doc['(lib "SRFI-105/scribblings/SRFI-105.scrbl")]
+
+
+@section[#:tag "pragmas"]{Using Makefile and debugging Scheme+ program}
 
 
 The Racket GUI can not display the line of error in a Scheme+ program.The reason is because the Scheme+ program is pre-parsed by the SRFI 105 reader and the Racket compiler has not access to the original lines of code and even do not display the error line relative to the resulting parsed line of code.
