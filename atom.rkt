@@ -18,8 +18,11 @@
 
 (module atom racket/base
 
-  (provide atom?)
+  (provide atom? atom)
 
-  (define (atom? x)
+  (define (atom x) ; near Lisp definition (allow '() but do not allow pairs that are not lists
+    (not (pair? x)))
+
+  (define (atom? x) ; as atom in Lisp but allow pairs that are not lists but do not allow '()
     (and (not (list? x))
 	 (not (null? x)))))

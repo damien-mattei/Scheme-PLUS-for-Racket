@@ -3,12 +3,12 @@
 
 	(provide recursive-apply)
 
-	(require Scheme+/atom)
+	;;(require Scheme+/atom)
 
 
 	(define (recursive-apply L)
 
-	  (cond ((atom? L) L)
+	  (cond ((not (list? L)) L) ;;((atom? L) L)
 		;; now should be a list
 		((null? L) L)
 		((procedure? (car L)) ; something to evaluate

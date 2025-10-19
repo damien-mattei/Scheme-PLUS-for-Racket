@@ -486,7 +486,34 @@
     ;;(display "!*prec-generic-infix-parser-rec returning early") (newline)
     (return terms))
 
- 
+
+   ;; Python stylish , (statement if test else statement2)
+  ;; at this point we at least a list
+  ;; check : (statement if test ....)
+  (when (and (not (null? (cdr terms)))
+	     (datum=? 'if (cadr terms)))
+    ;;(error "Python if")
+    (define stmt (!*prec-generic-infix-parser-rec (car terms) creator))
+    (when (null? (cddr terms))
+      (error "if : (statement if test else statement2) : missing test in :" terms))
+    (define tst (!*prec-generic-infix-parser-rec (caddr terms) creator))
+    (define yf (cadr terms)) ; if
+    (when (null? (cdddr terms))
+      (return
+       (list yf tst stmt)))
+    (define ls (cadddr terms)) ; else : (statement if test else ....)
+    (when (not (datum=? ls 'else))
+      (error "if : (statement if test else statement2) : found something else than else in expression : " terms))
+    (when (null? (cddddr terms))
+      (error "if : (statement if test else statement2) : missing statement2 in expression : " terms))
+    (define stmt2 (!*prec-generic-infix-parser-rec (car (cddddr terms)) creator))
+    (when (null? (cdr (cddddr terms)))
+      (return
+       (list yf tst stmt stmt2)))
+    (error "if : (statement if test else statement2) : too much arguments : " terms))
+  
+
+  
   ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponential versus signs)
   (define parsed-superscript (superscript-operator-loop terms))
   ;;(display "!*prec-generic-infix-parser-rec : parsed-superscript=") (display parsed-superscript) (newline)
@@ -642,17 +669,43 @@
 ;; note: i removed all syntax stuff as this routine should be only call from external parser (SRFI-105), not by the Scheme+ syntax transformers
 (def (!*prec-generic-infix-parser-prepare-runtime terms creator )   ;; precursor of !*-generic-infix-parser
 
-  ;; (display "!*prec-generic-infix-parser-prepare-runtime : start terms=") (display terms) (newline)
+  ;;(display "!*prec-generic-infix-parser-prepare-runtime : start terms=") (display terms) (newline)
   ;; (newline)
 
   (when (null? terms) ; special case ?
 	;;(display "!*prec-generic-infix-parser-prepare-runtime returning early 0 : null terms") (newline)
 	(return terms))
 
-
   (when (atom? terms)
     ;;(display "!*prec-generic-infix-parser-prepare-runtime returning early") (newline)
     (return terms))
+
+  ;; Python stylish , (statement if test else statement2)
+  ;;(error "Python if : terms=" terms)
+  ;; at this point we at least a list
+  ;; check : (statement if test ....)
+  (when (and (not (null? (cdr terms)))
+	     (eq? 'if (cadr terms)))
+    ;;(error "Python if")
+    (define stmt (!*prec-generic-infix-parser-rec-prepare (car terms) creator))
+    (when (null? (cddr terms))
+      (error "if : (statement if test else statement2) : missing test in :" terms))
+    (define tst (!*prec-generic-infix-parser-rec-prepare (caddr terms) creator))
+    (define yf (cadr terms)) ; if
+    (when (null? (cdddr terms))
+      (return
+       (list yf tst stmt)))
+    (define ls (cadddr terms)) ; else : (statement if test else ....)
+    (when (not (eq? ls 'else))
+      (error "if : (statement if test else statement2) : found something else than else in expression : " terms))
+    (when (null? (cddddr terms))
+      (error "if : (statement if test else statement2) : missing statement2 in expression : " terms))
+    (define stmt2 (!*prec-generic-infix-parser-rec-prepare (car (cddddr terms)) creator))
+    (when (null? (cdr (cddddr terms)))
+      (return
+       (list yf tst stmt stmt2)))
+    (error "if : (statement if test else statement2) : too much arguments : " terms))
+  
 
   ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponential versus signs)
   (define parsed-superscript (superscript-operator-loop terms))
@@ -813,7 +866,7 @@
   
   ;;(display "!*prec-generic-infix-parser-runtime : parsed+-=") (display parsed+-) (newline)
   
-  (define deep-terms (map (lambda (x) (if (equal? x '-)  ; replace '- by procdure -
+  (define deep-terms (map (lambda (x) (if (equal? x '-)  ; replace '- by procedure -
 					  -
 					  x))
 			  parsed+-)) ;; parsed for + - and superscript number **
@@ -916,7 +969,34 @@
     ;;(display "!*prec-generic-infix-parser-rec-prepare returning early") (newline)
     (return terms))
 
- 
+
+  ;; Python stylish , (statement if test else statement2)
+  ;; at this point we at least a list
+  ;; check : (statement if test ....)
+  (when (and (not (null? (cdr terms)))
+	     (eq? 'if (cadr terms)))
+    ;;(error "Python if")
+    (define stmt (!*prec-generic-infix-parser-rec-prepare (car terms) creator))
+    (when (null? (cddr terms))
+      (error "if : (statement if test else statement2) : missing test in :" terms))
+    (define tst (!*prec-generic-infix-parser-rec-prepare (caddr terms) creator))
+    (define yf (cadr terms)) ; if
+    (when (null? (cdddr terms))
+      (return
+       (list yf tst stmt)))
+    (define ls (cadddr terms)) ; else : (statement if test else ....)
+    (when (not (eq? ls 'else))
+      (error "if : (statement if test else statement2) : found something else than else in expression : " terms))
+    (when (null? (cddddr terms))
+      (error "if : (statement if test else statement2) : missing statement2 in expression : " terms))
+    (define stmt2 (!*prec-generic-infix-parser-rec-prepare (car (cddddr terms)) creator))
+    (when (null? (cdr (cddddr terms)))
+      (return
+       (list yf tst stmt stmt2)))
+    (error "if : (statement if test else statement2) : too much arguments : " terms))
+  
+
+  
   ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponential versus signs)
   (define parsed-superscript (superscript-operator-loop terms))
   ;;(display "!*prec-generic-infix-parser-rec-prepare : parsed-superscript=") (display parsed-superscript) (newline)
@@ -1451,3 +1531,9 @@
 ;; (+ (- (+ (* 3 7) 2) (/ 12 3)) -2)
 ;; 17
 ;; #<eof>
+
+
+;; {1 if ((#f or #f) and #t) else 2}
+
+;; (if (and (or #f #f) #t) 1 2)
+;; 2

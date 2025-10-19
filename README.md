@@ -31,12 +31,39 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 <br>
 
+**Changes of version 17.0:**
+
+Add another syntax for ```if``` inspired from Python ```(statement if test else statement2)```.
+
+Examples:
+
+```scheme
+(def+ (foo)
+    ("test positif" if ((#f or #f) and #t) else "test negatif"))
+
+(foo)
+"test negatif"
+
+```
+
+```scheme
+{"test positif" if ((#f or #f) and #t) else "test negatif"}
+
+(if (and (or #f #f) #t) "test positif" "test negatif") ; result of parsing
+
+"test negatif"
+
+```
+
+
+<br>
+
 **Changes of version 15.8:**
 
 Changes for SRFI 105 for Racket version 12.7: provide some necessary exported names.
 
 <br>
-<br>
+
 
 **Changes of version 15.7:**
 

@@ -40,7 +40,7 @@
 ;; $nfx$ : parsed-args={.#<syntax:15-interactions from an unsaved editor:3:15 +> {.#<syntax:15-interactions from an unsaved editor:3:11 *> .#<syntax:15-interactions from an unsaved editor:3:9 3> .#<syntax:15-interactions from an unsaved editor:3:13 5>} .#<syntax:15-interactions from an unsaved editor:3:17 2>}
 ;; 17
 
-;; DEPRECATED ?
+;; partly DEPRECATED : used only with syntax transformers only mode
 (define-syntax $nfx$
 
   (lambda (stx)

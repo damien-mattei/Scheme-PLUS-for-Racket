@@ -805,7 +805,7 @@ returning
 @subsection[#:tag "control"]{Control flow : Conditionals and Loops}
 
 @defform[#:literals (then else)
-         (if test then then-body ... else else-body ...)]{
+         (if test [then] then-body ... [else] else-body ...)]{
 Evalutes @racket[test] and, if @racket[test] is @racket[True], evaluates
 @racket[then-body ...], otherwise it evaluates @racket[else-body ...]. Note that multiple
 expressions can be placed in each block in the syntax; you can remove the @racket[then] or/and @racket[else] block delimiters as long as there is no ambiguities with the syntax you expressed,so you can fall back to the classic scheme @racket[if] form and it is backward compatible with the classic scheme syntax.
@@ -861,6 +861,32 @@ Example from real code:
 	     
 	     (funct-unify-minterms-set-of-sets-rec-tail mt-set2-to-mt-setn acc))) ;; continue with sets from 2 to n
 }|
+
+@defform*[ #:link-target? #f #:id if  #:literals (else)
+((statement if test [else statement2])
+ (statement if test [else statement2]))]{
+
+An infix @racket[if] inspired from Python language.}
+
+Examples:
+
+@codeblock|{
+(def+ (foo)
+    ("test positif" if ((#f or #f) and #t) else "test negatif"))
+
+(foo)
+"test negatif"
+}|
+
+@codeblock|{
+{"test positif" if ((#f or #f) and #t) else "test negatif"}
+
+(if (and (or #f #f) #t) "test positif" "test negatif") ; result of parsing
+
+"test negatif"
+}|
+
+
 
 @defform[(when test body ...)]{}
 @defform[(unless test body ...)]{
