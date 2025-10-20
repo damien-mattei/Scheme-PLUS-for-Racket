@@ -864,7 +864,7 @@ Example from real code:
 
 @defform*[ #:link-target? #f #:id if  #:literals (else)
 ((statement if test [else statement2])
- (statement if test [else statement2]))]{
+ {statement if test [else statement2]})]{
 
 An infix @racket[if] inspired from Python language.}
 
@@ -879,12 +879,19 @@ Examples:
 }|
 
 @codeblock|{
+{"Hello world" if #t}
+
+"Hello world"
+}|
+
+@codeblock|{
 {"test positif" if ((#f or #f) and #t) else "test negatif"}
 
 (if (and (or #f #f) #t) "test positif" "test negatif") ; result of parsing
 
 "test negatif"
 }|
+
 
 
 
