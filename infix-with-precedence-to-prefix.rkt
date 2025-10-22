@@ -487,8 +487,8 @@
     (return terms))
 
 
-   ;; Python stylish , (statement if test else statement2)
-  ;; at this point we at least a list
+  ;; Python stylish , (statement if test else statement2)
+  ;; at this point we have at least a list
   ;; check : (statement if test ....)
   (when (and (not (null? (cdr terms)))
 	     (datum=? 'if (cadr terms)))
@@ -682,7 +682,7 @@
 
   ;; Python stylish , (statement if test else statement2)
   ;;(error "Python if : terms=" terms)
-  ;; at this point we at least a list
+  ;; at this point we have at least a list
   ;; check : (statement if test ....)
   (when (and (not (null? (cdr terms)))
 	     (eq? 'if (cadr terms)))
