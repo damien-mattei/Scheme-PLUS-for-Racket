@@ -34,6 +34,7 @@
    define+
    lambda+
    defun
+   rec+
    
    <+ +>
    ⥆ ⥅
@@ -95,10 +96,15 @@
    ∣ ; warning: this pipe could be a special character (different from keyboard stroke)
    · ; AltGr + Maj (CAPS) + 1 --> · on french keyboard ,Option + h on MacOS
 
+   
    ;; functions
-   √ ∛
+   √
+   ∛
    && ; procedure and
+   ∣∣ ; procedure or
+   int
 
+   
    ;; overloading
    define-overload-procedure
    overload-procedure
@@ -148,6 +154,7 @@
    Scheme+/return
    Scheme+/lambda+
    Scheme+/defun
+   Scheme+/rec+
    
    ;; infix notation,indexing,slicing and assignment
    Scheme+/slice
@@ -176,9 +183,11 @@
    Scheme+/multiply
    Scheme+/little-greater-or-equal
    Scheme+/conjunction
+   Scheme+/disjunction
 
    ;; functions
    Scheme+/square-and-cubic-root
+   Scheme+/int
 
    ;; overloading
    Scheme+/overload

@@ -56,6 +56,23 @@
 				   (ret-id vals (... ...))])])
 		       ($nfx$-rec <body>)
 		       ($nfx$-rec <body>*)
+		       ...)))))
+
+	      ;; variadic arguments in list
+	      ((_ L <body> <body>* ...)
+         
+	       #'(lambda L
+		   (call/cc
+		    (lambda (ret-id) ;(#,ret-id)
+		      ;; In the body we adjust the 'return' keyword so that calls
+		      ;; to 'return' are replaced with calls to the escape
+		      ;; continuation.
+		      (syntax-parameterize
+		       ([return (syntax-rules ()
+				  [(return vals (... ...))
+				   (ret-id vals (... ...))])])
+		       ($nfx$-rec <body>)
+		       ($nfx$-rec <body>*)
 		       ...))))))))
 
 	) ; end module

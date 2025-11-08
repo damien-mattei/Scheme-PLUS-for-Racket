@@ -30,6 +30,33 @@ Again you will have all the information about errors with the true line number d
 Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile) provided (see docs).
 
 
+
+
+<br>
+
+**Changes of version 17.2:**
+
+Added an ```int``` procedure, the same as in Python language, because this is usefull and was missing in scheme:
+
+```scheme
+
+(int -3.7)
+-3
+```
+
+Updated the ```lambda+``` macro with  ```(lambda+ L body ...+)``` and updated the documentation accordingly.
+
+Fixes bugs: missing exportation of procedural or ```∣∣``` (provide and require about it where missing in Scheme+.rkt file)
+
+Added ```rec+```, equivalent of ```rec``` in infix and using ```lambda+```.
+
+```scheme
+(define f (rec+ foo (lambda () (2 + 3))))
+(f)
+5
+```
+
+<br>
 <br>
 
 **Changes of version 17.1:**
@@ -51,7 +78,7 @@ Now ok:
 Example update for subset sum problem, now find solutions, or
 approximation, using memoization and backtracking.
 <br>
-<br>
+
 
 **Changes of version 17.0:**
 
