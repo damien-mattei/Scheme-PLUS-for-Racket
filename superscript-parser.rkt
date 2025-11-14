@@ -359,7 +359,7 @@
 
      ;; return case
      (when (string-null? ss-tok)
-       (display "superscript-parser : state-1-symbol : return case") (newline)
+       ;;(display "superscript-parser : state-1-symbol : return case") (newline)
        (return (cons (datum->syntax #'nfx #; #'$nfx$ (string->symbol p-tok)) ; seems we can put anything as lexical context
 		     '()))) ; create the NIL of list expression
      
