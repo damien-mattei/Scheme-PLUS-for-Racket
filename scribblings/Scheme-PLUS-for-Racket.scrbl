@@ -1404,7 +1404,7 @@ There is currently no need of pragmas with Scheme+. The very few pragmas that ca
 
 @section[#:tag "pragmas"]{Using Makefile and debugging Scheme+ program}
 
-The Cuurly Infix (SRFI 105) reader parser can now display the line, column, and character offset in the source file if a parsing error arise at this stage.
+The Curly Infix (SRFI 105) reader parser can now display the line, column, and character offset in the source file if a parsing error arise at this stage.
 The Racket GUI can not display the line of error in a Scheme+ program.The reason is because the Scheme+ program is pre-parsed by the SRFI 105 reader and the Racket compiler has not access to the original lines of code and even do not display the error line relative to the resulting parsed line of code.
 
 If you have to debug your source code you must generate a Scheme file
