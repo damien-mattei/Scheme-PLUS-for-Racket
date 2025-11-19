@@ -1,6 +1,5 @@
 #lang scribble/manual
 @(require scribble/core)
-;@(require scribble/eval)
 @require[scriblib/footnote]
 
 @centerline{@image[#:scale 1.0 "Scheme+.png"]}
