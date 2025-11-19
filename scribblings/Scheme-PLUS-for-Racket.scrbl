@@ -1,5 +1,6 @@
 #lang scribble/manual
 @(require scribble/core)
+;@(require scribble/eval)
 @require[scriblib/footnote]
 
 @centerline{@image[#:scale 1.0 "Scheme+.png"]}
@@ -18,6 +19,9 @@ This reader package provides the SRFI-105 Curly Infix reader/parser.
 Source code: @url["https://github.com/damien-mattei/SRFI-105-for-Racket"]
 
 Package: @url["https://pkgs.racket-lang.org/package/SRFI-105-for-Racket"]
+
+@hyperlink["https://srfi.schemers.org/srfi-105/srfi-105.html"]{Scheme Request For Implementations 105}
+
 }
 
 
@@ -30,7 +34,16 @@ Source code: @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket"]
 Package: @url["https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket"]
 }
 
+@defmodule[SRFI-110 #:reader]{
+This other reader package provides also the Curly Infix reader/parser as it is also part of SRFI-110 specifications and implementation.
 
+Source code: @url["https://github.com/damien-mattei/SRFI-110-for-Racket"]
+
+Package: @url["https://pkgs.racket-lang.org/package/SRFI-110-for-Racket"]
+
+@hyperlink["https://srfi.schemers.org/srfi-110/srfi-110.html"]{Scheme Request For Implementations 110}
+
+}
 
 Scheme+ is an extension of the syntax of the Scheme language.
 
@@ -114,6 +127,7 @@ Here the parsing process is activated by the encountering of curly parenthesis {
 
 Scheme+ can be installed via the Racket Package system or downloaded from Github.See the links at the top of this page.
 Scheme+ is designed to be used with the package SRFI-105 for Racket which is a curly infix reader also available in the same way described above.
+As an alternative to SRFI 105 you can also use SRFI 110.
 
 
 @section[#:tag "REPL"]{Scheme+ and Curly Infix SRFI-105 REPL (Read Eval Print Loop)}
@@ -199,17 +213,20 @@ But infix sub-expressions are allowed to be between normal parenthesis ( ) like 
 @codeblock|{
 #reader SRFI-105
 (require Scheme+)
-> {3 * 5 + 2} ; the displayed symbol > is here only the Racket prompt
+{3 * 5 + 2}
 (+ (* 3 5) 2) ; generated code displayed by REPL/parser
 17 ; result
 }|
+
 
 @codeblock|{
 {3 * 7 + 2 - 12 / 3 + -2}
 17
 }|
 
-In the examples the display of the REPL/parser in prefix will generally be removed from examples for clarity, also the prompt > and the displayed #<eof> (end of file) printed by some ancient versions of the SRFI-105 parser.
+In the examples the display of the REPL/parser in prefix will generally be removed from examples for clarity, also the prompt > and the displayed #<eof> (end of file), if any,printed by some ancient versions of the SRFI-105 parser.
+
+
 
 @codeblock|{
 #lang reader SRFI-105
@@ -217,6 +234,7 @@ In the examples the display of the REPL/parser in prefix will generally be remov
 {3 · 5 + 2 ³}
 23
 }|
+
 
 Note that in the above example and in Scheme+ the operator @racket[·] is @racket[*], also note that superscript chars are exposants.
 
