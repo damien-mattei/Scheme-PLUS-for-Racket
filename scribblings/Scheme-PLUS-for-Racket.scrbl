@@ -103,7 +103,6 @@ Other examples:
 
 @code-examples[#:lang "reader SRFI-105" #:context #'here]|{
 {(- 7 (3 * (+ 2 4) - 1)) + 3}
--7
 }|
 
 The parsing is the result of sometimes up to 3 stages of parsing:
