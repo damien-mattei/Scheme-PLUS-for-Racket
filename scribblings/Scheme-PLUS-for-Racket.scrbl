@@ -795,6 +795,7 @@ Examples:
      (error "else in scalar-to-long-rainbow-rgb"))))
 }|
 
+
 @codeblock|{
 (def+ (chaos p q d x0 y0)
   
