@@ -1,5 +1,6 @@
 #lang scribble/manual
 @(require scribble/core)
+@(require scribble-code-examples)
 @require[scriblib/footnote]
 
 @centerline{@image[#:scale 1.0 "Scheme+.png"]}
@@ -63,16 +64,17 @@ What Scheme+ is not: Scheme+ is not a DSL (Domain Specific Language) a contrario
 
 You can mix infix sub-expressions and prefix sub-expressions in the same expression:
 
-@codeblock|{
+
+@code-examples[#:lang "reader SRFI-105" #:context #'here]|{
 {3 * (- 9 4) + 2}
-17
 }|
+
+
 
 In Scheme+, in an expression surrounded by @racket[{ }] curly brackets,the sub-expressions using @racket[( )] round brackets can contains prefix or infix expressions.The parser will automatically detect the infix or prefix and parse it accordingly.
 
-@codeblock|{
+@code-examples[#:lang "reader SRFI-105" #:context #'here]|{
 {(3 + 1) * (2 * (+ 2 1) - (sin 0.3)) + ((* 2 5) - 5)}
-27.817919173354642
 }|
 
 The above expression is automatically parsed and converted in a classic scheme prefix expression before evaluation:
@@ -99,7 +101,7 @@ Other examples:
 
 
 
-@codeblock|{
+@code-examples[#:lang "reader SRFI-105" #:context #'here]|{
 {(- 7 (3 * (+ 2 4) - 1)) + 3}
 -7
 }|
@@ -210,7 +212,7 @@ In general Scheme+ use the same convention for infix expression than SRFI-105 Cu
 But infix sub-expressions are allowed to be between normal parenthesis ( ) like it is in mathematic notation. Infix or prefix is then autodetected.In case of ambiguities { } force infix mode. Inside curly infix expression surrounded by { } parenthesis associativity and operator precedence are applied.
 
 @codeblock|{
-#reader SRFI-105
+#lang reader SRFI-105
 (require Scheme+)
 {3 * 5 + 2}
 (+ (* 3 5) 2) ; generated code displayed by REPL/parser
@@ -218,9 +220,8 @@ But infix sub-expressions are allowed to be between normal parenthesis ( ) like 
 }|
 
 
-@codeblock|{
+@code-examples[#:lang "reader SRFI-105" #:context #'here]|{
 {3 * 7 + 2 - 12 / 3 + -2}
-17
 }|
 
 In the examples the display of the REPL/parser in prefix will generally be removed from examples for clarity, also the prompt > and the displayed #<eof> (end of file), if any,printed by some ancient versions of the SRFI-105 parser.
@@ -249,9 +250,8 @@ An example of inner round brackets inside curly brackets in a full infix express
 
 Example of a mixed infix and prefix expression autodetected:
 
-@codeblock|{
+@code-examples[#:lang "reader SRFI-105" #:context #'here]|{
 {3 * (+ 2 4) - 1}
-17
 }|
 
 Other examples:

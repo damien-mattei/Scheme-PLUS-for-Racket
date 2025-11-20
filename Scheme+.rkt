@@ -205,10 +205,12 @@
   (define info-getter (get-info '("Scheme+")))
   (define version (cond ((procedure? info-getter) (info-getter 'version))
 			(else info-getter)))
-  
-  (newline)
-  (display (string-append "Scheme+ v" version " by Damien Mattei")) (newline)
-  (newline)
+
+  (define verbose #t)
+  (when verbose
+    (newline)
+    (display (string-append "Scheme+ v" version " by Damien Mattei")) (newline)
+    (newline))
 
 
   ) ; end library

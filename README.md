@@ -30,7 +30,14 @@ Again you will have all the information about errors with the true line number d
 Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile) provided (see docs).
 
 
+<br>
 
+**Changes of version 17.3:**
+
+Documentation use ```code-example``` aside ```code-block``` to better display.
+
+Added a flag ```verbose``` in the source code to activate or deactivate the verbose mode.
+<br>
 
 <br>
 
