@@ -9,7 +9,8 @@
 	       "r6rs-lib"
 	       "reprovide-lang-lib"
 	       "SRFI-105-for-Racket"
-	       "try-catch"))
+	       "try-catch"
+	       "SRFI-110-for-Racket"))
 (define pkg-desc "Scheme+ for Racket")
 (define version "17.3")
 (define pkg-authors '(mattei))
