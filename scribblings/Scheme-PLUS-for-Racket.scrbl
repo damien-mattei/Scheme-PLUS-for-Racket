@@ -180,6 +180,14 @@ Result:
 "Hello world !"
 }|
 
+You can also use SRFI-110 which implements too the curly infix parser:
+
+@codeblock|{
+#reader SRFI-110 ; implements too the curly infix parser
+(display "Hello world") (newline)
+}|
+
+
 A module example:
 
 @codeblock|{
