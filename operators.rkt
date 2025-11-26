@@ -234,7 +234,7 @@
   (or (AND-op? oper)
       (OR-op? oper)))
 
-
+;; Warning : no difference here between 'logic' and 'bitwise' operators
 (define (XOR-op? oper) ;; note: logxor in Guile, xor in Racket
   (or (datum=? oper 'logxor)
       (datum=? oper 'xor)

@@ -84,12 +84,16 @@
 
 ;; precedence lists
 
+
 (define calculus-operator-syntax (list (list #'* #'/ #'% #'·)
 				       ;;(list #'·) ; symbolic logic And
-				       (list #'⊕) ; bitwise Xor
+				       (list #'⊕) ; symbolic Xor
 				       (list #'- #'+)
 				       (list #'<< #'>>)
-				       (list #'& #'∣)))
+				       (list #'&)
+				       (list #'^) ; bitwise xor
+				       (list #'∣)
+				       ))
 
 (define in/equalities-operator-syntax (list #'< #'> #'= #'≠ #'<= #'>= #'<> #'≤ #'≥ #'equal?))
 
@@ -168,3 +172,26 @@
 ;;   )
 
 ) ; end module
+
+
+
+;; > {1 & 1 ^ 0}
+
+
+;; (^ (& 1 1) 0)
+;; 1
+
+
+;; > {1 & 1 ^ 1}
+
+
+;; (^ (& 1 1) 1)
+;; 0
+
+
+;; > {1 & 1 ^ 1 ∣ 1}
+
+
+;; (∣ (^ (& 1 1) 1) 1)
+;; 1
+

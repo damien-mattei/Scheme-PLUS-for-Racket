@@ -94,8 +94,9 @@
    << >>
    &
    ∣ ; warning: this pipe could be a special character (different from keyboard stroke)
+   ^ ; bitwise xor
    · ; AltGr + Maj (CAPS) + 1 --> · on french keyboard ,Option + h on MacOS
-
+   ~ ; bitwise not
    
    ;; functions
    √

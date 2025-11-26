@@ -1142,6 +1142,10 @@ Note: exponentiation can also be written with superscript numbers and expression
 
 @defform[#:id ∣ {n ∣ m}]{Bitwise Or.Note: this is U+2223  because vertical line is reserved in Racket.}
 
+@defform[#:id ^ {n ^ m}]{Bitwise Exclusive Or}
+
+@defform[(~ n)]{Bitwise Not}
+
 @defform[#:id && {expr1 && expr2}]{This is a procedural @racket[and] intended to be used both internally,inside Scheme+ source code,and externally in a Scheme+ program when parsing is required at runtime where we can not use the macro @racket[and] and thus we will use the @racket[&&] procedure.Unless your expression will be parsed at runtime do not use it and prefer it @racket[and].}
 
 @defform[#:id ∣∣ {expr1 ∣∣ expr2}]{This is a procedural @racket[or].See explanations above.See also note about vertical line reserved in Racket above.}

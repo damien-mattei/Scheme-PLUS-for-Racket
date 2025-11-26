@@ -12,7 +12,7 @@
 	       "try-catch"
 	       "SRFI-110-for-Racket"))
 (define pkg-desc "Scheme+ for Racket")
-(define version "17.3")
+(define version "17.4")
 (define pkg-authors '(mattei))
 (define scribblings '(("scribblings/Scheme-PLUS-for-Racket.scrbl" ())))
 (define build-deps '("scribble-lib" "racket-doc" "scribble-code-examples" "scribble-doc"))
