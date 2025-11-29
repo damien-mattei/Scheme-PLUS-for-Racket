@@ -1175,7 +1175,84 @@ As being procedurals @racket[&&] and @racket[∣∣] are not short-circuited.
 
 @defform[#:id · {n · m}]{Same as @racket[*]}
 
-Note: some Qi operators not documented here (see Qi documentation for them) are recognized, for example @racket[~>] should immediately work in infix.
+Note: some Qi operators not documented here (see Qi documentation for them) are recognized, for example @racket[~>] should immediately work in infix:
+
+@codeblock|{
+;; displayTrajectory3D : parse the Bepi Colombo spacecraft trajectory file text and display it in 3D
+#lang reader SRFI-105
+
+;; (displayTrajectory3D  "/opt/homebrew/var/www/drive/BepiColombo-Mio_MSO-orbit_1min_short.txt" "/opt/homebrew/var/www/drive/BepiColombo-Mio_MSO-FlyBy_1min_short.txt")
+
+(module displayTrajectory3D racket
+	
+	(require Scheme+)	
+	(require xml
+		 (except-in 2htdp/batch-io xexpr?)) ; for: read-lines
+	(require plot)
+	(require racket/pretty) ; pretty print
+	(require qi qi/list) ; Qi flow language
+
+	(provide displayTrajectory3D)
+
+	(define (displayTrajectory3D src src1)
+
+	  ;; check we have a .txt file
+	  {ext <- src[-4 :]} ; try to get the .txt extension
+
+	  (when (not (equal? ext ".txt"))
+		(error "Not a text file."))
+
+	  ;; read all lines
+	  {input-lines <- (read-lines src)}
+	  {vl <- (list->vector input-lines)}
+
+	  {input-lines1 <- (read-lines src1)}
+	  {vl1 <- (list->vector input-lines1)}
+
+	  ;; find the basename
+	  {basename <- src[: -4]} ; skip the 4 char of extension
+
+	  ;; find the spatial_unit if exist
+	  {spatial_unit <- (regexp-match #rx"km" vl[4])}
+	  (when (not spatial_unit)
+		{spatial_unit <- (regexp-match #rx"Rm" vl[4])})
+
+	  (when (not spatial_unit)
+		(error "No spatial unit (km or Rm) found."))
+
+	  {spatial_unit <- (first spatial_unit)}
+
+	  {tdl <- vl[5 :]} ; TABLEDATA lines, skip the header to go to table data lines
+	  {tdl1 <- vl1[5 :]}
+	  
+	  ;; for points3d we must have a list of vectors of x,y,z
+	  (define Lplot1  (for/list ([tr tdl1])
+				    (list->vector (map string->number (rest (string-split tr))))))
+
+	  (define-qi-foreign-syntaxes $bracket-apply$)
+
+	  {Lplot := (src) ~> read-lines ~> list->vector ~> _[5 :] ~> vector->list ~> (△ (string-split ~> rest ~> (△ string->number) ~> vector)) ~> ▽}
+	  
+	  (plot3d (list (points3d Lplot
+				  #:sym 'dot
+				  #:color "blue")
+
+			(points3d Lplot1			  
+				  #:sym 'dot
+				  #:color "red")
+
+			(polar3d (λ (θ ϕ) 1) #:color "gray"))
+
+		  #:title "BepiColombo FlyBy (red) over Mercury planet and Injection (blue)"
+		  #:x-min -6	 	 	 	 
+		  #:x-max 6	 	 	 	 
+		  #:y-min -6	 	 	 	 
+		  #:y-max 6	 	 	 	 
+		  #:z-min -6	 	 	 	 
+		  #:z-max 6))) ; end module
+}|
+
+@centerline{@image[#:scale 1.1 "BepiColombo-Mercury-Planet.png"]}
 
 
 @defform[(int x)]{Return the integer part of a number.

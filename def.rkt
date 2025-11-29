@@ -23,7 +23,7 @@
 (module def racket/base
 
 
-	(provide def #;def+ return return-rec)
+	(provide def return return-rec)
 
 	(require srfi/31 ;; for 'rec in def*
 		 ;;(only-in racket/base [define define-scheme]) ;; backup original Scheme 'define' in case of need
@@ -183,7 +183,7 @@
 
 	;; (def s  3 ² + 2 * 3 * 5 + 5 ²)
 	;; 64
-	((_ var expr expr-optional ...) #`(define var ($nfx$-rec expr expr-optional ...))) ; expr expr-optional ...))
+	((_ var expr expr-optional ...) #`(define var ($nfx$-rec expr expr-optional ...)))
 
 	((_) #`(error "Bad def form"))
 	

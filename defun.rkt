@@ -17,7 +17,7 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-
+;; should only allow return, not return-rec for time optimisation
 
 
 (module defun racket/base
@@ -132,7 +132,6 @@
 		    (cons <arg> L))))
 
 
-	
 
 	;; single definition without a value assigned
 	;; (defun x)
