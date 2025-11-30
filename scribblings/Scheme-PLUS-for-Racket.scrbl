@@ -1175,7 +1175,7 @@ As being procedurals @racket[&&] and @racket[∣∣] are not short-circuited.
 
 @defform[#:id · {n · m}]{Same as @racket[*]}
 
-Note: some Qi operators not documented here (see Qi documentation for them) are recognized, for example @racket[~>] should immediately work in infix:
+Note: some Qi operators not documented here (see @hyperlink["https://docs.racket-lang.org/qi/index.html"]{Qi documentation} for them) are recognized, for example @racket[~>] should immediately work in infix:
 
 @codeblock|{
 ;; displayTrajectory3D : parse the Bepi Colombo spacecraft trajectory file text and display it in 3D

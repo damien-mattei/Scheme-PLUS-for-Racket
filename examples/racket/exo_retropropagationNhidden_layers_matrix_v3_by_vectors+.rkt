@@ -1,4 +1,4 @@
-#reader SRFI-105
+#reader SRFI-110 ;105
 
 ;;#lang reader SRFI-105
 
