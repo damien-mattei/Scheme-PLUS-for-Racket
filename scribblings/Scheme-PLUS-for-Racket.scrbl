@@ -58,6 +58,8 @@ Scheme+ makes it easy the access and assignment for arrays,strings,hash tables,e
 
 What Scheme+ is not: Scheme+ is not a DSL (Domain Specific Language) a contrario Scheme+ tends to be the more universal possible and to be applied in a lot of domains.
 
+Scheme+ is available for different Scheme implementation: DrRacket,Guile,Kawa... the Racket implementation is for now (2025) the most advanced.
+
 @table-of-contents[]
 
 @section[#:tag "both"]{Both prefix and infix expressions in the same world}
@@ -107,7 +109,7 @@ Other examples:
 
 The parsing is the result of sometimes up to 3 stages of parsing:
 @itemlist[#:style'ordered
-          @item{SRFI 105 Curly Infix is an external parser necessary for the curly brackets { } syntax which is not in the base of scheme language.}
+          @item{SRFI 105 Curly Infix is an external parser necessary for the curly brackets { } syntax which is not in the base of scheme language and for the indexing [ ] square brackets.}
           @item{Syntax transformers are sometimes used at a "compile" stage before the code run.}
 	  @item{Parsing at runtime is rarely done but can be necessary when the parsed expression or some of her subexpressions remain ambiguous at prior parsing stages about being infix or prefix expressions.}]
 
