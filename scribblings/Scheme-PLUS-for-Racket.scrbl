@@ -1483,9 +1483,17 @@ Example for accessing and modifying a line of a matrix:
   
 (overload-square-brackets matrix-vect-line-ref matrix-vect-line-set! (matrix-vect? number?))
 
-(define Mv (matrix-vect #(#(1 2 3) #(4 5 6))))
+(define Mv (matrix-vect #(#(1 2 3)
+                          #(4 5 6))))
 {Mv[1]}
 '#(4 5 6)
+}|
+
+You can access all elements of the matrix also by different syntaxes:
+
+@codeblock|{
+{Mv[1][0]}
+4
 
 ; define getter,setter
 (define (matrix-vect-ref M lin col)
@@ -1498,8 +1506,24 @@ Example for accessing and modifying a line of a matrix:
 
 (overload-square-brackets matrix-vect-ref matrix-vect-set!  (matrix-vect? number? number?))
 
-{Mv[1][0]}
+{Mv[1 0]}
 4
+}|
+
+This works also for assignment if your object is mutable:
+
+@codeblock|{
+{a <- (vector (vector 1 2 3)
+              (vector 4 5 6))}
+
+(display a)
+'#(#(1 2 3) #(4 5 6))
+
+{a[1 2] <- 7}
+
+(display a)
+'#(#(1 2 3) #(4 5 7))
+
 }|
 
 See the full example at @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/matrix-by-vectors+.rkt"]
