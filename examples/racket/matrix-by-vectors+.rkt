@@ -11,6 +11,8 @@
 ;; or:
 ;; (require "matrix-by-vectors.rkt")
 
+;; (require "../examples/racket/matrix-by-vectors+.rkt") ; relatively from Scheme+ REPL src/ directory
+
 (module matrix-by-vectors racket
 
 (provide matrix-vect

@@ -933,6 +933,11 @@ Examples:
 }|
 
 @codeblock|{
+(declare interpolation-code)
+{{interpolation-code <- "cut_1D.py"} if ipic3D else {interpolation-code <- "cut_1D_menura.py"}}
+}|
+
+@codeblock|{
 {"test positif" if ((#f or #f) and #t) else "test negatif"}
 
 (if (and (or #f #f) #t) "test positif" "test negatif") ; result of parsing
@@ -1524,6 +1529,10 @@ This works also for assignment if your object is mutable:
 (display a)
 '#(#(1 2 3) #(4 5 7))
 
+{a[1][2] <- 10}
+
+(display a)
+#(#(1 2 3) #(4 5 10))
 }|
 
 See the full example at @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/matrix-by-vectors+.rkt"]
