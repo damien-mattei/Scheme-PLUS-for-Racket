@@ -1540,7 +1540,7 @@ See the full example at @url["https://github.com/damien-mattei/Scheme-PLUS-for-R
 
 @section[#:tag "makefile"]{Pragmas}
 
-There is currently no need of pragmas with Scheme+. The very few pragmas that can be used are the few ones of SRFI 105 Curly infix reader described in the doc: @other-doc['(lib "SRFI-105/scribblings/SRFI-105.scrbl")]
+There is currently no need of pragmas with Scheme+. The very few pragmas that can be used are the few ones of SRFI 105 Curly infix reader described in the doc: @other-doc['(lib "SRFI-105/scribblings/SRFI-105.scrbl")]  or the few pragmas of SRFI 110.
 
 
 @section[#:tag "pragmas"]{Using Makefile and debugging Scheme+ program}
