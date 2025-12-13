@@ -1384,7 +1384,7 @@ Another example:
 (overload-procedure uniform uniform-interval (number? number?))
 }|
 
-@defform[(define-overload-existing-procedure name)]{Define an overloaded existing procedure named @racket[name].}
+@defform[(define-overload-existing-procedure name)]{Define an overloaded existing procedure named @racket[name].For example the already existing procedure @racket[length] can be overloaded to be used with different types than only @racket[list].}
 @codeblock|{
 (define-overload-existing-procedure length)
 }|
@@ -1415,7 +1415,7 @@ Note that when no defined predicates matches the arguments, in the above example
 
 @defform[(overload-operator name special (predicate ...))]{Overload an operator named @racket[name] with a specialized operator named @racket[special] which use parameters that pass the @racket[predicates] test.}
 
-@defform[(define-overload-existing-operator name)]{Overload an already existing operator named @racket[name] with a specialized operator named @racket[special] which use parameters that pass the @racket[predicates] test.}
+@defform[(define-overload-existing-operator name)]{Define an overloaded already existing operator named @racket[name].For example the already existing arithmetic operators (+,-,*,/,...) can be overloaded.}
 
 @codeblock|{
 (define-overload-existing-operator +)
