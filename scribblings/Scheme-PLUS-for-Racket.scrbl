@@ -597,7 +597,7 @@ Other example:
 {M_i_o[j (i + 1)]  <-  M_i_o[j (i + 1)] + η · z_input[i] · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j]}
 }|
 
-Note in the example above the special neoteric expression available by SRFI-105 Curly Infix: @bold{მzⳆმz̃(z_output[j] z̃_output[j])} which is automatically parsed and transformed in the prefix expression : @racket[(მzⳆმz̃ z_output[j] z̃_output[j])], note also that @racket[მzⳆმz̃] is only a symbol.
+Note in the example above the special neoteric expression available by SRFI-105 Curly Infix:@codeblock|{მzⳆმz̃(z_output[j] z̃_output[j])}| which is automatically parsed and transformed in the prefix expression : @codeblock|{(მzⳆმz̃ z_output[j] z̃_output[j])}|, note also that @racket[მzⳆმz̃] is only a symbol.
 
 Assignment and slicing works as in Python language or even better,allowing more possibilities.
 

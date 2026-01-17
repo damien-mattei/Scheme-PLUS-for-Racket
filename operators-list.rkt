@@ -23,12 +23,14 @@
 
 	(provide definition-operator
 		 assignment-operator
+                 
 		 exponential-operator		 
 		 infix-operators-lst-for-parser
 		 
 		 definition-operator-syntax
 		 ;;single-variable-assignment-operator-syntax
 		 assignment-operator-syntax
+                 
 		 exponential-operator-syntax
 		 arithmetic-operator-syntax	 
 		 infix-operators-lst-for-parser-syntax
@@ -92,7 +94,7 @@
 				       (list #'<< #'>>)
 				       (list #'&)
 				       (list #'^) ; bitwise xor
-				       (list #'∣)
+				       (list #'∣) ; it is not the keyboard character because reserved in Racket !
 				       ))
 
 (define in/equalities-operator-syntax (list #'< #'> #'= #'≠ #'<= #'>= #'<> #'≤ #'≥ #'equal?))
