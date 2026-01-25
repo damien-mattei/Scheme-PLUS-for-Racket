@@ -88,7 +88,7 @@
   ;; executed body of procedure start here
   
   (cond ((and (null? terms)
-	      (not (exponential-operators-group? operators)))
+	      (not (exponentiation-operators-group? operators)))
 
 	  ;; (display "!**-generic-infix-parser cond case 1 : stack =")
 	  ;; (display stack)
@@ -143,8 +143,8 @@
 		(calculus (begin
 			    ;;(display "!**-generic-infix-parser : a=") (display a) (newline)
 			    ;;(display "!**-generic-infix-parser : b=") (display b) (newline)
-			    ;;(display "checking exponential for calculus...")(newline)
-			    (if (exponential-operators-group? operators) ; testing for exponential (expt or **)
+			    ;;(display "checking exponentiation for calculus...")(newline)
+			    (if (exponentiation-operators-group? operators) ; testing for exponentiation (expt or **)
 				(calc-generic-infix-parser op b a) ; op equal expt or **
 				(calc-generic-infix-parser op a b)))))
 	   
@@ -198,7 +198,7 @@
 	 (error "!*-generic-infix-parser : no more operator precedence groups , resting terms to parse:" terms))
        
        (let* ((current-operator-group (car operator-groups))
-	      (rv-tms (if (exponential-operators-group? current-operator-group) ; testing for exponential (expt or **)
+	      (rv-tms (if (exponentiation-operators-group? current-operator-group) ; testing for exponentiation (expt or **)
 			  (begin
 			    ;;(display  "!*-generic-infix-parser : expo detected") (newline)
 			    ;;(display "!*-generic-infix-parser : current-operator-group = ") (display current-operator-group) (newline)
@@ -316,7 +316,7 @@
     (return terms))
 
  
-  ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponential versus signs)
+  ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponentiation versus signs)
   (define parsed-superscript (superscript-operator-loop terms))
   ;;(display "!*prec-generic-infix-parser : parsed-superscript=") (display parsed-superscript) (newline)
 
@@ -441,7 +441,7 @@
   ;; TODO pass to n-arity also arithmetic expressions (+ , * , ...) note: fail with n-arity
   ;; note: some overloaded arithmetic operator could not have implemented the n-arity
   ;; perheaps write this in another module ,sort of !*post-generic-infix-parser
-  (if ;;(not (isEXPONENTIAL? expr))
+  (if ;;(not (isEXPONENTIATION? expr))
    (or (isDEFINE? expr)
        (isASSIGNMENT? expr))
    
@@ -514,7 +514,7 @@
   
 
   
-  ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponential versus signs)
+  ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponentiation versus signs)
   (define parsed-superscript (superscript-operator-loop terms))
   ;;(display "!*prec-generic-infix-parser-rec : parsed-superscript=") (display parsed-superscript) (newline)
 
@@ -639,7 +639,7 @@
   ;; TODO pass to n-arity also arithmetic expressions (+ , * , ...) note: fail with n-arity
   ;; note: some overloaded arithmetic operator could not have implemented the n-arity
   ;; perheaps write this in another module ,sort of !*post-generic-infix-parser
-  (if ;;(not (isEXPONENTIAL? expr))
+  (if ;;(not (isEXPONENTIATION? expr))
    (or (isDEFINE? expr)
        (isASSIGNMENT? expr))
    
@@ -707,7 +707,7 @@
     (error "if : (statement if test else statement2) : too much arguments : " terms))
   
 
-  ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponential versus signs)
+  ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponentiation versus signs)
   (define parsed-superscript (superscript-operator-loop terms))
   ;;(display "!*prec-generic-infix-parser-prepare-runtime : parsed-superscript=") (display parsed-superscript) (newline)
 
@@ -830,7 +830,7 @@
   ;; TODO pass to n-arity also arithmetic expressions (+ , * , ...) note: fail with n-arity
   ;; note: some overloaded arithmetic operator could not have implemented the n-arity
   ;; perheaps write this in another module ,sort of !*post-generic-infix-parser
-  (if ;;(not (isEXPONENTIAL? expr))
+  (if ;;(not (isEXPONENTIATION? expr))
    (or (isDEFINE? expr)
        (isASSIGNMENT? expr))
    
@@ -997,7 +997,7 @@
   
 
   
-  ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponential versus signs)
+  ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponentiation versus signs)
   (define parsed-superscript (superscript-operator-loop terms))
   ;;(display "!*prec-generic-infix-parser-rec-prepare : parsed-superscript=") (display parsed-superscript) (newline)
 
@@ -1107,7 +1107,7 @@
   ;; TODO pass to n-arity also arithmetic expressions (+ , * , ...) note: fail with n-arity
   ;; note: some overloaded arithmetic operator could not have implemented the n-arity
   ;; perheaps write this in another module ,sort of !*post-generic-infix-parser
-  (if ;;(not (isEXPONENTIAL? expr))
+  (if ;;(not (isEXPONENTIATION? expr))
    (or (isDEFINE? expr)
        (isASSIGNMENT? expr))
    

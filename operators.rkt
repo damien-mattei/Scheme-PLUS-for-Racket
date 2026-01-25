@@ -1,6 +1,6 @@
 ;; This file is part of Scheme+
 
-;; Copyright 2024 Damien MATTEI
+;; Copyright 2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@
 	   ASSIGNMENT-op?
 	   FLOW-op?
 	   COMPOSITION-op?
-	   EXPONENTIAL-op?
+	   EXPONENTIATION-op?
 	   MULTIPLY-op?
 	   
 	   is-associative-operator?
@@ -86,11 +86,11 @@
 	   isASSIGNMENT?
 	   isFLOW?
 	   isCOMPOSITION?
-	   isEXPONENTIAL?
+	   isEXPONENTIATION?
 	   isASSOCIATIVE?
 
 	   ;; group test
-	   exponential-operators-group?
+	   exponentiation-operators-group?
 	   strict-precedence-over-minus?
 	   precedence-rank
 	   operator-precedence>?
@@ -348,11 +348,11 @@
 ;;   (member-generic oper single-variable-assignment-operator-syntax))
 
 
-(define (EXPONENTIAL-op? oper)
-  (or (memv oper exponential-operator)
-      (member-generic oper exponential-operator-syntax)))
+(define (EXPONENTIATION-op? oper)
+  (or (memv oper exponentiation-operator)
+      (member-generic oper exponentiation-operator-syntax)))
 
-(define (exponential-operators-group? grp)
+(define (exponentiation-operators-group? grp)
   (member-generic 'expt grp)) 
 
 
@@ -430,7 +430,7 @@
 (define (isCOMPOSITION? expr)
   (and (pair? expr) (COMPOSITION-op?  (operator expr))))
 
-(define (isEXPONENTIAL? expr)
+(define (isEXPONENTIATION? expr)
   (and (pair? expr) (ASSIGNMENT-op?  (operator expr))))
 
 

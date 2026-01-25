@@ -27,7 +27,7 @@
 	   ;;(for-syntax Scheme+/operators)
 	   (for-syntax racket/base)
 	   Scheme+/infix-with-precedence-to-prefix
-	   Scheme+/exponential ; ???? why 
+	   Scheme+/exponentiation ; ???? why 
 	   Scheme+/multiply ; ???? but errors without : unbound **
 	   Scheme+/def-function
 	   )

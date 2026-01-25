@@ -67,7 +67,7 @@
 	 (set! previous-operator '-)
 	 (state-1-loop-over+- (cdr lst) acc)) ; go to another automaton state
 	((NO-OP? elem) ; should be a general sexpr
-	  ; we keep it in the resulting list as this the first sexpr
+	  ; we keep it in the resulting list as this is the first sexpr
 	 (state-3-parse-operators (cdr lst)
 				  (append acc (list elem))))
 	(else
@@ -128,6 +128,7 @@
 				  (append acc (list elem))))
 	
 	((MINUS-op? elem) ; we drop it from the resulting infix list (but will be possibly integrated in a prefixed sub sexpr)
+	 (set! previous-operator '-) ; TODO check it (begin-operators+- '(x := - 2 * 3 + 5) '()) ---> '(x := (- (2 * 3)) + 5)
 	 (state-1-loop-over+- (cdr lst) acc)) ; go to another automaton state
 	
 	(else
@@ -197,7 +198,7 @@
   ;;(display "minus-expression : rest-lst =") (display rest-lst) (newline)
   
   (condx ((null? rest-lst)
-	  (if (null? (cdr minus-lst))
+	  (if (null? (cdr minus-lst)) ; a single element list (sexpr)
 	      (values (car minus-lst) rest-lst)
 	      (values minus-lst rest-lst)))
 	 
@@ -207,20 +208,20 @@
 	 ((or (NO-OP? elem) 
 	      ;;(strict-precedence-over-minus? elem))
 	      (operator-precedence>? elem previous-operator)
-	      (and (EXPONENTIAL-op? previous-operator)
-		   (EXPONENTIAL-op? elem))) ; preserve that exponential is right associative
+	      (and (EXPONENTIATION-op? previous-operator)
+		   (EXPONENTIATION-op? elem))) ; preserve that exponentiation is right associative
 	  ;;(display "minus-expression : elem =") (display elem) (newline)
 	  ;;(display "minus-expression : (NO-OP? elem) =") (display (NO-OP? elem) ) (newline)
 	  ;;(display "minus-expression : append") (newline)
-	 (minus-expression (append minus-lst
-				   (list elem)) ; put the element at the end of the list
-			   (cdr rest-lst)))
-	
-	(else
-	 ;;(display "minus-expression : else") (newline)
-	 (if (null? (cdr minus-lst))
-	     (values (car minus-lst) rest-lst)
-	     (values minus-lst rest-lst)))))
+	  (minus-expression (append minus-lst
+				    (list elem)) ; put the element at the end of the list
+			    (cdr rest-lst)))
+	 
+	 (else
+	  ;;(display "minus-expression : else") (newline)
+	  (if (null? (cdr minus-lst))
+	      (values (car minus-lst) rest-lst)
+	      (values minus-lst rest-lst)))))
 
 
 ;; {3 + 2 ** - 0.5 * 3}

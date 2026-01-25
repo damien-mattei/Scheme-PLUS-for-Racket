@@ -178,7 +178,7 @@
 
    ;; operators
    Scheme+/not-equal
-   Scheme+/exponential
+   Scheme+/exponentiation
    Scheme+/bitwise
    Scheme+/modulo
    Scheme+/multiply

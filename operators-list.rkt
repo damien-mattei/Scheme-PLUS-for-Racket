@@ -24,14 +24,14 @@
 	(provide definition-operator
 		 assignment-operator
                  
-		 exponential-operator		 
+		 exponentiation-operator		 
 		 infix-operators-lst-for-parser
 		 
 		 definition-operator-syntax
 		 ;;single-variable-assignment-operator-syntax
 		 assignment-operator-syntax
                  
-		 exponential-operator-syntax
+		 exponentiation-operator-syntax
 		 arithmetic-operator-syntax	 
 		 infix-operators-lst-for-parser-syntax
 		 
@@ -75,10 +75,10 @@
 (define assignment-operator (map syntax->datum assignment-operator-syntax))
 
 
-(define exponential-operator-syntax (list #'expt #'**))
+(define exponentiation-operator-syntax (list #'expt #'**))
 
 
-(define exponential-operator (map syntax->datum exponential-operator-syntax))
+(define exponentiation-operator (map syntax->datum exponentiation-operator-syntax))
 
 
 
@@ -99,7 +99,7 @@
 
 (define in/equalities-operator-syntax (list #'< #'> #'= #'≠ #'<= #'>= #'<> #'≤ #'≥ #'equal?))
 
-(define arithmetic-operator-syntax (append (list exponential-operator-syntax)
+(define arithmetic-operator-syntax (append (list exponentiation-operator-syntax)
 					   calculus-operator-syntax
 					   (list in/equalities-operator-syntax)
 					   (list (list #'and))
@@ -144,7 +144,7 @@
 
 ;;    (list '∘) ; composition operator (for functions) Option + k  on MacOS
     
-;;    exponential-operator
+;;    exponentiation-operator
    
 ;;    (list '* '/ '% '·) ;; for:a ² + 2 · a · b + b ²      AltGr + Maj + 1 --> · on french keyboard ,Option + h on MacOS
 

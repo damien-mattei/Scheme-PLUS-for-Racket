@@ -57,7 +57,7 @@
 ; second stage overloading
 (overload-existing-operator + vector-append (vector? vector?))
 
-(random-seed 7)
+(random-seed 2005) ;  could make difference for accuracy
 
 ;; return a number in ]-1,1[
 ;; the dummy parameter is needed by a flomat procedure
@@ -359,6 +359,15 @@ but will it works with Scheme+ parser?
 			    {xp-DL <- z[vector-length(z) - 1][0]}
 			    (vector xp xp-DL))))
 
+	(define/public (DL-data-2D-GI) ; -pi/2 -> 3pi/2
+
+		(list-ec (s42: n 100)
+	      		($+>
+			    {xp <- - pi / 2 +  3 · pi / 2  ·  n / 100}
+			    (accepte_et_propage (vector xp))
+			    {xp-DL <- z[vector-length(z) - 1][0]}
+			    (vector xp xp-DL))))
+	
 
 	; plot in 2D the points of the input/output layers
 	(define/public (DL-plot)
@@ -368,7 +377,12 @@ but will it works with Scheme+ parser?
 		(plot (points Lplot-DL  #:sym 'fullcircle1
             	         		#:color "red")))
 
+	(define/public (DL-plot-GI)
+		
+		{Lplot-DL <- (DL-data-2D-GI)}
 
+		(plot (points Lplot-DL  #:sym 'fullcircle1
+            	         		#:color "red")))
 	
 
 
@@ -509,7 +523,6 @@ but will it works with Scheme+ parser?
 			 #:label "y = sin(x)"))
 
  
-
 (send r3 apprentissage Llearning)
 
 (send r3 test Ltest)
@@ -525,6 +538,10 @@ but will it works with Scheme+ parser?
             	               	    #:color "red"
 				    #:label "neural sine")))
 
+
+
+
+;; test truncature of numbers in matrix
 
 {M <- (get-field M r3)} ; get the vector of matrices in the retro-propagation class
 
@@ -566,6 +583,57 @@ but will it works with Scheme+ parser?
 	    (points Lplot-DL-main   #:sym 'circle1
             	               	    #:color "red"
 				    #:label "neural sine")))
+
+
+
+
+(printf "################## SINUS greater interval ##################")
+(newline)
+
+{r4 <- (new ReseauRetroPropagation (nc #(1 70 70 1))
+				   (nbiter 50000)
+				   (ηₛ 0.01)
+				   (activation_function_hidden_layer atan)
+				   (activation_function_output_layer tanh)
+				   (activation_function_hidden_layer_derivative der_atan)
+				   (activation_function_output_layer_derivative der_tanh))}
+
+{Llearning-GI <- (vector-ec (:list x (list-ec (s42: n 10000)
+					   (uniform (- pi) pi)))
+			 (cons (vector x) (vector (sin x))))   ; vectors by eager comprehension (SRFI 42)
+	   }  ; use pairs in Scheme instead of vectors in Python
+
+{Ltest-GI <- (vector-ec (:list x (list-ec (s42: n 10)
+				       (uniform {- pi / 2} pi)))
+		     (cons (vector x) (vector (sin x))))   ; vectors by eager comprehension (SRFI 42)
+       }  ; use pairs in Scheme instead of vectors in Python
+
+
+
+;; {Lplot-sin <- (list-ec (s42: n 100)
+;; 	      	     ($+> ; begin-def
+;; 			{xp <- - pi / 2 + pi · n / 100} ; try without parenthesis in (- pi)
+;; 			(vector xp (sin xp))))}
+
+ 
+(send r4 apprentissage Llearning-GI)
+
+(send r4 test Ltest-GI)
+
+(send r4 DL-plot-GI)
+
+{Lplot-DL-main-GI <- (send r4 DL-data-2D-GI)} 
+
+(plot (list (points Lplot-sin  #:sym 'fullcircle1
+                	       #:color "blue"
+			       #:label "y = sin(x)")
+	    (points Lplot-DL-main-GI   #:sym 'circle1
+            	               	    #:color "red"
+				    #:label "neural sine")))
+
+
+
+
 
 
 ) ; end module
