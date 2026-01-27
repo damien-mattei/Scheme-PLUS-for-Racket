@@ -57,7 +57,7 @@
 ; second stage overloading
 (overload-existing-operator + vector-append (vector? vector?))
 
-(random-seed 2005) ;  could make difference for accuracy
+(random-seed 1027 #;1005 #;2005) ;  could make difference for accuracy
 
 ;; return a number in ]-1,1[
 ;; the dummy parameter is needed by a flomat procedure
@@ -369,6 +369,19 @@ but will it works with Scheme+ parser?
 			    (vector xp xp-DL))))
 	
 
+	(define/public (DL-data-2D-HO) ; iinf -> isup
+
+		(list-ec (s42: n 100)
+                         ($+>
+                          {iinfp <- iinf + 1.0}
+                          {isupp <- isup - 1.5}
+                          {interv <- isupp - iinfp}
+                          {xp <- iinfp + interv · n / 100}
+                          (accepte_et_propage (vector xp))
+                          {xp-DL <- z[vector-length(z) - 1][0]}
+                          (vector xp xp-DL))))
+
+	
 	; plot in 2D the points of the input/output layers
 	(define/public (DL-plot)
 		
@@ -380,6 +393,14 @@ but will it works with Scheme+ parser?
 	(define/public (DL-plot-GI)
 		
 		{Lplot-DL <- (DL-data-2D-GI)}
+
+		(plot (points Lplot-DL  #:sym 'fullcircle1
+            	              #:color "red")))
+
+
+	(define/public (DL-plot-HO)
+		
+		{Lplot-DL <- (DL-data-2D-HO)}
 
 		(plot (points Lplot-DL  #:sym 'fullcircle1
             	         		#:color "red")))
@@ -476,6 +497,63 @@ but will it works with Scheme+ parser?
 
 (send r2 test Lexemples2)
 (newline)
+
+
+(printf "################## Harmonic Oscillator ##################")
+(newline)
+
+(define (ho x)
+  {(sin x) · (exp (- x / 10.0)) / 1.7})
+
+{r5 <- (new ReseauRetroPropagation (nc #(1 200   40 40   1))
+				   (nbiter 70000 #;50000)
+				   (ηₛ 0.01)
+				   (activation_function_hidden_layer atan)
+				   (activation_function_output_layer tanh)
+				   (activation_function_hidden_layer_derivative der_atan)
+				   (activation_function_output_layer_derivative der_tanh))}
+{iinf <- -7.0}
+{isup <- 11.0}
+
+
+{Llearning-HO <- (vector-ec (:list x (list-ec (s42: n 30000)
+					   (uniform iinf isup)))
+			 (cons (vector x) (vector (ho x))))   ; vectors by eager comprehension (SRFI 42)
+	   }  ; use pairs in Scheme instead of vectors in Python
+
+
+
+{Ltest-HO <- (vector-ec (:list x (list-ec (s42: n 10)
+				       (uniform iinf isup)))
+		     (cons (vector x) (vector (ho x))))   ; vectors by eager comprehension (SRFI 42)
+       }  ; use pairs in Scheme instead of vectors in Python
+
+
+; plot for equation computed Harmonic Oscillator
+{Lplot-HO <- (list-ec (s42: n 100)
+                      ($+> ; begin-def
+                       {iinfp <- iinf + 1.0}
+                       {isupp <- isup - 2.5}
+                       {interv <- isupp - iinfp}
+                       {xp <- iinfp + interv · n / 100}
+                       (vector xp (ho xp))))}
+
+ 
+(send r5 apprentissage Llearning-HO)
+
+(send r5 test Ltest-HO)
+
+(send r5 DL-plot-HO)
+
+{Lplot-DL-main-HO <- (send r5 DL-data-2D-HO)} ; compute the plot for neural data
+
+(plot (list (points Lplot-HO  #:sym 'fullcircle1
+                	       #:color "blue"
+			       #:label "y = sin(x)·e^(-x/10)/1.7")
+	    (points Lplot-DL-main-HO   #:sym 'circle1
+            	               	    #:color "red"
+				    #:label "Neural Harmonic Oscillator")))
+
 
 
 

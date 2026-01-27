@@ -31,13 +31,20 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 <br>
 
+**Changes of version 17.5:**
+
+Fixes a bug preventing sometimes the correct parsing of negative expressions in an assignment. 
+
+<br>
+
+<br>
+
 **Changes of version 17.4:**
 
 Added Bitwise Exclusive Or , symbol ```^``` which was missing and Bitwise Not: ```~```. 
 
 <br>
 
-<br>
 
 **Changes of version 17.3:**
 

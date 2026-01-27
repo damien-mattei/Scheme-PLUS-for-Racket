@@ -1591,6 +1591,10 @@ More examples can be find in this directory and subdirectories:
 
 @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/"]
 
+@centerline{@image[#:scale 1.1 "neural-sine-and-sine.png"]}
+
+@centerline{@image[#:scale 1.1 "neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator.png"]}
+
 @section[#:tag "emacs"]{Emacs configuration for syntax highligting of Scheme+}
 
 Add the line below in your .emacs configuration file:
