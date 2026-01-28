@@ -506,7 +506,7 @@ but will it works with Scheme+ parser?
   {(sin x) · (exp (- x / 10.0)) / 1.7})
 
 {r5 <- (new ReseauRetroPropagation (nc #(1 200   40 40   1))
-				   (nbiter 70000 #;50000)
+				   (nbiter 70000)
 				   (ηₛ 0.01)
 				   (activation_function_hidden_layer atan)
 				   (activation_function_output_layer tanh)
