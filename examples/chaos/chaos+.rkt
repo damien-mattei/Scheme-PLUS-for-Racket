@@ -160,7 +160,7 @@
   (stream-map (lambda (z)
                 (match-let (((vector x y) z))
                   (vector ((ksx / (√ 2)) * (x + y))
-			  {(ksy / (√ 2)) * ((- x) + y)}))) ; here { } could be replaced by ( )
+			  {(ksy / (√ 2)) * (- x + y)}))) ; here { } could be replaced by ( )
                   (stream-iterate (lambda (z)
                                     (match-let (((vector x y) z))
                                       (vector
