@@ -14,6 +14,6 @@
 (define pkg-desc "Scheme+ for Racket")
 (define version "17.5")
 (define pkg-authors '(mattei))
-(define scribblings '(("scribblings/Scheme-PLUS-for-Racket.scrbl" (language))))
+(define scribblings '(("scribblings/Scheme-PLUS-for-Racket.scrbl" () (language))))
 (define build-deps '("scribble-lib" "racket-doc" "scribble-code-examples" "scribble-doc"))
 (define license 'LGPL-3.0-or-later)
