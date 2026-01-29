@@ -1,7 +1,8 @@
 #lang scribble/manual
 @(require scribble/core)
 @(require scribble-code-examples)
-@require[scriblib/footnote]
+@(require scriblib/footnote)
+@(require racket/runtime-path)
 
 @centerline{@image[#:scale 1.0 "Scheme+.png"]}
 
@@ -1259,7 +1260,10 @@ Note: some Qi operators not documented here (see @hyperlink["https://docs.racket
 		  #:z-max 6))) ; end module
 }|
 
-@centerline{@image[#:scale 1.1 "BepiColombo-Mercury-Planet.png"]}
+
+@(define-runtime-path bepi-colombo "BepiColombo-Mercury-Planet.png")
+
+@centerline{@image[#:scale 1.1 bepi-colombo]}
 
 
 @defform[(int x)]{Return the integer part of a number.
