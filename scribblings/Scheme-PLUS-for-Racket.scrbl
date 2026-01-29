@@ -249,7 +249,7 @@ In the examples the display of the REPL/parser in prefix will generally be remov
 
 Note that in the above example and in Scheme+ the operator @racket[·] is @racket[*], also note that superscript chars are exposants.
 
-In the following sections i will omit to rewrite the directives about lang or reader and the requirement in each example to keep the code and the web page compact.
+In the following sections i will omit to rewrite the directives about @racket[lang] or @racket[reader] and the requirement in each example to keep the code and the web page compact.
 
 An example of inner round brackets inside curly brackets in a full infix expression:
 
