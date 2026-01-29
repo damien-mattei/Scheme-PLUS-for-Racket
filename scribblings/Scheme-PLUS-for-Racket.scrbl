@@ -4,7 +4,8 @@
 @(require scriblib/footnote)
 @(require racket/runtime-path)
 
-@centerline{@image[#:scale 1.0 "Scheme+.png"]}
+@(define-runtime-path Scheme+ "Scheme+.png")
+@centerline{@image[#:scale 1.0 Scheme+]}
 
 
 	   
@@ -1595,9 +1596,12 @@ More examples can be find in this directory and subdirectories:
 
 @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/"]
 
-@centerline{@image[#:scale 1.1 "neural-sine-and-sine.png"]}
 
-@centerline{@image[#:scale 1.1 "neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator.png"]}
+@(define-runtime-path neural-sine-and-sine "neural-sine-and-sine.png")
+@centerline{@image[#:scale 1.1 neural-sine-and-sine]}
+
+@(define-runtime-path neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator "neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator.png")
+@centerline{@image[#:scale 1.1 neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator]}
 
 @section[#:tag "emacs"]{Emacs configuration for syntax highligting of Scheme+}
 
