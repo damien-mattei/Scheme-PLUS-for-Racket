@@ -1,4 +1,4 @@
-#lang racket/base
+;;#lang racket/base
 ;; overload
 
 ;; Damien Mattei
@@ -27,7 +27,9 @@
 
 ;; Warning: overload is now a module to prevent infinite recursion in case someone overload a scheme procedure used in the implementation of any of the procedures provided by overload.scm (example: length !)
 
+;; TODO put it in a real module file ,no lang.... if it works!
 
+(module overload racket/base
 
 (provide $ovrld-ht$
 	 
@@ -62,6 +64,19 @@
 
 (require srfi/69 ;; Basic hash tables
 	 Scheme+/condx)
+
+(require (for-syntax racket/base))
+
+;; TODO relocate it?
+;; > (id-from-proc +)
+;; orig-+: undefined;
+;;  cannot reference an identifier before its definition
+(define-syntax (id-from-proc stx)
+  (syntax-case stx ()
+    [(_ proc)
+     (datum->syntax
+      stx
+      (string->symbol (string-append "orig-" (symbol->string (syntax-e #'proc)))))]))
 
 
 (define $ovrld-ht$ (make-hash-table)) ;; for procedure and operators
@@ -701,9 +716,8 @@
     ((_ proc module-name)
 
      (begin
-     
-       (require (rename-in module-name (proc
-       				        orig-proc)))
+
+       (require (rename-in module-name (proc orig-proc)))
 
        (define qproc (quote proc)) 
        
@@ -920,6 +934,9 @@
 	     (cdr proc-search-result)
 	     (error '$bracket-apply$ "no matching found in $ovrld-square-brackets-lst$ : failed with those arguments list ~a" args-lst)))
        
+) ; end module
+
+
 
 ;; other example 
 

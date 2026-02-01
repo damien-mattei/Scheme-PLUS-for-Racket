@@ -1,6 +1,6 @@
 ;; This file is part of Scheme+
 
-;; Copyright 2024 Damien MATTEI
+;; Copyright 2024-2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -22,33 +22,52 @@
   
   (provide datum=?  
 	   member-generic
-	   procedure->string
+	   ;;procedure->string
 	   procedure->symbol
 	   var-syntax2list)
 
 
   (require (only-in srfi/1 any member))
+  (require (for-syntax racket/base))
 
 
-  
+
+  ;; DEPRECATED
 ;; (procedure->string +)
 ;; "+"
 
-;; (procedure->string foo:3>)
-;; "foo:3>"
-  (define (procedure->string p)
-    (define o (open-output-string))
-    (write p o)
-    (define str (get-output-string o))
-    (substring str
-	       (string-length "#<procedure:")
-	       (- (string-length str) 1)))
+;; (procedure->string foo)
+;; "foo"
+  ;; (define (procedure->string p)
+  ;;   (define o (open-output-string))
+  ;;   (write p o)
+  ;;   (define str (get-output-string o))
+  ;;   (display str) (newline)
+  ;;   (substring str
+  ;;              (string-length "#<procedure:")
+  ;;              (- (string-length str) 1)))
 
 
-  (define (procedure->symbol p)
-    (string->symbol (procedure->string p)))
+  ;; DEPRECATED
+  ;; (define (procedure->symbol p)
+  ;;   (string->symbol (procedure->string p)))
 
 
+  ;; > (procedure->symbol +)
+  ;; '+
+  (define-syntax (procedure->symbol stx)
+    (syntax-case stx ()
+      [(_ proc)
+
+       (with-syntax
+	   
+	   ((str-proc
+             
+             (symbol->string  (syntax-e #'proc)))) ; should work also with syntax->datum
+	 
+         #'(string->symbol str-proc)
+         )])) 
+  
 
   ;; (datum=? #'* *)
   ;; #t
