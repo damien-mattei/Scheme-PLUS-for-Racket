@@ -9,16 +9,13 @@
 SHELL := /bin/bash
 
 # path to SRFI-105 directory
-#SRFI-105=../../SRFI-105-for-Racket
 SRFI-105=../../../../SRFI-105-for-Racket
 
 # for MacOS:
-#SCHEME_EXEC=/Applications/Racket\ v8.12/bin/racket
 SCHEME_EXEC=racket
 
 
 # Scheme+ for parser
-#PARSER:=$(SCHEME_EXEC) $(SCHEME_PLUS)/src/curly-infix2prefix4racket.rkt
 PARSER:=$(SRFI-105)/src/curly-infix2prefix4racket.rkt
 
 
@@ -31,7 +28,6 @@ MODULES_NAME=$(wildcard *+.rkt *+.scm)
 
 # Scheme programs to create by parsing the Scheme+ files
 OBJECT=$(addprefix $(MODULE_DIRECTORY)/,$(MODULES_NAME))
-
 
 
 
@@ -53,12 +49,12 @@ $(MODULE_DIRECTORY) :
 # create Scheme files (*.scm) by parsing Scheme+ files (*+.scm)
 $(MODULE_DIRECTORY)/%+.scm: %+.scm
 	@echo PARSING $< :
-	$(PARSER) $< > $@
+	$(SCHEME_EXEC) $(PARSER) $< > $@
 
 # create Scheme files (*.rkt) by parsing Scheme+ files (*+.rkt)
 $(MODULE_DIRECTORY)/%+.rkt: %+.rkt
 	@echo PARSING $< :
-	$(PARSER) $< > $@
+	$(SCHEME_EXEC) $(PARSER) $< > $@
 
 
 clean:

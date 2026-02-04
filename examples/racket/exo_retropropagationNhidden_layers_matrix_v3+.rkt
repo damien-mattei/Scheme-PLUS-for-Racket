@@ -38,11 +38,7 @@
 			   (shape shape-flomat)
 			   (transpose transpose-flomat)))
 
-
-
 (require (rename-in Scheme+ (· ·bak)))
-
-
 
 
 (require "matrix+.rkt")
@@ -57,7 +53,7 @@
 ; second stage overloading
 (overload-existing-operator + vector-append (vector? vector?))
 
-(random-seed 1027 #;1005 #;2005) ;  could make difference for accuracy
+(random-seed 1027 #;2005)
 
 ;; return a number in ]-1,1[
 ;; the dummy parameter is needed by a flomat procedure
