@@ -133,6 +133,8 @@ Scheme+ can be installed via the Racket Package system or downloaded from Github
 Scheme+ is designed to be used with the package SRFI-105 for Racket which is a curly infix reader also available in the same way described above.
 As an alternative to SRFI 105 you can also use SRFI 110.
 
+@bold{It is better to disable Background Expansion in the Preferences menu of Racket because it could warn for false error if not disabled.}But this should not block the compilation of code.
+
 
 @section[#:tag "REPL"]{Scheme+ and Curly Infix SRFI-105 REPL (Read Eval Print Loop)}
 
