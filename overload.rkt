@@ -27,7 +27,7 @@
 
 ;; Warning: overload is now a module to prevent infinite recursion in case someone overload a scheme procedure used in the implementation of any of the procedures provided by overload.scm (example: length !)
 
-;; TODO put it in a real module file ,no lang.... if it works!
+;; in a real module file ,no lang....
 
 (module overload racket/base
 
