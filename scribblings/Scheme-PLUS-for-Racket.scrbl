@@ -121,7 +121,7 @@ Here the parsing process is activated by the encountering of curly parenthesis {
 (define (line-length x0 y0 x1 y1)
   (√ {(x1 - x0) ² + (y1 - y0) ²}))
 
-{(ksy / (√ 2)) * ((- x) + y)}
+{(ksy / (√ 2)) * (- x + y)}
 
 (define (norm x y)
   {x ² + y ²})
