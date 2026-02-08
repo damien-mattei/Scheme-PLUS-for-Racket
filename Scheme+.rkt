@@ -117,6 +117,7 @@
    overload-operator
    
    define-overload-existing-operator
+   define-overload-existing-operator-annot
    overload-existing-operator
    
    define-overload-n-arity-operator

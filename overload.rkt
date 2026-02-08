@@ -43,6 +43,7 @@
 	 overload-operator
 	 
 	 define-overload-existing-operator
+	 define-overload-existing-operator-annot
 	 overload-existing-operator
 	 
 	 define-overload-n-arity-operator
@@ -766,6 +767,66 @@
        ;;(replace-operator! orig-proc proc)
        
        )))) 
+
+
+
+(define-syntax define-overload-existing-operator-annot
+
+  (syntax-rules ()
+
+    ((_ proc orig-proc) (define-overload-existing-operator-annot proc orig-proc racket/base))
+
+    ;; example: (define-overload-existing-operator · Scheme+/multiply)
+    ((_ proc orig-proc module-name)
+
+     (begin
+
+       (require (rename-in module-name (proc orig-proc)))
+
+       (define qproc (quote proc)) 
+       
+       (define (proc . args-lst)
+
+	 ;;(display "proc=") (display proc) (newline)
+	 ;;(define ht (hash-table->alist $ovrld-ht$))
+	 ;;(display ht) (newline)
+
+
+	 (define proc-lst (hash-table-ref $ovrld-ht$ qproc)) ;;  example: ((number? string?) (lambda (n s) (display n) (display s) (newline)))
+	 ;;(display "proc-lst=") (display proc-lst)
+	 ;;(newline)
+	 
+	 (define (check-args-lst pred-list) ; check arguments list match predicates
+	   ;;(display "pred-list=") (display pred-list) (newline)
+	   ;;(display "args-lst=") (display args-lst) (newline)
+	   (check-arguments pred-list args-lst))
+
+
+
+	 (define (test-proc pred-proc-list) ; test the procedure if it matches with arguments
+	   ;;(display "pred-proc-list=") (display pred-proc-list) (newline)
+	   (if (check-args-lst (car pred-proc-list)) ;; check args
+	       (car (cdr  pred-proc-list)) ;; return procedure
+	       #f))
+
+	 
+	 (define proc-search-result (ormap test-proc proc-lst)) ; search for a procedure matching arguments
+
+	 
+	 ;;(display "proc-search-result=") (display proc-search-result) (newline)
+	 
+	 (condx (proc-search-result (apply proc-search-result args-lst))
+		(exec
+		 (define nb-args (length args-lst)))
+		((> nb-args 2)   ;;(display ">2 args") (newline)
+		 (proc (car args-lst) (apply proc (cdr args-lst))))
+		(else
+		 ;;(display "else") (newline)
+		 (apply orig-proc args-lst))))
+       
+       (hash-table-set! $ovrld-ht$ qproc '())
+
+       ))))
 
 
 
