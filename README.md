@@ -7,6 +7,11 @@ The documentation is here (for Racket but generally works also for other Scheme 
 
 https://docs.racket-lang.org/Scheme-PLUS-for-Racket/index.html
 
+## 💙 Support My Work
+
+If my projects help you, you can support me with a donation: [Donate via PayPal](https://www.paypal.me/DamienMATTEI27)
+
+
 An other but a bit outdated documentation is here:
 https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/gh-pages/README.md
 
