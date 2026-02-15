@@ -9,7 +9,7 @@ https://docs.racket-lang.org/Scheme-PLUS-for-Racket/index.html
 
 ## 💙 Support My Work
 
-[![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-003087?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.me/DamienMATTEI27)
+If my projects help you, you can support me with a donation: [![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-003087?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.me/DamienMATTEI27)
 
 <br>
 
