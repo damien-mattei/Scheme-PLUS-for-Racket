@@ -39,7 +39,7 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 <br>
 
-Future: the next release will take some months to be achieved,i'm working on a type annotation system to improve speed to top.
+Future: the next release is more complex and will take more time to be achieved,i'm working on a type annotation system to improve speed to top.
 
 <br>
 
