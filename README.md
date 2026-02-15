@@ -31,6 +31,10 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 <br>
 
+Future: the next release will take some months to be achieved,i'm working on a type annotation system to improve speed to top.
+
+<br>
+
 **Changes of version 17.5:**
 
 Fixes a bug preventing sometimes the correct parsing of negative expressions in an assignment. 
