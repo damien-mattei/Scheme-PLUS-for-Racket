@@ -9,8 +9,9 @@ https://docs.racket-lang.org/Scheme-PLUS-for-Racket/index.html
 
 ## 💙 Support My Work
 
-If my projects help you, you can support me with a donation: [Donate via PayPal](https://www.paypal.me/DamienMATTEI27)
+[![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-003087?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.me/DamienMATTEI27)
 
+<br>
 
 An other but a bit outdated documentation is here:
 https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/gh-pages/README.md
