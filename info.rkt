@@ -5,14 +5,14 @@
 (define test-omit-paths '("library" "examples" "SRFI" "compiled" "src" "deprecated"))
 (define deps '("base"
 	       "srfi-lib"
-	       "sci"
+	       ;"sci"
 	       "r6rs-lib"
 	       "reprovide-lang-lib"
 	       "SRFI-105-for-Racket"
 	       "try-catch"
 	       "SRFI-110-for-Racket"))
 (define pkg-desc "Scheme+ for Racket")
-(define version "17.5")
+(define version "17.7")
 (define pkg-authors '(mattei))
 (define scribblings '(("scribblings/Scheme-PLUS-for-Racket.scrbl" () (language))))
 (define build-deps '("scribble-lib" "racket-doc" "scribble-code-examples" "scribble-doc"))

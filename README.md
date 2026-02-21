@@ -46,6 +46,69 @@ Future: the next release is more complex and will take more time to be achieved,
 
 <br>
 
+**Changes of version 17.7:**
+
+Bootstrapping start to be used. Scheme+ is now written in Scheme+. See: https://en.wikipedia.org/wiki/Bootstrapping_(compilers)
+For now the Bootstrapping is only used in SRFI-105 as Scheme+ code do not have changed.
+
+<br>
+
+flomat (floating point matrix) support is temporary dropped due to report that sci (flomat) is complex to install due to dependances to libgfortran (GNU Fortran libraries). (contact me if this is a problem for you)
+
+So i commented code, if someone wants to reactivate support for flomat he sould leave uncommented those lines of code:
+
+in bracket-apply.rkt and assignment.rkt:
+
+```scheme
+(rename-in flomat
+	      (repeat repeat-flomat)
+	      (shape shape-flomat)
+	      (transpose transpose-flomat))
+```
+
+in bracket-apply.rkt:
+
+```scheme
+((flomat? container-eval) (if (equal? slice index-eval) ;; T[:] 
+				      (error "apply-square-brackets.* : assignment : slice not allowed with flomat")
+				      (row container-eval index-eval)))
+```
+
+```scheme
+((flomat? container-eval) (if (or (equal? slice index1-or-keyword-eval)
+					  (equal? slice index2-or-keyword-eval))
+				      (error "apply-square-brackets.* : assignment : slice not allowed with flomat")
+				      (ref container-eval index1-or-keyword-eval index2-or-keyword-eval)))
+```
+
+
+in assignment.rkt:
+
+```scheme
+((flomat? container-eval)
+	 (error "row setting not allowed with flomat"))
+```
+
+```scheme
+#;((flomat? container-eval) ; flomat
+		 (mset! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
+```
+
+and in info.rkt uncomment this if necessary:
+"sci"
+in deps definition.
+
+as a consequence the example exo_retropropagationNhidden_layers_matrix_v3+.rkt no more works but exo_retropropagationNhidden_layers_matrix_v3_by_vectors+.rkt still works.
+
+
+Others internal modifications:
+
+Type annotation is in progress.
+
+Bootstrapping start to be used. Scheme+ is now written in Scheme+. See: https://en.wikipedia.org/wiki/Bootstrapping_(compilers)
+
+<br>
+
 **Changes of version 17.5:**
 
 Fixes a bug preventing sometimes the correct parsing of negative expressions in an assignment. 

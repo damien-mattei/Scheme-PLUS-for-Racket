@@ -19,7 +19,9 @@
 
 ;; use: (require Scheme+)
 
-
+;; in case of rare bug (only when modifying the language itself, so not for user but developers of Scheme+) like 'undefined something'
+;; which is defined and provided remove all the 'compiled' directories from Scheme+ and restart Racket
+;; this is not a Scheme+ bug but a Racket bug !
 
 
 (module Scheme+ racket/base

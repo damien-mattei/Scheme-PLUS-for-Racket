@@ -39,8 +39,9 @@
 	   srfi/25 ;; Multi-dimensional Array Primitives
 	   ;;(only (srfi :43) vector-copy vector-copy!)
 	   srfi/69 ; hash table
-	   
-	   (rename-in flomat
+
+	   ; could be commented because sci require libgfortran which complex installation for some users
+	   #;(rename-in flomat
 		      (repeat repeat-flomat)
 		      (shape shape-flomat)
 		      (transpose transpose-flomat))
@@ -55,7 +56,6 @@
 	   Scheme+/defvar
 	   Scheme+/bracket-apply
 	   Scheme+/overload)
-
 
 
  
@@ -850,7 +850,7 @@
 	       (<- index-eval (+ (string-length container-eval) index-eval)))
 	 (string-set! container-eval index-eval expr-eval))
 
-	((flomat? container-eval)
+	#;((flomat? container-eval)
 	 (error "row setting not allowed with flomat"))
 	
 	((array? container-eval)
@@ -1017,7 +1017,8 @@
 		((array? container-eval)
 		 ;;(display "assignment.* : 2 args ,array case : container-eval = ") (display container-eval) (newline)
 		 (array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
-		((flomat? container-eval) ; flomat
+		
+		#;((flomat? container-eval) ; flomat
 		 (mset! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
 
 		(else ;; overloaded
