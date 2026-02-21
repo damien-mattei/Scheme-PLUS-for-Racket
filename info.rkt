@@ -2,7 +2,7 @@
 (define pkg-name "Scheme-PLUS-for-Racket")
 (define collection "Scheme+")
 (define compile-omit-paths '("library" "examples" "SRFI" "compiled" "src" "bootstrapping"))
-(define test-omit-paths '("library" "examples" "SRFI" "compiled" "src"))
+(define test-omit-paths '("library" "examples" "SRFI" "compiled" "src" "bootstrapping"))
 (define deps '("base"
 	       "srfi-lib"
 	       ;"sci"
