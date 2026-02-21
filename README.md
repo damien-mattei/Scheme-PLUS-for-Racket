@@ -48,7 +48,10 @@ Future: the next release is more complex and will take more time to be achieved,
 
 **Changes of version 17.7:**
 
-Bootstrapping start to be used. Scheme+ is now written in Scheme+. See: https://en.wikipedia.org/wiki/Bootstrapping_(compilers)
+Bootstrapping start to be used. Scheme+ is now written in Scheme+.
+<br>
+See: https://en.wikipedia.org/wiki/Bootstrapping_(compilers)
+<br>
 For now the Bootstrapping is only used in SRFI-105 as Scheme+ code do not have changed.
 
 <br>
@@ -90,7 +93,7 @@ in assignment.rkt:
 ```
 
 ```scheme
-#;((flomat? container-eval) ; flomat
+((flomat? container-eval) ; flomat
 		 (mset! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
 ```
 
