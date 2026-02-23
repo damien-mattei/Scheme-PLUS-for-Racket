@@ -213,7 +213,7 @@
   (define verbose #t)
   (when verbose
     (newline)
-    (display (string-append "Scheme+ v" version " by Damien Mattei")) (newline)
+    (display (string-append "Scheme+ v" version " by Damien Mattei.")) (newline)
     (newline))
 
 
