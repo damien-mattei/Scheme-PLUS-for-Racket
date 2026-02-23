@@ -217,10 +217,11 @@
 
     ((_ orig-funct funct (pred-arg1 ...))
 
-     (let* ((qorig-funct (quote orig-funct))
-	    (ovrld-lst (hash-table-ref $ovrld-ht$ qorig-funct)))
+     (let* ((qorig-funct (quote orig-funct)) ; quoted original function
+	    (ovrld-lst (hash-table-ref $ovrld-ht$ qorig-funct))) ; retrieve list of the overloaded
        ;;(display qorig-funct) (newline)
        (hash-table-set! $ovrld-ht$ qorig-funct
+			; construct the new list of the overloaded
 			(cons (list (list pred-arg1 ...) ;; example: ((number? string?) (lambda (n s) (display n) (display s) (newline)))
 				    funct)
 			      ovrld-lst))))))

@@ -162,6 +162,14 @@ Here is the source code of @bold{REPL-Scheme-PLUS.rkt} which is also a typical e
   )
 }|
 
+If you installed Scheme+ with the Package Manager of the DrRacket the place of the above file @bold{REPL-Scheme-PLUS.rkt} depends of your system and scope of installation of @bold{Scheme+}.
+
+For example under Linux and for a user installation of @bold{Scheme+}, @bold{REPL-Scheme-PLUS.rkt} should be relative to your home directory in the @bold{.racket} subdirectory followed by path depending of the version of Racket and finally in @bold{pkgs/Scheme-PLUS-for-Racket/src}.
+
+Example under Linux with a user (mattei) installation of @bold{Scheme+} and the 8.17 version of Racket:
+@bold{/home/mattei/.racket/8.17/pkgs/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt}
+
+You could simply open the above file in @bold{DrRacket} to work with @bold{Scheme+}.
 
 @section[#:tag "hello"]{A simple Hello World application in Scheme+ and Curly Infix}
 

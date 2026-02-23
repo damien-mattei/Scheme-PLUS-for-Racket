@@ -103,6 +103,7 @@ in deps definition.
 
 as a consequence the example exo_retropropagationNhidden_layers_matrix_v3+.rkt no more works but exo_retropropagationNhidden_layers_matrix_v3_by_vectors+.rkt still works.
 
+Documentation has been updated explaining how to find the Scheme+ REPL on an installation via the DrRacket Package Manager.
 
 Others internal modifications:
 
