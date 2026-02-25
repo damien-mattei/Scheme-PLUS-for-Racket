@@ -453,6 +453,25 @@
 
 ;; (precedence-rank #'**)
 ;; 1
+
+;; > (precedence-rank '*)
+;; REPL Curly Infix:
+
+;; (precedence-rank '*)
+
+;; Parsed annotations. :
+;; (precedence-rank '*)
+
+;; 2
+;; > (precedence-rank '-)
+;; REPL Curly Infix:
+
+;; (precedence-rank '-)
+
+;; Parsed annotations. :
+;; (precedence-rank '-)
+
+;; 4
 (define (precedence-rank op)
   (define i -1)
   (for ([op-group infix-operators-lst-for-parser-syntax])

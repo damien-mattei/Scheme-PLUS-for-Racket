@@ -160,10 +160,10 @@
 	 ;; (display "state-1-loop-over+- : calling minus-expression with : ") (newline)
 	 ;; (display (list elem)) (display "   ") (display (cdr lst)) (newline)
 	 
-	 (define-values (minus-lst rest-lst) (minus-expression (list elem) (cdr lst))) ; acccumulator is (elem ...)
+	 (define-values (minus-lst rest-lst) (minus-expression (list elem) (cdr lst))) ; accumulator is (elem ...)
 	 
-	 ;; (display "state-1-loop-over+- : minus-lst =") (display minus-lst) (newline)
-	 ;; (display "state-1-loop-over+- : rest-lst =") (display rest-lst) (newline)
+	 ;(display "state-1-loop-over+- : minus-lst =") (display minus-lst) (newline)
+	 ;(display "state-1-loop-over+- : rest-lst =") (display rest-lst) (newline)
 	 
 	 ;; (cons
 	 ;;  (list '- ;(syntax -) ; '- : possible bug if we manipulate syntax object this should be (syntax -) and in R6RS could be also different
@@ -193,6 +193,7 @@
 
 
 ;; find the minus expression and the rest
+;; as we evaluate from left to right we go from beginning of the list to the end
 (define (minus-expression minus-lst rest-lst)
   ;;(display "minus-expression : minus-lst =") (display minus-lst) (newline)
   ;;(display "minus-expression : rest-lst =") (display rest-lst) (newline)
@@ -207,8 +208,51 @@
 	  (define elem (car rest-lst)))
 	 ((or (NO-OP? elem) 
 	      ;;(strict-precedence-over-minus? elem))
-	      (operator-precedence>? elem previous-operator)
-	      (and (EXPONENTIATION-op? previous-operator)
+              ; (operator-precedence>? elem previous-operator)
+	      ; above commented because of fail:
+              ; {x := 2}
+              ; {y := 3}
+
+              ;; > {- x * - y}
+              ;; REPL Curly Infix:
+
+              ;; (* (- x) (- y))
+
+              ;; Parsed annotations. :
+              ;; (* (- x) (- y))
+
+              ;; 6
+
+              ;; > {- 2 ** 4}
+              ;; REPL Curly Infix:
+
+              ;; (- (** 2 4))
+
+              ;; Parsed annotations. :
+              ;; (- (** 2 4))
+
+              ;; -16
+              ;; > {- 3 % 2}
+              ;; REPL Curly Infix:
+
+              ;; (% (- 3) 2)
+
+              ;; Parsed annotations. :
+              ;; (% (- 3) 2)
+
+              ;; 1
+              ;; > {- 3 & 2}
+              ;; REPL Curly Infix:
+
+              ;; (& (- 3) 2)
+
+              ;; Parsed annotations. :
+              ;; (& (- 3) 2)
+
+              ;; 0
+             
+              (EXPONENTIATION-op? elem)
+	      #;(and (EXPONENTIATION-op? previous-operator)
 		   (EXPONENTIATION-op? elem))) ; preserve that exponentiation is right associative
 	  ;;(display "minus-expression : elem =") (display elem) (newline)
 	  ;;(display "minus-expression : (NO-OP? elem) =") (display (NO-OP? elem) ) (newline)
@@ -224,11 +268,22 @@
 	      (values minus-lst rest-lst)))))
 
 
-;; {3 + 2 ** - 0.5 * 3}
 
 
 ) ; end module
 
+
+;; > {3 + 2 ** - 0.5 * 3}
+;; state-1-loop-over+- : minus-lst =0.5
+;; state-1-loop-over+- : rest-lst =(* 3)
+;; REPL Curly Infix:
+
+;; (+ 3 (* (** 2 (- 0.5)) 3))
+
+;; Parsed annotations. :
+;; (+ 3 (* (** 2 (- 0.5)) 3))
+
+;; 5.121320343559643
 
 ;; {2 ** -0.5 * 2}
 ;; !*-generic-infix-parser : terms = ((.#<syntax *> (.#<syntax **> .#<syntax 2> .#<syntax -0.5>) .#<syntax 2>))
@@ -239,21 +294,21 @@
 ;; 0.5
 
 
-;; {2 ** - 0.5 * 2}
-;; 1.4142135623730951
-
 ;; {- 2 + 3}
 ;; 1
 
 
-;; {4 2 + 3}
 
+;; > {4 2 + 3}
+;; REPL Curly Infix:
 
-;; ($nfx$ 4 2 + 3)
-;; !*prec-generic-infix-parser : terms=(.#<syntax 4> .#<syntax 2> .#<syntax +> .#<syntax 3>)
-;; !*prec-generic-infix-parser : parsed-superscript=(.#<syntax 4> .#<syntax 2> .#<syntax +> .#<syntax 3>)
-;; . . ../plus-minus-parser.rkt:75:6: Error parsing +- : state-3-parse-operators : found something else than an operator ,see element and list : #<syntax 2> '(#<syntax 2> #<syntax +> #<syntax 3>)
+;; (!*prec-generic-infix-parser-runtime (list 4 2 + 3) (lambda (op a b) (op a b)))
 
+;; Parsed annotations. :
+;; (!*prec-generic-infix-parser-runtime (list 4 2 + 3) (lambda (op a b) (op a b)))
+
+;; . . Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/infix-with-precedence-to-prefix.rkt:236:4: infix-with-precedence-to-prefix.rkt : pre-check-!*-generic-infix-parser : not a canonical infix expression:  '(4 2 #<procedure:+> 3)
+;; > 
 
 ;; {2 + - 3}
 ;; -1
@@ -278,6 +333,19 @@
 
 ;; {- + - - 2 ** 4}
 ;; -16
+
+
+;; {2 ** - 0.5 * 3}
+;; state-1-loop-over+- : minus-lst =0.5
+;; state-1-loop-over+- : rest-lst =(* 3)
+;; REPL Curly Infix:
+
+;; (* (** 2 (- 0.5)) 3)
+
+;; Parsed annotations. :
+;; (* (** 2 (- 0.5)) 3)
+
+;; 2.121320343559643
 
 
 ;; {3 + 2 ** - 0.5 * 3}

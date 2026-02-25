@@ -44,6 +44,13 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 Future: the next release is more complex and will take more time to be achieved,i'm working on a type annotation system to improve speed to top.
 
+
+<br>
+
+**Changes of version 17.8:**
+
+Fix a bug in the algebraic parser.The rule was more simple than i thought, left to right evaluation with exception for exponential.
+
 <br>
 
 **Changes of version 17.7:**
