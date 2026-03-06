@@ -43,7 +43,7 @@
    srfi/69 ; hash table
 
    ; could be commented because sci require libgfortran which complex installation for some users
-   #;(rename-in flomat
+   (rename-in flomat
 	      (repeat repeat-flomat)
 	      (shape shape-flomat)
 	      (transpose transpose-flomat))
@@ -346,7 +346,7 @@
 					  (string-ref container-eval (+ (string-length container-eval) index-eval)) ;; negative indexing
 					  (string-ref container-eval index-eval)))) ;; return an element of the string
 
-	#;((flomat? container-eval) (if (equal? slice index-eval) ;; T[:] 
+	((flomat? container-eval) (if (equal? slice index-eval) ;; T[:] 
 				      (error "apply-square-brackets.* : assignment : slice not allowed with flomat")
 				      (row container-eval index-eval)))
 
@@ -424,7 +424,7 @@
 					 (error "apply-square-brackets-argument-2 : bad arguments in string case,expecting : i2 or i1 :, provided :"
 						index1-or-keyword-eval index2-or-keyword-eval) )))
 
-	#;((flomat? container-eval) (if (or (equal? slice index1-or-keyword-eval)
+	((flomat? container-eval) (if (or (equal? slice index1-or-keyword-eval)
 					  (equal? slice index2-or-keyword-eval))
 				      (error "apply-square-brackets.* : assignment : slice not allowed with flomat")
 				      (ref container-eval index1-or-keyword-eval index2-or-keyword-eval)))

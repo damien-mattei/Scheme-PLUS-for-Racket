@@ -15,98 +15,122 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;; (require Scheme+/infix-prefix)
+;; > (require Scheme+/infix-prefix-postfix)
+;; REPL Curly Infix:
 
-;; (infix-prefix-test? '(x * y))
+;; (require Scheme+/infix-prefix-postfix)
+
+;; Parsed annotations. :
+;; (require Scheme+/infix-prefix-postfix)
+
+;; > (infix-prefix-postfix-test? '(3 +))
+;; REPL Curly Infix:
+
+;; (infix-prefix-postfix-test? '(3 +))
+
+;; Parsed annotations. :
+;; (infix-prefix-postfix-test? '(3 +))
+
+;; 'postfix
+
+;; (require Scheme+/infix-prefix-postfix)
+
+;; (infix-prefix-postfix-test? '(x * y))
 ;; 'infix
 
-;; (infix-prefix-test? '(cons + L))
+;; (infix-prefix-postfix-test? '(cons + L))
 ;; 'prefix
 
-;; (infix-prefix-test? '(sin ∘ sqr))
+;; (infix-prefix-postfix-test? '(sin ∘ sqr))
 ;; 'infix
 
-;; (infix-prefix-test? '(x ²))
-;; infix-prefix State 0
-;; infix-prefix State 4
+;; (infix-prefix-postfix-test? '(x ²))
+;; infix-prefix-postfix State 0
+;; infix-prefix-postfix State 4
 ;; 'infix
 
-;; (infix-prefix-test? '(+ - x * 3))
+;; (infix-prefix-postfix-test? '(+ - x * 3))
 ;; 'infix
 
-;; (infix-prefix-test? '(-4 · (sin x) + x · y ² - 5 · x / y))
+;; (infix-prefix-postfix-test? '(-4 · (sin x) + x · y ² - 5 · x / y))
 ;; 'infix
 
-;; (infix-prefix-test? '(x ² + y ² + z ²))
-;; infix-prefix State 0
-;; infix-prefix State 4
+;; (infix-prefix-postfix-test? '(x ² + y ² + z ²))
+;; infix-prefix-postfix State 0
+;; infix-prefix-postfix State 4
 ;; 'infix
 
-;; (infix-prefix-test? '(- 2 · a · b + b ²))
-;; infix-prefix State 0
-;; infix-prefix State 1
-;; infix-prefix State 2
+;; (infix-prefix-postfix-test? '(- 2 · a · b + b ²))
+;; infix-prefix-postfix State 0
+;; infix-prefix-postfix State 1
+;; infix-prefix-postfix State 2
 ;; 'infix
 
-;; (infix-prefix-test? '(+ - x * 3))
-;; infix-prefix State 0
-;; infix-prefix State 1
+;; (infix-prefix-postfix-test? '(+ - x * 3))
+;; infix-prefix-postfix State 0
+;; infix-prefix-postfix State 1
 ;; 'infix
 
-;; (infix-prefix-test? '(- x · y))
-;; infix-prefix State 0
-;; infix-prefix State 1
-;; infix-prefix State 2
+;; (infix-prefix-postfix-test? '(- x · y))
+;; infix-prefix-postfix State 0
+;; infix-prefix-postfix State 1
+;; infix-prefix-postfix State 2
 ;; 'infix
 
-;; (infix-prefix-test? '(- x y))
-;; infix-prefix State 0
-;; infix-prefix State 1
-;; infix-prefix State 2
+;; (infix-prefix-postfix-test? '(- x y))
+;; infix-prefix-postfix State 0
+;; infix-prefix-postfix State 1
+;; infix-prefix-postfix State 2
 ;; 'prefix
 
-;; (infix-prefix-test? '((x or y) or (a and b)))
-;; (infix-prefix-test? '((x or y) or (a and b)))
-;; infix-prefix State 0
+;; (infix-prefix-postfix-test? '((x or y) or (a and b)))
+;; (infix-prefix-postfix-test? '((x or y) or (a and b)))
+;; infix-prefix-postfix State 0
 ;; L=((x or y) or (a and b))
 ;; f=(x or y)
 ;; fate=#(struct:exn:fail:syntax or: bad syntax #<continuation-mark-set> (.#<syntax or>))
 ;; generic-known-program
-;; infix-prefix State 4
+;; infix-prefix-postfix State 4
 ;; 'infix
 
 
-(module infix-prefix racket/base
+(module infix-prefix-postfix racket/base
 
-	(provide infix-prefix-test?
+	(provide infix-prefix-postfix-test?
 		 infix?
 		 prefix?
+                 postfix?
 		 simple-infix-list-syntax?
 		 infix-canonical?
-		 two-symbols-or-list-following?)
+		 two-symbols-or-list-following?
+                 not-infix-and-known-procedure-at-end-then-postfix?)
 
 	(require Scheme+/operators
 		 Scheme+/superscript
 		 Scheme+/condx
 		 Scheme+/def-function
 		 Scheme+/program-type
-		 Scheme+/syntax)
+		 Scheme+/syntax
+                 (only-in srfi/1 first)
+                 (only-in racket/list rest)
+                 Scheme+/operators-list)
 
 
 	;; State 0
-	(def (infix-prefix-test? L)
-	  ;;(display "infix-prefix State 0") (newline)
+	(def (infix-prefix-postfix-test? L)
+	  ;;(display "infix-prefix-postfix State 0") (newline)
 	  ;;(display "L=") (display L) (newline)
 
 	  (var-syntax2list L)
 	  
-	  ;; atoms or empty list
-	  (when (superscript? L)
-		(error "infix-prefix : infix-prefix-test? : SYNTAX ERROR superscript not allowed at the beginning of an expression: " L))
 	  
+	  (when (superscript? L)
+		(error "infix-prefix-postfix : infix-prefix-postfix-test? : SYNTAX ERROR superscript not allowed at the beginning of an expression: " L))
+
+          ;; atoms or empty list
 	  (when (or (not (list? L))
 		    (null? L))
-	    (display "infix-prefix-test? : state 0: infix/prefix detected") (newline)	
+	    (display "infix-prefix-postfix-test? : state 0: infix/prefix detected") (newline)	
 	    (return 'infix-prefix))
 	  
 	  ;; at this point list is not empty
@@ -117,7 +141,12 @@
 	  ;;(display "after var-syntax2list f=") (display f) (newline)
 	  
 	  (when (superscript-only? f) ; allow * which is both super and normal script, do not cause error on * (which anyway can not be at beginning of a superscripted _infix_ expression)
-	    (error "infix-prefix : infix-prefix-test? : SYNTAX ERROR superscript not allowed at the beginning of an expression: " L))
+	    (error "infix-prefix-postfix : infix-prefix-postfix-test? : SYNTAX ERROR superscript not allowed at the beginning of an expression: " L))
+
+          (when (number? f) ; TODO check this
+            (state-4
+             (cdr L) f))
+          
 	  (when (SIGN-op? f) ; + , - 
 		(return (state-1 (cdr L))))
 	  ;; debug
@@ -129,21 +158,22 @@
 
 	  (when (list? f) ;; example: '((x or y) or (a and b))
 		(return (state-4
-			 (cdr L))))
+			 (cdr L) f)))
 	  
 	  (when (or (operator-symbol-or-syntax? f) ; operators
 		    (generic-known-program? f)) ; procedures,macros
 		(return (state-3 (cdr L))))
 	  
-	  ;; other cases (including for example: (- 2) · a · b + b ² which should not at this stage but could be detected at runtime)
+	  ;; other cases (including for example: (- 2) · a · b + b ² which should not at this stage but could be detected at runtime) ???
+          ;; numbers ?
 	  (state-4
-	   (cdr L)))
+	   (cdr L) f))
 	  
 
 
 	
 	(def (state-1 L)
-	  ;;(display "infix-prefix State 1") (newline)
+	  ;;(display "infix-prefix-postfix State 1") (newline)
 
 	  (var-syntax2list L)
 	     
@@ -154,7 +184,7 @@
 		      (and (operator-symbol-or-syntax? f)
 			   (not+-? f)
 			   (not (COMPOSITION-op? f))))
-		  (error "infix-prefix : state-1 : SYNTAX ERROR in parsing the remaining list: " L))
+		  (error "infix-prefix-postfix : state-1 : SYNTAX ERROR in parsing the remaining list: " L))
 		 ((or (SIGN-op? f)
 		      (COMPOSITION-op? f)) 'infix) ; + - ∘
 		 ;; at this point this could not be an operator
@@ -164,7 +194,7 @@
 	
 
 	(def (state-2 L)
-	  ;;(display "infix-prefix State 2") (newline)
+	  ;;(display "infix-prefix-postfix State 2") (newline)
 	  (var-syntax2list L)
 	  
 	  (when (null? L)
@@ -176,13 +206,13 @@
 	  (cond ((NO-OP? f) 'prefix)
 		((or (arithmetic-operator? f) 
 		     (superscript? f)) 'infix)
-		(else (error "infix-prefix : state-2 : unknow case in parsing the remaining list: " L))))
+		(else (error "infix-prefix-postfix : state-2 : unknow case in parsing the remaining list: " L))))
 
 
 	
 
 	(def (state-3 L)
-	  ;;(display "infix-prefix State 3") (newline)
+	  ;;(display "infix-prefix-postfix State 3") (newline)
 
 	  (var-syntax2list L)
 	     
@@ -196,13 +226,13 @@
 		;;((SINGLE-VARIABLE-ASSIGNMENT-op? f) 'infix)
 		((ASSIGNMENT-op? f) 'infix)
 		((DEFINE-op? f) 'infix)
-		((superscript? f) (error "infix-prefix : state-3 : SYNTAX ERROR ,find superscript in parsing the remaining list: " L))
+		((superscript? f) (error "infix-prefix-postfix : state-3 : SYNTAX ERROR ,find superscript in parsing the remaining list: " L))
 		(else 'prefix)))
 	
 
 	
-	(def (state-4 L)
-	  ;;(display "infix-prefix State 4") (newline)
+	(def (state-4 L p) ; p: previous element
+	  ;;(display "infix-prefix-postfix State 4") (newline)
 	  ;;(display "L=") (display L) (newline)
 
 	  (var-syntax2list L)
@@ -212,16 +242,45 @@
 
 	  (define f (car L))
 	  (var-syntax2list f)
+
+          (define r (rest L))
 	  
-	  (cond ((or (superscript? f)
-		     (COMPOSITION-op? f)
-		     (operator-symbol-or-syntax? f)) 'infix)
-		(else 'prefix)))
+	  (condx ((and (not (null? r))
+                       (or (superscript? f) ; superscript exponentiation (power)
+                           (COMPOSITION-op? f) ; function composition
+                           (operator-symbol-or-syntax? f)))
+		  'infix)
+                 
+		 ; a case where it is postfix when no op,no known procedure,no superscript,no composition in middle
+		 ; and known procedure at end
+		 (exec (define rev-L (reverse L))
+                       (define rest-rev-L-datum (map secure-syntax->datum (cdr rev-L)))
+		       (define last-elem (first rev-L))
+                       (define last-elem-datum (secure-syntax->datum last-elem))
+                       (define p-datum (secure-syntax->datum p))
+		       ;(define middle-rev-L (rest rev-L))
+                       ;(display "state-4 : middle-rev-L:") (display middle-rev-L) (newline)
+                       #;(define (no-op/superscript/proc/compo s)
+                         (not (or (operator-symbol-or-syntax? s)
+                                  (superscript? s)
+                                  (generic-known-program? s)
+                                  (COMPOSITION-op? s)))))
+		 ((or (member-in-postfix-lst last-elem-datum)
+                      (and (generic-known-program? last-elem) ; test only in parser, not runtime! catastrophic time penalty on prefix/postfix test
+                           (number? p-datum)
+                           (andmap number? rest-rev-L-datum)))
+                       
+                  ;(display "infix-prefix-postfix State 4 postfix :") (display L) (newline)
+                  ;(display "last element : ") (display last-elem) (newline)
+                  ;(display "(generic-known-program? last-elem) : ") (display (generic-known-program? last-elem)) (newline)
+                  'postfix)
+		 
+		 (else 'prefix)))
 
 	
 	
 	(define (infix? L)
-	  (define rs (infix-prefix-test? L))
+	  (define rs (infix-prefix-postfix-test? L))
 	  (if (or (eq? rs
 		       'infix)
 		  (eq? rs
@@ -230,13 +289,33 @@
 	      #f))
 
 	(define (prefix? L)
-	  ;;(display "infix-prefix.rkt : prefix? : L = ") (display L) (newline)
-	  (if (eq? (infix-prefix-test? L)
+	  ;;(display "infix-prefix-postfix.rkt : prefix? : L = ") (display L) (newline)
+	  (if (eq? (infix-prefix-postfix-test? L)
 		   'prefix)
 	      #t
 	      #f))
-	
 
+
+        (define (postfix? L)
+          (if (eq? (infix-prefix-postfix-test? L)
+                   'postfix)
+              #t
+              #f))
+
+        ; test for not infix and known procedure at end, then should be postfix
+        (def (not-infix-and-known-procedure-at-end-then-postfix? L)
+
+          (var-syntax2list L) ; by precaution
+
+          (when (infix? L)
+            (return #f))
+
+          (when (null? L)
+            (return #f))
+          
+          (define f (car (reverse L)))
+          
+          (generic-known-program? f))
 
 
 	;; this procedure check that we have a canonical infix expression

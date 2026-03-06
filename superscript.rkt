@@ -19,11 +19,13 @@
 	 syntax-superscript-number->number
 	 generic-superscript-number->number
 	 superscript-only?
-	 full-superscript-string) ; for debug
+	 full-superscript-string ; for debug
+	 superscript-but-not-operator?)
 
 (require (rename-in srfi/13 (string-hash string-hash-srfi13))) ;; strings
 
-(require Scheme+/def-function)
+(require Scheme+/def-function
+	 Scheme+/operators-list)
 
 ;; note: under Linux and on a PC (french) keyboard superscript characters
 ;; can be generated with the keystroke sequence: ^ n where n is  a number or sign
@@ -37,7 +39,7 @@
 
 ;; (superscript? '²)
 ;; '("²")
-(def (superscript? ss-stx) ; test if a syntax (or not) object is a superscript expression
+(def (superscript? ss-stx) ; test if a syntax (or not) object is a superscript expression of integers numbers positives or not ,alphabetic char existing in superscript
   ;;(display "superscript? : ss-stx=") (display ss-stx)(newline)
   (define sd ss-stx)
   (when (syntax? ss-stx) ; could also be something not syntax,example:  '¹²  
@@ -51,8 +53,15 @@
   (define str-rgex (string-append "^[" full-superscript-string "]+$"))
   (regexp-match (regexp str-rgex) str))
 
+(define (superscript-but-not-operator? ss-stx)
+  (define sd ss-stx)
+  (when (syntax? ss-stx) ; could also be something not syntax,example:  '¹²  
+    (set! sd (syntax->datum ss-stx)))
+  (and (superscript? sd)
+       (not (member-in-postfix-lst sd))))
 
-(def (superscript-only? ss-stx) ; test if a syntax (or not) object is a superscript expression
+
+(def (superscript-only? ss-stx) ; test if a syntax (or not) object is a superscript expression, testing only alphabetic existing superscript
   ;;(display "superscript? : ss-stx=") (display ss-stx)(newline)
   (define sd ss-stx)
   (when (syntax? ss-stx) ; could also be something not syntax,example:  '¹²  
@@ -127,7 +136,8 @@
      (string-replace-chars str full-superscript-string full-normal-string))
 
 (define full-superscript-string (string-append superscript-string ; numbers and signs
-					  "ᴬᵃᴮᵇᶜᴰᵈᴱᵉᶠᴳᵍᴴʰᴵᶦᴶʲᴷᵏᴸˡᴹᵐᴺⁿᴼᵒᴾᵖᴿʳˢᵀᵗᵁᵘⱽᵛᵂʷˣʸᶻ" ; note all letters are not available (ex:C,Q,q...)
+                                               ; i removed ᵀ to use it as reserved keyword for transpose operator for matrix
+					  #;"ᴬᵃᴮᵇᶜᴰᵈᴱᵉᶠᴳᵍᴴʰᴵᶦᴶʲᴷᵏᴸˡᴹᵐᴺⁿᴼᵒᴾᵖᴿʳˢᵗᵁᵘⱽᵛᵂʷˣʸᶻ" "ᴬᵃᴮᵇᶜᴰᵈᴱᵉᶠᴳᵍᴴʰᴵᶦᴶʲᴷᵏᴸˡᴹᵐᴺⁿᴼᵒᴾᵖᴿʳˢᵀᵗᵁᵘⱽᵛᵂʷˣʸᶻ" ; note all letters are not available (ex:C,Q,q...)
 					  "⁽⁾"
 					  "⸱" ; will be used as decimal separator
 					  "*" ; multiplication
@@ -137,7 +147,8 @@
 
 
 (define full-normal-string (string-append "-+0123456789" ; numbers and signs
-					  "AaBbcDdEefGgHhIiJjKkLlMmNnOoPpRrsTtUuVvWwxyz" ; note all letters are not available (ex:C,Q,q...)
+                                          ; i removed T to use it as reserved keyword for transpose operator for matrix
+					  #;"AaBbcDdEefGgHhIiJjKkLlMmNnOoPpRrstUuVvWwxyz" "AaBbcDdEefGgHhIiJjKkLlMmNnOoPpRrsTtUuVvWwxyz" ; note all letters are not available (ex:C,Q,q...)
 					  "()"
 					  "." ; will be used as decimal separator
 					  "*" ; multiplication
@@ -146,6 +157,7 @@
 					  ))
 
 (define superscript-only-string (string-append superscript-string ; numbers and signs
+                                               ; i removed ᵀ to use it as reserved keyword for transpose operator for matrix
 					  "ᴬᵃᴮᵇᶜᴰᵈᴱᵉᶠᴳᵍᴴʰᴵᶦᴶʲᴷᵏᴸˡᴹᵐᴺⁿᴼᵒᴾᵖᴿʳˢᵀᵗᵁᵘⱽᵛᵂʷˣʸᶻ" ; note all letters are not available (ex:C,Q,q...)
 					  "⁽⁾"
 					  "⸱" ; will be used as decimal separator

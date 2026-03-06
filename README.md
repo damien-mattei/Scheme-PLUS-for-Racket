@@ -9,12 +9,15 @@ https://docs.racket-lang.org/Scheme-PLUS-for-Racket/index.html
 
 mirror : https://damien-mattei.github.io/Scheme-PLUS-for-Racket/Scheme-PLUS-for-Racket.html
 
+<!--
 
 ## 💙 Support My Work
 
 If my projects help you, you can support me with a donation:
 
 [![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-003087?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.me/DamienMATTEI27)
+
+-->
 
 <br>
 
@@ -43,6 +46,11 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 <br>
 
 Future: the next release is more complex and will take more time to be achieved,i'm working on a type annotation system to improve speed to top.
+
+**Changes of version 17.9:**
+
+Support for postfix operators and postfix notation. (see doc)
+This version support flomat.
 
 
 <br>

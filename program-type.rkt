@@ -23,11 +23,14 @@
 	(provide known-program?
 		 syntax-known-program?
 		 quote-known-program?
-		 generic-known-program?)
+		 generic-known-program?
+		 lambda-list?)
 
 	(require try-catch
 		 ;; Scheme+
 		 ;; (for-syntax Scheme+)
+		 (only-in srfi/13 string-contains)
+		 Scheme+/def-function
 		 )
 
 
@@ -66,16 +69,22 @@
 	;; 		 (else (error "known-program? : exception:" fate)))
 	;; 	   fate)))))
    
-	(define (known-program? var1)
+	(def (known-program? var1)
 
-	     (let ((fate (defatalize (procedure? (eval var1 (make-base-namespace))))))
-	       ;;(display "fate=") (display fate) (newline)
+	  (when (list? var1)
+	    (return #f))
+	       
+	  (let* ((fate (defatalize (procedure? (eval var1 (make-base-namespace)))))
+		 (fate-str (format "~a" fate)))
+	       ;(display "fate=") (display fate) (newline)
 	       (if (struct? fate)
-		   (cond ((exn:fail:syntax? fate) 'macro)
+		   (cond ((and (exn:fail:syntax? fate) (string-contains fate-str "bad syntax")) 'macro)
+			 ((exn:fail:syntax? fate) #f)
 			 ((exn:fail:contract:variable? fate) #f)
 			 ((exn:fail:contract? fate) #f)
 			 (else
-			  (error "known-program? : exception: fate var1=" fate var1)))
+			  #;(error "known-program? : exception: fate var1=" fate var1)
+			  #f))
 		   fate)))
 
 	;; (define-syntax syntax-known-program?
@@ -96,8 +105,7 @@
 	;; #f
 
 	;;(generic-known-program? '(x or y))
-	;;fate=#(struct:exn:fail:syntax or: bad syntax #<continuation-mark-set> (.#<syntax or>))
-	;;'macro
+	;; #f
 	
 	;; this generic will choose which one from the other macro to call
 	(define-syntax generic-known-program?
@@ -116,7 +124,12 @@
 	    ((_ var1)
 	     (known-program? var1))))
 
-	
+	; test for (lambda ....)
+	(define (lambda-list? L)
+	  (and (list? L)
+	       (not (null? L))
+	       (or (eq? (car L) 'lambda)
+		   (eq? (car L) 'λ))))
 	
 	) ; end module
 

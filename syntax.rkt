@@ -24,7 +24,8 @@
 	   member-generic
 	   ;;procedure->string
 	   procedure->symbol
-	   var-syntax2list)
+	   var-syntax2list
+           secure-syntax->datum)
 
 
   (require (only-in srfi/1 any member))
@@ -99,6 +100,13 @@
        ;;(display "datum=? rv =") (display rv) (newline)
        rv)
 
+
+  (define (secure-syntax->datum s)
+    (if (syntax? s)
+        (syntax->datum s)
+        s))
+  
+  
 ;; Welcome to DrRacket, version 8.13 [cs].
 ;; Language: r6rs, with debugging; memory limit: 8192 MB.
 ;; > (define op-lst (list #'* #'+ #'- #'/))
@@ -130,10 +138,10 @@
   
   ;; transform any syntax in a list if possible
   ;; note:this macro made a side effect on the input variable, modifying it
-  ;; note: why not use syntax->datum ???
   (define-syntax var-syntax2list
     (syntax-rules ()
       ((_ var)
+
        
        (let ((var-inter #f)) ; intermediate variable
 

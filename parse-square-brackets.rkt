@@ -32,7 +32,7 @@
 	   Scheme+/infix-with-precedence-to-prefix
 	   ;;Scheme+/infix
 	   Scheme+/insert
-	   Scheme+/infix-prefix
+	   Scheme+/infix-prefix-postfix
 	   ;;(for-template racket/base)
 	   )
 	  
@@ -165,3 +165,41 @@
 					    
 
 ) ; end module
+
+
+;; > {#(1 2 3 4 5 6 7)[(+ 1 2)]}
+;; REPL Curly Infix:
+
+;; ($bracket-apply$ #(1 2 3 4 5 6 7) (+ 1 2))
+
+;; Parsed annotations. :
+;; ($bracket-apply$ #(1 2 3 4 5 6 7) (+ 1 2))
+
+;; 4
+;; > {#(1 2 3 4 5 6 7)[(1 2 +)]}
+;; REPL Curly Infix:
+
+;; ($bracket-apply$ #(1 2 3 4 5 6 7) (+ 1 2))
+
+;; Parsed annotations. :
+;; ($bracket-apply$ #(1 2 3 4 5 6 7) (+ 1 2))
+
+;; 4
+;; > {#(1 2 3 4 5 6 7)[(1 2 3 +)]}
+;; REPL Curly Infix:
+
+;; ($bracket-apply$ #(1 2 3 4 5 6 7) (+ 1 2 3))
+
+;; Parsed annotations. :
+;; ($bracket-apply$ #(1 2 3 4 5 6 7) (+ 1 2 3))
+
+;; 7
+;; > {#(1 2 3 4 5 6 7)[(1 (5 3 -) 3 +)]}
+;; REPL Curly Infix:
+
+;; ($bracket-apply$ #(1 2 3 4 5 6 7) (+ 1 (- 5 3) 3))
+
+;; Parsed annotations. :
+;; ($bracket-apply$ #(1 2 3 4 5 6 7) (+ 1 (- 5 3) 3))
+
+;; 7

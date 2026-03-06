@@ -107,6 +107,9 @@
    ∣∣ ; procedure or
    int
 
+   ;; postfix operators
+   !
+
    
    ;; overloading
    define-overload-procedure
@@ -137,7 +140,9 @@
    !*prec-generic-infix-parser-runtime
 
    infix-operators-lst-for-parser
-   
+
+   ;; annotation
+   declare-postfix-operator
    
    )
 
@@ -198,6 +203,9 @@
    
    Scheme+/infix-with-precedence-to-prefix
    Scheme+/operators-list
+
+   ;; postfix operators
+   Scheme+/factorial
 
    setup/getinfo ; for parsing info.rkt
 

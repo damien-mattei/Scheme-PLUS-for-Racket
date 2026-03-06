@@ -198,7 +198,7 @@
   ;; #<eof>
   (when (null? r)
     ;;(display "nfx.rkt : nfx : r null , f = ") (display f) (newline)
-    (return (!*prec-generic-infix-parser-rec f ; usefull also for neoteric expressions , see above example
+    (return (!*prec-generic-infix-parser-rec-prepare  #;!*prec-generic-infix-parser-rec f ; usefull also for neoteric expressions , see above example
 					     (lambda (op a b) (list op a b)))))
 
   ;; 2 arguments or more
@@ -234,7 +234,7 @@
 
 	       ;;(car ;  probably because the result will be encapsuled in a list !
 		;; apply operator precedence rules
-		(!*prec-generic-infix-parser-rec ;; (list->mlist
+		(!*prec-generic-infix-parser-rec-prepare ;; (list->mlist
 		 ;;(syntax->list ;; no need in R6RS ???
 		 ;;#'(expr));))
 		 #'expr
@@ -262,8 +262,9 @@
 	   ((parsed-args
 
 	      ;;(car ;  probably because the result will be encapsuled in a list !
-	     (!*prec-generic-infix-parser-rec (list #'op1 #'e1)
-					;(syntax->list #'(op1 e1))
+	     (!*prec-generic-infix-parser-rec-prepare ;(list #'op1 #'e1)
+                                        ; TODO continue checking this: (instead of above)
+					  (syntax->list #'(op1 e1))
 					  (lambda (op a b) (list op a b))
 					  )
 	       ;) ; close car
@@ -288,7 +289,7 @@
 		 ;; 	  (syntax->list #'(e1 op1 e2 op ...))))
 
 		 
-	       (!*prec-generic-infix-parser-rec (syntax->list #'(e1 op1 e2 op ...))
+	       (!*prec-generic-infix-parser-rec-prepare (syntax->list #'(e1 op1 e2 op ...))
 						(lambda (op a b) (list op a b))
 						)
 			    

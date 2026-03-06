@@ -49,7 +49,7 @@ Package: @url["https://pkgs.racket-lang.org/package/SRFI-110-for-Racket"]
 
 Scheme+ is an extension of the syntax of the Scheme language.
 
-Scheme+ adds to Scheme a way to use also infix notation with a compatibility near 100% and not as a sub-system of Lisp syntax as it is often done but with a complete integration in the Scheme reader/parser system and also for Racket at REPL (Read Eval Print Loop).
+Scheme+ adds to Scheme a way to use also infix and even postfix notation with a compatibility near 100% and not as a sub-system of Lisp syntax as it is often done but with a complete integration in the Scheme reader/parser system and also for Racket at REPL (Read Eval Print Loop).
 
 Scheme+ is to Scheme what a concept-car is to automobile.Scheme+ is a concept-language.It is ideally what should be a modern Scheme.
 As Scheme+ syntax is compatible with Scheme syntax you can mix the two syntaxes in the same program. 
@@ -64,9 +64,9 @@ Scheme+ is available for different Scheme implementation: DrRacket,Guile,Kawa...
 
 @table-of-contents[]
 
-@section[#:tag "both"]{Both prefix and infix expressions in the same world}
+@section[#:tag "both"]{Prefix, infix and postfix expressions in the same world}
 
-You can mix infix sub-expressions and prefix sub-expressions in the same expression:
+You can mix infix,prefix and postfix sub-expressions in the same expression:
 
 
 @code-examples[#:lang "reader SRFI-105" #:context #'here]|{
@@ -75,7 +75,7 @@ You can mix infix sub-expressions and prefix sub-expressions in the same express
 
 
 
-In Scheme+, in an expression surrounded by @racket[{ }] curly brackets,the sub-expressions using @racket[( )] round brackets can contains prefix or infix expressions.The parser will automatically detect the infix or prefix and parse it accordingly.
+In Scheme+, in an expression surrounded by @racket[{ }] curly brackets,the sub-expressions using @racket[( )] round brackets can contains prefix,infix or postfix expressions.The parser will automatically detect the infix,prefix or postfix and parse it accordingly.
 
 @code-examples[#:lang "reader SRFI-105" #:context #'here]|{
 {(3 + 1) * (2 * (+ 2 1) - (sin 0.3)) + ((* 2 5) - 5)}
@@ -104,16 +104,21 @@ Other examples:
 }|
 
 
-
 @code-examples[#:lang "reader SRFI-105" #:context #'here]|{
 {(- 7 (3 * (+ 2 4) - 1)) + 3}
+}|
+
+Postfix:
+
+@code-examples[#:lang "reader SRFI-105" #:context #'here]|{
+{1 2 3 4 +}
 }|
 
 The parsing is the result of sometimes up to 3 stages of parsing:
 @itemlist[#:style'ordered
           @item{SRFI 105 Curly Infix is an external parser necessary for the curly brackets { } syntax which is not in the base of scheme language and for the indexing [ ] square brackets.}
           @item{Syntax transformers are sometimes used at a "compile" stage before the code run.}
-	  @item{Parsing at runtime is rarely done but can be necessary when the parsed expression or some of her subexpressions remain ambiguous at prior parsing stages about being infix or prefix expressions.}]
+	  @item{Parsing at runtime is rarely done but can be necessary when the parsed expression or some of her subexpressions remain ambiguous at prior parsing stages about being infix or prefix expressions (for performance and optimisation and because of their rarity postfix expression are never parsed at runtime).}]
 
 Here the parsing process is activated by the encountering of curly parenthesis { } in the expressions (there exist also other ways to force the parsing):
 
@@ -230,7 +235,7 @@ note it seems in the latest version of Racket we can replace the first line simp
 @subsection[#:tag "curly"]{Curly Infix notation with { }}
 
 In general Scheme+ use the same convention for infix expression than SRFI-105 Curly Infix that is an infix expression is between curly parenthesis { }.
-But infix sub-expressions are allowed to be between normal parenthesis ( ) like it is in mathematic notation. Infix or prefix is then autodetected.In case of ambiguities { } force infix mode. Inside curly infix expression surrounded by { } parenthesis associativity and operator precedence are applied.
+But infix or postfix sub-expressions are allowed to be between normal parenthesis ( ) like it is in mathematic notation. Infix, postfix or prefix is then autodetected.In case of ambiguities { } force infix mode and possibly postfix mode,while ( ) remains prefix mode. Inside curly infix expression surrounded by { } parenthesis associativity and operator precedence are applied.
 
 @codeblock|{
 #lang reader SRFI-105
@@ -319,7 +324,6 @@ x
 (plus 2 3 4 5 6)  ; parsed result
 20
 }|
-
 
 
 @codeblock|{
@@ -756,7 +760,7 @@ z
 
 @defform[#:link-target? #f (def name)]{Like @racket[declare].}
 
-@defform[(def+ (name args ...) body ...+)]{Same as @racket[def] but all @racket[body ...] will be parsed as possibly infix or still prefix.}
+@defform[(def+ (name args ...) body ...+)]{Same as @racket[def] but all @racket[body ...] will be parsed as possibly infix,postfix or still prefix.}
 
 Examples:
 
@@ -841,7 +845,7 @@ Examples:
 
 @defform*[((lambda+ (args ...) body ...+)
 (lambda+ (args . L) body ...+)
-(lambda+ L body ...+))]{Same as @racket[lambda] but all @racket[body ...] will be parsed as possibly infix or still prefix.Only @racket[return] is allowed in @racket[lambda+].}
+(lambda+ L body ...+))]{Same as @racket[lambda] but all @racket[body ...] will be parsed as possibly infix,postfix or still prefix.Only @racket[return] is allowed in @racket[lambda+].}
 
 @codeblock|{
 (define x 3)
@@ -863,7 +867,7 @@ returning
 17
 }|
 
-@defform[(rec+ name expr)]{@racket[rec] allowing infix expression and using internally @racket[lambda+]}.
+@defform[(rec+ name expr)]{@racket[rec] allowing infix,postfix or prefix expressions and using internally @racket[lambda+]}.
 @codeblock|{
 (define f (rec+ foo (lambda () (2 + 3))))
 (f)
@@ -934,7 +938,7 @@ Example from real code:
 ({statement if test [else statement2]}
  (statement if test [else statement2]))]{
 
-An infix @racket[if] inspired from Python language.}
+An infix @racket[if] inspired from Python language,also called ternary operator (or conditional operator).}
 
 Examples:
 
@@ -1289,6 +1293,22 @@ Note: some Qi operators not documented here (see @hyperlink["https://docs.racket
 
 }
 
+@defform[#:id ! {n !}]{Factorial.
+
+Could be used by convention as postfix operator,as in mathematics:
+@codeblock|{
+{12 !}
+479001600
+}|
+
+Or in a classic scheme expression:
+@codeblock|{
+(! 5)
+120
+}|
+
+}
+
 
 @subsection[#:tag "superscript"]{Superscript}
 Superscript characters can be used to form numbers, variable or expressions forming an exponent,thus defining an exponentiation without the need of @racket[**] operator:
@@ -1310,7 +1330,7 @@ Note also that not all alphabetic characters currently exists in superscript, he
 @codeblock|{
 (define superscript-string "⁻⁺⁰¹²³⁴⁵⁶⁷⁸⁹") ; super script numbers and signs
 (define superscript-only-string (string-append superscript-string ; numbers and signs
-					  "ᴬᵃᴮᵇᶜᴰᵈᴱᵉᶠᴳᵍᴴʰᴵᶦᴶʲᴷᵏᴸˡᴹᵐᴺⁿᴼᵒᴾᵖᴿʳˢᵀᵗᵁᵘⱽᵛᵂʷˣʸᶻ" ; note all letters are not available (ex:C,Q,q...)
+					  "ᴬᵃᴮᵇᶜᴰᵈᴱᵉᶠᴳᵍᴴʰᴵᶦᴶʲᴷᵏᴸˡᴹᵐᴺⁿᴼᵒᴾᵖᴿʳˢᵗᵁᵘⱽᵛᵂʷˣʸᶻ" ; note all letters are not available (ex:C,Q,q...)
 					  "⁽⁾"
 					  "⸱" ; will be used as decimal separator
 					  ;; "*" ; multiplication is ambiguous (both super and normal script)
@@ -1345,6 +1365,64 @@ A last example:
 }|
 
 Not all fonts support superscript characters, i use Monospace Bold with Emacs.
+
+@subsection[#:tag "postfix"]{Postfix operators}
+The { } parenthesis accept also postfix notation.
+By default all existing procedure can be used postfixed in { }.
+
+@code-examples[#:lang "reader SRFI-105" #:context #'here]|{
+{1 2 3 4 +}
+}|
+
+@codeblock|{
+{1 (4 5 *) 3 +}
+24
+
+; A mix of postfix,infix and prefix:
+{2 (3 (9 - 5) *) (- 8 3) +}
+19
+}|
+
+Also in sub expressions in ( ) parenthesis this could be used.
+As there is no special parenthesis to delimitate postfix expressions this could be ambiguous.
+For this reason when the priority must be given to postfix the operator must be defined as also postfix by this syntax:
+
+@defform[(declare-postfix-operator op)]{Define a postfix operator named @racket[op].
+
+Then if there are two variables that could be some procedures in a parenthesis expression: one at beginning (prefix like) and one at the end (postfix like)
+the procedure taken in account will be the postfix procedure at the end if defined postfix,and the procedure at beginning if it's one will be considered as an argument of the postfix one.Otherwise prefix normal execution would have remain.
+
+@codeblock|{
+(declare-postfix-operator *)
+{x := 7}
+{1 (x 5 *) 3 +}
+39
+}|
+
+Another example using floating point matrix and computing the transpose of the matrix:
+
+@codeblock|{
+(require flomat)
+(define ᵀ transpose)
+(declare-postfix-operator ᵀ)
+{A := (matrix #(#(1 2 3) #(4 5 6)))}
+{A ᵀ}
+(flomat: ((1.0 4.0) (2.0 5.0) (3.0 6.0)))
+{(A ᵀ)ᵀ}
+(flomat: ((1.0 2.0 3.0) (4.0 5.0 6.0)))
+}|
+
+}
+
+
+There exist also some predefined postfix operators such as factorial @racket[!] , example of use:
+
+@codeblock|{
+(define (C n k)
+    {(n !) / ((k !) · ((n - k)!))})
+}|
+
+
 
 @subsection[#:tag "overload"]{Overloading procedures and operators}
 

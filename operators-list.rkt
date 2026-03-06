@@ -39,7 +39,14 @@
 		 operators-lst-syntax
 		 arithmetic-operator-lst-syntax
 		 strict-precedence-over-minus
-		 in/equalities-operator-syntax)
+		 in/equalities-operator-syntax
+		 insert-in-postfix-lst
+		 member-in-postfix-lst
+		 get-postfix-lst
+		 declare-postfix-operator
+		 verify-if-declare-postfix-operator-then-store-it
+		 verify-if-declare-postfix-operator-then-store-it-for-proc
+		 )
 
 	(require srfi/1 ; take-while
 		 Scheme+/syntax
@@ -172,6 +179,48 @@
 ;;    )
   
 ;;   )
+
+
+(define postfix-lst '(!))
+
+(define (insert-in-postfix-lst elem) ; insert it only if not already inside
+  (when (not (member elem postfix-lst))
+    (set! postfix-lst (cons elem postfix-lst))))
+
+(define (member-in-postfix-lst elem)
+  (member elem postfix-lst))
+
+(define (get-postfix-lst)
+  postfix-lst)
+
+#;(define (declare-postfix-operator op) 
+  (insert-in-postfix-lst op))
+
+(define-syntax declare-postfix-operator
+  (syntax-rules ()
+    ((_ op) 
+     (insert-in-postfix-lst (quote op)))))
+
+
+(define (verify-if-declare-postfix-operator-then-store-it-for-proc datum)  ; return a boolean
+  (if (and (list? datum)
+           (not (null? datum))
+           (eq? (car datum) 'declare-postfix-operator))
+      (begin
+        (insert-in-postfix-lst (cadr datum))
+        #t)
+      #f))
+
+(define (verify-if-declare-postfix-operator-then-store-it datum)  ; return a boolean
+  (if (and (list? datum)
+           (not (null? datum))
+           (eq? (car datum) 'declare-postfix-operator))
+      (begin
+        (insert-in-postfix-lst (cadr datum))
+        (display "Parser : main.rkt : Postfix operators list :") (display (get-postfix-lst)) (newline)
+        #t)
+      #f))
+
 
 ) ; end module
 

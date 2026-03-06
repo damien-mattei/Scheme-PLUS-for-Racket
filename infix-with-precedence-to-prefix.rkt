@@ -42,13 +42,14 @@
 	 Scheme+/alternating-parameters
 	 Scheme+/superscript-parser
 	 Scheme+/block
-	 Scheme+/infix-prefix
+	 Scheme+/infix-prefix-postfix
 	 Scheme+/plus-minus-parser
 	 Scheme+/atom
 	 Scheme+/in-equalities
 	 Scheme+/n-arity
 	 Scheme+/conjunction ; perheaps useless TODO test
 	 Scheme+/recursive-apply
+         Scheme+/superscript
 	 ) 
 	  
 
@@ -283,13 +284,19 @@
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; main entry routines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; main entry routine
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 
 ;; precursor generic infix parser
-;; (this is generally one of the main entry routines of this module)
+;; still call by at least parse-square-brackets-arguments
+
+;; For infix only in { ... } or from {array[ … ]},etc
+
+;; (this was generally one of the main entry routines of this module , called with $nfx$ - deprecated)
 (def (!*prec-generic-infix-parser terms creator )   ;; precursor of !*-generic-infix-parser
 
   ;;(display "!*prec-generic-infix-parser : start terms=") (display terms) (newline)
@@ -352,7 +359,7 @@
     ;;(display "!*prec-generic-infix-parser : length = 2") (newline)
     (return ; before infix parsing as it is already infix
        (map (lambda (x) ; mapping in infix the deep terms
-	     (!*prec-generic-infix-parser-rec x creator)) 
+	     (!*prec-generic-infix-parser-rec-prepare x creator)) 
 	   deep-terms)))
 
   ;;(display "!*prec-generic-infix-parser 1 before in/equalities : deep-terms=") (display deep-terms) (newline)
@@ -382,7 +389,7 @@
 	     (not (datum=? 'define ; define is preserved this way (no infix recursive in define)
 			   (car deep-terms))))
     ;;(display "!*prec-generic-infix-parser : recalling !*prec-generic-infix-parser via map") (newline) (newline)
-    (set! deep-terms (map (lambda (x) (!*prec-generic-infix-parser-rec x creator))
+    (set! deep-terms (map (lambda (x) (!*prec-generic-infix-parser-rec-prepare x creator))
 			  deep-terms)))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -460,7 +467,15 @@
 
 
 
+
+
+
+
+;; For infix or prefix in ( … )
 ;; i suppose this version called in a recursive way will parse both infix and prefix as it is for nested terms
+;; but it was also called at toplevel by nfx with only one argument.
+;; DEPRECATED
+
 (def (!*prec-generic-infix-parser-rec terms creator )   ;; precursor of !*-generic-infix-parser
 
   ;;(display "!*prec-generic-infix-parser-rec : start terms=") (display terms) (newline)
@@ -486,6 +501,11 @@
     ;;(display "!*prec-generic-infix-parser-rec returning early") (newline)
     (return terms))
 
+
+  ; check for postfix in my codes
+  #;(when (postfix? terms)
+     (error "!*prec-generic-infix-parser-rec  : postfix expression find :" terms))
+ 
 
   ;; Python stylish , (statement if test else statement2)
   ;; at this point we have at least a list
@@ -551,8 +571,8 @@
     ;;(display "!*prec-generic-infix-parser-rec : length = 2") (newline)
     (return ; before infix parsing as it is already infix
        (map (lambda (x) ; mapping in infix the deep terms
-	     (!*prec-generic-infix-parser-rec x creator)) 
-	   deep-terms)))
+              (!*prec-generic-infix-parser-rec x creator)) 
+            deep-terms)))
 
   ;;(display "!*prec-generic-infix-parser-rec 1 before in/equalities : deep-terms=") (display deep-terms) (newline)
   ;; (newline)
@@ -625,6 +645,7 @@
       (return (infix->prefix-in-equality deep-terms)))
 
   
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; it's here we put the expression in prefix ;;;;;;;;;;;;;;;;;;;;;;;
   (define rv (pre-check-!*-generic-infix-parser deep-terms creator ))
 
   
@@ -640,7 +661,7 @@
   ;; note: some overloaded arithmetic operator could not have implemented the n-arity
   ;; perheaps write this in another module ,sort of !*post-generic-infix-parser
   (if ;;(not (isEXPONENTIATION? expr))
-   (or (isDEFINE? expr)
+   (or (isDEFINE? expr) ;;  make n-arity for <- and <+ only
        (isASSIGNMENT? expr))
    
    ;;  make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
@@ -663,7 +684,7 @@
 
 
 
-;; version called from SRFI-105 (will prepare possible runtime parsing)
+;; version called from nfx of SRFI-105 (will prepare possible runtime parsing)
 ;; precursor generic infix parser
 ;; (this is generally one of the main entry routines of this module)
 ;; note: i removed all syntax stuff as this routine should be only call from external parser (SRFI-105), not by the Scheme+ syntax transformers
@@ -680,12 +701,19 @@
     ;;(display "!*prec-generic-infix-parser-prepare-runtime returning early") (newline)
     (return terms))
 
-  ;; Python stylish , (statement if test else statement2)
+  
+  ;; Python stylish , (statement if test else statement2) also called "ternary operator"
   ;;(error "Python if : terms=" terms)
   ;; at this point we have at least a list
   ;; check : (statement if test ....)
+  ; example {- if #f else +}
+  ; REPL Curly Infix:
+  ;; (if #f - +)
+  ;; Parsed annotations. :
+  ;; (if #f - +)
+  ;; #<procedure:+>
   (when (and (not (null? (cdr terms)))
-	     (eq? 'if (cadr terms)))
+	     (eq? 'if (cadr terms))) ; eq? could be used on atoms,not lists
     ;;(error "Python if")
     (define stmt (!*prec-generic-infix-parser-rec-prepare (car terms) creator))
     (when (null? (cddr terms))
@@ -705,8 +733,36 @@
       (return
        (list yf tst stmt stmt2)))
     (error "if : (statement if test else statement2) : too much arguments : " terms))
+
+ 
+
+  
+  ; postfix should be after 'if' as we can have {- if #f else +} with + being postfix operator
+  ; check for postfix in my codes
+
+  ;(display "!*prec-generic-infix-parser-prepare-runtime : (get-postfix-lst) :") (display (get-postfix-lst)) (newline)
+  
+  (when (or (postfix? terms)
+            (not-infix-and-known-procedure-at-end-then-postfix? terms))
+    ;(display "!*prec-generic-infix-parser-prepare-runtime  : postfix expression : ") (display terms) (newline)
+    (define rev-terms (reverse terms))
+    (define fct (car rev-terms)) ; function to call
+    (define terms-without-last (reverse (cdr rev-terms)))
+    (when (ormap (lambda (x) (superscript-only? x)) ;  postfix expression can not contains superscript elements --> error
+                  terms-without-last)
+      (error "!*prec-generic-infix-parser-prepare-runtime  : postfix expression arguments can not contains superscript elements:" terms-without-last))
+    (define parsed-deep-args (map (lambda (x) ; mapping in infix the deep terms
+				     (!*prec-generic-infix-parser-rec-prepare x creator)) 
+				   terms-without-last))
+    ; convert the expression from postfix to prefix
+    (return
+     (cons fct parsed-deep-args))) ; postfix expression
   
 
+  
+  ; i let the superscript parsing done even for postfix as:
+  ; 1/ postfix rarely used
+  ; 2/ help detecting non postfix expressions
   ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponentiation versus signs)
   (define parsed-superscript (superscript-operator-loop terms))
   ;;(display "!*prec-generic-infix-parser-prepare-runtime : parsed-superscript=") (display parsed-superscript) (newline)
@@ -720,11 +776,12 @@
 				     (!*prec-generic-infix-parser-rec-prepare x creator)) 
 				   parsed-superscript))
 
+    ; we return here the backquoted expression that will be evaluate at runtime later
     (return `(!*prec-generic-infix-parser-runtime ,(cons 'list parsed-deep-terms) ; ah ah ! not only terms but 'list before
 						  (lambda (op a b) (op a b))))) ; end when
 
   
-  
+  ; parse the + - (could return an atom, ex: {- - 2} --> 2 , not list
   (define parsed+- parsed-superscript) ; by default
 
   (when (and (not (null? parsed-superscript))
@@ -736,7 +793,7 @@
   ;;(display "!*prec-generic-infix-parser-prepare-runtime : parsed+-=") (display parsed+-) (newline)
   
   (define deep-terms parsed+-) ;; parsed for + - and superscript number ** 
-  ;;(display "!*prec-generic-infix-parser-prepare-runtime : deep-terms=") (display deep-terms) (newline)
+  ;(display "!*prec-generic-infix-parser-prepare-runtime : deep-terms=") (display deep-terms) (newline)
 
 
   (when (atom? deep-terms) ; no need to go further
@@ -747,11 +804,6 @@
 
   ;; infix parser do not know how to deal with only 2 terms
 
-  ;; strange case (2 elements) can not remember how we arrive here... anyway we recall parsing on all (both) elements.
-  ;; {- - 2}
-  ;;($nfx$ - - 2)
-  ;;2
-  ;;#<eof>
   (when (and (list? deep-terms)
 	     (= 2 (length deep-terms))) ; example : syntax something of (- (- 2))
     ;;(display "!*prec-generic-infix-parser-prepare-runtime : length = 2") (newline)
@@ -781,6 +833,8 @@
   ;; (when (and (list? deep-terms)
   ;; 	     (not (datum=? 'define ; define is preserved this way (no infix recursive in define)
   ;; 			   (car deep-terms))))
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
     ;;(display "!*prec-generic-infix-parser-prepare-runtime : recalling !*prec-generic-infix-parser-rec-prepare via map") (newline) (newline)
     (set! deep-terms (map (lambda (x)
 			    (!*prec-generic-infix-parser-rec-prepare x creator))
@@ -814,10 +868,20 @@
 
   ;;(display "!*prec-generic-infix-parser-prepare-runtime : general case :  deep-terms=") (display deep-terms) (newline)
   ;;(newline)
+
+  ;; retest for postfix here
+  #;(when (not-infix-and-known-procedure-at-end-then-postfix? deep-terms) ; prefix is excluded in this context of { }
+    (define rev-terms (reverse deep-terms))
+    (define fct (car rev-terms))
+    (define args (reverse (cdr rev-terms)))
+    (return
+     (cons fct args)))
+             
   
   ;; general case (when no other 'return' has happened on simplier things
   (define rv (pre-check-!*-generic-infix-parser deep-terms creator ))
 
+  ; rv is now in prefix !!!
   
   ;; (display "!*prec-generic-infix-parser-prepare-runtime : rv=") (display rv) (newline)
 
@@ -954,12 +1018,16 @@
 
 
 
-
+;; now the second most important routine
+;; For infix or prefix in ( … )
 
 (def (!*prec-generic-infix-parser-rec-prepare terms creator )   ;; precursor of !*-generic-infix-parser
 
   ;;(display "!*prec-generic-infix-parser-rec-prepare : start terms=") (display terms) (newline)
   ;; (newline)
+
+  ;; *-parser-rec and *parser-rec-prepare just differ with the line below?!
+  (var-syntax2list terms)
 
   (when (null? terms) ; special case ?
      ;;(display "!*prec-generic-infix-parser-rec-prepare returning early 0 : null terms") (newline)
@@ -996,10 +1064,29 @@
     (error "if : (statement if test else statement2) : too much arguments : " terms))
   
 
+ 
+  ; postfix should be after 'if' as we can have {- if #f else +} with + being postfix operator
+  ; check for postfix in my codes
+  (when (postfix? terms)
+    ;(display "!*prec-generic-infix-parser-prepare-runtime  : postfix expression : ") (display terms) (newline)
+    (define rev-terms (reverse terms))
+    (define fct (car rev-terms)) ; function to call
+    (define terms-without-last (reverse (cdr rev-terms)))
+    (when (ormap (lambda (x) (superscript-only? x)) ;  postfix expression can not contains superscript elements --> error
+                  terms-without-last)
+      (error "!*prec-generic-infix-parser-prepare-runtime  : postfix expression arguments can not contains superscript elements:" terms-without-last))
+    (define parsed-deep-args (map (lambda (x) ; mapping in infix the deep terms
+				     (!*prec-generic-infix-parser-rec-prepare x creator)) 
+				   terms-without-last))
+    ; convert the expression from postfix to prefix
+    (return
+     (cons fct parsed-deep-args))) ; postfix expression
   
+   
   ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponentiation versus signs)
   (define parsed-superscript (superscript-operator-loop terms))
   ;;(display "!*prec-generic-infix-parser-rec-prepare : parsed-superscript=") (display parsed-superscript) (newline)
+
 
   (define parsed+- parsed-superscript) ; by default
 
@@ -1007,7 +1094,7 @@
   (when (and (not (null? parsed-superscript))
 	     (not (null? (cdr parsed-superscript))) ;; forbid to treat (something) ,example : (a_syntax)
 	     ;; unless that it would return a_syntax , loosing the ( ) because begin-operators+- return sometimes the car when there is only one element in the return list
-	     (infix? parsed-superscript)) 
+	     (infix? parsed-superscript))
 	(set! parsed+- (begin-operators+- parsed-superscript '())))
   
   ;;(display "!*prec-generic-infix-parser-rec-prepare : parsed+-=") (display parsed+-) (newline)
@@ -1065,10 +1152,20 @@
   
   ;;(display "!*prec-generic-infix-parser-rec-prepare 2 : deep-terms=") (display deep-terms) (newline)
   ;;(newline)
+
+  ;; TODO check it:
+  (when (not-infix-and-known-procedure-at-end-then-postfix? deep-terms) 
+    (when (number? (car deep-terms)) ; then postfix
+      (define rev-terms (reverse deep-terms))
+      (define fct (car rev-terms))
+      (define args (reverse (cdr rev-terms)))
+      (return
+       (cons fct args))))
+
   
   ;; if we already have prefix (and already recall on the deep terms) then why continuing?
   (when (prefix? deep-terms) ; could be prefix
-    ;;(display "!*prec-generic-infix-parser-rec-prepare returning early 2 PREFIX DETECTED EARLY") (newline)
+    ;(display "!*prec-generic-infix-parser-rec-prepare returning early 2 PREFIX DETECTED EARLY : ") (display deep-terms) (newline)
     (return deep-terms))
  
 
@@ -1088,11 +1185,13 @@
   ;; (newline)
 	
   ;; we can check for expressions like 2<3<=3 here
-  ;; twice: same comment as for non recursiver version
+  ;; twice: same comment as for non recursive version
   (when (multiple-in-equalities? deep-terms)
       (return (infix->prefix-in-equality deep-terms)))
 
   
+  
+  ; call the infix parser to prefix
   (define rv (pre-check-!*-generic-infix-parser deep-terms creator ))
 
   
@@ -1537,3 +1636,137 @@
 
 ;; (if (and (or #f #f) #t) 1 2)
 ;; 2
+
+
+;; > {1 2 3 +}
+;; REPL Curly Infix:
+;; (+ 1 2 3)
+;; Parsed annotations. :
+;; (+ 1 2 3)
+;; 6
+
+
+;; (declare-postfix-operator +)
+;;  {1 (4 5 +) 3 +}
+;; 13
+
+
+
+;; (require Scheme+)
+;; (declare-postfix-operator +)
+;; (+ 2 3)
+;; 7
+;; {1 (4 5 +) 3 +}
+;; (define-syntax ++
+;;     (syntax-rules ()
+;;       ((_ v) (let ((tmp v))
+;;                (set! v (+ v 1))
+;;                tmp))))
+;; (declare-postfix-operator ++)
+;; (define x 3)
+;; {x ++}
+;; x
+;;
+;; Parser : main.rkt : Postfix operators list :(++ +)
+;; (module aschemeplusprogram racket
+;;   (require Scheme+)
+;;   (+ 2 3)
+;;   7
+;;   (+ 1 (+ 4 5) 3)
+;;   (define-syntax ++
+;;     (syntax-rules () ((_ v) (let ((tmp v)) (set! v (+ v 1)) tmp))))
+;;   (define x 3)
+;;   (++ x)
+;;   x)
+;; 5
+;7
+;13
+;3
+;4
+
+
+;; now without declaring postfix operators !!! works.
+;; > {3 4 (2 5 *) 7 +}
+;; REPL Curly Infix:
+
+;; (+ 3 4 (* 2 5) 7)
+
+;; Parsed annotations. :
+;; (+ 3 4 (* 2 5) 7)
+
+;; 24
+
+
+
+;; > (require flomat)
+;; REPL Curly Infix:
+
+;; (require flomat)
+
+;; Parsed annotations. :
+;; (require flomat)
+
+;; > (define ᵀ transpose)
+;; REPL Curly Infix:
+
+;; (define ᵀ transpose)
+
+;; Parsed annotations. :
+;; (define ᵀ transpose)
+
+;; > (declare-postfix-operator ᵀ)
+;; REPL Curly Infix:
+;; Parser : main.rkt : Postfix operators list :(ᵀ !)
+
+;; (declare-postfix-operator ᵀ)
+
+;; Parsed annotations. :
+;; (declare-postfix-operator ᵀ)
+
+
+;; > {A := (matrix #(#(1 2 3) #(4 5 6)))}
+;; REPL Curly Infix:
+
+;; (:= A (matrix #(#(1 2 3) #(4 5 6))))
+
+;; Parsed annotations. :
+;; (:= A (matrix #(#(1 2 3) #(4 5 6))))
+
+;; > {A ᵀ}
+;; REPL Curly Infix:
+
+;; (ᵀ A)
+
+;; Parsed annotations. :
+;; (ᵀ A)
+
+;; (flomat: ((1.0 4.0) (2.0 5.0) (3.0 6.0)))
+;; > {(A ᵀ)ᵀ}
+;; REPL Curly Infix:
+
+;; (ᵀ (ᵀ A))
+
+;; Parsed annotations. :
+;; (ᵀ (ᵀ A))
+
+;; (flomat: ((1.0 2.0 3.0) (4.0 5.0 6.0)))
+
+;; > {Ti := 3}
+;; REPL Curly Infix:
+
+;; (:= Ti 3)
+
+;; Parsed annotations. :
+;; (:= Ti 3)
+
+;; > {2 ᵀᶦ}
+;; REPL Curly Infix:
+
+;; (** 2 .#<syntax Ti>)
+
+;; Parsed annotations. :
+;; (** 2 .#<syntax Ti>)
+
+;; 8
+
+
