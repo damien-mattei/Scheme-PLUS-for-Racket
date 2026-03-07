@@ -47,6 +47,11 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 Future: the next release is more complex and will take more time to be achieved,i'm working on a type annotation system to improve speed to top.
 
+**Changes of version 17.9.1:**
+
+Support for postfix operators and postfix notation. (see doc)
+This is the official version for Racket packager easy install,for this reason, without flomat support.
+
 **Changes of version 17.9:**
 
 Support for postfix operators and postfix notation. (see doc)
