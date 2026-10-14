@@ -67,4 +67,48 @@
   {Mw[1 1] := 10}
   (check-equal? {Mw[1 1]} 10)
 
+  ;; the return type of the getter given in the overload : (overload-square-brackets (flonum?) ...) , the type of
+  ;; {F[i j]} is known for every object of this type , without a (type flonum? {F[]}) for each object
+  (struct fmat (v)) ;; a matrix of flonums
+
+  (define (fmat-ref M lin col)
+    {v := (fmat-v M)}
+    {v[lin][col]})
+
+  (define (fmat-set! M lin col x)
+    {v := (fmat-v M)}
+    {v[lin][col] := x})
+
+  (define (fmat-line-ref M lin)
+    {v := (fmat-v M)}
+    {v[lin]})
+
+  (define (fmat-line-set! M lin line)
+    {v := (fmat-v M)}
+    {v[lin] := line})
+
+  (overload-square-brackets (flonum?) fmat-ref fmat-set! (fmat? number? number?)) ; an element is a flonum
+  (overload-square-brackets (vector?) fmat-line-ref fmat-line-set! (fmat? number?)) ; a line is a vector
+
+  (define F (fmat (vector (vector 1.5 2.5)
+                          (vector 3.5 4.5))))
+
+  (define (ftrace M)
+    (type fmat? M)
+    {M[0 0] + M[1 1]}) ; (fl+ (fmat-ref M 0 0) (fmat-ref M 1 1))
+  (check-equal? (ftrace F) 6.0)
+
+  (define (fsum-line M i)
+    (type fmat? M)
+    {line := M[i]} ; line is a vector : line[0] is specialized for vectors
+    {line[0] + line[1]})
+  (check-equal? (fsum-line F 1) 8.0)
+
+  (define (fscale! M a)
+    (type fmat? M)
+    (type flonum? a)
+    {M[0 1] := a * M[0 1]}) ; (fmat-set! M 0 1 (fl* a (fmat-ref M 0 1)))
+  (fscale! F 2.0)
+  (check-equal? {F[0 1]} 5.0)
+
   (displayln "test-overload-square-brackets+ : done"))

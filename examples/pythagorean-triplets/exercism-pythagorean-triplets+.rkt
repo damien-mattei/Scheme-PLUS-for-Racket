@@ -67,7 +67,7 @@
 
 (define (positive-integer-triplet? t)
     (and (list? t)
-         (equal? (length t) 3)
+         (= (length t) 3)
          (positive-integer? (first t))
          (apply pythagorean-triplet? t)))
 
@@ -128,7 +128,7 @@ obtained by scaling up the primitive triplets for some divisor of p.
 
 |#
 
-(define (coprime? . args) (equal? (apply gcd args) 1))
+(define (coprime? . args) (= (apply gcd args) 1))
 ;; valid m and n: must be relatively prime (otherwise, obviously, the
 ;; resulting a,b,c will be divisible by the same factor); also, you need
 ;; exactly one of m and n to be odd. If both even, well, they're not

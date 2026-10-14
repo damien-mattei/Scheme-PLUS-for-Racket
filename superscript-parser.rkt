@@ -65,10 +65,10 @@
 ;; (superscript-operator-loop '(3 ²))
 ;; '(3 ** 2)
 
-;; (superscript-operator-loop '(3 ²⋅³⁻⁴))
+;; (superscript-operator-loop '(3 ²·³⁻⁴))
 ;; '(3 ** (2 .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:310:38 ·> 3 .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:285:38 -> 4))
 
-;; (superscript-operator-loop '(3 ²⋅⁽³⁻⁴⁾))
+;; (superscript-operator-loop '(3 ²·⁽³⁻⁴⁾))
 ;; '(3 ** (2 .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:310:38 ·> (3 .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:285:38 -> 4)))
 
 
@@ -126,6 +126,23 @@
       L))
 
 
+;; index of the closing parenthesis matching an opening one already read , #f if it is missing
+;; (the last closing parenthesis of the string is not the good one when there are several groups)
+;; (matching-closing-parenthesis-index "1+1)·(1+2)")
+;; 3
+;; (matching-closing-parenthesis-index "4-(5-2))-2")
+;; 7
+(define (matching-closing-parenthesis-index str)
+  (let loop ((i 0)
+	     (depth 0)) ; number of nested opened parenthesis
+    (cond ((= i (string-length str)) #f)
+	  ((char=? (string-ref str i) #\() (loop (+ i 1) (+ depth 1)))
+	  ((char=? (string-ref str i) #\)) (if (= depth 0)
+					      i
+					      (loop (+ i 1) (- depth 1))))
+	  (else (loop (+ i 1) depth)))))
+
+
 ;; (parse-superscript-token "17")
 ;;17
 
@@ -148,12 +165,12 @@
 ;; '(3 .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:201:28 *> (4 .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:193:28 -> 5) .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:193:28 -> 2)
 
 ;;(parse-superscript-token "-5")
-;;-5
+;; '(- 5)
 
 ;; (parse-superscript-token "alpha2")
 ;; 'alpha2
 
-;; (parse-superscript-token "²⋅³⁻⁴")
+;; (parse-superscript-token "²·³⁻⁴")
 ;; '(2 .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:306:38 ·> 3 .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:281:38 -> 4)
 
 (define (parse-superscript-token ss-tok)
@@ -205,7 +222,8 @@
 
      (when (char=? c #\-)
        ;;(display "superscript-parser : state-0-syntax-analysis : before cons #'-") (newline)
-       (return 	(cons #'- ;;'- ;;- ;;#'-
+       ;; #'- had the lexical context of this module : in a module {3 ⁻²} gave "-: identifier's binding is ambiguous"
+       (return 	(cons '- ;;#'- ;;- 
 		      (state-0-syntax-analysis nxt))))
 
      (when (char=? c #\/)
@@ -234,7 +252,9 @@
      ;; opening parenthesis ( is a special case
      (when (char=? c #\() ;  we extract the nested substring expression
        ;; search for the closing parenthesis
-       (define index-closing-parenthesis-far (string-index-right nxt #\)))
+       ;; the last closing parenthesis is wrong with several groups : ⁽¹⁺¹⁾·⁽¹⁺²⁾
+       #;(define index-closing-parenthesis-far (string-index-right nxt #\)))
+       (define index-closing-parenthesis-far (matching-closing-parenthesis-index nxt))
        (unless index-closing-parenthesis-far
 	 (error "state-0-syntax-analysis : ) (closing parenthesis) is missing in this expression : " nxt))
        (define substr (substring nxt 0 index-closing-parenthesis-far))     
@@ -352,7 +372,7 @@
 ;; '(3 ** (n .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:372:34 -> 4))
 
 
-;; (superscript-operator-loop '(3 ²⋅⁽ⁿ⁻⁴⁾))
+;; (superscript-operator-loop '(3 ²·⁽ⁿ⁻⁴⁾))
 ;; '(3 ** (2 .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:318:38 ·> (n .#<syntax:Dropbox/git/Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/superscript-parser.rkt:372:34 -> 4)))
 
 (def (state-1-symbol p-tok ss-tok) ; partial token, sub string tokens

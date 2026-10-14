@@ -86,25 +86,23 @@
   ;; the difference is only returning [x y z ...] instead of [[x y z ...]]
   (overload-square-brackets ref ndarray-line-set! (numpy-array? number?))
 
-  (define-overload-existing-operator *)
-  
+  ;; overload-operator defines the overloaded operator (original * from racket/base) and adds the binary overload
   ;; {'(1 2 3) * 5}
   ;; (* '(1 2 3) 5)
   ;; (obj "list" : [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3])
-  (overload-existing-operator * mul (list? number?))
-  (overload-existing-operator * matmul (numpy-array? numpy-array?))
+  (overload-operator * mul (list? number?))
+  (overload-operator * matmul (numpy-array? numpy-array?))
 
   
-  (define-overload-existing-operator · Scheme+/multiply)
-  
-  (overload-existing-operator · mul (list? number?))
-  (overload-existing-operator · matmul (numpy-array? numpy-array?))
+  ;; · of Scheme+ is renamed ·s above : the module gives the original · (used when no overload matches)
+  (overload-operator · (only-in Scheme+/multiply ·) mul (list? number?))
+  (overload-operator · matmul (numpy-array? numpy-array?))
 
   ; numpy array * vector, return a vector
   (define (matmul-vector npa v)
     (numpy-column->vector (matmul npa (vector->numpy-column v))))
   
-  (overload-existing-operator · matmul-vector (numpy-array? vector?))
+  (overload-operator · matmul-vector (numpy-array? vector?))
 
   (define (set A x y val)
     (:= A [x y] val))

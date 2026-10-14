@@ -22,7 +22,8 @@
 
 (module parse-square-brackets racket/base
 
-  (provide parse-square-brackets-arguments-lister-syntax)
+  (provide parse-square-brackets-arguments-lister-syntax
+	   select-overloaded-square-brackets)
   
   (require Scheme+/def-function
 	   Scheme+/declare
@@ -34,11 +35,17 @@
 	   Scheme+/insert
 	   Scheme+/infix-prefix-postfix
 	   ;;(for-template racket/base)
+	   Scheme+/list
+	   ;Scheme+/operators-list
 	   )
-	  
+
+
+(define err-port (current-error-port))
+
+(define repl-oper-flag #t) ; replace operator flag, use with overloading and also annotation
   
 ;; split the expression using slice as separator
-(def (parse-square-brackets-arguments args-brackets creator)
+(def (parse-square-brackets-arguments args-brackets creator op-equiv) ; op-equiv is for operator replacement (due to overload and annotations)
 
   ;;(display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
 
@@ -47,6 +54,14 @@
 
   (declare result partial-result) ; '() at beginning
 
+  (define (pred=? x y)
+    (define xd x)
+    (when (syntax? x)
+      (set! xd (syntax->datum x)))
+    ;(display "parse-square-brackets.rkt : pred=? : x=" err-port) (display x err-port) (display " , xd=" err-port) (display xd err-port)
+    ;(display " , y=" err-port) (display y err-port) (newline err-port)  
+    (equal? xd y))
+  
   ;; note: example that needs to be between { } : {#(1 2 3 4)[{cinque minus 3}]}
  
   (def (psba args) ;; parse square brackets arguments ,note: it is a tail-recursive function (see end)
@@ -59,18 +74,23 @@
   	 ;;(display "before !*prec") (newline)
 	 ;;(display "null args") (newline)
 
-	 (when (not (null? partial-result)) ;; check infix expression exist really
+	 (when (not (null? partial-result)) ;; check infix expression exists really
 	       ;;(display "not null") (newline)
 
 	       ;;(display "psba 1 : partial-result =") (display partial-result) (newline)
 	       (if (infix? #;infix-simple? partial-result) ; we test but we do not need to check all the syntax
 
-		   ($> ; then
+		   ($+> ; then
 		    ;;(display "psba 1 : infix detected ") (newline)
-		    
-		    (insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser partial-result
-											     creator
-											     ))) 
+		    (define pr (!*prec-generic-infix-parser partial-result
+							    creator))
+		    (when repl-oper-flag
+		      (set! pr (replace-many-deep-equality pr op-equiv pred=?))
+		      ;(display "parse-square-bracket.rkt : pr =" err-port) (display pr err-port) (newline err-port)
+                      )
+		      
+		    (insert-tail-set! #;append-tail-set! result pr))
+		   
 		   (begin
 		     ;;(display "NO infix detected") (newline)
 		     ;; append because the singleton (atom) needs to be exited from the list ,and append make it exited
@@ -108,12 +128,17 @@
 	      ;; check it is in infix, not already prefixed (we are in scheme...) we test but we do not need to check all the syntax
   	      (if (infix? #;infix-simple?  partial-result) ;;  operateurs quotés ou syntaxés !
 		  
-  		      (begin ; yes
+  		      ($+> ; yes
   			;;(display "psba 2 : infix detected ") (newline)
+			(define pr (!*prec-generic-infix-parser partial-result
+								creator))
+			(when repl-oper-flag
+			  (set! pr (replace-many-deep-equality pr op-equiv pred=?))
+					;(display "parse-square-bracket.rkt : pr =" err-port) (display pr err-port) (newline err-port)
+			  )
 			
   			(insert-tail-set! #;append-tail-set! result (!*prec-generic-infix-parser partial-result
-												 creator
-		       									    	 ))) ;; convert to prefix and store the expression
+												 creator))) ;; convert to prefix and store the expression
 		      ;; no
 		      (begin
 			;;(display "NO infix detected") (newline)
@@ -153,16 +178,31 @@
 
 
 
-(define (parse-square-brackets-arguments-lister-syntax args-brackets)
+(define (parse-square-brackets-arguments-lister-syntax args-brackets op-equiv)
   ;;(newline) (display "parse-square-brackets-arguments-lister-syntax : args-brackets=") (display args-brackets) (newline)
   (when (not (list? args-brackets))
     (display "parse-square-brackets-arguments-lister-syntax : WARNING , args-brackets is not a list, perheaps expander is not psyntax (Portable Syntax)") (newline)
     (display "parse-square-brackets-arguments-lister-syntax : args-brackets=") (display args-brackets) (newline))
 
   (parse-square-brackets-arguments args-brackets ;; generic procedure
-				   (lambda (op a b) (list op a b)))) 
+				   (lambda (op a b) (list op a b))
+				   op-equiv)) 
 				
 					    
+
+;; for $bracket-apply-overloaded$ and the assignment : the overloads of the square brackets kept by the type
+;; annotation pass for an object of known type , ((getter setter nb-indexes) ...) , and the parsed indexes.
+;; Return the overload (getter setter nb-indexes) that has this number of indexes when there is exactly one ,
+;; otherwise #f : then the generic $bracket-apply$ chooses at runtime , as before. A slice (the : keyword) gives #f too.
+(define (select-overloaded-square-brackets ovrlds parsed-args)
+  (define (datum x) (if (syntax? x) (syntax->datum x) x))
+  (define nb-args (length parsed-args))
+  (define candidates (filter (lambda (ovrld) (equal? (datum (caddr ovrld)) nb-args))
+			     ovrlds))
+  (if (and (not (memq ': (map datum parsed-args)))
+	   (= (length candidates) 1))
+      (car candidates)
+      #f))
 
 ) ; end module
 

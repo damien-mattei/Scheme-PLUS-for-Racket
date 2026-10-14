@@ -13,24 +13,27 @@
 	 *
 	 ·) ; matrix-column->vector) 
 
-(require (rename-in flomat (repeat repeat-flomat)  ; flomat is in package sci
-		           (shape shape-flomat)
-			   (transpose transpose-flomat)))
+#;(require (except-in (rename-in flomat (repeat repeat-flomat)  ; flomat is in package sci
+		               (shape shape-flomat)
+			       (transpose transpose-flomat)) ×))
+
 
 ;; (require (for-syntax r6rs/private/base-for-syntax)) ;; for macro syntax (for ... : identifier-syntax: undefined;
 
 
-(require Scheme+)
+(require (rename-in flomat (repeat repeat-flomat)  ; flomat is in package sci
+		    (shape shape-flomat)
+		    (transpose transpose-flomat))
+	 (except-in Scheme+ ×)) ; × is also provided by flomat
 
-
-(define-overload-existing-operator *)
-(define-overload-existing-operator · Scheme+/multiply)
+ANNOTATION-ON
 
 (define (multiply-flomat-vector M v) ;; args: M : flomat, v:vector , return vector
-  (flomat->vector (times M (matrix v))))
+  (flomat->vector #;(times M (matrix v)) {M × (matrix v)})) ; multiply a matrix of floats by a matrix vector column (?) and return a vector column (?)
 
-(overload-existing-operator * multiply-flomat-vector (flomat? vector?))
-(overload-existing-operator · multiply-flomat-vector (flomat? vector?))
+;; overload-operator defines the overloaded operator (original * from racket/base, original · from Scheme+/multiply) and adds the binary overload
+(overload-operator * multiply-flomat-vector (flomat? vector?))
+(overload-operator · (only-in Scheme+/multiply ·) multiply-flomat-vector (flomat? vector?)) ; only the original · is needed from Scheme+/multiply
 
 ;; (define (matrix-column->vector C)
 ;;   {lgC <- (ncols C)}

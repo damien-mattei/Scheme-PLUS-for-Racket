@@ -91,7 +91,39 @@
 ;; 2 < 3
 
 
-(define (call-parse-if-args-syntax Largs) ; Largs = (test e1 ...)
+;; a block written as a sub-list , (then e ...) or (else e ...) , is put back flat : then e ...
+;; in sweet-expressions (SRFI 110) the indentation gives sub-lists :
+;; if {x < 0}
+;;   then
+;;     'negative
+;;   else
+;;     'positive
+;; is read (if (< x 0) (then 'negative) (else 'positive))
+;; > (if #f (then 1 2) (else 3 4))
+;; 4
+;; > (if #t then 1 (else 2))
+;; 1
+(define (flatten-then-else-blocks Lr) ; Lr : the arguments of 'if' without the test
+  (append-map (lambda (arg)
+		(let ((l (and (syntax? arg)
+			      (syntax->list arg))))
+		  (if (and l
+			   (not (null? l))
+			   (or (then=? (car l))
+			       (else=? (car l))))
+		      l ; then e ... or else e ...
+		      (list arg))))
+	      Lr))
+
+
+;;(define (call-parse-if-args-syntax Largs) ; Largs = (test e1 ...)
+(define (call-parse-if-args-syntax Largs-with-blocks) ; Largs-with-blocks = (test e1 ...) , e1 ... can be blocks (then ...) (else ...)
+
+  ;; the blocks (then e ...) and (else e ...) are put back flat , the test is kept as it is
+  (define Largs (if (null? Largs-with-blocks)
+		    Largs-with-blocks
+		    (cons (car Largs-with-blocks)
+			  (flatten-then-else-blocks (cdr Largs-with-blocks)))))
 
   ;;(display "Largs=") (display Largs) (newline)
   (define lenL (length Largs))

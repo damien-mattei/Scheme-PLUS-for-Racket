@@ -1,12 +1,14 @@
+;; DEPRECATED (Scheme+ 18.0) : lambda+ is kept for the compatibility with old programs but it is no more documented
+;; nor improved. Its infix parsing is done at expansion time ($nfx$-rec) and knows only the procedures of Racket ,
+;; not those of the program. Use lambda with the curly brackets { } : (lambda (x) {x * 2 + 1})
+
 (module lambda+ racket/base
 
 	(provide lambda+)
 
-	(require srfi/31 ;; for 'rec
-		 Scheme+/return
+	(require Scheme+/return
 		 racket/stxparam
 		 Scheme+/nfx
-		 Scheme+/def+
 		 (for-syntax racket/base))
 
 
@@ -25,43 +27,11 @@
 	(define-syntax lambda+
 	  (lambda (stx)
   	    (syntax-case stx ()
-	      ((_ (<arg> ...) <body> <body>* ...)
+	      ;; formals can be a list of arguments, a list with a rest argument or only a rest argument
+	      ;; (lambda+ (a b . L) ...)  (lambda+ L ...)  (lambda+ () ...)
+	      ((_ <formals> <body> <body>* ...)
 
-	       #'(lambda (<arg> ...)
-		   (call/cc
-			(lambda (ret-id) ;(#,ret-id)
-			  ;; In the body we adjust the 'return' keyword so that calls
-			  ;; to 'return' are replaced with calls to the escape
-			  ;; continuation.
-			  (syntax-parameterize
-			   ([return (syntax-rules ()
-				      [(_ vals (... ...))
-				       (ret-id vals (... ...))])])
-			   ($nfx$-rec <body>)
-			   ($nfx$-rec <body>*)
-			   ...)))))	      
-
-	      ;; variadic arguments in list
-	      ((_ (<arg> . L) <body> <body>* ...)
-         
-	       #'(lambda (<arg> . L)
-		   (call/cc
-		    (lambda (ret-id) ;(#,ret-id)
-		      ;; In the body we adjust the 'return' keyword so that calls
-		      ;; to 'return' are replaced with calls to the escape
-		      ;; continuation.
-		      (syntax-parameterize
-		       ([return (syntax-rules ()
-				  [(return vals (... ...))
-				   (ret-id vals (... ...))])])
-		       ($nfx$-rec <body>)
-		       ($nfx$-rec <body>*)
-		       ...)))))
-
-	      ;; variadic arguments in list
-	      ((_ L <body> <body>* ...)
-         
-	       #'(lambda L
+	       #'(lambda <formals>
 		   (call/cc
 		    (lambda (ret-id) ;(#,ret-id)
 		      ;; In the body we adjust the 'return' keyword so that calls

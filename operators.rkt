@@ -61,6 +61,7 @@
 	   SIGN-op?
 	   IMPLIC-op?
 	   EQUIV-op?
+	   DEFINITION-op? ; scheme 'define
 	   DEFINE-op?
 	   ;;SINGLE-VARIABLE-ASSIGNMENT-op?
 	   ASSIGNMENT-op?
@@ -68,6 +69,20 @@
 	   COMPOSITION-op?
 	   EXPONENTIATION-op?
 	   MULTIPLY-op?
+	   BRACKET-APPLY-op?
+	   BRACKET-APPLY-VECTOR-op?
+	   BRACKET-APPLY-STRING-op?
+	   BRACKET-APPLY-HASH-TABLE-op?
+	   BRACKET-APPLY-ARRAY-op?
+	   BRACKET-APPLY-FLOMAT-op?
+	   VALUES-op?
+	   QUOTE-op?
+	   QUASIQUOTE-op?
+	   SYNTAX-QUOTE-op?
+	   CASE-op?
+	   COND-op?
+	   LAMBDA-op?
+	   DO-op?
 	   
 	   is-associative-operator?
 	   
@@ -88,6 +103,14 @@
 	   isCOMPOSITION?
 	   isEXPONENTIATION?
 	   isASSOCIATIVE?
+	   isBRACKET-APPLY?
+	   isBRACKET-APPLY-VECTOR?
+	   isBRACKET-APPLY-STRING?
+	   isBRACKET-APPLY-HASH-TABLE?
+	   isBRACKET-APPLY-ARRAY?
+	   isBRACKET-APPLY-FLOMAT?
+	   isBRACKET-APPLY*?
+	   isVALUES?
 
 	   ;; group test
 	   exponentiation-operators-group?
@@ -95,6 +118,30 @@
 	   precedence-rank
 	   operator-precedence>?
 	   operator-precedence=?
+	   operator-bp
+
+
+	   ;is-define-overload-procedure? ; define-overload-procedure replaced by overload-procedure
+	   is-define-overload?
+
+	   is-overload-operator?
+	   is-require-overload-operator?
+
+	   is-overload-existing-operator?
+
+	   is-overload-existing-n-ary-operator?
+	   	   
+	   is-overload-procedure?
+	   is-require-overload-procedure?
+
+	   is-overload-square-brackets?
+	   is-require-overload-square-brackets?
+	   
+	   ;is-overload-existing-procedure? ; replaced by overload-procedure
+	   ;is-require-overload-existing-procedure?
+	   
+	   quote-or-quasi?
+	   unquote-or-splicing?
 
    )
 
@@ -220,14 +267,14 @@
 (define (AND-op? oper)
   (or (datum=? oper 'and)
       (datum=? oper '·)))
-  ;;(or (eqv? oper 'and) (check-syntax=? oper #'and)))
-  ;;(or (eqv? oper 'and) (eqv? oper 'AND) (eqv? oper '·)))
+  ;;(or (eq? oper 'and) (check-syntax=? oper #'and)))
+  ;;(or (eq? oper 'and) (eq? oper 'AND) (eq? oper '·)))
 
 ;; test if an operator is OR
 (define (OR-op? oper)
   (datum=? oper 'or))
-  ;;(or (eqv? oper 'or) (check-syntax=? oper #'or)))
-;;(or (eqv? oper 'or) (eqv? oper 'OR)  (eqv? oper '➕))) ;; middle dot
+  ;;(or (eq? oper 'or) (check-syntax=? oper #'or)))
+;;(or (eq? oper 'or) (eq? oper 'OR)  (eq? oper '➕))) ;; middle dot
 
 
 (define (LOGIC-N-ARY-op? oper)
@@ -241,48 +288,48 @@
       (datum=? oper '^)
       (datum=? oper '⊕)))
 
-  ;;(or (eqv? oper 'xor) (check-syntax=? oper #'xor)))
-  ;;(or (eqv? oper 'xor) (eqv? oper 'XOR)  (eqv? oper '⊕))) ;; ⨁
+  ;;(or (eq? oper 'xor) (check-syntax=? oper #'xor)))
+  ;;(or (eq? oper 'xor) (eq? oper 'XOR)  (eq? oper '⊕))) ;; ⨁
 
 
 ;; test if an operator is NOT
 (define (NOT-op? oper)
   (datum=? oper 'not))
-  ;;(or (eqv? oper 'not) (check-syntax=? oper #'not))) ; not sure it is usefull in syntax 
-  ;;(or (eqv? oper 'not) (eqv? oper 'NOT)))
+  ;;(or (eq? oper 'not) (check-syntax=? oper #'not))) ; not sure it is usefull in syntax 
+  ;;(or (eq? oper 'not) (eq? oper 'NOT)))
 
 
 (define (EQUAL-op? oper)
-  (or (eqv? oper =)
-      (eqv? oper equal?)
+  (or (eq? oper =)
+      (eq? oper equal?)
       (datum=? oper '=)
       (datum=? oper 'equal?)))
 
 (define (NOT-EQUAL-op? oper)
-  (or (eqv? oper ≠)
-      (eqv? oper <>)
+  (or (eq? oper ≠)
+      (eq? oper <>)
       (datum=? oper '≠)
       (datum=? oper '<>)))
 
 
 (define (LESS-op? oper)
-  (or (eqv? oper <)
+  (or (eq? oper <)
       (datum=? oper '<)))
 
 (define (GREATER-op? oper)
-  (or (eqv? oper >)
+  (or (eq? oper >)
       (datum=? oper '>)))
 
 (define (LESS-OR-EQUAL-op? oper)
-  (or (eqv? oper <=)
+  (or (eq? oper <=)
       (datum=? oper '<=)
-      (eqv? oper ≤)
+      (eq? oper ≤)
       (datum=? oper '≤)))
 
 (define (GREATER-OR-EQUAL-op? oper)
-  (or (eqv? oper >=)
+  (or (eq? oper >=)
       (datum=? oper '>=)
-      (eqv? oper ≥)
+      (eq? oper ≥)
       (datum=? oper '≥)))
 
 
@@ -296,12 +343,12 @@
 
 
 (define (ADD-op? oper)
-  (or (eqv? oper +)
+  (or (eq? oper +)
       (datum=? oper '+)))
-;;(or (eqv? oper +) (eqv? oper '+) (check-syntax=? oper #'+)))
+;;(or (eq? oper +) (eq? oper '+) (check-syntax=? oper #'+)))
 
 (define (MINUS-op? oper)
-  (or (eqv? oper -)
+  (or (eq? oper -)
       (datum=? oper '-)))
 
 (define (SIGN-op? oper)
@@ -310,23 +357,99 @@
 
 
 (define (MULTIPLY-op? oper)
-  (or (eqv? oper *)
-      (eqv? oper ·)
+  (or (eq? oper *)
+      (eq? oper ·)
       (datum=? oper '*)
       (datum=? oper '·)))
 
+
+(define (BRACKET-APPLY-op? oper)
+  (or (eq? oper '$bracket-apply$)
+      (datum=? oper '$bracket-apply$)))
+
+(define (BRACKET-APPLY-VECTOR-op? oper)
+  (or (eq? oper '$bracket-apply-vector$)
+      (datum=? oper '$bracket-apply-vector$)))
+
+(define (BRACKET-APPLY-STRING-op? oper)
+  (or (eq? oper '$bracket-apply-string$)
+      (datum=? oper '$bracket-apply-string$)))
+
+(define (BRACKET-APPLY-HASH-TABLE-op? oper)
+  (or (eq? oper '$bracket-apply-hash-table$)
+      (datum=? oper '$bracket-apply-hash-table$)))
+
+(define (BRACKET-APPLY-ARRAY-op? oper)
+  (or (eq? oper '$bracket-apply-array$)
+      (datum=? oper '$bracket-apply-array$)))
+
+(define (BRACKET-APPLY-FLOMAT-op? oper)
+  (or (eq? oper '$bracket-apply-flomat$)
+      (datum=? oper '$bracket-apply-flomat$)))
+
+(define (VALUES-op? oper)
+  (or (eq? oper 'values)
+      (datum=? oper 'values)))
+
+
 (define (IMPLIC-op? oper)
-  (or (eqv? oper '⟹) (eqv? oper '=>)))
+  (or (eq? oper '⟹) (eq? oper '=>)))
 
 (define (EQUIV-op? oper)
-  (or (eqv? oper '⟺) (eqv? oper '<=>)))
+  (or (eq? oper '⟺) (eq? oper '<=>)))
+
+
+(define (DEFINITION-op? oper)
+  (or (eq? oper 'define)
+      (datum=? oper 'define)))
+
+(define (QUOTE-op? oper)
+  (define op 'quote)
+  (or (eq? oper op)
+      (datum=? oper op)))
+
+(define (QUASIQUOTE-op? oper)
+  (define op 'quasiquote)
+  (or (eq? oper op)
+      (datum=? oper op)))
+
+;; #'(...) , #`(...) , (quote-syntax ...) : a syntax template is data, like a quoted expression
+(define (SYNTAX-QUOTE-op? oper)
+  (or (memq oper '(syntax quasisyntax quote-syntax))
+      (datum=? oper 'syntax)
+      (datum=? oper 'quasisyntax)
+      (datum=? oper 'quote-syntax)))
+
+;; (case key ((datum ...) expr ...) ...) : the lists of datums are data
+(define (CASE-op? oper)
+  (define op 'case)
+  (or (eq? oper op)
+      (datum=? oper op)))
+
+;; (cond (test expr ...) ...) : a clause is not an expression
+(define (COND-op? oper)
+  (define op 'cond)
+  (or (eq? oper op)
+      (datum=? oper op)))
+
+;; (lambda formals body ...) : the formals are not an expression
+(define (LAMBDA-op? oper)
+  (or (memq oper '(lambda λ))
+      (datum=? oper 'lambda)
+      (datum=? oper 'λ)))
+
+;; (do ((var init step) ...) (test expr ...) body ...) : the specifications of variables and the clause of end are not expressions
+(define (DO-op? oper)
+  (define op 'do)
+  (or (eq? oper op)
+      (datum=? oper op)))
 
 
 (define (DEFINE-op? oper)
-  ;; (or (eqv? oper '<+) (eqv? oper '+>)
-  ;;     (eqv? oper '←) (eqv? oper '+>)
-  ;;     (eqv? oper '<-) (eqv? oper '->)
-  ;;     (eqv? oper '←) (eqv? oper '+>)))
+  ;; (or (eq? oper '<+) (eq? oper '+>)
+  ;;     (eq? oper '←) (eq? oper '+>)
+  ;;     (eq? oper '<-) (eq? oper '->)
+  ;;     (eq? oper '←) (eq? oper '+>)))
 
   (or (memv oper definition-operator)
       (member-generic oper definition-operator-syntax)))
@@ -334,7 +457,7 @@
 
   
 (define (ASSIGNMENT-op? oper)
-  ;;(or (eqv? oper '<-) (eqv? oper '->)))
+  ;;(or (eq? oper '<-) (eq? oper '->)))
   (or (memv oper assignment-operator)
       (member-generic oper assignment-operator-syntax)))
 
@@ -386,10 +509,40 @@
 
 
 
-  ;;(or (eqv? oper *) (eqv? oper '*) (check-syntax=? oper #'*)))
+  ;;(or (eq? oper *) (eq? oper '*) (check-syntax=? oper #'*)))
 
 (define (isMULTIPLY? expr)
   (and (pair? expr) (MULTIPLY-op? (car expr))))
+
+(define (isBRACKET-APPLY? expr)
+  (and (pair? expr) (BRACKET-APPLY-op? (car expr))))
+
+(define (isBRACKET-APPLY-VECTOR? expr)
+  (and (pair? expr) (BRACKET-APPLY-VECTOR-op? (car expr))))
+
+(define (isBRACKET-APPLY-STRING? expr)
+  (and (pair? expr) (BRACKET-APPLY-STRING-op? (car expr))))
+
+(define (isBRACKET-APPLY-HASH-TABLE? expr)
+  (and (pair? expr) (BRACKET-APPLY-HASH-TABLE-op? (car expr))))
+
+(define (isBRACKET-APPLY-ARRAY? expr)
+  (and (pair? expr) (BRACKET-APPLY-ARRAY-op? (car expr))))
+
+(define (isBRACKET-APPLY-FLOMAT? expr)
+  (and (pair? expr) (BRACKET-APPLY-FLOMAT-op? (car expr))))
+
+(define (isBRACKET-APPLY*? expr)
+  (or (isBRACKET-APPLY? expr)
+      (isBRACKET-APPLY-VECTOR? expr)
+      (isBRACKET-APPLY-STRING? expr)
+      (isBRACKET-APPLY-HASH-TABLE? expr)
+      (isBRACKET-APPLY-ARRAY? expr)
+      (isBRACKET-APPLY-FLOMAT? expr)))
+
+
+(define (isVALUES? expr)
+  (and (pair? expr) (VALUES-op? (car expr))))
 
 ;; test if an expression is a OR
 (define (isOR? expr)
@@ -495,6 +648,94 @@
   (display "operator-precedence>? op2=") (display op2) (newline)
   (= (precedence-rank op2)
      (precedence-rank op1)))
+
+
+;; binding power for the Pratt parser (pratt-infix-parser.rkt) : derived from precedence-rank, the
+;; tightest group (rank 0, ∘) gets the highest binding power, the loosest group (rank 14, definition
+;; operators) gets 0. The *10 factor leaves room for synthetic binding powers that do not correspond to
+;; a whole precedence group (example: unary minus's nud needs a right binding power strictly between
+;; * (bp 120) and expt (bp 130), see pratt-infix-parser.rkt).
+;; only meaningful for op already known to be an operator (same caveat as precedence-rank itself, which
+;; returns 14 -- not an error -- for a symbol found in no group at all).
+;; (operator-bp '*) -> 120
+;; (operator-bp '+) -> 100
+;; (operator-bp 'expt) -> 130
+(define (operator-bp op)
+  (* (- 14 (precedence-rank op)) 10))
+
+#;(define (is-define-overload-procedure? s) ; define-overload-procedure replaced by overload-procedure
+  (eq? s 'define-overload-procedure))
+
+(define (is-define-overload? s)
+  (or (eq? s 'define-overload-existing-operator)
+      ;(eq? s 'define-overload-existing-procedure) ; replaced by overload-procedure
+      (eq? s 'define-overload-existing-n-ary-associative-operator)
+      ;(is-define-overload-procedure? s) ; replaced by overload-procedure
+      ))
+
+
+
+;; overload-operator (overload.rkt) defines the overloaded operator if needed and adds an
+;; overload, binary with 2 predicates or n-ary with 1 predicate :
+;; (overload-operator op funct (pred ...))
+;; (overload-operator op (ret-pred ...) funct (pred ...))
+;; (overload-operator op module-name funct (pred ...))
+;; (overload-operator op module-name (ret-pred ...) funct (pred ...))
+;; a separate test from is-overload-existing-operator? : the parser must choose the binary or
+;; the n-ary table from the number of predicates, not always the binary one
+(define (is-overload-operator? s)
+  (eq? s 'overload-operator))
+
+;; require-overload-operator (overload.rkt) : same forms as overload-operator, restated in a module
+;; importing the overloaded operator so that the parser knows the overloads done in the other module
+(define (is-require-overload-operator? s)
+  (eq? s 'require-overload-operator))
+
+(define (is-overload-existing-operator? s)
+  (eq? s 'overload-existing-operator))
+
+
+
+
+(define (is-overload-existing-n-ary-operator? s)
+  (eq? s 'overload-existing-n-ary-operator))
+
+
+
+
+(define (is-overload-procedure? s)
+  (eq? s 'overload-procedure))
+
+(define (is-require-overload-procedure? s)
+  (eq? s 'require-overload-procedure))
+
+;; (overload-square-brackets getter setter! (pred-obj pred-index ...)) : for the type annotation pass
+(define (is-overload-square-brackets? s)
+  (eq? s 'overload-square-brackets))
+
+;; restates , in a module importing them , square brackets overloaded in another module (type annotation only)
+(define (is-require-overload-square-brackets? s)
+  (eq? s 'require-overload-square-brackets))
+
+
+
+;; replaced by overload-procedure / require-overload-procedure
+#;(define (is-overload-existing-procedure? s)
+  (eq? s 'overload-existing-procedure))
+
+#;(define (is-require-overload-existing-procedure? s)
+  (eq? s 'require-overload-existing-procedure))
+
+
+;; definitions for testing equality to quoted regions
+(define (quote-or-quasi? datum)
+  (or (eq? datum 'quote)
+      (eq? datum 'quasiquote)))
+
+;; definitions for testing equality to unquoted regions and setting and storing the region modes
+(define (unquote-or-splicing? datum)
+  (or (eq? datum 'unquote)
+      (eq? datum 'unquote-splicing)))
 
 
 ) ; end module

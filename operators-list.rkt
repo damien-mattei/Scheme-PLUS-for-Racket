@@ -24,8 +24,11 @@
 	(provide definition-operator
 		 assignment-operator
                  
-		 exponentiation-operator		 
+		 exponentiation-operator
 		 infix-operators-lst-for-parser
+		 right-associative-operators
+		 right-associative-operators-syntax
+		 right-associative?
 		 
 		 definition-operator-syntax
 		 ;;single-variable-assignment-operator-syntax
@@ -43,20 +46,38 @@
 		 insert-in-postfix-lst
 		 member-in-postfix-lst
 		 get-postfix-lst
-		 declare-postfix-operator
-		 verify-if-declare-postfix-operator-then-store-it
-		 verify-if-declare-postfix-operator-then-store-it-for-proc
+		 reset-postfix-lst!
+		 insert-in-executables-lst
+		 member-in-executables-lst
+		 get-executables-lst
+		 reset-executables-lst!
+		 insert-in-data-lst
+		 member-in-data-lst
+		 get-data-lst
+		 reset-data-lst!
+		 ;declare-postfix-operator ; now in parser-declarations.rkt
+		 ;verify-if-declare-postfix-operator-then-store-it ; replaced by verify-if-declaration-for-parser-then-store-it in parser-declarations.rkt
+		 ;verify-if-declare-postfix-operator-then-store-it-for-proc ; idem
+		 ;oper-equiv-symbol-syntax
+		 ;orig-*
+		 ;orig--
+		 ;orig-+
+		 ;orig-/
 		 )
 
 	(require srfi/1 ; take-while
 		 Scheme+/syntax
-		 Scheme+/map-nested)
+		 Scheme+/map-nested
+		 #;(only-in racket/base (* orig-*)
+                                      (- orig--)
+				      (+ orig-+)
+				      (/ orig-/)))
 
 	
 
 ;;  from syntax we create the quoted operators symbols with syntax->datum, but we could have done the reverse (with datum->syntax)
 	
-
+;(define orig-+ +)
 	
 
 (define definition-operator-syntax (list #'<+ #'+>
@@ -88,13 +109,22 @@
 (define exponentiation-operator (map syntax->datum exponentiation-operator-syntax))
 
 
+;; the operators that are right-associative for the Pratt parser (pratt-infix-parser.rkt) : today only
+;; expt/** , aliased from exponentiation-operator-syntax so there is a single place to extend if another
+;; right-associative operator is ever added.
+(define right-associative-operators-syntax exponentiation-operator-syntax)
+(define right-associative-operators exponentiation-operator)
+
+(define (right-associative? op)
+  (member-generic op right-associative-operators-syntax))
+
 
 
 
 ;; precedence lists
 
 
-(define calculus-operator-syntax (list (list #'* #'/ #'% #'·)
+(define calculus-operator-syntax (list (list #'* #'/ #'% #'· #'×)
 				       ;;(list #'·) ; symbolic logic And
 				       (list #'⊕) ; symbolic Xor
 				       (list #'- #'+)
@@ -193,16 +223,58 @@
 (define (get-postfix-lst)
   postfix-lst)
 
+(define (reset-postfix-lst!) ; each file read starts with only the factorial as postfix operator
+  (set! postfix-lst '(!)))
+
+
+;; the procedures and macros known by the infix parser, in addition to those of Racket (see known-program? in program-type.rkt) :
+;; defined in the file, typed with a type of procedure, overloaded (see parser-declarations.rkt)
+(define executables-lst '())
+
+(define (insert-in-executables-lst elem) ; insert it only if not already inside
+  (when (not (member elem executables-lst))
+    (set! executables-lst (cons elem executables-lst))))
+
+(define (member-in-executables-lst elem)
+  (member elem executables-lst))
+
+(define (get-executables-lst)
+  executables-lst)
+
+(define (reset-executables-lst!)
+  (set! executables-lst '()))
+
+
+;; the variables typed with a type which is not a procedure, example: (type flonum? x y)
+;; an expression starting with such a variable can not be a call, so (x 3 +) is postfix (see infix-prefix-postfix.rkt)
+(define data-lst '())
+
+(define (insert-in-data-lst elem) ; insert it only if not already inside
+  (when (not (member elem data-lst))
+    (set! data-lst (cons elem data-lst))))
+
+(define (member-in-data-lst elem)
+  (member elem data-lst))
+
+(define (get-data-lst)
+  data-lst)
+
+(define (reset-data-lst!)
+  (set! data-lst '()))
+
+
 #;(define (declare-postfix-operator op) 
   (insert-in-postfix-lst op))
 
-(define-syntax declare-postfix-operator
+;; now in parser-declarations.rkt : the operator is also stored at the compilation, for the parser called by def+ , define+ ...
+#;(define-syntax declare-postfix-operator
   (syntax-rules ()
     ((_ op) 
      (insert-in-postfix-lst (quote op)))))
 
 
-(define (verify-if-declare-postfix-operator-then-store-it-for-proc datum)  ; return a boolean
+;; replaced by verify-if-declaration-for-parser-then-store-it in parser-declarations.rkt
+#;(define (verify-if-declare-postfix-operator-then-store-it-for-proc datum)  ; return a boolean
   (if (and (list? datum)
            (not (null? datum))
            (eq? (car datum) 'declare-postfix-operator))
@@ -211,7 +283,8 @@
         #t)
       #f))
 
-(define (verify-if-declare-postfix-operator-then-store-it datum)  ; return a boolean
+;; replaced by verify-if-declaration-for-parser-then-store-it in parser-declarations.rkt
+#;(define (verify-if-declare-postfix-operator-then-store-it datum)  ; return a boolean
   (if (and (list? datum)
            (not (null? datum))
            (eq? (car datum) 'declare-postfix-operator))
@@ -221,6 +294,22 @@
         #t)
       #f))
 
+
+#;(define oper-equiv-syntax (list (cons #'* #'orig-*)
+				(cons #'- #'orig--)
+				(cons #'+ #'orig-+)
+				(cons #'/ #'orig-/)))
+
+;(define oper-equiv-symb (map-nested-pair syntax->datum oper-equiv-syntax))
+
+;(define oper-equiv (append oper-equiv-syntax oper-equiv-symb))
+
+;(displayln orig-+)
+
+#;(define oper-equiv-symbol-syntax (list (cons '* #'orig-*)
+				       (cons '- #'orig--)
+				       (cons '+ #'orig-+)
+				       (cons '/ #'orig-/)))
 
 ) ; end module
 

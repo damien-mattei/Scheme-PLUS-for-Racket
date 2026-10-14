@@ -16,8 +16,6 @@
            *
            ·)
   (require Scheme+)
-  (define-overload-existing-operator *)
-  (define-overload-existing-operator · Scheme+/multiply)
   (require (rename-in srfi/43 (vector-map vector-map-srfi-43)))
   (require Scheme+/array)
   (struct matrix-vect (v))
@@ -44,7 +42,7 @@
     (define (res i j)
       (<- sum 0)
       (for
-       ((<- k 0) (< k p1) (<- k (+ k 1)))
+       ((<- k 0) (< k p1) (<- k (fx+ k 1)))
        (<-
         sum
         (+
@@ -55,12 +53,10 @@
       sum)
     (<- v (create-vector-2d res n1 p2))
     (matrix-vect v))
-  (overload-existing-operator
-   *
-   multiply-matrix-matrix
-   (matrix-vect? matrix-vect?))
-  (overload-existing-operator
+  (overload-operator * multiply-matrix-matrix (matrix-vect? matrix-vect?))
+  (overload-operator
    ·
+   (only-in Scheme+/multiply ·)
    multiply-matrix-matrix
    (matrix-vect? matrix-vect?))
   (define (vector->matrix-column v)
@@ -71,8 +67,8 @@
   (define (multiply-matrix-vector M v)
     (<- Mc (vector->matrix-column v))
     (matrix-column->vector (* M Mc)))
-  (overload-existing-operator * multiply-matrix-vector (matrix-vect? vector?))
-  (overload-existing-operator · multiply-matrix-vector (matrix-vect? vector?))
+  (overload-operator * multiply-matrix-vector (matrix-vect? vector?))
+  (overload-operator · multiply-matrix-vector (matrix-vect? vector?))
   (define (matrix-vect-ref M lin col)
     (<- v (matrix-vect-v M))
     ($bracket-apply$ ($bracket-apply$ v lin) col))

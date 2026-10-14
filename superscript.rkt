@@ -20,7 +20,7 @@
 	 generic-superscript-number->number
 	 superscript-only?
 	 full-superscript-string ; for debug
-	 superscript-but-not-operator?)
+	 #;superscript-but-not-operator?)
 
 (require (rename-in srfi/13 (string-hash string-hash-srfi13))) ;; strings
 
@@ -53,12 +53,14 @@
   (define str-rgex (string-append "^[" full-superscript-string "]+$"))
   (regexp-match (regexp str-rgex) str))
 
+
+;; NOT USED FOR NOW AND ERROR
 (define (superscript-but-not-operator? ss-stx)
   (define sd ss-stx)
   (when (syntax? ss-stx) ; could also be something not syntax,example:  '¹²  
     (set! sd (syntax->datum ss-stx)))
   (and (superscript? sd)
-       (not (member-in-postfix-lst sd))))
+       (not (member-in-postfix-lst sd)))) ; TODO ERROR: postfix? but operator? above
 
 
 (def (superscript-only? ss-stx) ; test if a syntax (or not) object is a superscript expression, testing only alphabetic existing superscript
@@ -136,7 +138,7 @@
      (string-replace-chars str full-superscript-string full-normal-string))
 
 (define full-superscript-string (string-append superscript-string ; numbers and signs
-                                               ; i removed ᵀ to use it as reserved keyword for transpose operator for matrix
+                                               ; the commented string below is without ᵀ (once reserved for the transpose of a matrix) , ᵀ is now a superscript letter
 					  #;"ᴬᵃᴮᵇᶜᴰᵈᴱᵉᶠᴳᵍᴴʰᴵᶦᴶʲᴷᵏᴸˡᴹᵐᴺⁿᴼᵒᴾᵖᴿʳˢᵗᵁᵘⱽᵛᵂʷˣʸᶻ" "ᴬᵃᴮᵇᶜᴰᵈᴱᵉᶠᴳᵍᴴʰᴵᶦᴶʲᴷᵏᴸˡᴹᵐᴺⁿᴼᵒᴾᵖᴿʳˢᵀᵗᵁᵘⱽᵛᵂʷˣʸᶻ" ; note all letters are not available (ex:C,Q,q...)
 					  "⁽⁾"
 					  "⸱" ; will be used as decimal separator
@@ -147,7 +149,7 @@
 
 
 (define full-normal-string (string-append "-+0123456789" ; numbers and signs
-                                          ; i removed T to use it as reserved keyword for transpose operator for matrix
+                                          ; the commented string below is without T (once reserved for the transpose of a matrix) , T is now used for ᵀ
 					  #;"AaBbcDdEefGgHhIiJjKkLlMmNnOoPpRrstUuVvWwxyz" "AaBbcDdEefGgHhIiJjKkLlMmNnOoPpRrsTtUuVvWwxyz" ; note all letters are not available (ex:C,Q,q...)
 					  "()"
 					  "." ; will be used as decimal separator
@@ -157,7 +159,7 @@
 					  ))
 
 (define superscript-only-string (string-append superscript-string ; numbers and signs
-                                               ; i removed ᵀ to use it as reserved keyword for transpose operator for matrix
+                                               ; ᵀ is a superscript letter (it was once reserved for the transpose of a matrix)
 					  "ᴬᵃᴮᵇᶜᴰᵈᴱᵉᶠᴳᵍᴴʰᴵᶦᴶʲᴷᵏᴸˡᴹᵐᴺⁿᴼᵒᴾᵖᴿʳˢᵀᵗᵁᵘⱽᵛᵂʷˣʸᶻ" ; note all letters are not available (ex:C,Q,q...)
 					  "⁽⁾"
 					  "⸱" ; will be used as decimal separator

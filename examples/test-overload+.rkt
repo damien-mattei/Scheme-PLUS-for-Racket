@@ -5,8 +5,8 @@
 
 
 	(require Scheme+)
-	
-	(define-overload-existing-n-arity-operator +)
+
+	ANNOTATION-ON
 
 	(define (add-n-lists . vn-lst) (implementation-add-n-lists vn-lst))
 
@@ -15,7 +15,7 @@
 	  {map-args <- (cons plus vn-lst)}
 	  (apply map map-args))
 
-	(overload-existing-n-arity-operator + add-n-lists (list? list?))
+	(overload-operator + (list?) add-n-lists (list?)) ; n-ary : any number of lists, returns a list
 
 	(display "+ =") (display +) (newline)
 

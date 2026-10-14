@@ -21,6 +21,11 @@
 
 (module def-nfx racket/base
 
+	;; DEPRECATED (Scheme+ 18.0) : the forms with an infix value , (define x a b c ...) and define+ , are kept for the
+	;; compatibility with old programs but they are no more documented nor improved. Their infix parsing is done at
+	;; expansion time ($nfx$-rec) and knows only the procedures of Racket , not those of the program.
+	;; Use define with the curly brackets { } : (define x {3 * 5 + 2}) instead of (define x 3 * 5 + 2)
+
 
 	(provide define
 		 define+)
@@ -96,6 +101,7 @@
 	    ;; 0.3334870921408144
 	    
 	    ;; at least 2 arguments
+	    ;; DEPRECATED (Scheme+ 18.0) : use (define name {arg1 arg2 arg3 ...})
 	    ((define name   arg1 arg2 arg3 ...)
 	     (define-scheme name ($nfx$-rec arg1 arg2 arg3 ...)))  ; call the recursive version of infix/prefix parser of expressions
 
@@ -163,6 +169,7 @@
 	    ;; 0.8253356149096783
 	   	    
 	    ;; at least 1 arguments, so (define+ name arg1) is parsed here
+	    ;; DEPRECATED (Scheme+ 18.0) : use (define name {arg1 arg2 ...})
 	    ((define+ name    arg1 arg2 ...)    (define name ($nfx$-rec arg1 arg2 ...)))
 
 	    

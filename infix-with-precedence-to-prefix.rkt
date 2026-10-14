@@ -24,21 +24,19 @@
 (module infix-with-precedence-to-prefix racket/base
 
 	(provide !*prec-generic-infix-parser
-		 !*prec-generic-infix-parser-rec
+		 ;!*prec-generic-infix-parser-rec
 		 !*prec-generic-infix-parser-rec-prepare
 		 !*prec-generic-infix-parser-prepare-runtime
 		 !*prec-generic-infix-parser-runtime
-		 !*-generic-infix-parser
-		 superscript-operator-loop
-		 begin-operators+-)
+		 !*-generic-infix-parser)
+
+	(provide use-pratt-parser?)
 
 	(require ;(only-in srfi/1 any)
 	 Scheme+/syntax
 	 Scheme+/operators-list
 	 Scheme+/operators
 	 Scheme+/def-function
-	 ;;Scheme+/defvar
-	 ;;SRFI-105/SRFI-105-curly-infix ; for alternating-parameters
 	 Scheme+/alternating-parameters
 	 Scheme+/superscript-parser
 	 Scheme+/block
@@ -47,10 +45,18 @@
 	 Scheme+/atom
 	 Scheme+/in-equalities
 	 Scheme+/n-arity
-	 Scheme+/conjunction ; perheaps useless TODO test
+	 ;Scheme+/conjunction ; perheaps useless TODO test
 	 Scheme+/recursive-apply
          Scheme+/superscript
-	 ) 
+	 Scheme+/pratt-infix-parser
+	 )
+
+;; migration to a Pratt parser (see pratt-infix-parser.rkt and the migration plan) : #t (default, since
+;; this flip) routes pre-check-!*-generic-infix-parser's canonical-infix case through pratt-infix-parser ;
+;; #f falls back to the historical !*-generic-infix-parser/!**-generic-infix-parser engine below, kept
+;; permanently as a rollback path. Kept as a parameter, not a straight toggle, so a differential-testing
+;; harness can parameterize it locally without touching the global default.
+(define use-pratt-parser? (make-parameter #t))
 	  
 
   ;; procedures work with quoted expression and syntax expressions
@@ -223,7 +229,7 @@
 
 
 
-;; deal with simple infix with same operator n-arity,why same operator ???
+;; deal with simple infix
 ;; check we really have infix expression before
 ;; wrap a null test
 (def (pre-check-!*-generic-infix-parser terms creator)
@@ -233,8 +239,9 @@
 
   ;; check the whole expression for infix (canonical) because parser infix->prefix can not do it
   (when (not (infix-canonical? terms))
-    ;; no more error but runtime parsing
-    (error "infix-with-precedence-to-prefix.rkt : pre-check-!*-generic-infix-parser : not a canonical infix expression: " terms))
+   
+    ;(error "infix-with-precedence-to-prefix.rkt : pre-check-!*-generic-infix-parser : not a canonical infix expression: " terms)
+    (return (list terms))) ; return terms instead of errors because if not infix canonical they should be prefix
     
     ;; (define mult *)
     ;; (define add +)
@@ -275,10 +282,12 @@
   
   (if (null? terms) ;; never for infix as there is e1 op1 e2 op2 e3 at least
 	terms
-	(!*-generic-infix-parser terms ; (reverse terms) ; will now reverse only later when expo
-				 ;; as we are in REPL/parsing generating source code we can use symbols for parsing
-				 infix-operators-lst-for-parser;-syntax
-				 creator)))
+	(if (use-pratt-parser?)
+	    (pratt-infix-parser terms creator)
+	    (!*-generic-infix-parser terms ; (reverse terms) ; will now reverse only later when expo
+				     ;; as we are in REPL/parsing generating source code we can use symbols for parsing
+				     infix-operators-lst-for-parser;-syntax
+				     creator))))
 
 
 
@@ -329,11 +338,20 @@
 
   (define parsed+- parsed-superscript) ; by default
 
+  ;; NOTE : unary +/- folding is NOT gated behind use-pratt-parser? (unlike the in/equalities folding
+  ;; below) : skipping it here caused pratt-infix-parser's nud-unary-sign to be unreachable AND broken
+  ;; downstream output, because infix-canonical? (pre-check-!*-generic-infix-parser) rejects the unfolded
+  ;; shape (odd-length/alternating check fails as soon as a sign token is not matched) and passes it
+  ;; through untouched as "already prefix" instead of ever reaching the core -- a deeper fix of
+  ;; infix-canonical?/prefix? would be needed first ; left for a dedicated follow-up, see the migration
+  ;; plan's deviation notes. nud-unary-sign stays correct and unit-tested directly in the meantime.
   (when (and (not (null? parsed-superscript))
-	     (not (null? (cdr parsed-superscript)))) ;; forbid to treat (something) ,example : (a_syntax)
-    ;; unless that it would return a_syntax , loosing the ( ) because begin-operators+- return sometimes the car when there is only one element in the return list
-	     ;;(infix? parsed-superscript)) ; we already know we are in infix
-	(set! parsed+- (begin-operators+- parsed-superscript '())))
+	     (not (null? (cdr parsed-superscript))) ;; forbid to treat (something) ,example : (a_syntax)
+             ;; unless that it would return a_syntax , loosing the ( ) because begin-operators+- return sometimes the car when there is only one element in the return list
+             ;;(infix? parsed-superscript)) ; we already know we are in infix
+             )
+    ;(display "!*prec-generic-infix-parser-runtime before begin-operators+- 1 : parsed+-=") (display parsed+-) (newline)
+    (set! parsed+- (begin-operators+- parsed-superscript '())))
   
   ;;(display "!*prec-generic-infix-parser : parsed+-=") (display parsed+-) (newline)
   
@@ -372,6 +390,11 @@
 
 
   ;; deal with possible in/equalities
+  ;; NOTE : not gated behind use-pratt-parser? -- in/equalities-state-1's job here is to bracket/isolate a
+  ;; chain embedded in a larger and/or/assignment expression (ex: (or 1 < 2 < 2) -> (or (1 < 2 < 2))), not
+  ;; to reduce it to (and ...) -- that reduction is the part skipped below for multiple-in-equalities?, and
+  ;; it is only reachable once this bracketing step has isolated the chain as its own sub-list. For a bare
+  ;; chain with no and/or crossing it, this call is a no-op pass-through. See the migration plan.
   (when (and (list? deep-terms)
 	     (>= (length deep-terms) 5)) ; length of a < b < c
     ;;(display "!*prec-generic-infix-parser launching in/equalities-state-1") (newline)
@@ -386,10 +409,11 @@
   ;; because we do not want to evaluate any ( ... ) as infix but as prefix
 
   (when (and (list? deep-terms)
-	     (not (datum=? 'define ; define is preserved this way (no infix recursive in define)
-			   (car deep-terms))))
-    ;;(display "!*prec-generic-infix-parser : recalling !*prec-generic-infix-parser via map") (newline) (newline)
-    (set! deep-terms (map (lambda (x) (!*prec-generic-infix-parser-rec-prepare x creator))
+	     (not (DEFINITION-op?  ; define is preserved this way (no infix recursive in define)
+		    (car deep-terms))))
+    ;(display "!*prec-generic-infix-parser 1 : recalling !*prec-generic-infix-parser via map") (newline) (newline)
+    (set! deep-terms (map (lambda (x)
+                            (!*prec-generic-infix-parser-rec-prepare x creator))
 			  deep-terms)))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -417,7 +441,9 @@
   (when (or (= (length deep-terms) 3) ; we are infix because { } , we have 3 terms this should be simple infix
 	    ;; this allows some things like that without strict SRFI 105 mode:
 	    ;; {(cinque) - {(cinque) (minus) 3}}
-	    (simple-infix-list-syntax? deep-terms))
+	    #;(simple-infix-list-syntax? deep-terms)
+	    (and (simple-infix-list-syntax? deep-terms)
+		 (not (right-associative? (cadr deep-terms))))) ; {2 expt 3 expt 2} is not (expt 2 3 2) , expt has 2 arguments : the right associative operators are parsed by the precedence engine
     ;;(display "!*prec-generic-infix-parser : deep-terms is a simple infix list") (newline)
     ;;(display "!*prec-generic-infix-parser : deep-terms=") (display deep-terms) (newline)
     (return 
@@ -430,10 +456,13 @@
 	
   ;; we can check for expressions like 2<3<=3 here
   ;; can not remember why we should deal twice with in/equalities (also above in the code) seems parsing is in 2 stage
-  (when (multiple-in-equalities? deep-terms)
-    (return (infix->prefix-in-equality deep-terms)))
+  ;; use-pratt-parser? : skip this early return so a raw chained in/equality reaches pratt-infix-parser's
+  ;; led-relational instead (see the migration plan)
+  (unless (use-pratt-parser?)
+    (when (multiple-in-equalities? deep-terms)
+      (return (infix->prefix-in-equality deep-terms))))
 
-  
+
   (define rv (pre-check-!*-generic-infix-parser deep-terms creator ))
 
   
@@ -476,7 +505,7 @@
 ;; but it was also called at toplevel by nfx with only one argument.
 ;; DEPRECATED
 
-(def (!*prec-generic-infix-parser-rec terms creator )   ;; precursor of !*-generic-infix-parser
+#;(def (!*prec-generic-infix-parser-rec terms creator )   ;; precursor of !*-generic-infix-parser
 
   ;;(display "!*prec-generic-infix-parser-rec : start terms=") (display terms) (newline)
   ;; (newline)
@@ -598,9 +627,10 @@
   ;; because we do not want to evaluate any ( ... ) as infix but as prefix
 
   (when (and (list? deep-terms)
-	     (not (datum=? 'define ; define is preserved this way (no infix recursive in define)
-			   (car deep-terms))))
-    ;;(display "!*prec-generic-infix-parser-rec : recalling !*prec-generic-infix-parser-rec via map") (newline) (newline)
+	     (not (DEFINITION-op?  ; define is preserved this way (no infix recursive in define)
+		    (car deep-terms)))
+             )
+    ;(display "!*prec-generic-infix-parser-rec 2 : recalling !*prec-generic-infix-parser-rec via map") (newline) (newline)
     (set! deep-terms (map (lambda (x) (!*prec-generic-infix-parser-rec x creator))
 			  deep-terms)))
 
@@ -784,11 +814,14 @@
   ; parse the + - (could return an atom, ex: {- - 2} --> 2 , not list
   (define parsed+- parsed-superscript) ; by default
 
+  ;; NOTE : not gated behind use-pratt-parser? -- see the comment on the first begin-operators+- call site.
   (when (and (not (null? parsed-superscript))
-	     (not (null? (cdr parsed-superscript)))) ;; forbid to treat (something) ,example : (a_syntax)
+	     (not (null? (cdr parsed-superscript))) ;; forbid to treat (something) ,example : (a_syntax)
     ;; unless that it would return a_syntax , loosing the ( ) because begin-operators+- return sometimes the car when there is only one element in the return list
              ;;(infix? parsed-superscript)) ; we already know we are in infix
-	(set! parsed+- (begin-operators+- parsed-superscript '())))
+             )
+    ;(display "!*prec-generic-infix-parser-runtime before begin-operators+- 2 : parsed+-=") (display parsed+-) (newline)
+    (set! parsed+- (begin-operators+- parsed-superscript '())))
   
   ;;(display "!*prec-generic-infix-parser-prepare-runtime : parsed+-=") (display parsed+-) (newline)
   
@@ -814,6 +847,8 @@
 
 
   ;; deal with possible in/equalities
+  ;; NOTE : not gated behind use-pratt-parser? -- see the comment on the first in/equalities-state-1 call
+  ;; site above (bracketing/isolation role, not reduction -- a no-op for a bare chain).
   (when (and (list? deep-terms)
 	     (>= (length deep-terms) 5)) ; length of a < b < c
     ;;(display "!*prec-generic-infix-parser-prepare-runtime launching in/equalities-state-1") (newline)
@@ -850,7 +885,9 @@
   (when (or (= (length deep-terms) 3) ; we are infix because { } , we have 3 terms this should be simple infix
 	    ;; this allows some things like that without strict SRFI 105 mode:
 	    ;; {(cinque) - {(cinque) (minus) 3}}
-	    (simple-infix-list-syntax? deep-terms))
+	    #;(simple-infix-list-syntax? deep-terms)
+	    (and (simple-infix-list-syntax? deep-terms)
+		 (not (right-associative? (cadr deep-terms))))) ; {2 expt 3 expt 2} is not (expt 2 3 2) , expt has 2 arguments : the right associative operators are parsed by the precedence engine
     ;;(display "!*prec-generic-infix-parser-prepare-runtime : deep-terms is a simple infix list") (newline)
     ;;(display "!*prec-generic-infix-parser-prepare-runtime : deep-terms=") (display deep-terms) (newline)
     (return 
@@ -863,8 +900,9 @@
 	
   ;; we can check for expressions like 2<3<=3 here
   ;; can not remember why we should deal twice with in/equalities (also above in the code) seems parsing is in 2 stage
-  (when (multiple-in-equalities? deep-terms)
-    (return (infix->prefix-in-equality deep-terms)))
+  (unless (use-pratt-parser?)
+    (when (multiple-in-equalities? deep-terms)
+      (return (infix->prefix-in-equality deep-terms))))
 
   ;;(display "!*prec-generic-infix-parser-prepare-runtime : general case :  deep-terms=") (display deep-terms) (newline)
   ;;(newline)
@@ -922,15 +960,18 @@
 
   (define parsed+- parsed-superscript) ; by default
 
+  ;; NOTE : not gated behind use-pratt-parser? -- see the comment on the first begin-operators+- call site.
   (when (and (not (null? parsed-superscript))
-	     (not (null? (cdr parsed-superscript)))) ;; forbid to treat (something) ,example : (a_syntax)
-    ;; unless that it would return a_syntax , loosing the ( ) because begin-operators+- return sometimes the car when there is only one element in the return list
+	     (not (null? (cdr parsed-superscript))) ;; forbid to treat (something) ,example : (a_syntax)
+                  ;; unless that it would return a_syntax , loosing the ( ) because begin-operators+- return sometimes the car when there is only one element in the return list
              ;;(infix? parsed-superscript)) ; we already know we are in infix
-	(set! parsed+- (begin-operators+- parsed-superscript '())))
+             )
+    ;(display "!*prec-generic-infix-parser-runtime before begin-operators+- 3 : parsed+-=") (display parsed+-) (newline)
+    (set! parsed+- (begin-operators+- parsed-superscript '())))
   
   ;;(display "!*prec-generic-infix-parser-runtime : parsed+-=") (display parsed+-) (newline)
   
-  (define deep-terms (map (lambda (x) (if (equal? x '-)  ; replace '- by procedure -
+  (define deep-terms (map (lambda (x) (if (eq? x '-)  ; replace '- by procedure -
 					  -
 					  x))
 			  parsed+-)) ;; parsed for + - and superscript number **
@@ -963,6 +1004,8 @@
 
 
   ;; deal with possible in/equalities
+  ;; NOTE : not gated behind use-pratt-parser? -- see the comment on the first in/equalities-state-1 call
+  ;; site above (bracketing/isolation role, not reduction -- a no-op for a bare chain).
   (when (and (list? deep-terms)
 	     (>= (length deep-terms) 5)) ; length of a < b < c
     ;;(display "!*prec-generic-infix-parser-runtime launching in/equalities-state-1") (newline)
@@ -979,7 +1022,9 @@
   (when (or (= (length deep-terms) 3) ; we are infix because { } , we have 3 terms this should be simple infix
 	    ;; this allows some things like that without strict SRFI 105 mode:
 	    ;; {(cinque) - {(cinque) (minus) 3}}
-	    (simple-infix-list-syntax? deep-terms))
+	    #;(simple-infix-list-syntax? deep-terms)
+	    (and (simple-infix-list-syntax? deep-terms)
+		 (not (right-associative? (cadr deep-terms))))) ; {2 expt 3 expt 2} is not (expt 2 3 2) , expt has 2 arguments : the right associative operators are parsed by the precedence engine
     ;;(display "!*prec-generic-infix-parser-runtime : deep-terms is a simple infix list") (newline)
     ;;(display "!*prec-generic-infix-parser-runtime : deep-terms=") (display deep-terms) (newline)
     (return 
@@ -992,11 +1037,12 @@
 	
   ;; we can check for expressions like 2<3<=3 here
   ;; can not remember why we should deal twice with in/equalities (also above in the code) seems parsing is in 2 stage
-  (when (multiple-in-equalities? deep-terms)
-    ;;(display "!*prec-generic-infix-parser-runtime : multiple in/equalities detected") (newline)
-    (define in-eq-terms (infix->prefix-in-equality-runtime deep-terms))
-    ;;(display "!*prec-generic-infix-parser-runtime : in-eq-terms=") (display in-eq-terms) (newline)
-    (return (recursive-apply in-eq-terms))) ; should be &&
+  (unless (use-pratt-parser?)
+    (when (multiple-in-equalities? deep-terms)
+      ;;(display "!*prec-generic-infix-parser-runtime : multiple in/equalities detected") (newline)
+      (define in-eq-terms (infix->prefix-in-equality-runtime deep-terms))
+      ;;(display "!*prec-generic-infix-parser-runtime : in-eq-terms=") (display in-eq-terms) (newline)
+      (return (recursive-apply in-eq-terms)))) ; should be &&
 			     
 
   ;; general case (when no other 'return' has happened on simplier things
@@ -1023,7 +1069,7 @@
 
 (def (!*prec-generic-infix-parser-rec-prepare terms creator )   ;; precursor of !*-generic-infix-parser
 
-  ;;(display "!*prec-generic-infix-parser-rec-prepare : start terms=") (display terms) (newline)
+  ;(display "!*prec-generic-infix-parser-rec-prepare : start terms=") (display terms) (newline)
   ;; (newline)
 
   ;; *-parser-rec and *parser-rec-prepare just differ with the line below?!
@@ -1037,6 +1083,86 @@
     ;;(display "!*prec-generic-infix-parser-rec-prepare returning early") (newline)
     (return terms))
 
+  ; at this point we should have a list
+  ; a quoted or quasiquoted expression is data : it must not be parsed as infix or postfix
+  ; (without this : '(+ - * /) causes an error in the +- parser, '(x + y) becomes (+ x y), '(1 2 3 +) becomes (+ 1 2 3)
+  ; and `(x + y ,z) causes an error : not a canonical infix expression).
+  ; A quoted curly infix expression '{x + y} is still converted, by the reader (SRFI 105).
+  ; The same for the syntax quotes #'(...) , #`(...) and (quote-syntax ...) (without this : #'(a + b) became #'(+ a b)),
+  ; #'{x + y} is still converted.
+  (when (or (QUOTE-op? (car terms))
+            (QUASIQUOTE-op? (car terms))
+            (SYNTAX-QUOTE-op? (car terms)))
+    (return terms))
+
+  ; (case key ((datum ...) expr ...) ... (else expr ...)) : the lists of datums are data, they must not be parsed
+  ; (without this : (case op ((+ -) 'add) ...) caused an error in the +- parser) ; the key and the expressions are
+  (when (and (CASE-op? (car terms))
+             (pair? (cdr terms)))
+    (return
+     (cons (car terms) ; case
+           (cons (!*prec-generic-infix-parser-rec-prepare (cadr terms) creator) ; the key
+                 (map (lambda (clause) ; (datums expr ...) or (else expr ...)
+                        (var-syntax2list clause) ; in def+ ($nfx$-rec) the terms are syntax objects
+                        (if (pair? clause)
+                            (cons (car clause) ; the list of datums (or else) : not parsed
+                                  (map (lambda (x) (!*prec-generic-infix-parser-rec-prepare x creator))
+                                       (cdr clause)))
+                            clause))
+                      (cddr terms))))))
+
+  ; (cond (test expr ...) ... (else expr ...)) : each element of a clause is parsed alone, a clause is never parsed as a whole
+  ; (without this : (else !) became (! else) , and (#t cdr) would become (cdr #t) with the postfix rule)
+  (when (COND-op? (car terms))
+    (return
+     (cons (car terms) ; cond
+           (map (lambda (clause) ; (test expr ...) or (else expr ...) or (test => receiver)
+                  (var-syntax2list clause) ; in def+ ($nfx$-rec) the terms are syntax objects
+                  (if (pair? clause)
+                      (map (lambda (x) (!*prec-generic-infix-parser-rec-prepare x creator))
+                           clause)
+                      clause))
+                (cdr terms)))))
+
+  ; (lambda formals body ...) : the parameters are not parsed , the body is
+  ; (without this : (lambda (n !) n) became (lambda (! n) n))
+  (when (and (LAMBDA-op? (car terms))
+             (pair? (cdr terms)))
+    (return
+     (cons (car terms) ; lambda
+           (cons (cadr terms) ; the parameters : not parsed
+                 (map (lambda (x) (!*prec-generic-infix-parser-rec-prepare x creator))
+                      (cddr terms))))))
+
+  ; (do ((var init step) ...) (test expr ...) body ...) of R7RS : the variables are not parsed , init , step , test , expr and
+  ; body are ; not the do of Scheme+ : (do body ... while test)
+  (when (and (DO-op? (car terms))
+             (pair? (cdr terms))
+             (pair? (cddr terms))
+             (not (ormap (lambda (x) (eq? 'while (secure-syntax->datum x)))
+                         (cdr terms))))
+    (define specs (cadr terms)) ; ((var init step) ...)
+    (var-syntax2list specs) ; in def+ ($nfx$-rec) the terms are syntax objects
+    (define end-clause (caddr terms)) ; (test expr ...)
+    (var-syntax2list end-clause)
+    (return
+     (cons (car terms) ; do
+           (cons (if (list? specs)
+                     (map (lambda (spec)
+                            (var-syntax2list spec)
+                            (if (pair? spec)
+                                (cons (car spec) ; the variable : not parsed
+                                      (map (lambda (x) (!*prec-generic-infix-parser-rec-prepare x creator))
+                                           (cdr spec)))
+                                spec))
+                          specs)
+                     specs)
+                 (cons (if (list? end-clause)
+                           (map (lambda (x) (!*prec-generic-infix-parser-rec-prepare x creator))
+                                end-clause)
+                           end-clause)
+                       (map (lambda (x) (!*prec-generic-infix-parser-rec-prepare x creator))
+                            (cdddr terms)))))))
 
   ;; Python stylish , (statement if test else statement2)
   ;; at this point we have at least a list
@@ -1091,11 +1217,13 @@
   (define parsed+- parsed-superscript) ; by default
 
   
+  ;; NOTE : not gated behind use-pratt-parser? -- see the comment on the first begin-operators+- call site.
   (when (and (not (null? parsed-superscript))
 	     (not (null? (cdr parsed-superscript))) ;; forbid to treat (something) ,example : (a_syntax)
 	     ;; unless that it would return a_syntax , loosing the ( ) because begin-operators+- return sometimes the car when there is only one element in the return list
 	     (infix? parsed-superscript))
-	(set! parsed+- (begin-operators+- parsed-superscript '())))
+    ;(display "!*prec-generic-infix-parser-runtime before begin-operators+- 4 : parsed+-=") (display parsed+-) (newline)
+    (set! parsed+- (begin-operators+- parsed-superscript '())))
   
   ;;(display "!*prec-generic-infix-parser-rec-prepare : parsed+-=") (display parsed+-) (newline)
   
@@ -1128,6 +1256,8 @@
   ;; (newline)
 
   ;; deal with in/equalities
+  ;; NOTE : not gated behind use-pratt-parser? -- see the comment on the first in/equalities-state-1 call
+  ;; site above (bracketing/isolation role, not reduction -- a no-op for a bare chain).
   (when (and (list? deep-terms)
 	     (>= (length deep-terms) 5)) ; length of a < b < c
     (set! deep-terms (in/equalities-state-1 deep-terms '() '() '() '())))
@@ -1141,9 +1271,10 @@
   ;; because we do not want to evaluate any ( ... ) as infix but as prefix
 
   (when (and (list? deep-terms)
-	     (not (datum=? 'define ; define is preserved this way (no infix recursive in define)
-			   (car deep-terms))))
-    ;;(display "!*prec-generic-infix-parser-rec-prepare : recalling !*prec-generic-infix-parser-rec-prepare via map") (newline) (newline)
+	     (not (DEFINITION-op?  ; define is preserved this way (no infix recursive in define)
+		    (car deep-terms))))
+    ;(display "!*prec-generic-infix-parser-rec-prepare 3 : recalling !*prec-generic-infix-parser-rec-prepare via map") (newline) (newline)
+    ;(display (car deep-terms)) (newline)
     (set! deep-terms (map (lambda (x)
 			    (!*prec-generic-infix-parser-rec-prepare x creator))
 			  deep-terms)))
@@ -1155,7 +1286,7 @@
 
   ;; TODO check it:
   (when (not-infix-and-known-procedure-at-end-then-postfix? deep-terms) 
-    (when (number? (car deep-terms)) ; then postfix
+    (when #;(number? (car deep-terms)) (surely-data? (car deep-terms)) ; then postfix (the same rule as in state 4 of infix-prefix-postfix-test?)
       (define rev-terms (reverse deep-terms))
       (define fct (car rev-terms))
       (define args (reverse (cdr rev-terms)))
@@ -1173,7 +1304,9 @@
   
   ;;(display "!*prec-generic-infix-parser-rec-prepare : rv : deep-terms:") (display deep-terms) (newline)
   ;; test for simple-infix (no operator precedence)
-  (when (simple-infix-list-syntax? deep-terms)
+  ;;(when (simple-infix-list-syntax? deep-terms)
+  (when (and (simple-infix-list-syntax? deep-terms)
+	     (not (right-associative? (cadr deep-terms)))) ; {2 expt 3 expt 2} is not (expt 2 3 2) , expt has 2 arguments : the right associative operators are parsed by the precedence engine
     ;;(display "!*prec-generic-infix-parser-rec-prepare : deep-terms is a simple infix list") (newline)
     ;;(display "!*prec-generic-infix-parser-rec-prepare : deep-terms=") (display deep-terms) (newline)
     (return
@@ -1186,8 +1319,9 @@
 	
   ;; we can check for expressions like 2<3<=3 here
   ;; twice: same comment as for non recursive version
-  (when (multiple-in-equalities? deep-terms)
-      (return (infix->prefix-in-equality deep-terms)))
+  (unless (use-pratt-parser?)
+    (when (multiple-in-equalities? deep-terms)
+      (return (infix->prefix-in-equality deep-terms))))
 
   
   

@@ -67,13 +67,10 @@
 
 
 
-; first stage overloading
-(define-overload-existing-operator +)
-(define-overload-procedure uniform)
+;(define-overload-procedure uniform) ; no more needed : overload-procedure defines uniform the first time
 
-
-; second stage overloading
-(overload-existing-operator + vector-append (vector? vector?))
+; overloading of + (defined as an overloaded operator the first time) : binary, 2 predicates, returns a vector
+(overload-operator + (vector?) vector-append (vector? vector?))
 
 (random-seed 7)
 

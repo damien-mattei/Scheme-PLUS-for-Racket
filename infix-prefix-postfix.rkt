@@ -103,7 +103,8 @@
 		 simple-infix-list-syntax?
 		 infix-canonical?
 		 two-symbols-or-list-following?
-                 not-infix-and-known-procedure-at-end-then-postfix?)
+                 not-infix-and-known-procedure-at-end-then-postfix?
+                 surely-data?)
 
 	(require Scheme+/operators
 		 Scheme+/superscript
@@ -118,8 +119,8 @@
 
 	;; State 0
 	(def (infix-prefix-postfix-test? L)
-	  ;;(display "infix-prefix-postfix State 0") (newline)
-	  ;;(display "L=") (display L) (newline)
+	  ;(display "infix-prefix-postfix State 0" (current-error-port)) (newline (current-error-port))
+	  ;(display "L=" (current-error-port)) (display L (current-error-port)) (newline (current-error-port))
 
 	  (var-syntax2list L)
 	  
@@ -175,11 +176,11 @@
 	(def (state-1 L)
 	  ;;(display "infix-prefix-postfix State 1") (newline)
 
-	  (var-syntax2list L)
+	  #;(var-syntax2list L) ; useless : L is (cdr L) of state 0 , already a list
 	     
 	  (condx ((null? L) 'prefix)
 		 (exec (define f (car L))
-		       (var-syntax2list f))
+		       #;(var-syntax2list f)) ; useless : the tests below on f give the same result for a list or its syntax
 		 ((or (superscript? f)
 		      (and (operator-symbol-or-syntax? f)
 			   (not+-? f)
@@ -195,13 +196,13 @@
 
 	(def (state-2 L)
 	  ;;(display "infix-prefix-postfix State 2") (newline)
-	  (var-syntax2list L)
+	  #;(var-syntax2list L) ; useless : L is (cdr L) of state 1 , already a list
 	  
 	  (when (null? L)
 		(return 'prefix))
 	  
 	  (define f (car L))
-	  (var-syntax2list f)
+	  #;(var-syntax2list f) ; useless : the tests below on f give the same result for a list or its syntax
 	  
 	  (cond ((NO-OP? f) 'prefix)
 		((or (arithmetic-operator? f) 
@@ -214,19 +215,23 @@
 	(def (state-3 L)
 	  ;;(display "infix-prefix-postfix State 3") (newline)
 
-	  (var-syntax2list L)
+	  #;(var-syntax2list L) ; useless : L is (cdr L) of state 0 , already a list
 	     
 	  (when (null? L)
 	     (return 'prefix))
 	  
 	  (define f (car L))
-	  (var-syntax2list f)
+	  #;(var-syntax2list f) ; useless : the tests below on f give the same result for a list or its syntax
 	  
 	  (cond ((COMPOSITION-op? f) 'infix)
 		;;((SINGLE-VARIABLE-ASSIGNMENT-op? f) 'infix)
 		((ASSIGNMENT-op? f) 'infix)
 		((DEFINE-op? f) 'infix)
-		((superscript? f) (error "infix-prefix-postfix : state-3 : SYNTAX ERROR ,find superscript in parsing the remaining list: " L))
+                ; commented because it forbids (quote *) or (quote ²) ,etc
+		#;((#;superscript-but-not-operator? superscript? f)
+		 (display "ERROR: infix-prefix-postfix.rkt : state-3 : f =" (current-error-port)) (display f (current-error-port)) (newline (current-error-port))
+		 (display "ERROR: this could caused by a token being both normal and superscript (example *)" (current-error-port)) (newline (current-error-port))
+		 (error "infix-prefix-postfix : state-3 : SYNTAX ERROR ,find superscript in parsing the remaining list: " L))
 		(else 'prefix)))
 	
 
@@ -235,13 +240,13 @@
 	  ;;(display "infix-prefix-postfix State 4") (newline)
 	  ;;(display "L=") (display L) (newline)
 
-	  (var-syntax2list L)
+	  #;(var-syntax2list L) ; useless : L is (cdr L) of state 0 , already a list
 	  
 	  (when (null? L)
 	    (return 'prefix))
 
 	  (define f (car L))
-	  (var-syntax2list f)
+	  #;(var-syntax2list f) ; useless : the tests below on f give the same result for a list or its syntax
 
           (define r (rest L))
 	  
@@ -254,10 +259,10 @@
 		 ; a case where it is postfix when no op,no known procedure,no superscript,no composition in middle
 		 ; and known procedure at end
 		 (exec (define rev-L (reverse L))
-                       (define rest-rev-L-datum (map secure-syntax->datum (cdr rev-L)))
+                       #;(define rest-rev-L-datum (map secure-syntax->datum (cdr rev-L))) ; no more used
 		       (define last-elem (first rev-L))
                        (define last-elem-datum (secure-syntax->datum last-elem))
-                       (define p-datum (secure-syntax->datum p))
+                       #;(define p-datum (secure-syntax->datum p)) ; no more used
 		       ;(define middle-rev-L (rest rev-L))
                        ;(display "state-4 : middle-rev-L:") (display middle-rev-L) (newline)
                        #;(define (no-op/superscript/proc/compo s)
@@ -266,9 +271,12 @@
                                   (generic-known-program? s)
                                   (COMPOSITION-op? s)))))
 		 ((or (member-in-postfix-lst last-elem-datum)
-                      (and (generic-known-program? last-elem) ; test only in parser, not runtime! catastrophic time penalty on prefix/postfix test
+                      #;(and (generic-known-program? last-elem) ; test only in parser, not runtime! catastrophic time penalty on prefix/postfix test
                            (number? p-datum)
-                           (andmap number? rest-rev-L-datum)))
+                           (andmap number? rest-rev-L-datum))
+                      ;; the first element can not be a procedure, so the expression can not be a call : (3 x +) (z 3 +) with (type flonum? z)
+                      (and (surely-data? p) ; first, as it is fast
+                           (generic-known-program? last-elem))) ; test only in parser, not runtime! catastrophic time penalty on prefix/postfix test
                        
                   ;(display "infix-prefix-postfix State 4 postfix :") (display L) (newline)
                   ;(display "last element : ") (display last-elem) (newline)
@@ -279,6 +287,25 @@
 
 	
 	
+	;; the first element of an expression is surely a data, not a procedure : then the expression can not be a call (prefix)
+	;; and with a procedure at the end it is postfix.
+	;; a number, a string, a character, a boolean, a quoted data, or a variable typed with a type which is not a procedure
+	;; (type flonum? x) ; but not an unknown variable, which could contain a procedure.
+	;; the clauses of cond and the parameters of lambda are not parsed as postfix (see !*prec-generic-infix-parser-rec-prepare)
+	(define (surely-data? p)
+	  (define d (secure-syntax->datum p)) ; in def+ ($nfx$-rec) the terms are syntax objects
+	  (or (number? d)
+	      (string? d)
+	      (char? d)
+	      (boolean? d)
+	      (and (pair? d) ; '(1 2 3) , in def+ the elements of the list can be syntax objects
+		   (or (QUOTE-op? (car d))
+		       (QUASIQUOTE-op? (car d))))
+	      (and (symbol? d)
+		   (member-in-data-lst d)
+		   #t)))
+	
+
 	(define (infix? L)
 	  (define rs (infix-prefix-postfix-test? L))
 	  (if (or (eq? rs

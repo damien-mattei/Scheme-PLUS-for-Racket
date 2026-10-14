@@ -9,7 +9,7 @@
 	 colors
 	 (only-in racket/base [for for-racket]))
 
-
+ANNOTATION-ON
 ;; ← or <- or := are equivalent to 'define' (or 'set!' if the variable already exist !)
 ;; (define i +1i)
 {i ← +1i} ;; imaginaire pur / i complex
@@ -33,7 +33,7 @@
 
 
 ;; draw a vector point
-(def+ (draw-vect-point dc z-vect point-brush)
+(define (draw-vect-point dc z-vect point-brush)
   (send dc set-pen no-pen)
   (send dc set-brush point-brush) ; blue-brush)
   ;; size of the ellipse / point in pixels
@@ -42,22 +42,22 @@
   {x ← z-vect[0]}
   {y ← z-vect[1]}
   ;;(display "before (z ← x + i * y)") (newline)
-  (z ← x + i * y) ; complex number
+  {z ← x + i * y} ; complex number
   ;;(display "after (z ← x + i * y)") (newline)
-  ((x y) ← (to-screen-multi-values z))
+  {(x y) ← (to-screen-multi-values z)}
   {x ← x - (quotient ga 2)}
-  (y ← y - (quotient pa 2))
+  {y ← y - (quotient pa 2)}
   (send dc draw-ellipse x y ga pa))
 
 
 ;; convert in screen coordinates
-(def+ (to-screen-multi-values z0) ; z0 is a complex number
+(define (to-screen-multi-values z0) ; z0 is a complex number
   {re ← (real-part z0)}
   {im ← (imag-part z0)}
   {xs ← re * unit-axis-in-pixel}
   {ys ← im * unit-axis-in-pixel}
-  (values (round (xo + xs))
-	  (round (yo - ys))))
+  (values (round {xo + xs})
+	  (round {yo - ys})))
 
 
 (define (norm x y)
@@ -75,9 +75,9 @@
 (define (f-trunc x y)
   (remove-extrema (f x y)))
 
-(def+ (g x y)
-  ;;(abs (sin (sqrt (x ** 2 + y ** 2)))))
-  (abs (sin (√ (x ² + y ²)))))
+(define (g x y)
+  ;;(abs (sin (sqrt {x ** 2 + y ** 2}))))
+  (abs (sin (√ {x ² + y ²}))))
 
 (define (g-trunc x y)
   (remove-extrema (g x y))) 
@@ -109,15 +109,15 @@
   (h x y))
 
 ;; get a normalized scalar between [0,1] and return the values of red, green and blue of the color in the long rainbow
-(def+ (scalar-to-long-rainbow-rgb s)
+(define (scalar-to-long-rainbow-rgb s)
   {a := (1 - s) / 0.2} ; invert and group
   {x := (inexact->exact (floor a))} ; this is the integer part
   {y := (inexact->exact (floor (255 * (a - x))))} ; fractional part from 0 to 255
   (case x
     ((0) (values 255 y 0))
-    ((1) (values (255 - y) 255 0))
+    ((1) (values {255 - y} 255 0))
     ((2) (values 0 255 y))
-    ((3) (values 0 (255 - y) 255))
+    ((3) (values 0 {255 - y} 255))
     ((4) (values y 0 255))
     ((5) (values 255 0 255))
     (else
@@ -129,7 +129,7 @@
 
 (define (yellow-to-red s)
   {a := 1 - s}
-  ;;(define+ y (inexact->exact (floor (255 * a))))
+  ;;(define y (inexact->exact (floor {255 * a})))
   {y <- (inexact->exact (floor (255 * a)))}
   (values 255 y 0))
 
@@ -149,23 +149,23 @@
       (max max-norm-x-y (max-list-norm-x-y (cdr ls)))))
 
 
-(def+ (chaos p q d x0 y0)
+; return a stream !?
+(define (chaos p q d x0 y0)
   
   ;;(define a {2 * cos{2 * pi * p / q}}) ; or {2 * (cos {2 * pi * p / q})} or {2 * cos({2 * pi * p / q})}
-  ;;(define a   2 * (cos (2 * pi * p / q)))
-  (def a   2 * (cos (2 * pi * p / q)))
-  (def+ ksx  (√ ((2 + a) / 2)) ) ;; (sqrt {(2 + a) / 2})) ; or sqrt{{2 + a} / 2}
-  {ksy := (√ ((2 - a) / 2))}    ; (sqrt {(2 - a) / 2})} ; or (define ksy (sqrt {{2 - a} / 2}))
+  {a := 2 * (cos (2 * pi * p / q))}
+  {ksx := (√ ((2 + a) / 2))} ; (sqrt {(2 + a) / 2})) ; or sqrt{{2 + a} / 2}
+  {ksy := (√ ((2 - a) / 2))} ; (sqrt {(2 - a) / 2})} ; or (define ksy (sqrt {{2 - a} / 2}))
   
   (stream-map (lambda (z)
                 (match-let (((vector x y) z))
-                  (vector ((ksx / (√ 2)) * (x + y))
-			  {(ksy / (√ 2)) * (- x + y)}))) ; here { } could be replaced by ( )
+                  (vector {(ksx / (√ 2)) * (x + y)}
+			  {(ksy / (√ 2)) * (- x + y)})))
                   (stream-iterate (lambda (z)
                                     (match-let (((vector x y) z))
                                       (vector
-                                       ;;((a * x) + y + (d * x) / (add1 (x ** 2))) ; infix left to right evaluation avoid extra parenthesis but is hard for humans
-				       ((a * x) + y + (d * x) / (add1 (x ²)))
+                                       ;;{(a * x) + y + (d * x) / (add1 (x ** 2))} ; infix left to right evaluation avoid extra parenthesis but is hard for humans
+				       {(a * x) + y + (d * x) / (add1 (x ²))}
 				       (- x))))
 				  (vector x0 y0))))
 
@@ -223,7 +223,7 @@
 ;;                  (8  17 5 0.1 1 60000)))
 
 ;; compute the RGB color from hsv
-(def+ (compute-rgb-color-from-hsv point max-norm-x-y)
+(define (compute-rgb-color-from-hsv point max-norm-x-y)
 
   ;; extract the coordonates
   {x <- point[0]}
@@ -233,13 +233,13 @@
   {h0 <- (√ ((norm x y) / max-norm-x-y))} ; normalized scalar
   ;;(display "compute-rgb-color-from-hsv : h=") (display h) (newline)
   
-  (when (h0 = 1.0) ;; strange? hue can not be 1.0 when converting to RGB after: it causes a strange error:
+  (when {h0 = 1.0} ;; strange? hue can not be 1.0 when converting to RGB after: it causes a strange error:
                   ;; kw.rkt:1263:25: color-conversion: nonsense hue: 1, internal: 6
     ;;(display h)
     ;;(newline)
-    (h0 <- 0.999))
+    {h0 <- 0.999})
 
-  (hsv->color (hsv (1 - h0) 1 1)))
+  (hsv->color (hsv {1 - h0} 1 1)))
 
 
 
@@ -251,7 +251,7 @@
   {y <- point[1]}
 
   ;; with various functions
-  ;; (define+ red-val (inexact->exact (abs (round (255 * (red-value x y))))))
+  ;; (define red-val (inexact->exact (abs (round {255 * (red-value x y)}))))
   ;; (define green-val (inexact->exact (abs (round {255 * (green-value x y)}))))
   ;; (define blue-val (inexact->exact (abs (round {255 * (blue-value x y)}))))
 

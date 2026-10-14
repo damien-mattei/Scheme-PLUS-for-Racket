@@ -63,6 +63,19 @@
 ;; 2
 ;; 3
 
+;; list of the arguments from the formals of a procedure
+;; (formals->list (a b)) -> (cons a (cons b '()))
+;; (formals->list (a b . L)) -> (cons a (cons b L))
+;; (formals->list L) -> L
+(define-syntax formals->list
+
+  (syntax-rules ()
+
+    ((_ ()) '())
+    ((_ (a . rest)) (cons a (formals->list rest)))
+    ((_ r) r)))
+
+
 (define-syntax def
 
   (lambda (stx)
@@ -72,44 +85,19 @@
 	;; multiple definitions without values assigned
 	;; (def (x y z))
 	;; TODO: remove? redundant with (declare x y z)
-	((_ (var1 ...)) #`(begin (define var1 '()) ...))
-	
-	;;  (def (foo) (when #t (return "hello") "bye"))
-        ;; ((_ (<name> <arg> ...) <body> <body>* ...)
-        ;;  (let ((ret-id (datum->syntax stx 'return)))
-        ;;    #`(define (<name> <arg> ...)
-        ;;        (call/cc (lambda (#,ret-id) <body> <body>* ...)))))
+	((_ (var1 ...)) #'(begin (define var1 '()) ...))
 
+	;; function definition, with fixed, variadic or only rest arguments
+	;; (def (foo a b . L) (when #t (return (list a b L))))
+	;; (foo 1 2 3 4)
+	;; '(1 2 (3 4))
+	((_ (<name> . <formals>) <body> <body>* ...)
 
-	;; ((_ (<name> <arg> ...) <body> <body>* ...)
-	 
-        ;;  (with-syntax ((ret-id (datum->syntax stx 'return))
-	;; 	       (ret-rec-id (datum->syntax stx 'return-rec)))
-
-	;; 	      (display "def.scm : def : ret-id = ") (display #'ret-id) (newline)
-	;; 	      (display "def.scm : def : ret-rec-id = ") (display #'ret-rec-id) (newline)
-
-	;; 	      #'(define (<name> <arg> ...)
-
-	;; 		  (call/cc (lambda (ret-rec-id) ;(#,ret-rec-id)
-				     
-	;; 			     (apply (rec <name> (lambda (<arg> ...)
-							  
-	;; 						  (call/cc
-	;; 						   (lambda (ret-id) ;(#,ret-id)
-	;; 							     <body> <body>* ...))))
-					    
-	;; 				    (list <arg> ...)))))))
-  
-
-	((_ (<name> <arg> ...) <body> <body>* ...)
-	 
-         
-	 #'(define (<name> <arg> ...)
+	 #'(define (<name> . <formals>)
 
 	     (call/cc
 
-	      (lambda (ret-rec-id) ;(#,ret-rec-id)
+	      (lambda (ret-rec-id)
 		;; In the body we adjust the 'return-rec' keyword so that calls
 		;; to 'return-rec' are replaced with calls to the escape
 		;; continuation.
@@ -118,79 +106,36 @@
 		 ([return-rec (syntax-rules ()
 				[(return-rec vals (... ...))
 				 (ret-rec-id vals (... ...))])])
-		 
-		 (apply (rec <name> (lambda (<arg> ...)
-				      
-				      (call/cc
 
-				       (lambda (ret-id) ;(#,ret-id)
-					 ;; In the body we adjust the 'return' keyword so that calls
-					 ;; to 'return' are replaced with calls to the escape
-					 ;; continuation.
-					 (syntax-parameterize
-					  ([return (syntax-rules ()
-						     [(return vals (... ...))
-						      (ret-id vals (... ...))])])
-					  <body> <body>* ...)))))
-			
-			(list <arg> ...)))))))
+		 (apply (letrec ((<name> (lambda <formals>
 
-	
+					   (call/cc
 
-	;; variadic arguments in list
-	;; (def (foo a . L) (when #t (return (cons a L))))
-	;; (foo 1 2 3)
-	;; '(1 2 3)
-	((_ (<name> <arg> . L) <body> <body>* ...)
-	 
-         
-	 #'(define (<name> <arg> . L)
+					    (lambda (ret-id)
+					      ;; In the body we adjust the 'return' keyword so that calls
+					      ;; to 'return' are replaced with calls to the escape
+					      ;; continuation.
+					      (syntax-parameterize
+					       ([return (syntax-rules ()
+							  [(return vals (... ...))
+							   (ret-id vals (... ...))])])
+					       <body> <body>* ...))))))
+			  <name>)
 
-	     (call/cc
+			(formals->list <formals>)))))))
 
-	      (lambda (ret-rec-id) ;(#,ret-rec-id)
-		;; In the body we adjust the 'return-rec' keyword so that calls
-		;; to 'return-rec' are replaced with calls to the escape
-		;; continuation.
-
-		(syntax-parameterize
-		 ([return-rec (syntax-rules ()
-				[(return-rec vals (... ...))
-				 (ret-rec-id vals (... ...))])])
-		 
-		 (apply (rec <name> (lambda (<arg> . L)
-				      
-				      (call/cc
-
-				       (lambda (ret-id) ;(#,ret-id)
-					 ;; In the body we adjust the 'return' keyword so that calls
-					 ;; to 'return' are replaced with calls to the escape
-					 ;; continuation.
-					 (syntax-parameterize
-					  ([return (syntax-rules ()
-						     [(return vals (... ...))
-						      (ret-id vals (... ...))])])
-					  <body> <body>* ...)))))
-			
-			(cons <arg> L)))))))
-
-
-	
 
 	;; single definition without a value assigned
 	;; (def x)
-	((_ var) #`(define var '()))
+	((_ var) #'(define var '()))
 
 	;; (def s  3 ² + 2 * 3 * 5 + 5 ²)
 	;; 64
-	((_ var expr expr-optional ...) #`(define var ($nfx$-rec expr expr-optional ...)))
+	;; DEPRECATED (Scheme+ 18.0) : kept for the compatibility but no more documented nor improved , its infix parsing
+	;; is done at expansion time ($nfx$-rec) and knows only the procedures of Racket : use (def s {3 ² + 2 * 3 * 5 + 5 ²})
+	((_ var expr expr* ...) #'(define var ($nfx$-rec expr expr* ...)))
 
-	((_) #`(error "Bad def form"))
-	
-	;; (def x 7)
-	;;((_ var expr) #`(define var expr))
-
-	;;((_ err ...) #`(syntax-error "Bad def form"))
+	((_ . err) #'(error "Bad def form"))
 
 	)))
 
@@ -228,4 +173,4 @@
 
 
 
-) ; end library
+) ; end module

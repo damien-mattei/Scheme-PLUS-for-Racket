@@ -15,7 +15,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;; version 17
+;; version 18
 
 ;; use: (require Scheme+)
 
@@ -53,7 +53,15 @@
    : ; slice symbol
    $nfx$ ; infix
    $bracket-apply$ ; [ ]
+   $bracket-apply-vector$
+   $bracket-apply-string$
+   $bracket-apply-hash-table$
+   $bracket-apply-array$
+   $bracket-apply-flomat$
+   $bracket-apply-overloaded$ ; written by the type annotation pass for square brackets overloaded with overload-square-brackets
    <- ->
+   <-vector-vector*
+   <-string-string*
    ← →
    :=  =:
    ;; multiple values assignment
@@ -89,7 +97,7 @@
 
    
    ;; operators
-   <> ≠
+   <> ≠ fx≠ fl≠
    ≤ ≥
    **
    %
@@ -98,6 +106,7 @@
    ∣ ; warning: this pipe could be a special character (different from keyboard stroke)
    ^ ; bitwise xor
    · ; AltGr + Maj (CAPS) + 1 --> · on french keyboard ,Option + h on MacOS
+   × ; alt + ;  on PC french keyboard
    ~ ; bitwise not
    
    ;; functions
@@ -109,29 +118,38 @@
 
    ;; postfix operators
    !
-
+   
    
    ;; overloading
-   define-overload-procedure
+   ;define-overload-procedure ; replaced by overload-procedure
+   ;define-overload-procedure-annot
    overload-procedure
+   require-overload-procedure
    
-   define-overload-existing-procedure
-   overload-existing-procedure
+   ;define-overload-existing-procedure ; replaced by overload-procedure
+   ;define-overload-existing-procedure-annot
+   ;overload-existing-procedure
    
    define-overload-operator
+   ;define-overload-operator-annot
    overload-operator
    
    define-overload-existing-operator
    define-overload-existing-operator-annot
+   require-overload-operator
+   define-overloaded-operator
    overload-existing-operator
    
-   define-overload-n-arity-operator
-   overload-n-arity-operator
+   define-overload-n-ary-associative-operator
+   ;define-overload-n-ary-associative-operator-annot
+   overload-n-ary-operator
    
-   define-overload-existing-n-arity-operator
-   overload-existing-n-arity-operator
+   define-overload-existing-n-ary-associative-operator
+   define-overload-existing-n-ary-associative-operator-annot
+   overload-existing-n-ary-operator
    
    overload-square-brackets
+   require-overload-square-brackets ; for the type annotation pass only
 
    find-getter-for-overloaded-square-brackets
    find-setter-for-overloaded-square-brackets
@@ -143,8 +161,57 @@
 
    ;; annotation
    declare-postfix-operator
+
+   ;; type annotation
+   type ; this is in fact a dummy macro in case some type annotation has been forgotten by the type annotation parser, so that the code can still be compiled and run, but with a warning message
+
+   ; backup operators
+   orig-*
+   orig--
+   orig-·
+   orig-×
+   orig-/
+   orig-**
+   orig-expt
+   orig-+
+   orig-%
+   orig-<
+   orig->
+   orig-<=
+   orig->=
+   orig-=
+   orig-≠
+   orig-<>
+
+   ; flonum operators
+   fl+
+   fl-
+   fl*
+   fl/
+   fl<
+   fl>
+   fl<=
+   fl>=
+   fl=
+
+   ; fixnum operators
+   fx+
+   fx-
+   fx*
+   fxquotient
+   fxmodulo
+   fx<
+   fx>
+   fx<=
+   fx>=
+   fx=
    
-   )
+   $ovrld-ht$ ; for debug only
+   $ovrld-ht-n-ary$ ; for debug only
+   $ovrld-ht-proc$ ; for debug only
+
+   ANNOTATION-ON
+	 ANNOTATION-OFF)
 
 
   
@@ -184,7 +251,7 @@
    Scheme+/while-do
    Scheme+/repeat-until
 
-   ;; operators
+   ;; operators WARNING : see also backup operators
    Scheme+/not-equal
    Scheme+/exponentiation
    Scheme+/bitwise
@@ -204,11 +271,39 @@
    Scheme+/infix-with-precedence-to-prefix
    Scheme+/operators-list
 
+   ;(for-template Scheme+/operators-list)
+
    ;; postfix operators
    Scheme+/factorial
+   (only-in Scheme+/parser-declarations declare-postfix-operator) ; declare-executable and declare-data are internal (written by the reader)
+
+   ;; type annotation
+   Scheme+/type
 
    setup/getinfo ; for parsing info.rkt
 
+   ; backup operators
+   (only-in Scheme+/multiply (· orig-·)
+	                     (× orig-×)) ; TODO in annot+
+
+   (only-in Scheme+/exponentiation (** orig-**))
+
+   (only-in Scheme+/not-equal (≠ orig-≠)
+	                      (<> orig-<>))
+
+   (only-in racket/base (* orig-*)
+            (- orig--)
+	    (+ orig-+)
+	    (/ orig-/)
+            (expt orig-expt)
+	    (< orig-<)
+	    (> orig->)
+	    (<= orig-<=)
+	    (>= orig->=)
+	    (= orig-=))
+
+   racket/flonum ; real
+   racket/fixnum ; integer
 
    ) ; end import
 
@@ -216,9 +311,10 @@
 
   (define info-getter (get-info '("Scheme+")))
   (define version (cond ((procedure? info-getter) (info-getter 'version))
-			(else info-getter)))
+			                  (else info-getter)))
 
-  (define verbose #t)
+  (define verbose #f) ; otherwise make garbage in curly-infix2prefix4racket
+  
   (when verbose
     (newline)
     (display (string-append "Scheme+ v" version " by Damien Mattei.")) (newline)
@@ -233,3 +329,5 @@
 ;; under MacOS the keystroke sequence is : Command Shift + n (you really need to type + key for superscript)
 
 ;; Using the text editor vim, one can produce subscripted and superscripted numbers by using the digraphs control-k-ns for subscription and control-k-nS for superscription, where n is an Arabic numeral.
+
+

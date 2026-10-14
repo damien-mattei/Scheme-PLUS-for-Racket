@@ -3,9 +3,11 @@
 (module modulo racket/base
 
 
-  (provide % )
+  (provide % orig-%)
 
 
-(define % modulo)
+  (define % modulo)
+  (define orig-% modulo)
+  
 
 ) ;  end library

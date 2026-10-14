@@ -18,17 +18,22 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+;; note: modified with AI agentic
 
 (module assignment racket/base
 
-  (provide  <- ->
-	    ← →
-	    :=  =:
-	    <v v>
-	    ⇜ ⇝)
+ (provide  <- ->
+           <-vector-vector*
+           <-string-string*
+	   ← →
+	   :=  =:
+	   <v v>
+	   ⇜ ⇝)
 
 
-  (require (for-syntax Scheme+/parse-square-brackets) ; import at expand phase (not run phase)
+  (require (for-syntax Scheme+/parse-square-brackets
+		       ;Scheme+/operators-list
+		       ) ; import at expand phase (not run phase)
 
 	   racket/match
 	   (for-syntax racket/base)
@@ -41,10 +46,15 @@
 	   srfi/69 ; hash table
 
 	   ; could be commented because sci require libgfortran which complex installation for some users
-	   #;(rename-in flomat
+	   (rename-in flomat
 		      (repeat repeat-flomat)
 		      (shape shape-flomat)
 		      (transpose transpose-flomat))
+
+	   #;(only-in racket/base (* orig-*)
+                                (- orig--)
+				(+ orig-+)
+				(/ orig-/))
 	   
 	   Scheme+/parse-square-brackets
 	   Scheme+/for_next_step
@@ -55,7 +65,8 @@
 	   Scheme+/def-function
 	   Scheme+/defvar
 	   Scheme+/bracket-apply
-	   Scheme+/overload)
+	   Scheme+/overload
+           racket/fixnum)
 
 
  
@@ -142,118 +153,537 @@
 
        #'(define-or/and-set!-values (var) expr))
 
-      
-
-    ;; ;; {(x y) <- Lexemples[ip]}   
-    ;; ((_ (kar kdr) expr) ; expr must be a pair
-
-    ;;  #`(begin
-    ;; 	 ;;(display "<- : case (_ (kar kdr) expr)") (newline)
-    ;; 	 (set! kar (car expr))
-    ;; 	 (set! kdr (cdr expr))))
-    
-
-
-
-      ;; example: {a[4] <- 7}
-      ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
-      
-      ;; ((_ (brket-applynext container index ...) expr)  ; possible to have NO index :
-      ;; 					; minimal form is (_ (brket-applynext container) expr)
-
-      ;;  ;; We will let the second $bracket-apply$ be executed and forbid the execution of first $bracket-apply$.
-      ;;  (cond ((equal? (quote $bracket-apply$next) (syntax->datum #'brket-applynext))  ;; already parsed and optimised by parser
-      ;; 	      #'(assignmentnext container expr index  ...)) ; possible to have NO index
-	     
-      ;; 	     ((equal? (quote $bracket-apply$) (syntax->datum #'brket-applynext)) ;; integrated curly-infix of guile (no parsing) at REPL
-      ;; 	      ;; we parse arguments at posteriori
-      ;; 	      (case (length (syntax->datum #'(index ...)))
-
-      ;; 		;; 0 argument in []
-      ;; 		;; T[]
-      ;; 		;; {v[] <- #(1 2 3)}
-      ;; 		;; > v
-      ;; 		;;'#(1 2 3)
-      ;; 		((0) 
-      ;; 		 #'(assignment-argument-0 container index ... expr))  ; possible to have NO index
-
-      ;; 		;; 1 argument in [ ]
-      ;; 		;; T[index]
-      ;; 		((1)
-      ;; 		 #'(assignment-argument-1 container index ... expr))
-
-      ;; 		;; 2 arguments in [ ]
-      ;; 		;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]   
-      ;; 		;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
-      ;; 		;; '#(3 4 5)
-      ;; 		((2)
-      ;; 		 #'(assignment-argument-2 container index ... expr))
-
-      ;; 		;; 3 arguments in [ ]
-      ;; 		;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
-      ;; 		((3)
-      ;; 		 #'(assignment-argument-3 container index ... expr))
-
-      ;; 		;; 4 arguments in [ ]
-      ;; 		;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
-      ;; 		((4)
-      ;; 		 #'(assignment-argument-4 container index ... expr))
-
-      ;; 		;; 5 arguments in [ ]
-      ;; 		;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
-      ;; 		((5)
-      ;; 		 #'(assignment-argument-5 container index ... expr))
-
-      ;; 		;; more than 5 arguments in [ ]
-      ;; 		;; T[i1 i2 i3 i4 i5 i6 ...]
-      ;; 		(else
-      ;; 		 #'(assignment-argument-6-and-more container (list index ...) expr))))
-
       ;; example: {a[4] <- 7}
       ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
       ((_ (brket-aply container index ...) expr)  ; possible to have NO index :
 					; minimal form is (_ (brket-aply container) expr)
 
-       ;; We will let the second $bracket-apply$ be executed and forbid the execution of first $bracket-apply$.
-       (cond ;; ((equal? (quote $bracket-apply$next) (syntax->datum #'brket-aply))  ;; already parsed and optimised by parser
-	      
-	     ;;  #'(assignmentnext container expr index  ...)) ; possible to have NO index
+       #| We will let the second $bracket-apply$ be executed and use the return value
+          but do not execute the first $bracket-apply$ as we needs to interpret the syntax and deal with their arguments. |#
+       (cond	      
 
-	     
-	((equal? (quote $bracket-apply$) (syntax->datum #'brket-aply)) ;; curly-infix
+	 ; square brackets overloaded by overload-square-brackets , for an object of known type (written by the type
+	 ; annotation pass) : ($bracket-apply-overloaded$ ((getter setter nb-indexes) ...) object arg-bracket ...)
+	 ; the setter is chosen from the number of indexes : {Mv[i j] := x} --> (matrix-vect-set! Mv i j x) ,
+	 ; otherwise the generic assignment chooses at runtime
+	 ((eq? (quote $bracket-apply-overloaded$) (syntax->datum #'brket-aply))
 
-	 ;;(newline)
-	 ;; display { } as they are.
-	 ;;(print-mpair-curly-braces #f)
+	  (syntax-case #'(container index ...) ()
 
-	 ;;(display "<- : #'(index ...) = ") (display #'(index ...)) (newline)
+	    (((ovrld ...) object arg-bracket ...)
 
-	 ;; we parse arguments at posteriori of SRFI 105 parser
-	 (with-syntax
-	     ;;(let-syntax
-	     ;; (let
-	     ((parsed-args
+	     (let* ((parsed-args (parse-square-brackets-arguments-lister-syntax (syntax->list #'(arg-bracket ...))
+										  (list (cons '* #'fx*)
+											(cons '- #'fx-)
+											(cons '+ #'fx+)
+											(cons '/ #'fxquotient))))
+		    (ovrld-found (select-overloaded-square-brackets (map syntax->list (syntax->list #'(ovrld ...)))
+								    parsed-args)))
 
-	       (cons #'list (parse-square-brackets-arguments-lister-syntax (syntax->list #'(index ...)))))
-	      ;;#`(list #,@(parse-square-brackets-arguments-lister-syntax #'(index ...))))
+	       (if ovrld-found
+		   (with-syntax ((setter (cadr ovrld-found))
+				 ((idx ...) parsed-args))
+		     #'(setter object idx ... expr))
+		   #'(<- ($bracket-apply$ object arg-bracket ...) expr))))))
+
+	 ; vector case (specialized)
+         ((eq? (quote $bracket-apply-vector$) (syntax->datum #'brket-aply)) ;; curly-infix
+
+          ;;(newline)
+          ;; display { } as they are.
+          ;;(print-mpair-curly-braces #f)
+
+          ;; we parse arguments at posteriori of SRFI 105 parser
+          (with-syntax
+
+              ((parsed-args
+
+                (cons #'list (parse-square-brackets-arguments-lister-syntax (syntax->list #'(index ...))
+                                                                            (list (cons '* #'fx*)
+                                                                                  (cons '- #'fx-)
+                                                                                  (cons '+ #'fx+)
+                                                                                  (cons '/ #'fxquotient)))))
+               ;;#`(list #,@(parse-square-brackets-arguments-lister-syntax #'(index ...))))
 	      ;;(parse-square-brackets-arguments-lister-syntax #'(index ...)))
 
+	       ;; is the RHS itself a {OtherVector[...]} form ? if so, we know at macro-expansion
+	       ;; time (thanks to the type annotation pass having already rewritten it to
+	       ;; $bracket-apply-vector$) that it evaluates to a vector, with no runtime vector?
+	       ;; check needed ; this lets assignment-argument-*-vector use vector-copy! (a bulk
+	       ;; copy) instead of an element-by-element loop for plain (step 1) slice assignment
+               
+               #| here we manipulate syntax, example above or: v3 so you can not test with vector?
+                  unless it is already litteral which is not always the case |#
+	       (is-vec (let ((d (syntax->datum #'expr))) 
+			 ;(display "<- : d=") (display d) (newline)
+			(if (and (pair? d) (eq? (car d) '$bracket-apply-vector$))
+			    #'#t ; seems we can drop the syntax here : #t simple
+			    #'#f)))
+
 	      ) ; end definitions
-			   
-	   ;;(display "<- : #'parsed-args=") (display #'parsed-args) (newline)
+
+	    ;(display "<- : #'is-vec=") (display #'is-vec) (newline)
+	    ;(display "<- : #'parsed-args=") (display #'parsed-args) (newline)
+            
 	   ;; (display "<- : (list? #'parsed-args)=") (display (list? #'parsed-args)) (newline)
 	   ;; (display "<- : (mlist? #'parsed-args)=") (display (mlist? #'parsed-args)) (newline)
 	   ;; (display "<- : (length #'parsed-args)=") (display (length #'parsed-args)) (newline)
-
-	   ;;#'(assignment-next4list-args container parsed-args expr)))
 
 	   ;; we parse arguments at posteriori
 	   ;; putting code here optimise run-time
 	   (case (length
 		  (cdr
 		   (syntax->datum #'parsed-args)))
-	     
-	     
+
+
+	     ;; 0 argument in []
+	     ;; T[]
+	     ;; {v[] <- #(1 2 3)}
+	     ;; > v
+	     ;;'#(1 2 3)
+	     ((0)
+	      ;;#'(begin
+	      ;; 	  (display "<- case 0 : parsed-args=") (display parsed-args) (newline)
+	      #'(assignment-argument-0 container expr));)  ; possible to have NO index
+
+	     ;; 1 argument in [ ]
+	     ;; T[index]
+	     ((1)
+	      ;;(begin
+	      ;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
+	      #'(assignment-argument-1-vector container
+                                              (first parsed-args)
+                                              expr));)
+
+	     ;; 2 arguments in [ ]
+	     ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
+	     ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
+	     ;; '#(3 4 5)
+	     ((2)
+	      ;; #'(begin
+	      ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
+	      #'(assignment-argument-2-vector container
+                                              (first parsed-args)
+                                              (second parsed-args)
+                                              expr
+                                              is-vec));)
+
+	     ;; 3 arguments in [ ]
+	     ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
+	     ((3)
+	      ;; #'(begin
+	      ;; 	  (display  "<- case 3 : 'parsed-args=") (display 'parsed-args) (newline)
+	      ;;#'parsed-args);)
+	      #'(assignment-argument-3-vector container
+                                              (first parsed-args)
+                                              (second parsed-args)
+                                              (third parsed-args)
+                                              expr
+                                              is-vec));)
+
+	     ;; 4 arguments in [ ]
+	     ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
+	     ((4) #'(assignment-argument-4-vector container
+                                                  (first parsed-args)
+                                                  (second parsed-args)
+                                                  (third parsed-args)
+                                                  (fourth parsed-args)
+                                                  expr
+                                                  is-vec))
+
+	     ;; 5 arguments in [ ]
+	     ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
+	     ((5) #'(assignment-argument-5-vector container
+                                                  (first parsed-args)
+                                                  (second parsed-args)
+                                                  (third parsed-args)
+                                                  (fourth parsed-args)
+                                                  (fifth parsed-args)
+                                                  expr
+                                                  is-vec))
+
+	     ;; more than 5 arguments in [ ]
+	     ;; T[i1 i2 i3 i4 i5 i6 ...]
+	     (else ; case
+	      #'(assignment-argument-6-and-more-vector container parsed-args expr)))))
+
+
+	 ; string case (specialized)
+         ((eq? (quote $bracket-apply-string$) (syntax->datum #'brket-aply)) ;; curly-infix
+
+          ;; we parse arguments at posteriori of SRFI 105 parser
+          (with-syntax
+
+              ((parsed-args
+
+                (cons #'list (parse-square-brackets-arguments-lister-syntax (syntax->list #'(index ...))
+                                                                            (list (cons '* #'fx*)
+                                                                                  (cons '- #'fx-)
+                                                                                  (cons '+ #'fx+)
+                                                                                  (cons '/ #'fxquotient)))))
+
+	       ;; is the RHS itself a {OtherString[...]} form ? if so, we know at macro-expansion
+	       ;; time (thanks to the type annotation pass having already rewritten it to
+	       ;; $bracket-apply-string$) that it evaluates to a string, with no runtime string?
+	       ;; check needed ; this lets assignment-argument-*-string use string-copy! (a bulk
+	       ;; copy) instead of an element-by-element loop for plain (step 1) slice assignment
+	       (is-str (let ((d (syntax->datum #'expr)))
+			 (if (and (pair? d) (eq? (car d) '$bracket-apply-string$))
+			     #'#t
+			     #'#f)))
+
+	      ) ; end definitions
+
+	   ;; we parse arguments at posteriori
+	   ;; putting code here optimise run-time
+	   (case (length
+		  (cdr
+		   (syntax->datum #'parsed-args)))
+
+
+	     ;; 0 argument in []
+	     ;; T[]
+	     ;; {s[] <- "abc"}
+	     ((0)
+	      #'(assignment-argument-0 container expr))  ; possible to have NO index
+
+	     ;; 1 argument in [ ]
+	     ;; T[index]
+	     ((1)
+	      #'(assignment-argument-1-string container
+                                              (first parsed-args)
+                                              expr))
+
+	     ;; 2 arguments in [ ]
+	     ;; ex: T[i1 :] , T[: i2] , T[: :]
+	     ((2)
+	      #'(assignment-argument-2-string container
+                                              (first parsed-args)
+                                              (second parsed-args)
+                                              expr
+                                              is-str))
+
+	     ;; 3 arguments in [ ]
+	     ;; T[i1 : i2] , T[: : s]
+	     ((3)
+	      #'(assignment-argument-3-string container
+                                              (first parsed-args)
+                                              (second parsed-args)
+                                              (third parsed-args)
+                                              expr
+                                              is-str))
+
+	     ;; 4 arguments in [ ]
+	     ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :]
+	     ((4) #'(assignment-argument-4-string container
+                                                  (first parsed-args)
+                                                  (second parsed-args)
+                                                  (third parsed-args)
+                                                  (fourth parsed-args)
+                                                  expr
+                                                  is-str))
+
+	     ;; 5 arguments in [ ]
+	     ;; T[i1 : i3 : s]
+	     ((5) #'(assignment-argument-5-string container
+                                                  (first parsed-args)
+                                                  (second parsed-args)
+                                                  (third parsed-args)
+                                                  (fourth parsed-args)
+                                                  (fifth parsed-args)
+                                                  expr
+                                                  is-str))
+
+	     ;; more than 5 arguments in [ ] : not allowed with strings
+	     (else ; case
+	      #'(assignment-argument-6-and-more-string container parsed-args expr)))))
+
+
+	 ; hash table case (specialized)
+         ((eq? (quote $bracket-apply-hash-table$) (syntax->datum #'brket-aply)) ;; curly-infix
+
+          ;; we parse arguments at posteriori of SRFI 105 parser
+          (with-syntax
+
+              ((parsed-args
+
+                (cons #'list (parse-square-brackets-arguments-lister-syntax (syntax->list #'(index ...))
+                                                                            (list (cons '* #'fx*)
+                                                                                  (cons '- #'fx-)
+                                                                                  (cons '+ #'fx+)
+                                                                                  (cons '/ #'fxquotient)))))
+
+	      ) ; end definitions
+
+	   ;; we parse arguments at posteriori
+	   ;; putting code here optimise run-time
+	   (case (length
+		  (cdr
+		   (syntax->datum #'parsed-args)))
+
+
+	     ;; 0 argument in []
+	     ;; T[]
+	     ;; {h[] <- expr}
+	     ((0)
+	      #'(assignment-argument-0 container expr))  ; possible to have NO index
+
+	     ;; 1 argument in [ ]
+	     ;; T[key]
+	     ((1)
+	      #'(assignment-argument-1-hash-table container
+                                                   (first parsed-args)
+                                                   expr))
+
+	     ;; more than 1 argument in [ ] : not allowed with hash tables
+	     ((2)
+	      #'(assignment-argument-2-hash-table container
+                                                   (first parsed-args)
+                                                   (second parsed-args)
+                                                   expr))
+
+	     ((3)
+	      #'(assignment-argument-3-hash-table container
+                                                   (first parsed-args)
+                                                   (second parsed-args)
+                                                   (third parsed-args)
+                                                   expr))
+
+	     ((4) #'(assignment-argument-4-hash-table container
+                                                       (first parsed-args)
+                                                       (second parsed-args)
+                                                       (third parsed-args)
+                                                       (fourth parsed-args)
+                                                       expr))
+
+	     ((5) #'(assignment-argument-5-hash-table container
+                                                       (first parsed-args)
+                                                       (second parsed-args)
+                                                       (third parsed-args)
+                                                       (fourth parsed-args)
+                                                       (fifth parsed-args)
+                                                       expr))
+
+	     (else ; case
+	      #'(assignment-argument-6-and-more-hash-table container parsed-args expr)))))
+
+
+	 ; array case (specialized)
+         ((eq? (quote $bracket-apply-array$) (syntax->datum #'brket-aply)) ;; curly-infix
+
+          ;; we parse arguments at posteriori of SRFI 105 parser
+          (with-syntax
+
+              ((parsed-args
+
+                (cons #'list (parse-square-brackets-arguments-lister-syntax (syntax->list #'(index ...))
+                                                                            (list (cons '* #'fx*)
+                                                                                  (cons '- #'fx-)
+                                                                                  (cons '+ #'fx+)
+                                                                                  (cons '/ #'fxquotient)))))
+
+	      ) ; end definitions
+
+	   ;; we parse arguments at posteriori
+	   ;; putting code here optimise run-time
+	   (case (length
+		  (cdr
+		   (syntax->datum #'parsed-args)))
+
+
+	     ;; 0 argument in []
+	     ;; T[]
+	     ;; {a[] <- expr}
+	     ((0)
+	      #'(assignment-argument-0 container expr))  ; possible to have NO index
+
+	     ;; 1 argument in [ ]
+	     ;; T[i1] ,  1 dimension array
+	     ((1)
+	      #'(assignment-argument-1-array container
+                                             (first parsed-args)
+                                             expr))
+
+	     ;; 2 arguments in [ ]
+	     ;; T[i1 i2] ,  2 dimension array
+	     ((2)
+	      #'(assignment-argument-2-array container
+                                             (first parsed-args)
+                                             (second parsed-args)
+                                             expr))
+
+	     ;; 3 arguments in [ ]
+	     ;; T[i1 i2 i3] ,  3 dimension array
+	     ((3)
+	      #'(assignment-argument-3-array container
+                                             (first parsed-args)
+                                             (second parsed-args)
+                                             (third parsed-args)
+                                             expr))
+
+	     ;; 4 arguments in [ ]
+	     ;; T[i1 i2 i3 i4] ,  4 dimension array
+	     ((4) #'(assignment-argument-4-array container
+                                                 (first parsed-args)
+                                                 (second parsed-args)
+                                                 (third parsed-args)
+                                                 (fourth parsed-args)
+                                                 expr))
+
+	     ;; 5 arguments in [ ]
+	     ;; T[i1 i2 i3 i4 i5] ,  5 dimension array
+	     ((5) #'(assignment-argument-5-array container
+                                                 (first parsed-args)
+                                                 (second parsed-args)
+                                                 (third parsed-args)
+                                                 (fourth parsed-args)
+                                                 (fifth parsed-args)
+                                                 expr))
+
+	     ;; more than 5 arguments in [ ] , n dimension array
+	     (else ; case
+	      #'(assignment-argument-6-and-more-array container parsed-args expr)))))
+
+
+        ; general case (not specialized for optimisation)
+        ((eq? (quote $bracket-apply$) (syntax->datum #'brket-aply)) ;; curly-infix
+
+         ;;(newline)
+         ;; display { } as they are.
+         ;;(print-mpair-curly-braces #f)
+
+         ;;(display "<- : #'(index ...) = ") (display #'(index ...)) (newline)
+
+         ;; we parse arguments at posteriori of SRFI 105 parser
+         (with-syntax
+              ;;(let-syntax
+              ;; (let
+              ((parsed-args
+
+                (cons #'list (parse-square-brackets-arguments-lister-syntax (syntax->list #'(index ...))
+									    (list (cons '* #'fx*)
+										  (cons '- #'fx-)
+										  (cons '+ #'fx+)
+										  (cons '/ #'fxquotient)))))
+               ;;#`(list #,@(parse-square-brackets-arguments-lister-syntax #'(index ...))))
+               ;;(parse-square-brackets-arguments-lister-syntax #'(index ...)))
+
+               ) ; end definitions
+            
+            ;;(display "<- : #'parsed-args=") (display #'parsed-args) (newline)
+            ;; (display "<- : (list? #'parsed-args)=") (display (list? #'parsed-args)) (newline)
+            ;; (display "<- : (mlist? #'parsed-args)=") (display (mlist? #'parsed-args)) (newline)
+            ;; (display "<- : (length #'parsed-args)=") (display (length #'parsed-args)) (newline)
+
+           ;; we parse arguments at posteriori
+            ;; putting code here optimise run-time
+            (case (length
+                   (cdr
+                    (syntax->datum #'parsed-args)))
+              
+              
+              ;; 0 argument in []
+              ;; T[]
+              ;; {v[] <- #(1 2 3)}
+              ;; > v
+              ;;'#(1 2 3)
+              ((0) 
+               ;;#'(begin
+               ;; 	  (display "<- case 0 : parsed-args=") (display parsed-args) (newline)
+               #'(assignment-argument-0 container expr));)  ; possible to have NO index
+
+              ;; 1 argument in [ ]
+              ;; T[index]
+              ((1)
+               ;;(begin
+               ;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
+               #'(assignment-argument-1 container
+                                        (first parsed-args)
+                                        expr));)
+
+              ;; 2 arguments in [ ]
+              ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]   
+              ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
+              ;; '#(3 4 5)
+              ((2)
+               ;; #'(begin
+               ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
+               #'(assignment-argument-2 container
+                                        (first parsed-args)
+                                        (second parsed-args)
+                                        expr));)
+
+              ;; 3 arguments in [ ]
+              ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
+              ((3)
+               ;; #'(begin
+               ;; 	  (display  "<- case 3 : 'parsed-args=") (display 'parsed-args) (newline)
+               ;;#'parsed-args);)
+               #'(assignment-argument-3 container					  
+                                        (first parsed-args)
+                                        (second parsed-args)
+                                        (third parsed-args)
+                                        expr));)
+              
+              ;; 4 arguments in [ ]
+              ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
+              ((4) #'(assignment-argument-4 container
+                                            (first parsed-args)
+                                            (second parsed-args)
+                                            (third parsed-args)
+                                            (fourth parsed-args)
+                                            expr))
+
+              ;; 5 arguments in [ ]
+              ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
+              ((5) #'(assignment-argument-5 container
+                                            (first parsed-args)
+                                            (second parsed-args)
+                                            (third parsed-args)
+                                            (fourth parsed-args)
+                                            (fifth parsed-args)
+                                            expr))
+
+              ;; more than 5 arguments in [ ]
+              ;; T[i1 i2 i3 i4 i5 i6 ...]
+              (else ; case
+               #'(assignment-argument-6-and-more container parsed-args expr)))))
+
+
+	 ;; flomat case
+	 ((eq? (quote $bracket-apply-flomat$) (syntax->datum #'brket-aply)) ;; curly-infix
+
+	  ;;(newline)
+	  ;; display { } as they are.
+	  ;;(print-mpair-curly-braces #f)
+
+	  ;; we parse arguments at posteriori of SRFI 105 parser
+	  (with-syntax
+	      
+	      ((parsed-args
+
+		(cons #'list (parse-square-brackets-arguments-lister-syntax (syntax->list #'(index ...))
+									    (list (cons '* #'fx*)
+										  (cons '- #'fx-)
+										  (cons '+ #'fx+)
+										  (cons '/ #'fxquotient)))))
+	       ;;#`(list #,@(parse-square-brackets-arguments-lister-syntax #'(index ...))))
+	       ;;(parse-square-brackets-arguments-lister-syntax #'(index ...)))
+
+	       ) ; end definitions
+	    
+	    ;; (display "<- : #'parsed-args=") (display #'parsed-args) (newline)
+	    ;; (display "<- : (list? #'parsed-args)=") (display (list? #'parsed-args)) (newline)
+	    ;; (display "<- : (mlist? #'parsed-args)=") (display (mlist? #'parsed-args)) (newline)
+	    ;; (display "<- : (length #'parsed-args)=") (display (length #'parsed-args)) (newline)
+
+	    ;; we parse arguments at posteriori
+	    ;; putting code here optimise run-time
+	    (case (length
+		   (cdr
+		    (syntax->datum #'parsed-args)))
+	      
+	      
 	     ;; 0 argument in []
 	     ;; T[]
 	     ;; {v[] <- #(1 2 3)}
@@ -265,96 +695,87 @@
 	      #'(assignment-argument-0 container expr));)  ; possible to have NO index
 
 	     ;; 1 argument in [ ]
-	     ;; T[index]
+	     ;; T[index] : row setting not allowed with flomat
 	     ((1)
 	      ;;(begin
 	      ;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
-	      #'(assignment-argument-1 container
-				       (first parsed-args)
-				       expr));)
+	      #'(assignment-argument-1-flomat container
+                                              (first parsed-args)
+                                              expr));)
 
 	     ;; 2 arguments in [ ]
-	     ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]   
-	     ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
-	     ;; '#(3 4 5)
+	     ;; T[i1 i2] : element (row,col) assignment ; slicing not allowed with flomat
 	     ((2)
 	      ;; #'(begin
 	      ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
-	      #'(assignment-argument-2 container
-				       (first parsed-args)
-				       (second parsed-args)
-				       expr));)
+	      #'(assignment-argument-2-flomat container
+                                              (first parsed-args)
+                                              (second parsed-args)
+                                              expr));)
 
-	     ;; 3 arguments in [ ]
-	     ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
+	     ;; 3 arguments in [ ] : not allowed with flomat
 	     ((3)
 	      ;; #'(begin
 	      ;; 	  (display  "<- case 3 : 'parsed-args=") (display 'parsed-args) (newline)
 	      ;;#'parsed-args);)
-	      #'(assignment-argument-3 container					  
-				       (first parsed-args)
-				       (second parsed-args)
-				       (third parsed-args)
-				       expr));)
-	     
-	     ;; 4 arguments in [ ]
-	     ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
-	     ((4)
-	      #'(assignment-argument-4 container
-				       (first parsed-args)
-				       (second parsed-args)
-				       (third parsed-args)
-				       (fourth parsed-args)
-				       expr))
+	      #'(assignment-argument-3-flomat container
+                                              (first parsed-args)
+                                              (second parsed-args)
+                                              (third parsed-args)
+                                              expr));)
 
-	     ;; 5 arguments in [ ]
-	     ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
-	     ((5)
-	      #'(assignment-argument-5 container
-				       (first parsed-args)
-				       (second parsed-args)
-				       (third parsed-args)
-				       (fourth parsed-args)
-				       (fifth parsed-args)
-				       expr))
+	     ;; 4 arguments in [ ] : not allowed with flomat
+	     ((4) #'(assignment-argument-4-flomat container
+                                                  (first parsed-args)
+                                                  (second parsed-args)
+                                                  (third parsed-args)
+                                                  (fourth parsed-args)
+                                                  expr))
 
-	     ;; more than 5 arguments in [ ]
-	     ;; T[i1 i2 i3 i4 i5 i6 ...]
+	     ;; 5 arguments in [ ] : not allowed with flomat
+	     ((5) #'(assignment-argument-5-flomat container
+                                                  (first parsed-args)
+                                                  (second parsed-args)
+                                                  (third parsed-args)
+                                                  (fourth parsed-args)
+                                                  (fifth parsed-args)
+                                                  expr))
+
+	     ;; more than 5 arguments in [ ] : not allowed with flomat
 	     (else ; case
-	      #'(assignment-argument-6-and-more container parsed-args expr)))))
+	      #'(assignment-argument-6-and-more-flomat container parsed-args expr)))))
 
 
-	;; i suppose the example below is done in the 'else' of 'cond'
-	;; {(x y z) <- (values 1 2 3)}
-	(else ; cond
-	 #'(define-or/and-set!-values (brket-aply container index ...) expr)))) ;; the argument's names does not match the use
+	 
+
+         ;; i suppose the example below is done in the 'else' of 'cond'
+         ;; {(x y z) <- (values 1 2 3)}
+         (else ; cond
+          #'(define-or/and-set!-values (brket-aply container index ...) expr)))) ;; the argument's names does not match the use
       
 
-    
-    ;;  special form like : (<- ($bracket-apply$ T 3) ($bracket-apply$ T 4))
-    ;; We will let the second $bracket-apply$ be executed and block the execution of first $bracket-apply$.
-    
-    ;; one dimension array, example: {a[4] <- 7}
-    ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
-    ;; ((_ (bracket-apply container index index1 ...) expr)
+      
+      ;;  special form like : (<- ($bracket-apply$ T 3) ($bracket-apply$ T 4))
+      ;; We will let the second $bracket-apply$ be executed and block the execution of first $bracket-apply$.
+      
+      ;; one dimension array, example: {a[4] <- 7}
+      ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
+      ;; ((_ (bracket-apply container index index1 ...) expr)
 
-    ;;  (begin
+      ;;  (begin
 
-    ;;    ;; add a checking
-    ;;    ;; (define x 3)
-    ;;    ;; > (<- (aye x 3) 7)
-    ;;    ;; . . ../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/required-files/assignment.rkt:1:6: Bad <- form: the LHS of expression must be an identifier or of the form ($bracket-apply$ container index) , first argument  'aye " is not $bracket-apply$."
-    ;;    (unless (equal? (quote $bracket-apply$) (quote bracket-apply)) 
-    ;; 	       (error "Bad <- form: the LHS of expression must be an identifier or of the form ($bracket-apply$ container index ...) , first argument is not $bracket-apply$:"
-    ;; 		      (quote bracket-apply)))
+      ;;    ;; add a checking
+      ;;    ;; (define x 3)
+      ;;    ;; > (<- (aye x 3) 7)
+      ;;    ;; . . ../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/required-files/assignment.rkt:1:6: Bad <- form: the LHS of expression must be an identifier or of the form ($bracket-apply$ container index) , first argument  'aye " is not $bracket-apply$."
+      ;;    (unless (eq? (quote $bracket-apply$) (quote bracket-apply)) 
+      ;; 	       (error "Bad <- form: the LHS of expression must be an identifier or of the form ($bracket-apply$ container index ...) , first argument is not $bracket-apply$:"
+      ;; 		      (quote bracket-apply)))
 
-    ;;    ;;(display "<- : container name:") (display (quote container)) (newline)
-    ;;    ;;(display "<- : container:") (display container) (newline)
-    ;;    ;;(display "<- : expr:") (display expr) (newline)
+      ;;    ;;(display "<- : container name:") (display (quote container)) (newline)
+      ;;    ;;(display "<- : container:") (display container) (newline)
+      ;;    ;;(display "<- : expr:") (display expr) (newline)
        
-    ;;    (assignmentnext container expr (parse-square-brackets-arguments (list index index1 ...)))))
-    
-    
     ;;(<- x 5)
     ((_ var expr)
      
@@ -404,100 +825,209 @@
     ;; > {(a b) <- (c d) <- (values 5 7)}
     ;; > (list a b c d)
     ;; '(5 7 5 7)
-    ((_ var var1 ... expr)
+    ((_ var var1 ... expr) ; i suppose varN are of the type (x y z ...)
      
-     ;;(<- var (<- var1 ... expr)))
+     ;;(<- var (<- var1 ... expr))) ; probably this is commented because the syntax is not allowed
 
      #'(begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result
 	 ;;(display "<- : case (_ var var1 ... expr)") (newline)
 	 ;;(<- var expr)
-	 (define return-values-of-expr (create-return-values expr))
-	 (<- var (return-values-of-expr))
+	 ;; create-return-values computed again expr for each var : {s <- T[0] <- (cons 9 s)} gave T[0] = (9 9 . s)
+	 ;;(define return-values-of-expr (create-return-values expr))
+	 (define values-of-expr (call-with-values (lambda () expr) list)) ; expr is computed only once
+	 ;;(<- var (return-values-of-expr))
+	 (<- var (apply values values-of-expr))
 	 ;;(display "<- : case : passed (<- var expr)") (newline)
-	 ;;(display "<- : case : var=") (display var) (newline) 
+	 ;;(display "<- : case : var=") (display var) (newline)
 	 ;;(<- var1 var)
-	 (<- var1 (return-values-of-expr))
+	 ;;(<- var1 (return-values-of-expr))
+	 (<- var1 (apply values values-of-expr))
 	 ...))
 
     )))
 
-;; DEPRECATED
-(define (assignment-next4list-args container parsed-args expr) 
 
-  	   (case (length parsed-args)
-			       
-			     ;; 0 argument in []
-			     ;; T[]
-			     ;; {v[] <- #(1 2 3)}
-			     ;; > v
-			     ;;'#(1 2 3)
-			     ((0) 
-			      ;;(begin
-			      ;; 	  (display "<- case 0 : parsed-args=") (display parsed-args) (newline)
-				  (assignment-argument-0 container expr));)  ; possible to have NO index
 
-			     ;; 1 argument in [ ]
-			     ;; T[index]
-			     ((1)
-			      ;;(begin
-			       	;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
-				  (assignment-argument-1 container
-							 (first parsed-args)
-							 expr));)
+; specialized for vectors only
+(define-syntax <-vector-vector*
+  
+  (lambda (stx)
+    
+    (syntax-case stx ()
 
-			     ;; 2 arguments in [ ]
-			     ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]   
-			     ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
-			     ;; '#(3 4 5)
-			     ;;
-			     ;; {(vector 1 2 3 4 5)[2 :]}
-			     ;; bracket-apply : #'parsed-args=(.#<syntax:git/Scheme-PLUS-for-Racket-R6RS/bracket-apply.sls:148:30 list> .#<syntax 2> .#<syntax :>)
-			     ;; '#(3 4 5)
-			     ((2)
-			      ;; (begin
-			      ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
-				  (assignment-argument-2 container
-							 (first parsed-args)
-							 (second parsed-args)
-							 expr));)
+      
+      ;; example: {a[4] <- 7}
+      ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
+      ((_ (brket-aply container index ...) expr)  ; possible to have NO index :
+					; minimal form is (_ (brket-aply container) expr)
 
-			     ;; 3 arguments in [ ]
-			     ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
-			     ((3)
-			      ;; (begin
-			      ;; 	  (display  "<- case 3 : 'parsed-args=") (display 'parsed-args) (newline)
-				 
-				  (assignment-argument-3 container					  
-				  			 (first parsed-args)
-				  			 (second parsed-args)
-				  			 (third parsed-args)
-				  			 expr));)
-			     
-			     ;; 4 arguments in [ ]
-			     ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
-			     ((4)
-			      (assignment-argument-4 container
-						       (first parsed-args)
-						       (second parsed-args)
-						       (third parsed-args)
-						       (fourth parsed-args)
-						       expr))
+       #| We will let the second $bracket-apply$ be executed and use the return value
+          but do not execute the first $bracket-apply$ as we needs to interpret the syntax and deal with their arguments. |#
+      
+          ;; display { } as they are.
+          ;;(print-mpair-curly-braces #f)
 
-			     ;; 5 arguments in [ ]
-			     ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
-			     ((5)
-			      (assignment-argument-5 container
-						       (first parsed-args)
-						       (second parsed-args)
-						       (third parsed-args)
-						       (fourth parsed-args)
-						       (fifth parsed-args)
-						       expr))
+          ;; we parse arguments at posteriori of SRFI 105 parser
+          (with-syntax
 
-			     ;; more than 5 arguments in [ ]
-			     ;; T[i1 i2 i3 i4 i5 i6 ...]
-			     (else ; case
-			      (assignment-argument-6-and-more container parsed-args expr))))
+              ((parsed-args
+
+                (cons #'list (parse-square-brackets-arguments-lister-syntax (syntax->list #'(index ...))
+                                                                            (list (cons '* #'fx*)
+                                                                                  (cons '- #'fx-)
+                                                                                  (cons '+ #'fx+)
+                                                                                  (cons '/ #'fxquotient)))))) ; end definitions
+
+	    ;(display "<- : #'parsed-args=") (display #'parsed-args) (newline)
+       
+	   ;; we parse arguments at posteriori
+	   ;; putting code here optimise run-time
+	   (case (length
+		  (cdr
+		   (syntax->datum #'parsed-args)))
+
+
+	     ;; 0 argument in []
+	     ;; T[]
+	     ;; {v[] <- #(1 2 3)}
+	     ;; > v
+	     ;;'#(1 2 3)
+	     ((0)
+	      ;;#'(begin
+	      ;; 	  (display "<- case 0 : parsed-args=") (display parsed-args) (newline)
+	      #'(assignment-argument-0 container expr));)  ; possible to have NO index
+
+	     ;; 1 argument in [ ]
+	     ;; T[index]
+	     ((1)
+	      ;;(begin
+	      ;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
+	      #'(assignment-argument-1-vector container
+                                              (first parsed-args)
+                                              expr));)
+
+	     ;; 2 arguments in [ ]
+	     ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
+	     ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
+	     ;; '#(3 4 5)
+	     ((2)
+	      ;; #'(begin
+	      ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
+	      #'(assignment-argument-2-vector container
+                                              (first parsed-args)
+                                              (second parsed-args)
+                                              expr
+                                              #t));)
+
+	     ;; 3 arguments in [ ]
+	     ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
+	     ((3)
+	      ;; #'(begin
+	      ;; 	  (display  "<- case 3 : 'parsed-args=") (display 'parsed-args) (newline)
+	      ;;#'parsed-args);)
+	      #'(assignment-argument-3-vector container
+                                              (first parsed-args)
+                                              (second parsed-args)
+                                              (third parsed-args)
+                                              expr
+                                              #t));)
+
+	     ;; 4 arguments in [ ]
+	     ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
+	     ((4) #'(assignment-argument-4-vector container
+                                                  (first parsed-args)
+                                                  (second parsed-args)
+                                                  (third parsed-args)
+                                                  (fourth parsed-args)
+                                                  expr
+                                                  #t))
+
+	     ;; 5 arguments in [ ]
+	     ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
+	     ((5) #'(assignment-argument-5-vector container
+                                                  (first parsed-args)
+                                                  (second parsed-args)
+                                                  (third parsed-args)
+                                                  (fourth parsed-args)
+                                                  (fifth parsed-args)
+                                                  expr
+                                                  #t))
+
+	     ;; more than 5 arguments in [ ]
+	     ;; T[i1 i2 i3 i4 i5 i6 ...]
+	     (else ; case
+	      #'(assignment-argument-6-and-more-vector container parsed-args expr)))))
+
+       
+    ;;(<- x 5)
+    ((_ var expr)
+     
+     ;; (begin
+     ;;   (display "<- : variable set!") (newline)
+     ;;   (display "var =") (display var) (newline)
+     ;;   (display "expr =") (display expr) (newline)
+     ;;#`(set! var expr))
+       ;; (display "after set! : var =") (display var) (newline)))
+     ;;var))
+
+     #'(if-defined var
+		   (set! var expr)
+		   (define var expr)))
+
+    ;; Warning: not sure if code below should also be kept in specialized macros
+    
+    ;; (declare x y z t)
+    ;; {x <- y <- z <- t <- 7}
+    ;; 7
+    ;; (list x y z t)
+    ;; (7 7 7 7)
+
+    ;; > (require srfi/25)
+    ;; > {I <- (make-array (shape 0 4 0 4))}
+    ;; #<array:srfi-9-record-type-descriptor>
+    ;; > {I[0 0] <- I[1 1] <- I[2 2] <- I[3 3] <- 1}
+    ;; 1
+    ;; > {I[0 0]}
+    ;; 1
+    ;; > {I[0 1]}
+    ;; 0
+    ;; > I
+    ;; #<array:srfi-9-record-type-descriptor>
+
+    ;; > (declare a b c d)
+    ;; > {(a b) <- (c d) <- (values 5 7)}
+    ;; > a
+    ;; 5
+    ;; > b
+    ;; 7
+    ;; > c
+    ;; 5
+    ;; > d
+    ;; 7
+
+    ;; without declare:
+    ;; > {(a b) <- (c d) <- (values 5 7)}
+    ;; > (list a b c d)
+    ;; '(5 7 5 7)
+    ((_ var var1 ... expr) ; i suppose varN are of the type (x y z ...)
+     
+     ;;(<- var (<- var1 ... expr))) ; probably this is commented because the syntax is not allowed
+
+     #'(begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result
+	 ;;(display "<- : case (_ var var1 ... expr)") (newline)
+	 ;;(<- var expr)
+	 ;; create-return-values computed again expr for each var
+	 ;;(define return-values-of-expr (create-return-values expr))
+	 (define values-of-expr (call-with-values (lambda () expr) list)) ; expr is computed only once
+	 ;;(<-vector-vector* var (return-values-of-expr))
+	 (<-vector-vector* var (apply values values-of-expr))
+	 ;;(display "<- : case : passed (<- var expr)") (newline)
+	 ;;(display "<- : case : var=") (display var) (newline)
+	 ;;(<- var1 var)
+	 ;;(<-vector-vector* var1 (return-values-of-expr))
+	 (<-vector-vector* var1 (apply values values-of-expr))
+	 ...)))))
+
 
 
 
@@ -689,7 +1219,7 @@
 
 
 
-
+; macro save lines of code
 (define-syntax check-step
 
   (syntax-rules ()
@@ -699,96 +1229,82 @@
 
 
 
+;; TODO assignment must be optimized also with expr (not only container) this force to have a lot of different functions such as copy-slice-with-negative-step etc... adapted for expression and container , this comment seems to concern only slice : ,sliced expressions.
 
-;; DEPRECATED
-(define-syntax assignmentnext
-  
-  (lambda (stx)
-
-    (syntax-case stx ()
-
-      ;; 0 argument in []
-      ;; T[]
-      ;; {v[] <- #(1 2 3)}
-      ;; > v
-      ;;'#(1 2 3)
-      [(_ container expr)
-       #'(assignment-argument-0 container expr)]
-    
-      ;; 1 argument in [ ]
-      ;; T[index]
-      [(_ container expr arg1)
-       #'(assignment-argument-1 container arg1 expr)]
-      
-      ;; 2 arguments in [ ]
-      ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]   
-      ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
-      ;; '#(3 4 5)
-      [(_ container expr arg1 arg2)
-       #'(assignment-argument-2 container arg1 arg2 expr)]
-
-      ;; 3 arguments in [ ]
-      ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
-      [(_ container expr arg1 arg2 arg3)
-       #'(assignment-argument-3 container arg1 arg2 arg3 expr)]
-
-      ;; 4 arguments in [ ]
-      ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
-      [(_ container expr arg1 arg2 arg3 arg4)
-       #'(assignment-argument-4 container arg1 arg2 arg3 arg4 expr)]
-
-      ;; 5 arguments in [ ]
-      ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
-      [(_ container expr arg1 arg2 arg3 arg4 arg5)
-       #'(assignment-argument-5 container arg1 arg2 arg3 arg4 arg5 expr)]
-
-      ;; more than 5 arguments in [ ]
-      ;; T[i1 i2 i3 i4 i5 i6 ...]
-      [(_ container expr arg1 arg2 arg3 arg4 arg5 arg6 ...)
-       #'(assignment-argument-6-and-more container (list arg1 arg2 arg3 arg4 arg5 arg6 ...) expr)]
-      
-      )))
-
-
-
-
-
-
+;; copy-slice-with-negative-step
 (define (copy-slice-with-negative-step container-eval expr-eval i1 i2 step)
   (for (($> (<+ k i1) (<+ i 0)) (> k i2) (<- k (+ k step)))
-       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
-       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
        (assignment-argument-1-index container-eval k (apply-square-brackets-argument-1 expr-eval i))
        (<- i (+ i 1))))
 
+(define (copy-slice-with-negative-step-vector container-eval expr-eval i1 i2 step)
+  (for (($> (<+ k i1) (<+ i 0)) (> k i2) (<- k (+ k step)))
+       (assignment-argument-1-index-vector container-eval k (apply-square-brackets-argument-1 expr-eval i))
+       (<- i (+ i 1))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; copy-slice-starting-at-zero-with-negative-step
 (define (copy-slice-starting-at-zero-with-negative-step container-eval expr-eval i1 step)
   (for (($> (<+ k i1) (<+ i 0)) (>= k 0) (<- k (+ k step)))
-       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
-       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
        (assignment-argument-1-index container-eval k (apply-square-brackets-argument-1 expr-eval i))
        (<- i (+ i 1))))
 
+(define (copy-slice-starting-at-zero-with-negative-step-vector container-eval expr-eval i1 step)
+  (for (($> (<+ k i1) (<+ i 0)) (>= k 0) (<- k (+ k step)))
+       (assignment-argument-1-index-vector container-eval k (apply-square-brackets-argument-1 expr-eval i))
+       (<- i (+ i 1))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;; copy-slice-with-positive-step
 (define (copy-slice-with-positive-step container-eval expr-eval i1 i2 step)
   (for (($> (<+ k i1) (<+ i 0)) (< k i2) (<- k (+ k step)))
-       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
-       ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval i))
        (assignment-argument-1-index container-eval k (apply-square-brackets-argument-1 expr-eval i))
        (<- i (+ i 1))))
 
+(define (copy-slice-with-positive-step-vector container-eval expr-eval i1 i2 step) ; container vector
+  (for (($> (<+ k i1) (<+ i 0)) (< k i2) (<- k (+ k step)))
+       (assignment-argument-1-index-vector container-eval k (apply-square-brackets-argument-1 expr-eval i))
+       (<- i (+ i 1))))
 
+;; fast path used only when expr is statically known (via $bracket-apply-vector$ syntax
+;; in the <- macro) to be a vector : vector-copy! is a bulk memory copy, much faster than
+;; the element-by-element loop above, but it does not support a step different than 1
+(define (copy-slice-with-positive-step-vector-vector container-eval expr-eval i1 i2 step)
+  (if (= step 1)
+      (vector-copy! container-eval i1 expr-eval 0 (- i2 i1))
+      (copy-slice-with-positive-step-vector container-eval expr-eval i1 i2 step)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;; copy-slice-starting-at-zero-with-positive-step
 (define (copy-slice-starting-at-zero-with-positive-step container-eval expr-eval i2 step)
   ;;(display "copy-slice-starting-at-zero-with-positive-step : container-eval=") (display container-eval) (newline)
   (for (($> (<+ k 0) (<+ i 0)) (< k i2) (<- k (+ k step)))
-       ;;(<+ bkt ($bracket-apply$next expr-eval (list i)))
-       ;;(<+ bkt ($bracket-apply$next expr-eval i))
        (<+ bkt (apply-square-brackets-argument-1 expr-eval i))
        ;;(display "bkt=") (display bkt) (newline)
        (assignment-argument-1-index container-eval k bkt)
        (<- i (+ i 1))))
 
 
-       
+(define (copy-slice-starting-at-zero-with-positive-step-vector container-eval expr-eval i2 step) ; container vector
+  ;;(display "copy-slice-starting-at-zero-with-positive-step-vector : container-eval=") (display container-eval) (newline)
+  (for (($> (<+ k 0) (<+ i 0)) (< k i2) (<- k (+ k step)))
+        (<+ bkt (apply-square-brackets-argument-1 expr-eval i))
+        (assignment-argument-1-index-vector container-eval k bkt)
+        (<- i (+ i 1))))
+
+;; fast path : see copy-slice-with-positive-step-vector-vector
+(define (copy-slice-starting-at-zero-with-positive-step-vector-vector container-eval expr-eval i2 step)
+  (if (= step 1)
+      (vector-copy! container-eval 0 expr-eval 0 i2)
+      (copy-slice-starting-at-zero-with-positive-step-vector container-eval expr-eval i2 step)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; copy-stepped-slice
 (define (copy-stepped-slice container-eval expr-eval i1 i2 step)
 
   (check-step step)
@@ -800,6 +1316,32 @@
       (copy-slice-with-positive-step container-eval expr-eval i1 i2 step)))
 
 
+(define (copy-stepped-slice-vector container-eval expr-eval i1 i2 step)
+
+  (check-step step)
+
+  (if (< step 0) ;; with negative step we start at end of vector (like in Python)
+
+      (copy-slice-with-negative-step-vector container-eval expr-eval i1 i2 step)
+
+      (copy-slice-with-positive-step-vector container-eval expr-eval i1 i2 step)))
+
+;; fast path : see copy-slice-with-positive-step-vector-vector ; there is no fast path for
+;; a negative step (vector-copy! only copies forward), so that branch is unchanged
+(define (copy-stepped-slice-vector-vector container-eval expr-eval i1 i2 step)
+
+  (check-step step)
+
+  (if (< step 0)
+
+      (copy-slice-with-negative-step-vector container-eval expr-eval i1 i2 step)
+
+      (copy-slice-with-positive-step-vector-vector container-eval expr-eval i1 i2 step)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
 ;; macro save lines of code
 (define-syntax negative->positive-index-when-not-slice
   
@@ -807,7 +1349,7 @@
 
     ((_ i container-length container-eval) 
      ;; transform the negative indexes in positive ones when not slices
-     (when (and (not (equal? i slice))  (< i 0))
+     (when (and (not (eq? i slice))  (< i 0))
 	   (<- i (+ (container-length container-eval) i))))))
 
 
@@ -828,6 +1370,12 @@
 	(else (error "slicing not allowed with this container"))))
 
 
+;; T[:]
+(define (assignment-argument-1-slice-vector container-eval expr-eval)
+
+  (vector-copy! container-eval
+                0
+                expr-eval))
 
 
 ;; normal case
@@ -839,7 +1387,7 @@
 
   (cond ((vector? container-eval)
 	 (when (< index-eval 0) ;; deal with negative index
-	       (<- index-eval (+ (vector-length container-eval) index-eval)))
+           (<- index-eval (+ (vector-length container-eval) index-eval)))
 	 (vector-set! container-eval index-eval expr-eval))
 	
 	((hash-table? container-eval)
@@ -850,7 +1398,7 @@
 	       (<- index-eval (+ (string-length container-eval) index-eval)))
 	 (string-set! container-eval index-eval expr-eval))
 
-	#;((flomat? container-eval)
+	((flomat? container-eval)
 	 (error "row setting not allowed with flomat"))
 	
 	((array? container-eval)
@@ -861,6 +1409,1005 @@
 	  (define args-lst (list container-eval index-eval))
 	  (define setter! (find-setter-for-overloaded-square-brackets args-lst))
 	  (setter! container-eval index-eval expr-eval)))))
+
+
+;; {T[3] <- T[7 2 4]}     
+(define (assignment-argument-1-index-vector container-eval index-eval expr-eval)
+
+  ;;(display "assignment-argument-1-index-vector  : container-eval=") (display container-eval) (newline)
+
+  (when (< index-eval 0) ;; deal with negative index
+    (<- index-eval (+ (vector-length container-eval) index-eval)))
+  (vector-set! container-eval index-eval expr-eval))
+
+
+(define (assignment-argument-1-vector container-eval index-eval expr-eval)
+
+  ;;(display "assignment.rkt : assignment-argument-1-vector") (newline)
+  
+  (if (eq? index-eval slice)  ;; T[:]
+      
+      (assignment-argument-1-slice-vector container-eval expr-eval)
+
+      ;; normal case
+      ;; {T[3] <- T[7 2 4]}
+      
+      (assignment-argument-1-index-vector container-eval index-eval expr-eval)))
+
+
+
+(define (assignment-argument-2-vector container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval expr-is-vector?)
+
+  (<+ index1-or-keyword-eval-pos  index1-or-keyword-eval) ;; pos for positive
+  (<+ index2-or-keyword-eval-pos  index2-or-keyword-eval)
+
+  (declare container-length container-copy! expr-length
+	   copy-slice-with-positive-step copy-slice-starting-at-zero-with-positive-step)
+
+
+  (<- container-length vector-length)
+  (<- container-copy! vector-copy!) ;; unfortunately vector-copy! does not support step
+
+  ;; expr-is-vector? is known at macro-expansion time (see the <- macro : the RHS syntax
+  ;; was itself $bracket-apply-vector$), no runtime vector? check needed here to pick the
+  ;; fast vector-copy!-based helpers below
+  (if expr-is-vector?
+      ($>
+       (<- copy-slice-with-positive-step copy-slice-with-positive-step-vector-vector)
+       (<- copy-slice-starting-at-zero-with-positive-step copy-slice-starting-at-zero-with-positive-step-vector-vector))
+      ($>
+       (<- copy-slice-with-positive-step copy-slice-with-positive-step-vector)
+       (<- copy-slice-starting-at-zero-with-positive-step copy-slice-starting-at-zero-with-positive-step-vector)))
+
+  (if (vector? expr-eval) ; still dependent on expression (will be specialized later when dealing with <-)
+      (<- expr-length vector-length)
+      (<- expr-length string-length))
+
+
+  ;; transform the negative indexes in positive ones when not slices
+  (negative->positive-index-when-not-slice index1-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index2-or-keyword-eval-pos container-length container-eval)
+
+  ;; > (require srfi/25)
+  ;; > (define a (make-array (shape 0 5 0 3) 0))
+  ;; > {a[1 2]}
+  ;; 0
+  ;; > {a[1 2] <- 7}
+  ;; > {a[1 2]}
+  ;; 7
+
+  (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos)
+
+	 ;;  {a <+ (make-vector 7 0)}
+	 ;; '#(0 0 0 0 0 0 0)
+	 ;; > {a[: :] <- #(1 2 3)}
+	 ;; > a
+	 ;; '#(1 2 3 0 0 0 0)
+
+	 ;; v=[1, 2, 3, 4, 5, 6, 7, 8,9]
+	 ;; v[: :]= 'abcd'
+	 ;; v
+	 ;; ['a', 'b', 'c', 'd']
+
+	 ;; > {a <+ (make-vector 7 0)}
+	 ;; > {a[: :] <- "abcd"}
+	 ;; > a
+	 ;; '#(#\a #\b #\c #\d 0 0 0)
+
+	 ((list (== slice) (== slice))
+	  ;;  make it work between vector and string
+	  (copy-slice-starting-at-zero-with-positive-step container-eval
+                                                                 expr-eval
+                                                                 (expr-length expr-eval)
+                                                                 1))
+
+	  ;; (container-copy! container-eval
+	  ;; 		   0
+	  ;; 		   expr-eval))
+
+	 ;;  {s <+ (string-append "abcdefgh")}
+	 ;; s
+	 ;; "abcdefgh"
+	 ;; > {s[3 :] <- "zob"}
+	 ;; > s
+	 ;; "abczobgh"
+	 ;; >
+
+	 ;; > {a <+ (make-vector 7 0)}
+	 ;; > a
+	 ;; '#(0 0 0 0 0 0 0)
+	 ;; > {a[3 :] <- "zob"}
+	 ;; > a
+	 ;; '#(0 0 0 #\z #\o #\b 0)
+	 ((list i1 (== slice))
+	  ;; make it work between vector and string
+	  (copy-slice-with-positive-step container-eval
+                                                expr-eval
+                                                i1
+                                                (+ i1 (expr-length expr-eval))
+                                                1))
+
+	  ;; (container-copy! container-eval
+	  ;; 		   i1
+	  ;; 		   expr-eval))
+
+
+	 ;; > {a <+ (make-vector 7 0)}
+	 ;; > a
+	 ;; '#(0 0 0 0 0 0 0)
+	 ;; > {a[: 3] <- (vector 1 2 3 4 5)}
+	 ;; > a
+	 ;; '#(1 2 3 0 0 0 0)
+	 ((list (== slice) i2)
+	  ;; make it work between vector and string
+	  (copy-slice-starting-at-zero-with-positive-step container-eval
+                                                                 expr-eval
+                                                                 i2
+                                                                 1))
+	 ;; (container-copy! container-eval
+	 ;; 		   0
+	 ;; 		   expr-eval
+	 ;; 		   0
+	 ;; 		   i2))
+
+	 ;; {a[1 2] <- 7}
+	 ((list i1 i2)
+          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2))))
+	
+	 ) ;; end match
+
+  )
+
+(define (assignment-argument-3-vector container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval expr-eval expr-is-vector?)
+
+  ;(display "assignment-argument-3-vector : expr-is-vector? =") (display expr-is-vector?) (newline)
+
+  (<+ index1-or-keyword-eval-pos index1-or-keyword-eval)
+  (<+ index2-or-keyword-eval-pos index2-or-keyword-eval)
+  (<+ index3-or-keyword-or-step-eval-pos  index3-or-keyword-or-step-eval)
+
+  (declare container-length container-copy! expr-length
+	   copy-slice-with-positive-step copy-slice-starting-at-zero-with-positive-step)
+
+  (<- container-length vector-length)
+  (<- container-copy! vector-copy!)
+
+  ;; expr-is-vector? comes from the <- macro (RHS syntactically $bracket-apply-vector$) ;
+  ;; no runtime vector? check needed to pick the fast vector-copy!-based helpers below,
+  ;; which themselves only fall back to the element-by-element loop when step ≠ 1
+  (if expr-is-vector?
+      ($>
+       (<- copy-slice-with-positive-step copy-slice-with-positive-step-vector-vector)
+       (<- copy-slice-starting-at-zero-with-positive-step copy-slice-starting-at-zero-with-positive-step-vector-vector))
+      ($>
+       (<- copy-slice-with-positive-step copy-slice-with-positive-step-vector)
+       (<- copy-slice-starting-at-zero-with-positive-step copy-slice-starting-at-zero-with-positive-step-vector)))
+
+  (if (vector? expr-eval)
+      (<- expr-length vector-length)
+      (<- expr-length string-length))
+
+
+  ;; transform the negative indexes in positive ones when not slices
+  (negative->positive-index-when-not-slice index1-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index2-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index3-or-keyword-or-step-eval-pos container-length container-eval)
+
+  (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-or-step-eval-pos)
+
+
+	 ;; T[: i2 :]
+	 ;;  make it work between vector and string
+	 ;; > {a <+ (make-vector 7 0)}
+	 ;; > a
+	 ;; '#(0 0 0 0 0 0 0)
+	 ;; > {a[: 3 :] <- (vector 1 2 3 4 5)}
+	 ;; > a
+	 ;; '#(1 2 3 0 0 0 0)
+	 ((list (== slice) i2 (== slice))  (copy-slice-starting-at-zero-with-positive-step container-eval
+                                                                                                  expr-eval
+                                                                                                  i2
+                                                                                                  1))
+
+
+	 ;; T[i1 : :]
+	 ;; make it work between vector and string
+	 ;; > {a <+ (make-vector 7 0)}
+	 ;; > {a[3 : :] <- "zob"}
+	 ;; > a
+	 ;; '#(0 0 0 #\z #\o #\b 0)
+	 ((list i1 (== slice) (== slice))  (copy-slice-with-positive-step container-eval
+                                                                                 expr-eval
+                                                                                 i1
+                                                                                 (+ i1 (expr-length expr-eval))
+                                                                                 1))
+
+
+	 
+	 ;; T[: : s3]
+	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
+	 ;; '#(1 2 3 4 5 6 7 8 9)
+	 ;; > {v[: : 2] <- (vector -1 -2 -3 -4 -5)}
+	 ;;> v
+	 ;;'#(-1 2 -2 4 -3 6 -4 8 -5)
+
+
+	
+	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
+	 ;; >  {v[: : -2] <- (vector -1 -2 -3 -4 -5)}
+	 ;; > v
+	 ;; '#(-5 2 -4 4 -3 6 -2 8 -1)
+
+	 ;; Python:
+	 ;; v=[1, 2, 3, 4, 5, 6, 7, 8,9]
+	 ;; v[: : -2] = [-1, -2, -3, -4, -5]
+	 ;; v
+	 ;; [-5, 2, -4, 4, -3, 6, -2, 8, -1]
+
+	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
+	 ;; > {v[: : -2] <- "abcde"}
+	 ;; > v
+	 ;; '#(#\e 2 #\d 4 #\c 6 #\b 8 #\a)
+
+	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
+	 ;; > {v[: : -2] <- (vector -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13)[: : 2]}
+	 ;; > v
+	 ;; '#(-9 2 -7 4 -5 6 -3 8 -1)
+
+	 ;;> {v <+ (vector 1 2 3 4 5 6 7 8 9)}
+	 ;; > {v[: : -2] <- "abcdefghijklmnop"[: : 2]}
+	 ;; > v
+	 ;; '#(#\i 2 #\g 4 #\e 6 #\c 8 #\a)
+	 ((list (== slice) (== slice) step-not-used)
+	  
+          (begin-def
+            (define size-input (vector-length container-eval))
+            (check-step index3-or-keyword-or-step-eval)
+            
+            (if (< index3-or-keyword-or-step-eval 0) ;; with negative step we start at end of vector (like in Python)
+                ;; the generic method allows compatibility between vectors and strings but is less fast
+                (copy-slice-starting-at-zero-with-negative-step-vector container-eval expr-eval (- size-input 1) index3-or-keyword-or-step-eval)
+                (copy-slice-with-positive-step container-eval expr-eval 0  size-input  index3-or-keyword-or-step-eval))))
+
+	
+	 
+
+
+	 ;; T[i1 : i3]
+	 ;; {s <+ (string-append "abcdefgh")}
+	 ;; s
+	 ;; "abcdefgh"
+	 ;; > {s[2 : 4] <- "zob"}
+	 ;; > s
+	 ;; "abzoefgh"
+	 ;; > {s[2 : 4] <- "zo"}
+	 ;; > s
+	 ;; "abzoefgh"
+
+
+	 ;; > {v <+ (vector 1 2 3 4)}
+	 ;; > {v[1 : 3] <- "abcdef"[2 : 4]}
+	 ;; > v
+	 ;; '#(1 #\c #\d 4)
+	 
+	 ;;  make it work between vector and string
+	 ((list i1 (== slice) i3) (copy-slice-with-positive-step container-eval
+                                                                        expr-eval
+                                                                        i1
+                                                                        i3
+                                                                        1))
+
+
+
+	 ;; T[i1 i2 i3]
+	 ((list i1 i2 i3) 
+	  
+	  ;; normal case
+          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3)))) ;;(array-n-dim-set! array value i1 i2)
+	  	 
+	 ) ;; end match
+
+  )
+
+
+(define (assignment-argument-4-vector container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval expr-eval expr-is-vector?)
+
+  (<+ index1-or-keyword-eval-pos index1-or-keyword-eval)
+  (<+ index2-or-keyword-eval-pos index2-or-keyword-eval)
+  (<+ index3-or-keyword-eval-pos index3-or-keyword-eval)
+  (<+ index4-or-step-eval-pos  index4-or-step-eval)
+
+  (declare container-length copy-slice-with-positive-step copy-slice-starting-at-zero-with-positive-step)
+
+  (<- container-length  vector-length)
+
+  ;; expr-is-vector? comes from the <- macro (RHS syntactically $bracket-apply-vector$) ;
+  ;; no runtime vector? check needed to pick the fast vector-copy!-based helpers below,
+  ;; which themselves only fall back to the element-by-element loop when step ≠ 1
+  (<- copy-slice-with-positive-step
+      (if expr-is-vector?
+          copy-slice-with-positive-step-vector-vector
+          copy-slice-with-positive-step-vector))
+  (<- copy-slice-starting-at-zero-with-positive-step
+      (if expr-is-vector?
+          copy-slice-starting-at-zero-with-positive-step-vector-vector
+          copy-slice-starting-at-zero-with-positive-step-vector))
+
+  ;; transform the negative indexes in positive ones when not slices
+  (negative->positive-index-when-not-slice index1-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index2-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index3-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index4-or-step-eval-pos container-length container-eval)
+
+
+  (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-eval-pos index4-or-step-eval-pos)
+
+	 ;; T[i1 : i2 :]  i1 start , i2 end (redundant trailing slice, step is implicitly 1)
+	 ((list i1 (== slice) i2 (== slice)) (assignment-argument-3-vector container-eval i1 slice i2 expr-eval expr-is-vector?))
+
+	 ;; T[: i2 : s3]
+	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
+	 ;; '#(1 2 3 4 5 6 7 8 9)
+	 ;; > {v[: 6 : 2] <- (vector -1 -2 -3 -4 -5)}
+	 ;; > v
+	 ;; '#(-1 2 -2 4 -3 6 7 8 9)
+
+	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
+	 ;; > {v[: 6 : -2] <- (vector -1 -2 -3 -4 -5)}
+	 ;; > v
+	 ;; '#(1 2 3 4 5 6 7 8 -1)
+	 ((list (== slice) i2 (== slice) step-not-used)
+
+	  (<+ step index4-or-step-eval)
+
+	  (check-step step)
+
+	  ;;(display "assignment : assignment-argument-4-vector ") (newline)
+
+	  (if (< step 0) ;; with negative index we start at end of vector (like in Python)
+
+	      (copy-slice-with-negative-step-vector container-eval
+                                                    expr-eval
+                                                    (- (container-length container-eval) 1)
+                                                    i2
+                                                    step)
+
+
+	      (copy-slice-starting-at-zero-with-positive-step container-eval
+                                                                     expr-eval
+                                                                     i2
+                                                                     step)))
+
+	 	 
+	 ;; T[i1 : : s3]
+	 ((list i1 (== slice) (== slice) step-not-used)
+
+          (<+ step index4-or-step-eval)
+
+	  ;; > {v <+ (vector 1 2 3 4 5 6 7 8)}
+	  ;; > {v[3 : : 2] <- (vector -1 -2 -3 -4)}
+	  ;; > v
+	  ;; '#(1 2 3 -1 5 -2 7 -3)
+	  
+	  ;; > {v <+ (vector 1 2 3 4 5 6 7 8)}
+	  ;; > {v[3 : : 2] <- (vector -1 -2 -3)}
+	  ;; > v
+	  ;; '#(1 2 3 -1 5 -2 7 -3)
+
+	  ;; > {v <+ (vector 1 2 3 4 5 6 7 8)}
+	  ;; > {v[5 : : -2] <- (vector -1 -2 -3)}
+	  ;; > v
+	  ;; '#(1 -3 3 -2 5 -1 7 8)
+
+	  ;; Python check:
+	  ;; v=[1, 2, 3, 4, 5, 6, 7, 8,9]
+	  ;; v[5:  : -2] = [-1, -2,-3 ]
+	  ;; v
+	  ;; [1, -3, 3, -2, 5, -1, 7, 8, 9]
+	  (check-step step)
+		    
+	  (if (< step 0) ;; with negative index we start at end of vector (like in Python)
+	      (copy-slice-starting-at-zero-with-negative-step-vector container-eval expr-eval i1 step)
+	
+	      ($+>
+	       (<+ size-input (container-length container-eval))
+	       (copy-slice-with-positive-step container-eval expr-eval i1 size-input step))))
+
+	 ;; T[i1 i2 i3 i4]
+	 ((list i1 i2 i3 i4) 
+	  
+	  ;; normal case
+          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4)))) ;;(array-n-dim-set! array value i1 i2)
+	 
+	 ) ;; end match
+  
+  ) ; end define
+
+
+(define (assignment-argument-5-vector container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval expr-eval expr-is-vector?)
+
+  ;; (display "assignment-argument-5-vector") (newline)
+  ;; (display "container-eval=") (display container-eval) (newline)
+  ;; (display "index1-eval=") (display index1-eval) (newline)
+  ;; (display "index2-or-keyword-eval=") (display index2-or-keyword-eval) (newline)
+  ;; (display "index3-eval=") (display index3-eval) (newline)
+  ;; (display "index4-or-keyword-eval=") (display index4-or-keyword-eval) (newline)
+  ;; (display "index5-or-step-eval=") (display index5-or-step-eval) (newline)
+  ;; (display "expr-eval=") (display expr-eval) (newline)
+
+
+  (<+ index1-eval-pos  index1-eval)
+  (<+ index2-or-keyword-eval-pos  index2-or-keyword-eval)
+  (<+ index3-eval-pos  index3-eval)
+  (<+ index4-or-keyword-eval-pos  index4-or-keyword-eval)
+  (<+ index5-or-step-eval-pos  index5-or-step-eval)
+
+  (declare container-length copy-stepped-slice)
+
+  (<- container-length  vector-length)
+
+  ;; expr-is-vector? comes from the <- macro (RHS syntactically $bracket-apply-vector$) ;
+  ;; no runtime vector? check needed to pick the fast vector-copy!-based helper below,
+  ;; which itself only falls back to the element-by-element loop for a negative or ≠ 1 step
+  (<- copy-stepped-slice
+      (if expr-is-vector?
+          copy-stepped-slice-vector-vector
+          copy-stepped-slice-vector))
+    
+  ;; transform the negative indexes in positive ones when not slices
+  (negative->positive-index-when-not-slice index1-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index2-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index3-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index4-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index5-or-step-eval-pos container-length container-eval)
+  
+  
+  (match (list index1-eval-pos index2-or-keyword-eval-pos index3-eval-pos index4-or-keyword-eval-pos index5-or-step-eval-pos)
+
+
+	 ;; from Python:
+	 ;; v=[1, 2, 3, 4, 5, 6, 7, 8,9]
+	 ;; v[7: 2 : -2] = [-1, -2, -3, -4, -5]
+	 ;; Traceback (most recent call last):
+	 ;;   File "<pyshell#26>", line 1, in <module>
+	 ;;     v[7: 2 : -2] = [-1, -2, -3, -4, -5]
+	 ;; ValueError: attempt to assign sequence of size 5 to extended slice of size 3
+	 ;; v[7: 2 : -2] = [-1, -2, -3]
+	 ;; v
+	 ;; [1, 2, 3, -3, 5, -2, 7, -1, 9]
+	 
+	 ;; > {v <- (vector 1 2 3 4 5 6 7 8 9)}
+	 ;; >  {v[7 : 2 : -2] <- (vector -1 -2 -3)}
+	 ;; > v
+	 ;; '#(1 2 3 -3 5 -2 7 -1 9)
+
+	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
+	 ;; > {v[7 : 3 : -2] <- (vector -1 -2 -3)}
+	 ;; > v
+	 ;; '#(1 2 3 4 5 -2 7 -1 9)
+	 ((list i1 (== slice) i2 (== slice) step-not-used)
+	  
+	  (<+ step index5-or-step-eval)
+
+	  ;; (display "container-eval=") (display container-eval) (newline)
+	  ;; (display "i1=") (display i1) (newline)
+	  ;; (display "i2=") (display i2) (newline)
+	  ;; (display "step=") (display step) (newline)
+	  ;; (display "expr-eval=") (display expr-eval) (newline)
+	  
+	  (copy-stepped-slice container-eval expr-eval i1 i2 step))
+	 
+	 
+	 ;; T[i1 i2 i3 i4 i5]
+	 ((list i1 i2 i3 i4 i5) 
+	  
+	  ;; normal case
+          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4 i5)))) ;;(array-n-dim-set! array expr-eval i1 i2)
+	  
+	 ) ;; end match
+  
+  ) ; end define
+
+
+
+(define (assignment-argument-6-and-more-vector container expr args)
+
+  (function-array-n-dim-set! container expr (reverse args))) ;; (array-n-dim-set! array value index1 index2 ...)
+
+
+
+;; string procedures, built on the model of the vector ones
+
+(define (copy-slice-with-negative-step-string container-eval expr-eval i1 i2 step)
+  (for (($> (<+ k i1) (<+ i 0)) (> k i2) (<- k (+ k step)))
+       (assignment-argument-1-index-string container-eval k (apply-square-brackets-argument-1 expr-eval i))
+       (<- i (+ i 1))))
+
+(define (copy-slice-starting-at-zero-with-negative-step-string container-eval expr-eval i1 step)
+  (for (($> (<+ k i1) (<+ i 0)) (>= k 0) (<- k (+ k step)))
+       (assignment-argument-1-index-string container-eval k (apply-square-brackets-argument-1 expr-eval i))
+       (<- i (+ i 1))))
+
+(define (copy-slice-with-positive-step-string container-eval expr-eval i1 i2 step) ; container string
+  (for (($> (<+ k i1) (<+ i 0)) (< k i2) (<- k (+ k step)))
+       (assignment-argument-1-index-string container-eval k (apply-square-brackets-argument-1 expr-eval i))
+       (<- i (+ i 1))))
+
+;; fast path used only when expr is statically known (via $bracket-apply-string$ syntax
+;; in the <- macro) to be a string : string-copy! is a bulk memory copy, much faster than
+;; the element-by-element loop above, but it does not support a step different than 1
+(define (copy-slice-with-positive-step-string-string container-eval expr-eval i1 i2 step)
+  (if (= step 1)
+      (string-copy! container-eval i1 expr-eval 0 (- i2 i1))
+      (copy-slice-with-positive-step-string container-eval expr-eval i1 i2 step)))
+
+(define (copy-slice-starting-at-zero-with-positive-step-string container-eval expr-eval i2 step) ; container string
+  (for (($> (<+ k 0) (<+ i 0)) (< k i2) (<- k (+ k step)))
+        (<+ bkt (apply-square-brackets-argument-1 expr-eval i))
+        (assignment-argument-1-index-string container-eval k bkt)
+        (<- i (+ i 1))))
+
+;; fast path : see copy-slice-with-positive-step-string-string
+(define (copy-slice-starting-at-zero-with-positive-step-string-string container-eval expr-eval i2 step)
+  (if (= step 1)
+      (string-copy! container-eval 0 expr-eval 0 i2)
+      (copy-slice-starting-at-zero-with-positive-step-string container-eval expr-eval i2 step)))
+
+(define (copy-stepped-slice-string container-eval expr-eval i1 i2 step)
+
+  (check-step step)
+
+  (if (< step 0) ;; with negative step we start at end of string (like in Python)
+
+      (copy-slice-with-negative-step-string container-eval expr-eval i1 i2 step)
+
+      (copy-slice-with-positive-step-string container-eval expr-eval i1 i2 step)))
+
+;; fast path : see copy-slice-with-positive-step-string-string ; there is no fast path for
+;; a negative step (string-copy! only copies forward), so that branch is unchanged
+(define (copy-stepped-slice-string-string container-eval expr-eval i1 i2 step)
+
+  (check-step step)
+
+  (if (< step 0)
+
+      (copy-slice-with-negative-step-string container-eval expr-eval i1 i2 step)
+
+      (copy-slice-with-positive-step-string-string container-eval expr-eval i1 i2 step)))
+
+
+;; T[:]
+(define (assignment-argument-1-slice-string container-eval expr-eval)
+
+  (string-copy! container-eval
+                0
+                expr-eval))
+
+
+;; {S[3] <- #\c}
+(define (assignment-argument-1-index-string container-eval index-eval expr-eval)
+
+  (when (< index-eval 0) ;; deal with negative index
+        (<- index-eval (+ (string-length container-eval) index-eval)))
+  (string-set! container-eval index-eval expr-eval))
+
+
+(define (assignment-argument-1-string container-eval index-eval expr-eval)
+
+  (if (eq? index-eval slice)  ;; T[:]
+
+      (assignment-argument-1-slice-string container-eval expr-eval)
+
+      ;; normal case
+      ;; {S[3] <- #\c}
+
+      (assignment-argument-1-index-string container-eval index-eval expr-eval)))
+
+
+(define (assignment-argument-2-string container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval expr-is-string?)
+
+  (<+ index1-or-keyword-eval-pos  index1-or-keyword-eval) ;; pos for positive
+  (<+ index2-or-keyword-eval-pos  index2-or-keyword-eval)
+
+  (declare container-length expr-length
+	   copy-slice-with-positive-step copy-slice-starting-at-zero-with-positive-step)
+
+  (<- container-length string-length)
+
+  ;; expr-is-string? is known at macro-expansion time (see the <- macro : the RHS syntax
+  ;; was itself $bracket-apply-string$), no runtime string? check needed here to pick the
+  ;; fast string-copy!-based helpers below
+  (if expr-is-string?
+      ($>
+       (<- copy-slice-with-positive-step copy-slice-with-positive-step-string-string)
+       (<- copy-slice-starting-at-zero-with-positive-step copy-slice-starting-at-zero-with-positive-step-string-string))
+      ($>
+       (<- copy-slice-with-positive-step copy-slice-with-positive-step-string)
+       (<- copy-slice-starting-at-zero-with-positive-step copy-slice-starting-at-zero-with-positive-step-string)))
+
+  (if (vector? expr-eval)
+      (<- expr-length vector-length)
+      (<- expr-length string-length))
+
+
+  ;; transform the negative indexes in positive ones when not slices
+  (negative->positive-index-when-not-slice index1-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index2-or-keyword-eval-pos container-length container-eval)
+
+  (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos)
+
+	 ;; > {s <+ (make-string 7 #\0)}
+	 ;; > {s[: :] <- "abc"}
+	 ;; > s
+	 ;; "abc0000"
+	 ((list (== slice) (== slice))
+	  (copy-slice-starting-at-zero-with-positive-step container-eval
+                                                                  expr-eval
+                                                                  (expr-length expr-eval)
+                                                                  1))
+
+	 ;;  {s <+ (string-append "abcdefgh")}
+	 ;; > {s[3 :] <- "zob"}
+	 ;; > s
+	 ;; "abczobgh"
+	 ((list i1 (== slice))
+	  (copy-slice-with-positive-step container-eval
+                                                expr-eval
+                                                i1
+                                                (+ i1 (expr-length expr-eval))
+                                                1))
+
+	 ;; > {s <+ (make-string 7 #\0)}
+	 ;; > {s[: 3] <- "abc"}
+	 ;; > s
+	 ;; "abc0000"
+	 ((list (== slice) i2)
+	  (copy-slice-starting-at-zero-with-positive-step container-eval
+                                                                  expr-eval
+                                                                  i2
+                                                                  1))
+
+	 ;; T[i1 i2] : not valid for strings (1-dimensional)
+	 ((list i1 i2)
+	  (error "assignment-argument-2-string : bad arguments in string case,expecting : i2 or i1 :, provided :"
+		 index1-or-keyword-eval index2-or-keyword-eval))
+
+	 ) ;; end match
+
+  )
+
+
+(define (assignment-argument-3-string container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval expr-eval expr-is-string?)
+
+  (<+ index1-or-keyword-eval-pos index1-or-keyword-eval)
+  (<+ index2-or-keyword-eval-pos index2-or-keyword-eval)
+  (<+ index3-or-keyword-or-step-eval-pos  index3-or-keyword-or-step-eval)
+
+  (declare container-length expr-length
+	   copy-slice-with-positive-step copy-slice-starting-at-zero-with-positive-step)
+
+  (<- container-length string-length)
+
+  ;; expr-is-string? comes from the <- macro (RHS syntactically $bracket-apply-string$) ;
+  ;; no runtime string? check needed to pick the fast string-copy!-based helpers below,
+  ;; which themselves only fall back to the element-by-element loop when step ≠ 1
+  (if expr-is-string?
+      ($>
+       (<- copy-slice-with-positive-step copy-slice-with-positive-step-string-string)
+       (<- copy-slice-starting-at-zero-with-positive-step copy-slice-starting-at-zero-with-positive-step-string-string))
+      ($>
+       (<- copy-slice-with-positive-step copy-slice-with-positive-step-string)
+       (<- copy-slice-starting-at-zero-with-positive-step copy-slice-starting-at-zero-with-positive-step-string)))
+
+  (if (vector? expr-eval)
+      (<- expr-length vector-length)
+      (<- expr-length string-length))
+
+
+  ;; transform the negative indexes in positive ones when not slices
+  (negative->positive-index-when-not-slice index1-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index2-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index3-or-keyword-or-step-eval-pos container-length container-eval)
+
+  (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-or-step-eval-pos)
+
+
+	 ;; T[: i2 :]
+	 ;; > {s <+ (make-string 7 #\0)}
+	 ;; > {s[: 3 :] <- "abc"}
+	 ;; > s
+	 ;; "abc0000"
+	 ((list (== slice) i2 (== slice))  (copy-slice-starting-at-zero-with-positive-step container-eval
+                                                                                                    expr-eval
+                                                                                                    i2
+                                                                                                    1))
+
+	 ;; T[i1 : :]
+	 ;; > {s <+ (make-string 7 #\0)}
+	 ;; > {s[3 : :] <- "zob"}
+	 ;; > s
+	 ;; "000zob0"
+	 ((list i1 (== slice) (== slice))  (copy-slice-with-positive-step container-eval
+                                                                                   expr-eval
+                                                                                   i1
+                                                                                   (+ i1 (expr-length expr-eval))
+                                                                                   1))
+
+	 ;; T[: : s3]
+	 ;; > {s <+ (string-append "abcdefgh")}
+	 ;; > {s[: : 2] <- "ABCD"}
+	 ;; > s
+	 ;; "AbBdCfDh"
+	 ((list (== slice) (== slice) step-not-used)
+
+          (begin-def
+            (define size-input (string-length container-eval))
+            (check-step index3-or-keyword-or-step-eval)
+
+            (if (< index3-or-keyword-or-step-eval 0) ;; with negative step we start at end of string (like in Python)
+                (copy-slice-starting-at-zero-with-negative-step-string container-eval expr-eval (- size-input 1) index3-or-keyword-or-step-eval)
+                (copy-slice-with-positive-step container-eval expr-eval 0  size-input  index3-or-keyword-or-step-eval))))
+
+
+	 ;; T[i1 : i3]
+	 ;; {s <+ (string-append "abcdefgh")}
+	 ;; > {s[2 : 4] <- "zob"}
+	 ;; > s
+	 ;; "abzoefgh"
+	 ((list i1 (== slice) i3) (copy-slice-with-positive-step container-eval
+                                                                        expr-eval
+                                                                        i1
+                                                                        i3
+                                                                        1))
+
+
+	 ;; T[i1 i2 i3] : not valid for strings
+	 ((list i1 i2 i3)
+	  (error "assignment-argument-3-string : in string case, provided too much arguments:"
+		 index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval))
+
+	 ) ;; end match
+
+  ) ;; end define
+
+
+(define (assignment-argument-4-string container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval expr-eval expr-is-string?)
+
+  (<+ index1-or-keyword-eval-pos index1-or-keyword-eval)
+  (<+ index2-or-keyword-eval-pos index2-or-keyword-eval)
+  (<+ index3-or-keyword-eval-pos index3-or-keyword-eval)
+  (<+ index4-or-step-eval-pos  index4-or-step-eval)
+
+  (declare container-length copy-slice-with-positive-step copy-slice-starting-at-zero-with-positive-step)
+
+  (<- container-length  string-length)
+
+  ;; expr-is-string? comes from the <- macro (RHS syntactically $bracket-apply-string$) ;
+  ;; no runtime string? check needed to pick the fast string-copy!-based helpers below,
+  ;; which themselves only fall back to the element-by-element loop when step ≠ 1
+  (<- copy-slice-with-positive-step
+      (if expr-is-string?
+          copy-slice-with-positive-step-string-string
+          copy-slice-with-positive-step-string))
+  (<- copy-slice-starting-at-zero-with-positive-step
+      (if expr-is-string?
+          copy-slice-starting-at-zero-with-positive-step-string-string
+          copy-slice-starting-at-zero-with-positive-step-string))
+
+  ;; transform the negative indexes in positive ones when not slices
+  (negative->positive-index-when-not-slice index1-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index2-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index3-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index4-or-step-eval-pos container-length container-eval)
+
+
+  (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-eval-pos index4-or-step-eval-pos)
+
+	 ;; T[i1 : i2 :]  i1 start , i2 end
+	 ((list i1 (== slice) i2 (== slice)) (assignment-argument-3-string container-eval i1 slice i2 expr-eval expr-is-string?))
+
+	 ;; T[: i2 : s3]
+	 ;; > {s <+ (string-append "abcdefgh")}
+	 ;; > {s[: 6 : 2] <- "ABCD"}
+	 ;; > s
+	 ;; "AbBdCfgh"
+	 ((list (== slice) i2 (== slice) step-not-used)
+
+	  (<+ step index4-or-step-eval)
+
+	  (check-step step)
+
+	  (if (< step 0) ;; with negative index we start at end of string (like in Python)
+
+	      (copy-slice-with-negative-step-string container-eval
+                                                    expr-eval
+                                                    (- (container-length container-eval) 1)
+                                                    i2
+                                                    step)
+
+	      (copy-slice-starting-at-zero-with-positive-step container-eval
+                                                                     expr-eval
+                                                                     i2
+                                                                     step)))
+
+
+	 ;; T[i1 : : s3]
+	 ;; > {s <+ (string-append "abcdefgh")}
+	 ;; > {s[3 : : 2] <- "0000"}
+	 ;; > s
+	 ;; "abc0e0g0"
+	 ((list i1 (== slice) (== slice) step-not-used)
+
+          (<+ step index4-or-step-eval)
+
+	  (check-step step)
+
+	  (if (< step 0) ;; with negative index we start at end of string (like in Python)
+	      (copy-slice-starting-at-zero-with-negative-step-string container-eval expr-eval i1 step)
+
+	      ($+>
+	       (<+ size-input (container-length container-eval))
+	       (copy-slice-with-positive-step container-eval expr-eval i1 size-input step))))
+
+	 ;; T[i1 i2 i3 i4] : not valid for strings
+	 ((list i1 i2 i3 i4)
+	  (error "assignment-argument-4-string : in string case, provided too much arguments:"
+		 index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval))
+
+	 ) ;; end match
+
+  ) ; end define
+
+
+(define (assignment-argument-5-string container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval expr-eval expr-is-string?)
+
+  (<+ index1-eval-pos  index1-eval)
+  (<+ index2-or-keyword-eval-pos  index2-or-keyword-eval)
+  (<+ index3-eval-pos  index3-eval)
+  (<+ index4-or-keyword-eval-pos  index4-or-keyword-eval)
+  (<+ index5-or-step-eval-pos  index5-or-step-eval)
+
+  (declare container-length copy-stepped-slice)
+
+  (<- container-length  string-length)
+
+  ;; expr-is-string? comes from the <- macro (RHS syntactically $bracket-apply-string$) ;
+  ;; no runtime string? check needed to pick the fast string-copy!-based helper below,
+  ;; which itself only falls back to the element-by-element loop for a negative or ≠ 1 step
+  (<- copy-stepped-slice
+      (if expr-is-string?
+          copy-stepped-slice-string-string
+          copy-stepped-slice-string))
+
+  ;; transform the negative indexes in positive ones when not slices
+  (negative->positive-index-when-not-slice index1-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index2-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index3-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index4-or-keyword-eval-pos container-length container-eval)
+  (negative->positive-index-when-not-slice index5-or-step-eval-pos container-length container-eval)
+
+
+  (match (list index1-eval-pos index2-or-keyword-eval-pos index3-eval-pos index4-or-keyword-eval-pos index5-or-step-eval-pos)
+
+	 ;; T[i1 : i2 : step]
+	 ;; > {s <+ (string-append "abcdefgh")}
+	 ;; > {s[2 : 7 : 2] <- "1234"}
+	 ;; > s
+	 ;; "ab1d2f3h"
+	 ((list i1 (== slice) i2 (== slice) step-not-used)
+
+	  (<+ step index5-or-step-eval)
+
+	  (copy-stepped-slice container-eval expr-eval i1 i2 step))
+
+	 ;; T[i1 i2 i3 i4 i5] : not valid for strings
+	 ((list i1 i2 i3 i4 i5)
+	  (error "assignment-argument-5-string : in string case, provided too much arguments:"
+		 index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval))
+
+	 ) ;; end match
+
+  )
+
+
+(define (assignment-argument-6-and-more-string container expr args)
+
+  (error "assignment-argument-6-and-more-string : string used with [ ] and more than 5 arguments"))
+
+
+
+;; hash table procedures, built on the model of the string/vector ones
+
+;; {H[:]} is not permitted for hash tables
+(define (assignment-argument-1-slice-hash-table container-eval expr-eval)
+
+  (error "assignment-argument-1-slice-hash-table : slicing not permitted with hash table"))
+
+
+;; {H[key] <- value}
+(define (assignment-argument-1-index-hash-table container-eval index-eval expr-eval)
+
+  (hash-table-set! container-eval index-eval expr-eval))
+
+
+(define (assignment-argument-1-hash-table container-eval index-eval expr-eval)
+
+  (if (eq? index-eval slice)  ;; H[:]
+
+      (assignment-argument-1-slice-hash-table container-eval expr-eval)
+
+      ;; normal case
+      ;; {H[key] <- value}
+
+      (assignment-argument-1-index-hash-table container-eval index-eval expr-eval)))
+
+
+(define (assignment-argument-2-hash-table container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval)
+
+  (error "assignment-argument-2-hash-table : hash table used with [ ] and more than 1 argument"))
+
+
+(define (assignment-argument-3-hash-table container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval expr-eval)
+
+  (error "assignment-argument-3-hash-table : hash table used with [ ] and more than 1 argument"))
+
+
+(define (assignment-argument-4-hash-table container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval expr-eval)
+
+  (error "assignment-argument-4-hash-table : hash table used with [ ] and more than 1 argument"))
+
+
+(define (assignment-argument-5-hash-table container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval expr-eval)
+
+  (error "assignment-argument-5-hash-table : hash table used with [ ] and more than 1 argument"))
+
+
+(define (assignment-argument-6-and-more-hash-table container expr args)
+
+  (error "assignment-argument-6-and-more-hash-table : hash table used with [ ] and more than 1 argument"))
+
+
+
+;; array procedures, built on the model of the vector/hash-table ones (SRFI 25)
+;; note : i do not use negative indexes or slices for array because they could be not starting at zero
+
+;; {A[i1] <- v} ,  1 dimension array
+(define (assignment-argument-1-array container-eval index-eval expr-eval)
+
+  (array-set! container-eval index-eval expr-eval))
+
+
+;; {A[i1 i2] <- v} ,  2 dimension array
+(define (assignment-argument-2-array container-eval index1-eval index2-eval expr-eval)
+
+  (array-set! container-eval index1-eval index2-eval expr-eval))
+
+
+;; {A[i1 i2 i3] <- v} ,  3 dimension array
+(define (assignment-argument-3-array container-eval index1-eval index2-eval index3-eval expr-eval)
+
+  (array-set! container-eval index1-eval index2-eval index3-eval expr-eval))
+
+
+;; {A[i1 i2 i3 i4] <- v} ,  4 dimension array
+(define (assignment-argument-4-array container-eval index1-eval index2-eval index3-eval index4-eval expr-eval)
+
+  (array-set! container-eval index1-eval index2-eval index3-eval index4-eval expr-eval))
+
+
+;; {A[i1 i2 i3 i4 i5] <- v} ,  5 dimension array
+(define (assignment-argument-5-array container-eval index1-eval index2-eval index3-eval index4-eval index5-eval expr-eval)
+
+  (array-set! container-eval index1-eval index2-eval index3-eval index4-eval index5-eval expr-eval))
+
+
+;; {A[i1 i2 i3 i4 i5 i6 ...] <- v} , n dimension array
+;; note: called as (assignment-argument-6-and-more-array container parsed-args expr) from the <- macro,
+;; so the 2nd parameter is the list of indices and the 3rd is the value to assign.
+(define (assignment-argument-6-and-more-array container args expr)
+
+  (array-set! container (list->vector args) expr))
+
 
 
 
@@ -891,7 +2438,7 @@
 
   ;;(display "assignment.sls : assignment-argument-1") (newline)
   
-  (if (equal? index-eval slice)  ;; T[:]
+  (if (eq? index-eval slice)  ;; T[:]
       
       (assignment-argument-1-slice container-eval expr-eval)
 
@@ -927,6 +2474,9 @@
   ;; transform the negative indexes in positive ones when not slices
   (negative->positive-index-when-not-slice index1-or-keyword-eval-pos container-length container-eval)
   (negative->positive-index-when-not-slice index2-or-keyword-eval-pos container-length container-eval)
+
+  (when (hash-table? container-eval)
+    (error "assignment forbiden with hash table with 2 arguments : hash table =" container-eval))    
   
   ;; > (require srfi/25)
   ;; > (define a (make-array (shape 0 5 0 3) 0))
@@ -1018,7 +2568,7 @@
 		 ;;(display "assignment.* : 2 args ,array case : container-eval = ") (display container-eval) (newline)
 		 (array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
 		
-		#;((flomat? container-eval) ; flomat
+		((flomat? container-eval) ; flomat
 		 (mset! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
 
 		(else ;; overloaded
@@ -1030,6 +2580,50 @@
 	 ) ;; end match
 
   )
+
+
+
+;; flomat procedures, built on the model of the hash-table/array ones
+;; note : flomat only supports element (row,col) assignment ; row setting, slicing,
+;; and more than 2 indices are not supported (matches apply-square-brackets-argument-*-flomat)
+
+;; {M[i] <- v} : not supported
+(define (assignment-argument-1-flomat container-eval index-eval expr-eval)
+
+  (error "assignment-argument-1-flomat : row setting not allowed with flomat"))
+
+
+;; {M[i j] <- v}
+(define (assignment-argument-2-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval)
+
+  (if (or (eq? slice index1-or-keyword-eval)
+	  (eq? slice index2-or-keyword-eval))
+      (error "assignment-argument-2-flomat : slice not allowed with flomat")
+      ;; {a[1 2] <- 7}
+      (mset! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval)))
+
+
+(define (assignment-argument-3-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval expr-eval)
+
+  (error "assignment-argument-3-flomat : flomat used with 3 arguments"))
+
+
+(define (assignment-argument-4-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval expr-eval)
+
+  (error "assignment-argument-4-flomat : flomat used with 4 arguments"))
+
+
+(define (assignment-argument-5-flomat container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval expr-eval)
+
+  (error "assignment-argument-5-flomat : flomat used with 5 arguments"))
+
+
+;; note: called as (assignment-argument-6-and-more-flomat container parsed-args expr) from the <- macro,
+;; so the 2nd parameter is the list of indices and the 3rd is the value to assign.
+(define (assignment-argument-6-and-more-flomat container args expr)
+
+  (error "assignment-argument-6-and-more-flomat : flomat used with more than 5 arguments"))
+
 
 
 
@@ -1067,7 +2661,11 @@
   (negative->positive-index-when-not-slice index1-or-keyword-eval-pos container-length container-eval)
   (negative->positive-index-when-not-slice index2-or-keyword-eval-pos container-length container-eval)
   (negative->positive-index-when-not-slice index3-or-keyword-or-step-eval-pos container-length container-eval)
- 
+
+  #;(when (or (hash-table? container-eval)
+	    (flomat? container-eval)
+	    (array? container-eval))
+    (error "assignment forbiden with hash table or flomat or array with 3 arguments : container =" container-eval))
   
   (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-or-step-eval-pos)
 	 
@@ -1236,8 +2834,8 @@
 (define (assignment-argument-4 container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval expr-eval)
   
   (<+ index1-or-keyword-eval-pos index1-or-keyword-eval)
-  (<+ index2-or-keyword-eval-pos  index2-or-keyword-eval)
-  (<+ index3-or-keyword-eval-pos  index3-or-keyword-eval)
+  (<+ index2-or-keyword-eval-pos index2-or-keyword-eval)
+  (<+ index3-or-keyword-eval-pos index3-or-keyword-eval)
   (<+ index4-or-step-eval-pos  index4-or-step-eval)
   
   (declare container-length); container-copy!)
@@ -1265,7 +2863,6 @@
   (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-eval-pos index4-or-step-eval-pos)
 
 	 ;; T[i1 : i2 :]  i1 start , i2 end
-	 ;;((list i1 (== slice) i2 (== slice)) (<- ($bracket-apply$next container-eval (list i1 slice i2)) expr-eval))
 	 ((list i1 (== slice) i2 (== slice)) (assignment-argument-3 container-eval i1 slice i2 expr-eval))
 	 
 	 ;; T[: i2 : s3]
@@ -1290,13 +2887,7 @@
 	  ;;(display "assignment : assignment-argument-4 ") (newline)
 	  
 	  (if (< step 0) ;; with negative index we start at end of vector (like in Python)
-	     
-	      ;;(for ((<+ k i2) (>= k 0) (<- k (+ k step)))
-	      ;; (for ((<+ k (- (container-length container-eval) 1)) (> k i2) (<- k (+ k step)))
-	      ;; 	   (<- ($bracket-apply$next container-eval (list k)) ($bracket-apply$next expr-eval (list i)))
-	      ;; 	   ;;(assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
-	      ;; 	   (<- i (+ i 1)))
-	      
+	         
 	      (copy-slice-with-negative-step container-eval
 	      				     expr-eval
 	      				     (- (container-length container-eval) 1)
@@ -1307,14 +2898,7 @@
 	      (copy-slice-starting-at-zero-with-positive-step container-eval
 	      						      expr-eval
 	      						      i2
-	      						      step))
-	  
-	      ;; (for ((<+ k 0) (< k i2) (<- k (+ k step)))
-	      ;; 	   ;;(<- ($bracket-apply$next container-eval (list k)) ($bracket-apply$next expr-eval (list i)))
-	      ;; 	   (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
-	      ;; 	   (<- i (+ i 1))))
-
-	  )
+	      						      step)))
 
 	 
 	 
@@ -1360,27 +2944,10 @@
 		    
 	  (if (< step 0) ;; with negative index we start at end of vector (like in Python)
 	      (copy-slice-starting-at-zero-with-negative-step container-eval expr-eval i1 step)
-		;; (for ((define k i1) (>= k 0) (set! k (+ k step)))
-		;;      ;; (vector-set! container-eval
-		;;      ;; 		  k
-		;;      ;; 		  (vector-ref expr-eval i))
-		;;      ;;(<- ($bracket-apply$next container-eval (list k)) ($bracket-apply$next expr-eval (list i)))
-		;;      (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
-		;;      (set! i (+ 1 i)))
 
 	      ($+>
 	       (<+ size-input (container-length container-eval))
-	       (copy-slice-with-positive-step container-eval expr-eval i1 size-input step)))
-	      
-		;; (for ((<+ k i1) (< k size-input) (<- k (+ k step)))
-		;;      ;; (vector-set! container-eval
-		;;      ;; 		  k
-		;;      ;; 		  (vector-ref expr-eval i))
-		;;      ;;(<- ($bracket-apply$next container-eval (list k)) ($bracket-apply$next expr-eval (list i)))
-		;;      (assignment-argument-1-index container-eval k ($bracket-apply$next expr-eval (list i)))
-		;;      (set! i (+ 1 i))))
-	 
-	  )
+	       (copy-slice-with-positive-step container-eval expr-eval i1 size-input step))))
 	 
 	 
 	 
@@ -1531,18 +3098,42 @@
 
 
 ;; this define a variable or if it already exists set it to '()
-(define-syntax define-or-clear-values
+;; no more used : the variables were set to '() before the computation of the values of the right hand side ,
+;; so {(a b) <- (values b {a + b})} gave an error
+#;(define-syntax define-or-clear-values
   (syntax-rules ()
     ((_ var ...) (begin
-		    (<- var '()) ; in racket <- can possibly define the value (if not already defined) 
+		    (<- var '()) ; in racket <- can possibly define the value (if not already defined)
 		    ...))))
 
+;; define a variable only if it is not already defined (its value is set afterwards by set!-values-plus) ,
+;; an already defined variable keeps its value until the assignment : the right hand side can use it
+;; > (define a 0)
+;; > (define b 1)
+;; > {(a b) <- (values b {a + b})}
+;; > (list a b)
+;; '(1 1)
+(define-syntax define-if-not-defined
+  (syntax-rules ()
+    ((_ (brket-aply container index ...)) (void)) ; T[i] : the container exists already
+    ((_ var) (if-defined var
+			 (void) ; already defined : nothing to do
+			 (define var '())))))
+
 ;; define or/and set! values
-(define-syntax define-or/and-set!-values
+#;(define-syntax define-or/and-set!-values
   (syntax-rules ()
     ((_ (var ...) expr)
      (begin
        (define-or-clear-values var ...)
+       (set!-values-plus (var ...) expr)))))
+
+(define-syntax define-or/and-set!-values
+  (syntax-rules ()
+    ((_ (var ...) expr)
+     (begin
+       (define-if-not-defined var)
+       ...
        (set!-values-plus (var ...) expr)))))
 
 
@@ -1628,7 +3219,8 @@
 ;; 1
 ;; > (return-values (sin 0.7))
 ;; 0.644217687237691
-(define-syntax return-values
+;; no more used : the chained assignments compute the values only once
+#;(define-syntax return-values
     (syntax-rules ()
       ((_ expr) (call-with-values (lambda () expr)
                                   values))))
@@ -1639,9 +3231,192 @@
 ;; 1
 ;; 2
 ;; 3
-(define-syntax create-return-values
+;; no more used : the procedure created computed again expr at each call
+#;(define-syntax create-return-values
     (syntax-rules ()
       ((_ expr) (lambda () (return-values expr)))))
+
+
+
+;; note: code below is AI generated
+;; Specialized string assignment macro
+(define-syntax <-string-string*
+
+  (lambda (stx)
+    
+    (syntax-case stx ()
+
+      
+      ;; example: {a[4] <- 7}
+      ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
+      ((_ (brket-aply container index ...) expr)  ; possible to have NO index :
+					; minimal form is (_ (brket-aply container) expr)
+
+        #| We will let the second $bracket-apply$ be executed and use the return value
+           but do not execute the first $bracket-apply$ as we needs to interpret the syntax and deal with their arguments. |#
+        
+        ;; display { } as they are.
+        ;;(print-mpair-curly-braces #f)
+
+        ;; we parse arguments at posteriori of SRFI 105 parser
+        (with-syntax
+
+            ((parsed-args
+
+              (cons #'list (parse-square-brackets-arguments-lister-syntax (syntax->list #'(index ...))
+                                                                          (list (cons '* #'fx*)
+                                                                                (cons '- #'fx-)
+                                                                                (cons '+ #'fx+)
+                                                                                (cons '/ #'fxquotient)))))) ; end definitions
+
+	  ;(display "<- : #'parsed-args=") (display #'parsed-args) (newline)
+        
+	 ;; we parse arguments at posteriori
+	 ;; putting code here optimise run-time
+	 (case (length
+		(cdr
+		 (syntax->datum #'parsed-args)))
+
+	   
+	   ;; 0 argument in []
+	   ;; T[]
+	   ;; {v[] <- #(1 2 3)}
+	   ;; > v
+	   ;;'#(1 2 3)
+	   ((0)
+	    ;;#'(begin
+	    ;; 	  (display "<- case 0 : parsed-args=") (display parsed-args) (newline)
+	    #'(assignment-argument-0 container expr));)  ; possible to have NO index
+
+	   ;; 1 argument in [ ]
+	   ;; T[index]
+	   ((1)
+	    ;;(begin
+	    ;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
+	    #'(assignment-argument-1-string container
+                                            (first parsed-args)
+                                            expr));)
+
+	   ;; 2 arguments in [ ]
+	   ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
+	   ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
+	   ;; '#(3 4 5)
+	   ((2)
+	    ;; #'(begin
+	    ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
+	    #'(assignment-argument-2-string container
+                                            (first parsed-args)
+                                            (second parsed-args)
+                                            expr
+                                            #t));)
+
+	   ;; 3 arguments in [ ]
+	   ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
+	   ((3)
+	    ;; #'(begin
+	    ;; 	  (display  "<- case 3 : 'parsed-args=") (display 'parsed-args) (newline)
+	    ;;#'parsed-args);)
+	    #'(assignment-argument-3-string container
+                                            (first parsed-args)
+                                            (second parsed-args)
+                                            (third parsed-args)
+                                            expr
+                                            #t));)
+
+	   ;; 4 arguments in [ ]
+	   ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
+	   ((4) #'(assignment-argument-4-string container
+                                                 (first parsed-args)
+                                                 (second parsed-args)
+                                                 (third parsed-args)
+                                                 (fourth parsed-args)
+                                                 expr
+                                                 #t))
+
+	   ;; 5 arguments in [ ]
+	   ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
+	   ((5) #'(assignment-argument-5-string container
+                                                 (first parsed-args)
+                                                 (second parsed-args)
+                                                 (third parsed-args)
+                                                 (fourth parsed-args)
+                                                 (fifth parsed-args)
+                                                 expr
+                                                 #t))
+
+	   ;; more than 5 arguments in [ ]
+	   ;; T[i1 i2 i3 i4 i5 i6 ...]
+	   (else ; case
+	    #'(assignment-argument-6-and-more-string container parsed-args expr)))))
+      
+      ;;(<- x 5)
+      ((_ var expr)
+       
+       ;; (begin
+       ;;   (display "<- : variable set!") (newline)
+       ;;   (display "var =") (display var) (newline)
+       ;;   (display "expr =") (display expr) (newline)
+       ;;#`(set! var expr))
+       ;; (display "after set! : var =") (display var) (newline)))
+       ;;var))
+
+       #'(if-defined var
+		    (set! var expr)
+		    (define var expr)))
+
+      ;; Warning: not sure if code below should also be kept in specialized macros
+      
+      ;; (declare x y z t)
+      ;; {x <- y <- z <- t <- 7}
+      ;; 7
+      ;; (list x y z t)
+      ;; (7 7 7 7)
+
+      ;; > (require srfi/25)
+      ;; > {I <- (make-array (shape 0 4 0 4))}
+      ;; #<array:srfi-9-record-type-descriptor>
+      ;; > {I[0 0] <- I[1 1] <- I[2 2] <- I[3 3] <- 1}
+      ;; 1
+      ;; > {I[0 0]}
+      ;; 1
+      ;; > {I[0 1]}
+      ;; 0
+      ;; > I
+      ;; #<array:srfi-9-record-type-descriptor>
+
+      ;; > (declare a b c d)
+      ;; > {(a b) <- (c d) <- (values 5 7)}
+      ;; > a
+      ;; 5
+      ;; > b
+      ;; 7
+      ;; > c
+      ;; 5
+      ;; > d
+      ;; 7
+
+      ;; without declare:
+      ;; > {(a b) <- (c d) <- (values 5 7)}
+      ;; > (list a b c d)
+      ;; '(5 7 5 7)
+      ((_ var var1 ... expr) ; i suppose varN are of the type (x y z ...)
+       
+       ;;(<- var (<- var1 ... expr))) ; probably this is commented because the syntax is not allowed
+
+       #'(begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result
+	   ;;(display "<- : case (_ var var1 ... expr)") (newline)
+	   ;;(<- var expr)
+	   ;; create-return-values computed again expr for each var
+	   ;;(define return-values-of-expr (create-return-values expr))
+	   (define values-of-expr (call-with-values (lambda () expr) list)) ; expr is computed only once
+	   ;;(<-string-string* var (return-values-of-expr))
+	   (<-string-string* var (apply values values-of-expr))
+	   ;;(display "<- : case : passed (<- var expr)") (newline)
+	   ;;(display "<- : case : var=") (display var) (newline)
+	   ;;(<- var1 var)
+	   ;;(<-string-string* var1 (return-values-of-expr))
+	   (<-string-string* var1 (apply values values-of-expr))
+	   ...)))))
 
 
 

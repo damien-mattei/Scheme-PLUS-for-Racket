@@ -139,6 +139,8 @@
 
 	;; (defun s  3 ² + 2 * 3 * 5 + 5 ²)
 	;; 64
+	;; DEPRECATED (Scheme+ 18.0) : kept for the compatibility but no more documented nor improved , its infix parsing
+	;; is done at expansion time ($nfx$-rec) and knows only the procedures of Racket : use (defun s {3 ² + 2 * 3 * 5 + 5 ²})
 	((_ var expr expr-optional ...) #`(define var ($nfx$-rec expr expr-optional ...))) ; expr expr-optional ...))
 
 	((_) #`(error "Bad defun form"))

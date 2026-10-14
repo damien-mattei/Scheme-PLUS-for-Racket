@@ -17,7 +17,7 @@
     (and (< a b c) (equal? (+ (* a a) (* b b)) (* c c))))
   (define (positive-integer-triplet? t)
     (and (list? t)
-         (equal? (length t) 3)
+         (= (length t) 3)
          (positive-integer? (first t))
          (apply pythagorean-triplet? t)))
   (define/contract
@@ -36,7 +36,7 @@
          #:when
          (pythagorean-triplet? a b c))
         (list a b c))))))
-  (define (coprime? . args) (equal? (apply gcd args) 1))
+  (define (coprime? . args) (= (apply gcd args) 1))
   (define (m-and-n-valid? m n) (and (odd? (+ m n)) (coprime? m n)))
   (define (primitive-triples-with-perimeter p)
     (if (even? p)

@@ -19,6 +19,11 @@
 
 (module def+ racket/base
 
+	;; DEPRECATED (Scheme+ 18.0) : def+ is kept for the compatibility with old programs but it is no more documented
+	;; nor improved. Its infix parsing is done at expansion time ($nfx$-rec) and knows only the procedures of Racket ,
+	;; not those of the program. Use def (or define) with the curly brackets { } :
+	;; (def (f x) {x * 2 + 1}) instead of (def+ (f x) (x * 2 + 1))
+
 
 	(provide def+ return return-rec) ; warning return and return-rec also provide elsewhere ! but it works....
 
@@ -34,6 +39,19 @@
 ;;(foo)
 ;;"vrai"
 
+;; list of the arguments from the formals of a procedure
+;; (formals->list (a b)) -> (cons a (cons b '()))
+;; (formals->list (a b . L)) -> (cons a (cons b L))
+;; (formals->list L) -> L
+(define-syntax formals->list
+
+  (syntax-rules ()
+
+    ((_ ()) '())
+    ((_ (a . rest)) (cons a (formals->list rest)))
+    ((_ r) r)))
+
+
 (define-syntax def+
 
   (lambda (stx)
@@ -43,17 +61,19 @@
 	;; multiple definitions without values assigned
 	;; (def+ (x y z))
 	;; TODO: remove? redundant with (declare x y z)
-	((_ (var1 ...)) #`(begin (define var1 '()) ...))
-	
+	((_ (var1 ...)) #'(begin (define var1 '()) ...))
 
-	((_ (<name> <arg> ...) <body> <body>* ...)
-	 
-         
-	 #'(define (<name> <arg> ...)
+	;; function definition, with fixed, variadic or only rest arguments
+	;; (def (foo a b . L) (when #t (return (list a b L))))
+	;; (foo 1 2 3 4)
+	;; '(1 2 (3 4))
+	((_ (<name> . <formals>) <body> <body>* ...)
+
+	 #'(define (<name> . <formals>)
 
 	     (call/cc
 
-	      (lambda (ret-rec-id) ;(#,ret-rec-id)
+	      (lambda (ret-rec-id)
 		;; In the body we adjust the 'return-rec' keyword so that calls
 		;; to 'return-rec' are replaced with calls to the escape
 		;; continuation.
@@ -62,85 +82,36 @@
 		 ([return-rec (syntax-rules ()
 				[(return-rec vals (... ...))
 				 (ret-rec-id vals (... ...))])])
-		 
-		 (apply (rec <name>
 
-			     (lambda (<arg> ...)
-				      
-				      (call/cc
+		 (apply (letrec ((<name> (lambda <formals>
 
-				       (lambda (ret-id) ;(#,ret-id)
-					 ;; In the body we adjust the 'return' keyword so that calls
-					 ;; to 'return' are replaced with calls to the escape
-					 ;; continuation.
-					 (syntax-parameterize
-					  ([return (syntax-rules ()
-						     [(return vals (... ...))
-						      (ret-id vals (... ...))])])
-					  ;;(display "def+.rkt : def+ : <body> =") (display <body>) (newline)
-					  ($nfx$-rec <body>)
-					  ($nfx$-rec <body>*)
-					  ...)))))
-			
-			(list <arg> ...)))))))
+					   (call/cc
 
+					    (lambda (ret-id)
+					      ;; In the body we adjust the 'return' keyword so that calls
+					      ;; to 'return' are replaced with calls to the escape
+					      ;; continuation.
+					      (syntax-parameterize
+					       ([return (syntax-rules ()
+							  [(return vals (... ...))
+							   (ret-id vals (... ...))])])
+					       ($nfx$-rec <body>)
+					       ($nfx$-rec <body>*)
+					       ...))))))
+			  <name>)
 
+			(formals->list <formals>)))))))
 
-	;; variadic arguments in list
-	((_ (<name> <arg> . L) <body> <body>* ...)
-	 
-         
-	 #'(define (<name> <arg> . L)
-
-	     (call/cc
-
-	      (lambda (ret-rec-id) ;(#,ret-rec-id)
-		;; In the body we adjust the 'return-rec' keyword so that calls
-		;; to 'return-rec' are replaced with calls to the escape
-		;; continuation.
-
-		(syntax-parameterize
-		 ([return-rec (syntax-rules ()
-				[(return-rec vals (... ...))
-				 (ret-rec-id vals (... ...))])])
-		 
-		 (apply (rec <name> (lambda (<arg> . L)
-				      
-				      (call/cc
-
-				       (lambda (ret-id) ;(#,ret-id)
-					 ;; In the body we adjust the 'return' keyword so that calls
-					 ;; to 'return' are replaced with calls to the escape
-					 ;; continuation.
-					 (syntax-parameterize
-					  ([return (syntax-rules ()
-						     [(return vals (... ...))
-						      (ret-id vals (... ...))])])
-					  ($nfx$-rec <body>)
-					  ($nfx$-rec <body>*)
-					  ...)))))
-			
-			(cons <arg> . L))))))) ; this way we get the full list of arguments
-	
-
-
-
-	;; same as def.rkt
 
 	;; single definition without a value assigned
 	;; (def x)
-	((_ var) #`(define var '()))
+	((_ var) #'(define var '()))
 
 	;; (def s  3 ² + 2 * 3 * 5 + 5 ²)
 	;; 64
-	((_ var expr expr-optional ...) #`(define var ($nfx$-rec expr expr-optional ...)))
+	((_ var expr expr* ...) #'(define var ($nfx$-rec expr expr* ...)))
 
-	((_) #`(error "Bad def form"))
-
-	;; (def x 7)
-	;; ((_ var expr) #`(define var expr))
-
-	;; ((_ err ...) #`(syntax-error "Bad def+ form"))
+	((_ . err) #'(error "Bad def form"))
 
 	)))
 

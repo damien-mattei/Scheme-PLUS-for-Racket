@@ -33,41 +33,43 @@
 
 
 
-  ;; DEPRECATED
-;; (procedure->string +)
-;; "+"
+  ;; (procedure->string +)
+  ;; "+"
 
-;; (procedure->string foo)
-;; "foo"
-  ;; (define (procedure->string p)
-  ;;   (define o (open-output-string))
-  ;;   (write p o)
-  ;;   (define str (get-output-string o))
-  ;;   (display str) (newline)
-  ;;   (substring str
-  ;;              (string-length "#<procedure:")
-  ;;              (- (string-length str) 1)))
+  ;; (procedure->string foo)
+  ;; "foo"
 
-
-  ;; DEPRECATED
-  ;; (define (procedure->symbol p)
-  ;;   (string->symbol (procedure->string p)))
+  ;; (procedure->string (lambda (x) x))
+  ;; #f  ; anonymous procedure : no name to extract
+  (define (procedure->string p) ; #f when p is anonymous : there is no name to extract
+    (define o (open-output-string))
+    (write p o)
+    (define str (get-output-string o))
+    (define prefix (string-length "#<procedure:")) ; also the length of the anonymous form "#<procedure>"
+    (if (char=? (string-ref str (- prefix 1)) #\:)
+        (substring str prefix (- (string-length str) 1))
+        #f))
 
 
+  (define (procedure->symbol p) ; #f when p is anonymous
+    (define s (procedure->string p))
+    (and s (string->symbol s)))
+
+  ;; WRONG : do not work, always return obj1,obj2 .... because macro
   ;; > (procedure->symbol +)
   ;; '+
-  (define-syntax (procedure->symbol stx)
-    (syntax-case stx ()
-      [(_ proc)
+  ;; (define-syntax (procedure->symbol stx)
+  ;;   (syntax-case stx ()
+  ;;     [(_ proc)
 
-       (with-syntax
+  ;;      (with-syntax
 	   
-	   ((str-proc
-             
-             (symbol->string  (syntax-e #'proc)))) ; should work also with syntax->datum
+  ;; 	   ((str-proc
+            
+  ;;            (symbol->string  (syntax-e #'proc)))) ; should work also with syntax->datum
 	 
-         #'(string->symbol str-proc)
-         )])) 
+  ;;        #'(string->symbol str-proc)
+  ;;        )])) 
   
 
   ;; (datum=? #'* *)
@@ -90,17 +92,30 @@
        (when (syntax? obj2)
 	 (set! obj2 (syntax->datum obj2)))
 
+       ;; if p has no name (anonymous procedure) procedure->symbol returns #f :
+       ;; leave obj as the raw procedure then, so the final equal? falls back to
+       ;; comparing the two procedures by identity instead of a fake placeholder
        (when (procedure? obj1)
-	 (set! obj1 (procedure->symbol obj1)))
+	 (define name1 (procedure->symbol obj1))
+	 (when name1 (set! obj1 name1)))
 
        (when (procedure? obj2)
-	 (set! obj2 (procedure->symbol obj2)))
+	 (define name2 (procedure->symbol obj2))
+	 (when name2 (set! obj2 name2)))
 
        (define rv (equal? obj1 obj2))
        ;;(display "datum=? rv =") (display rv) (newline)
        rv)
 
 
+  ; free-identifier? seemed to be a good replacement for datum=? but then i have errors not understood
+  ;(define datum=? free-identifier=?)
+  #| cause errors : ../if-parser.rkt:94:0: free-identifier=?: contract violation
+  expected: identifier?
+  given: #<syntax:/home/mattei/Dropbox/git/SRFI-105-for-Racket/annot+.rkt:14:8 (remove-expr (cdr s) p?)> |#
+
+
+  
   (define (secure-syntax->datum s)
     (if (syntax? s)
         (syntax->datum s)

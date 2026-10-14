@@ -22,7 +22,8 @@
 (module map-nested racket/base
 
 
-  (provide map-nested )
+	(provide map-nested
+		 map-nested-pair)
 
 
   ;; (map-nested sin '(0.1 0.2 (0.3) 0.4))
@@ -34,6 +35,12 @@
       (map (lambda (x) (map-nested f x))
 	   L)
       (f L)))
-      
+
+  (define (map-nested-pair f s)
+
+    (cond ((null? s) s)
+	  ((pair? s) (cons (map-nested-pair f (car s))
+			   (map-nested-pair f (cdr s))))
+	  (else (f s))))      
 
 ) 

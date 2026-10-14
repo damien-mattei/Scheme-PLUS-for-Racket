@@ -46,12 +46,12 @@ $(MODULE_DIRECTORY) :
 
 .DELETE_ON_ERROR:
 
-# create Scheme files (*.scm) by parsing Scheme+ files (*+.scm)
+# create Scheme files (*+.scm)in MODULE_DIRECTORY by parsing Scheme+ files (*+.scm)
 $(MODULE_DIRECTORY)/%+.scm: %+.scm
 	@echo PARSING $< :
 	$(SCHEME_EXEC) $(PARSER) $< > $@
 
-# create Scheme files (*.rkt) by parsing Scheme+ files (*+.rkt)
+# create Scheme files (*+.rkt) in MODULE_DIRECTORY by parsing Scheme+ files (*+.rkt)
 $(MODULE_DIRECTORY)/%+.rkt: %+.rkt
 	@echo PARSING $< :
 	$(SCHEME_EXEC) $(PARSER) $< > $@

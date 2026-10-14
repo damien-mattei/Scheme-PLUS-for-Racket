@@ -669,6 +669,23 @@
   (check-equal? {3 (p22-mult-proc) 5 p22-add 2} 17)
   (check-equal? {3 (p22-mult-proc) (p22-cinque) p22-add 2} 17)
 
+  ;; ================================================================
+  ;; 23. A flonum to an integer power : {x ²} is read (** x 2) with an
+  ;;     exact exponent ; with (type flonum? x) its type is flonum? and
+  ;;     the operation around it is specialized :
+  ;;     {1.0 - x ²} --> (fl- 1.0 (orig-** x 2))
+  ;;     (in typed code the exponent 0 is written 0.0 : (expt 2.0 0) is
+  ;;     the exact 1)
+  ;; ================================================================
+  (define (p23-d x) (type flonum? x) {1.0 - x ²})
+  (check-equal? (p23-d 2.0) -3.0)
+  (define (p23-cube x) (type flonum? x) {1.0 + x ³})
+  (check-equal? (p23-cube 2.0) 9.0)
+  (define (p23-e x) (type flonum? x) {1.0 + (expt x 2)})
+  (check-equal? (p23-e 3.0) 10.0)
+  (define (p23-star x) (type flonum? x) {1.0 + x ** 2})
+  (check-equal? (p23-star 3.0) 10.0)
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 

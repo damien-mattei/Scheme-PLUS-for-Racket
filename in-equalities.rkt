@@ -77,7 +77,19 @@
 
     (cons && (get-in-equalities x)))
 
-  
+
+  ;; operators with a lower precedence than the in/equalities (see infix-operators-lst-for-parser in operators-list.rkt) :
+  ;; they end an in/equality expression
+  ;; not only and/or but also the assignment and definition operators, otherwise :
+  ;; (b := 1 < 2 < 3) was grouped as ((b := 1) < 2 < 3) and (1 < 2 < 3 =: b) as (1 < 2 < (3 =: b))
+  ;; now : (b := (1 < 2 < 3)) and ((1 < 2 < 3) =: b)
+  (define (lower-precedence-than-in/equalities? f)
+    (or (LOGIC-N-ARY-op? f) ; and , or
+	(FLOW-op? f) ; ~>
+	(ASSIGNMENT-op? f) ; <- , := , ...
+	(DEFINE-op? f))) ; <+ , ...
+
+
 
   ;; we have to deal with something like that
   ;; (1 + d < x - xw < 7 and 0 < y - yw < 5)
@@ -125,8 +137,8 @@
 					 result-lst
 					 (insert-tail possible-result-lst f)))
 
-	  ;; and / or
-	  ((LOGIC-N-ARY-op? f) (not-N-ary-in/equality r
+	  ;; and / or , and the other operators with a lower precedence : ~> , assignment , definition
+	  ((lower-precedence-than-in/equalities? f) (not-N-ary-in/equality r
 						      '() ; inner list , drop the results because it is not in/equalities
 						      '() ; outer list
 						      result-lst
@@ -188,8 +200,8 @@
 				      result-lst
 				      (insert-tail possible-result-lst f)))
 	  
-	  ;; and / or
-	  ((LOGIC-N-ARY-op? f) (not-N-ary-in/equality r
+	  ;; and / or , and the other operators with a lower precedence : ~> , assignment , definition
+	  ((lower-precedence-than-in/equalities? f) (not-N-ary-in/equality r
 						      '() ; inner list , drop the results because it is not in/equalities
 						      '() ; outer list
 						      result-lst
@@ -246,8 +258,8 @@
 				      result-lst
 				      (insert-tail possible-result-lst f)))
 
-	  ;; and / or
-	  ((LOGIC-N-ARY-op? f)
+	  ;; and / or , and the other operators with a lower precedence : ~> , assignment , definition
+	  ((lower-precedence-than-in/equalities? f)
 	   
 	   ;; things to do with expressions:
 	   ;;(display "state-3 outer-lst =") (display outer-lst)  (newline)

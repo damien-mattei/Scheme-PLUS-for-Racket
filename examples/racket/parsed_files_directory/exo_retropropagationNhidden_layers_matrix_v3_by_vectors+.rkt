@@ -6,15 +6,14 @@
   (random-seed 7)
   (define (uniform-dummy dummy1 dummy2) (+ -1 (* (random) 2)))
   (define (uniform-interval inf sup)
-    (define gap sup - inf)
+    (def gap sup - inf)
     (+ inf (· gap (random))))
   (define (σ z̃) (/ 1 (+ 1 (exp (- z̃)))))
   (define (der_tanh z z̃) (- 1 (** z 2)))
   (define (der_σ z z̃) (· z (- 1 z)))
   (define (der_atan z z̃) (/ 1 (+ 1 (** z̃ 2))))
   (require "matrix-by-vectors+.rkt")
-  (define-overload-existing-operator +)
-  (overload-existing-operator + vector-append (vector? vector?))
+  (overload-operator + (vector?) vector-append (vector? vector?))
   (define ReseauRetroPropagation
     (class object%
       (super-new)
@@ -38,7 +37,7 @@
       (<-
        M
        (vector-ec
-        (s42: n (- lnc 1))
+        (s42: n (fx- lnc 1))
         (create-matrix-vect-by-function
          uniform-dummy
          ($bracket-apply$ nc n + 1)
@@ -58,7 +57,7 @@
       (field (eror 0))
       (define
        (accepte_et_propage x)
-       (when (≠ (vector-length x) (vector-length ($bracket-apply$ z 0)))
+       (when (fx≠ (vector-length x) (vector-length ($bracket-apply$ z 0)))
          (display "accepte_et_propage : Mauvais nombre d'entrées !")
          (newline)
          (exit #f))
@@ -67,17 +66,17 @@
        (declare z_1)
        (declare i)
        (for
-        ((<- i 0) (< i (- n 2)) (<- i (+ i 1)))
+        ((<- i 0) (fx< i (fx- n 2)) (<- i (fx+ i 1)))
         (<- z_1 (+ #(1) ($bracket-apply$ z i)))
         (<- ($bracket-apply$ z̃ i + 1) (· ($bracket-apply$ M i) z_1))
-        (<-
+        (<-vector-vector*
          ($bracket-apply$ z i + 1)
          (vector-map
           activation_function_hidden_layer
           ($bracket-apply$ z̃ i + 1))))
        (<- z_1 (+ #(1) ($bracket-apply$ z i)))
        (<- ($bracket-apply$ z̃ i + 1) (· ($bracket-apply$ M i) z_1))
-       (<-
+       (<-vector-vector*
         ($bracket-apply$ z i + 1)
         (vector-map
          activation_function_output_layer
@@ -92,7 +91,7 @@
         (<- x (car ($bracket-apply$ Lexemples ip)))
         (<- y (cdr ($bracket-apply$ Lexemples ip)))
         (accepte_et_propage x)
-        (<- i i_output_layer (- (vector-length z) 1))
+        (<- i i_output_layer (fx- (vector-length z) 1))
         (<- ns (vector-length ($bracket-apply$ z i)))
         (for-racket
          ((k (range ns)))
@@ -120,10 +119,11 @@
            (for/sum
             ((k (range ns)))
             (·
-             (მzⳆმz̃
-              ($bracket-apply$ ($bracket-apply$ z i + 1) k)
-              ($bracket-apply$ ($bracket-apply$ z̃ i + 1) k))
-             ($bracket-apply$ ($bracket-apply$ M i) k (+ j 1))
+             (·
+              (მzⳆმz̃
+               ($bracket-apply$ ($bracket-apply$ z i + 1) k)
+               ($bracket-apply$ ($bracket-apply$ z̃ i + 1) k))
+              ($bracket-apply$ ($bracket-apply$ M i) k (+ j 1)))
              ($bracket-apply$ ($bracket-apply$ ᐁ i + 1) k)))))
          (modification_des_poids
           ($bracket-apply$ M i - 1)
@@ -149,18 +149,22 @@
           (+
            ($bracket-apply$ M_i_o j (+ i 1))
            (·
-            η
-            ($bracket-apply$ z_input i)
-            (მzⳆმz̃ ($bracket-apply$ z_output j) ($bracket-apply$ z̃_output j))
+            (·
+             (· η ($bracket-apply$ z_input i))
+             (მzⳆმz̃
+              ($bracket-apply$ z_output j)
+              ($bracket-apply$ z̃_output j)))
             ($bracket-apply$ ᐁ_i_o j)))))
         (<-
          ($bracket-apply$ M_i_o j 0)
          (+
           ($bracket-apply$ M_i_o j 0)
           (*
-           η
-           1.0
-           (მzⳆმz̃ ($bracket-apply$ z_output j) ($bracket-apply$ z̃_output j))
+           (*
+            (* η 1.0)
+            (მzⳆმz̃
+             ($bracket-apply$ z_output j)
+             ($bracket-apply$ z̃_output j)))
            ($bracket-apply$ ᐁ_i_o j))))))
       (define/public
        (test Lexemples)
@@ -203,7 +207,7 @@
     (activation_function_output_layer σ)
     (activation_function_hidden_layer_derivative der_σ)
     (activation_function_output_layer_derivative der_σ)))
-  (<- Lexemples1 #((#(1) . #(0)) (#(0) . #(1))))
+  (<-vector-vector* Lexemples1 #((#(1) . #(0)) (#(0) . #(1))))
   (send r1 apprentissage Lexemples1)
   (send r1 test Lexemples1)
   (newline)
@@ -220,7 +224,7 @@
     (activation_function_output_layer σ)
     (activation_function_hidden_layer_derivative der_σ)
     (activation_function_output_layer_derivative der_σ)))
-  (<-
+  (<-vector-vector*
    Lexemples2
    #((#(1 0) . #(1)) (#(0 0) . #(0)) (#(0 1) . #(1)) (#(1 1) . #(0))))
   (send r2 apprentissage Lexemples2)

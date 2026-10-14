@@ -1,5 +1,5 @@
 #lang reader SRFI-110 ;105
- 
+  
 (module zeta racket
 
 ;; example in Scheme+ that plot the convergence of the ζ Riemann complex serie (without Analytic continuation)
@@ -8,6 +8,7 @@
 (require Scheme+/increment)
 (require racket/gui/base)
 
+  ANNOTATION-ON
 
 {animation-mode ← #t}
 
@@ -165,8 +166,8 @@
 
 ;;(sqrt {(x1 - x0) ** 2 + (y1 - y0) ** 2 }))
   ;;(sqrt ((x1 - x0) ** 2 + (y1 - y0) ** 2 )))
-(define+ (line-length x0 y0 x1 y1)
-  (√ ((x1 - x0) ² + (y1 - y0) ²)))
+(define (line-length x0 y0 x1 y1)
+  (√ {(x1 - x0) ² + (y1 - y0) ²}))
 
 ;; (new button% [parent frame0]
 ;;              [label "Pause"]

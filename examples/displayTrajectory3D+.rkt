@@ -52,7 +52,7 @@
 	  (display ext)
 	  (newline)
 
-	  (when (not (equal? ext ".txt"))
+	  (when (not (string=? ext ".txt"))
 		(error "Not a text file."))
 
 	  ;; read all lines
@@ -211,7 +211,7 @@
 	  (display ext)
 	  (newline)
 
-	  (when (not (equal? ext ".txt"))
+	  (when (not (string=? ext ".txt"))
 		(error "Not a text file."))
 
 	  ;; read all lines

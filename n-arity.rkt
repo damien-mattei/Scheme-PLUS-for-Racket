@@ -23,7 +23,8 @@
 
   (require Scheme+/operators)
 	  
-  
+
+  ; transform a binary expression in n-ary one
   
 ;; initially written for logical expression of OR / AND
 ;; should works for every associative operator

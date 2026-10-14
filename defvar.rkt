@@ -35,15 +35,51 @@
 ;; (if-defined x (void) (define x 6))
 ;; x ; -> 3
 
+;; not reliable : namespace-mapped-symbols does not list exactly the variables defined in the REPL
+#;(define-for-syntax (top-level-defined? id)
+  (and (not (syntax-transforming-module-expression?))
+       (memq (syntax-e id) (namespace-mapped-symbols (current-namespace)))
+       #t))
+
+;; no more used : a new name assigned in a procedure typed in the REPL became a variable of the REPL , not a local one
+;; out of a module (the REPL of Racket in command line , racket -i , racket -e) identifier-binding gives #f even for a
+;; defined variable , and the expansion can not know if the variable exists : at run time the variable is created
+;; (with '()) in the namespace of the REPL when it does not exist yet , then the assignment is done
+#;(define absent-variable (string->uninterned-symbol "absent-variable"))
+
+#;(define (ensure-top-level-variable! sym)
+  (when (eq? (namespace-variable-value sym #t (lambda () absent-variable))
+	     absent-variable)
+    (namespace-set-variable-value! sym '() #t)))
+
 ;;(define-syntax (if-defined stx)
 (define-syntax if-defined
     (lambda (stx)
       (syntax-case stx ()
 	[(_ id iftrue iffalse)
-	 (let ([exist-id (identifier-binding #'id)])
-	   ;;(display "id=") (display #'id) (newline)
-	   ;;(display "if-defined : exist-id=") (display exist-id) (newline) (newline)
-	   (if exist-id #'iftrue #'iffalse))])))
+	 #;(let ([exist-id (identifier-binding #'id)])
+	   (if exist-id
+	       #'iftrue
+	       #'iffalse))
+	 #;(let ([exist-id (or (identifier-binding #'id)
+			     (top-level-defined? #'id))]) ; a variable defined in the REPL , out of a module
+	   (if exist-id
+	       #'iftrue
+	       #'iffalse))
+	 #;(cond ((identifier-binding #'id) #'iftrue) ; a variable bound in a module , locally or imported
+	       ((syntax-transforming-module-expression?) #'iffalse) ; in a module : a new variable
+	       (else ; out of a module (REPL) : the variable is created at run time if needed , then iftrue (set! ...)
+		#'(begin
+		    (ensure-top-level-variable! 'id)
+		    iftrue)))
+	 ;; with the third argument top-level-symbol? = #t , identifier-binding also gives (id) for a variable defined
+	 ;; out of a module (the REPL of Racket in command line , racket -i , racket -e) : without it , the answer was #f
+	 ;; even for a defined variable. The decision stays at expansion time , as in a module : an existing variable is
+	 ;; assigned (iftrue) , a new name is defined where it is written (iffalse) , locally in a procedure.
+	 (let ([exist-id (identifier-binding #'id (syntax-local-phase-level) #t)])
+	   (if exist-id
+	       #'iftrue
+	       #'iffalse))])))
 
 
 
