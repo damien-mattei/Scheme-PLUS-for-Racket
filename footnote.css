@@ -1,5 +1,5 @@
 
-.NoteBox {
+.NoteBox, .FootnoteMarginContent {
   position: relative;
   float: right;
   left: 2em;
@@ -25,4 +25,9 @@
 .FootnoteBlockContent {
   padding-left: 1em;
   text-indent: -0.5em;
+}
+
+.FootnoteRefNumber, .FootnoteTargetNumber {
+  vertical-align: super;
+  font-size: .83em;
 }
