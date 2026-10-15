@@ -2159,6 +2159,11 @@ The annotation and inference pass consumes the @racket[type] forms and rewrites 
 
 Every @racket[·] of the two inner loops has become an @racket[fl*], every @litchar{{i + 1}} index a @racket[fx+], every @litchar{{M_i_o[j (i + 1)]}} a direct @racket[$bracket-apply-flomat$] access and every @litchar{{z_input[i]}} a direct @racket[$bracket-apply-vector$] access ; the @racket[type] annotations themselves are gone and the assignment stays a plain in place matrix update. No run time type dispatch is left in the hot loop.
 
+The curve below is computed by a neural network trained by this retropropagation, whose weights are updated by @racket[modification_des_poids] : it learns the damped harmonic oscillator y = sin(x)·e^(-x/10)/1.7.
+
+@(define-runtime-path neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator "neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator.png")
+@centerline{@image[#:scale 1.1 neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator]}
+
 See the full program at @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/exo_retropropagationNhidden_layers_matrix_v3+.rkt"] and the simpler @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/matrix-by-vectors+.rkt"] .
 
 
@@ -2340,9 +2345,6 @@ More examples can be find in this directory and subdirectories:
 
 @(define-runtime-path neural-sine-and-sine "neural-sine-and-sine.png")
 @centerline{@image[#:scale 1.1 neural-sine-and-sine]}
-
-@(define-runtime-path neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator "neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator.png")
-@centerline{@image[#:scale 1.1 neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator]}
 
 @section[#:tag "scheme-forms"]{Scheme forms : technical notes}
 
