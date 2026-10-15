@@ -28,7 +28,7 @@
 @defmodule[Scheme+ #:no-declare #:link-target? #f]
 @defmodule[SRFI-105 #:reader #:no-declare #:link-target? #f]
 
-Scheme+ is Scheme with, in addition, infix expressions (with the precedence of the operators), postfix expressions, the square brackets @litchar{[ ]} of the other languages to access arrays, strings and hash tables, and operators of assignment and definition. They can be mixed with the usual Scheme syntax:
+Scheme+ is Scheme with, in addition, infix expressions (with the precedence of the operators), postfix expressions, the square brackets @litchar{[ ]} of the other languages to access arrays, strings and hash tables, operators of assignment and definition, and an optional type annotation with type inference, which specializes the operators at read time. They can be mixed with the usual Scheme syntax:
 
 @codeblock|{
 (define (distance x0 y0 x1 y1)
@@ -51,7 +51,7 @@ v
 0.8807970779778823
 }|
 
-With the optional type annotation, the generic operators are replaced at read time by the operators of the types, see @secref["annotation"].
+The type annotation and inference are described in @secref["annotation"].
 
 Scheme+ is an extension of the syntax of the Scheme language.
 
