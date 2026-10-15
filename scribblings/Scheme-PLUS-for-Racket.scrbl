@@ -38,7 +38,15 @@ v
 
 {5 !}                             ; postfix
 120
+
+(define (σ z̃)                     ; the sigmoid of a neural network
+  (type flonum? z̃)                ; type annotation (in a region ANNOTATION-ON)
+  {1.0 / (1.0 + (exp (- z̃)))})    ; rewritten as (fl/ 1.0 (fl+ 1.0 (exp (fl- z̃)))) : the operators of the floats
+(σ 2.0)
+0.8807970779778823
 }|
+
+With the optional type annotation, the generic operators are replaced at read time by the operators of the types, see @secref["annotation"].
 
 Scheme+ is an extension of the syntax of the Scheme language.
 
