@@ -104,11 +104,16 @@
     {line[0] + line[1]})
   (check-equal? (fsum-line F 1) 8.0)
 
-  (define (fscale! M a)
+  (define (fscale! M a) ; multiply all the coefficients of the matrix by a
     (type fmat? M)
     (type flonum? a)
-    {M[0 1] := a * M[0 1]}) ; (fmat-set! M 0 1 (fl* a (fmat-ref M 0 1)))
+    {n := (vector-length (fmat-v M))} ; number of lines
+    {p := (vector-length M[0])} ; number of columns : M[0] is a line , a vector
+    (for ({i := 0} {i < n} {i := i + 1})
+      (for ({j := 0} {j < p} {j := j + 1})
+        {M[i j] := a * M[i j]}))) ; (fmat-set! M i j (fl* a (fmat-ref M i j)))
   (fscale! F 2.0)
-  (check-equal? {F[0 1]} 5.0)
+  (check-equal? (fmat-v F) (vector (vector 3.0 5.0)
+                                   (vector 7.0 9.0)))
 
   (displayln "test-overload-square-brackets+ : done"))

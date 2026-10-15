@@ -31,7 +31,7 @@ Scheme+ is Scheme with, in addition, infix expressions (with the precedence of t
 (distance 1 2 4 6)
 5
 
-{v :+ (make-vector 3 0)}          ; definition
+{v := (make-vector 3 0)}
 {v[2] := 3 * (- 9 4) + 2}         ; square brackets , assignment , a prefix expression inside an infix one
 v
 '#(0 0 17)
@@ -1833,7 +1833,7 @@ ANNOTATION-ON
   (list 10 (fx- n 1) (fl/ y x) (* 2.5 4)))
 }|
 
-Here @racket[x] and @racket[y] are flonums (from the literals and the specialized operators), @racket[n] and @racket[i] are fixnums (from @racket[vector-length] and from the literal @racket[0]), @racket[{2 * 3 + 4}] is folded to @racket[10], while @racket[{v[i]}] stays a generic access (the type of @racket[v] is unknown) and @racket[{2.5 * 4}] a generic product (a flonum times a fixnum). The @racket[type] form described below gives the types that cannot be inferred, for example those of the parameters of a procedure or of the elements of a vector.
+Here @racket[x] and @racket[y] are flonums (from the literals and the specialized operators), @racket[n] and @racket[i] are fixnums (from @racket[vector-length] and from the literal @racket[0]), @racket[{2 * 3 + 4}] is folded to @racket[10], while @litchar{{v[i]}} stays a generic access (the type of @racket[v] is unknown) and @racket[{2.5 * 4}] a generic product (a flonum times a fixnum). The @racket[type] form described below gives the types that cannot be inferred, for example those of the parameters of a procedure or of the elements of a vector.
 
 @subsection[#:tag "type-form"]{Annotating variables, elements and procedures : the @racket[type] form}
 
@@ -1876,7 +1876,7 @@ Domain and codomain of a procedure whose body is not annotated (a Racket or libr
 (type ((flonum?) procedure? (flonum? flonum?)) der_σ)   ; parentheses also accepted
 }|
 
-Composite types are equivalent to the bracket notation, both can be used: @racket[(type #(#(flonum?)) z)] is the same as @racket[(type vector? z {z[]})] with @racket[(type flonum? {z[][]})]. A composite type still matches a procedure or an overload expecting the simple container predicate (@racket[vector?], @racket[list?]).
+Composite types are equivalent to the bracket notation, both can be used: @racket[(type #(#(flonum?)) z)] is the same as @litchar{(type vector? z {z[]})} with @litchar{(type flonum? {z[][]})}. A composite type still matches a procedure or an overload expecting the simple container predicate (@racket[vector?], @racket[list?]).
 
 With the types of the elements, the inference knows the result of @racket[vector-map], @racket[map], @racket[apply], @racket[vector->list], @racket[list->vector], @racket[vector] and @racket[list], and specializes the operator or procedure passed to @racket[vector-map], @racket[map] and @racket[apply].
 
@@ -1985,9 +1985,9 @@ ANNOTATION-ON
 
 @subsection[#:tag "square-brackets-annotation"]{Overloaded square brackets}
 
-When the type of an object is known, an access @racket[{M[i j]}] to square brackets overloaded with @racket[overload-square-brackets] calls directly the getter, and an assignment @racket[{M[i j] := x}] calls directly the setter, instead of searching at run time the overload whose predicates accept the arguments. The type of the object is given by a @racket[type] annotation (@racket[(type matrix-vect? M)], or @racket[(type matrix-vect? {M[]})] for the elements of a vector @racket[M]) or found by the inference.
+When the type of an object is known, an access @litchar{{M[i j]}} to square brackets overloaded with @racket[overload-square-brackets] calls directly the getter, and an assignment @litchar{{M[i j] := x}} calls directly the setter, instead of searching at run time the overload whose predicates accept the arguments. The type of the object is given by a @racket[type] annotation (@racket[(type matrix-vect? M)], or @litchar{(type matrix-vect? {M[]})} for the elements of a vector @racket[M]) or found by the inference.
 
-The overload is chosen by the type of the object and by the number of indexes: @racket[{M[i]}] and @racket[{M[i j]}] can be two different overloads (a line and an element of a matrix). The indexes are counted as the square brackets macros cut them: @racket[{M[k (j + 1)]}] has 2 indexes, @racket[{M[i + 1]}] has 1. When the overload can not be chosen (no overload or more than one for this number of indexes, or a slice with @litchar{:}), the access stays dispatched at run time, as without the pass. The predicates of the indexes are not checked by the pass.
+The overload is chosen by the type of the object and by the number of indexes: @litchar{{M[i]}} and @litchar{{M[i j]}} can be two different overloads (a line and an element of a matrix). The indexes are counted as the square brackets macros cut them: @litchar{{M[k (j + 1)]}} has 2 indexes, @litchar{{M[i + 1]}} has 1. When the overload can not be chosen (no overload or more than one for this number of indexes, or a slice with @litchar{:}), the access stays dispatched at run time, as without the pass. The predicates of the indexes are not checked by the pass.
 
 With a return predicate in the overload, the type of the element is known too, and the operators around it are specialized:
 
@@ -2007,20 +2007,24 @@ ANNOTATION-ON
   (type fmat? M)
   {M[0 0] + M[1 1]})
 
-(define (fscale! M a)
+(define (fscale! M a) ; multiply all the coefficients of the matrix by a
   (type fmat? M)
   (type flonum? a)
-  {M[0 1] := a * M[0 1]})
+  {n := (vector-length (fmat-v M))} ; number of lines
+  {p := (vector-length M[0])} ; number of columns : M[0] is a line , a vector
+  (for ({i := 0} {i < n} {i := i + 1})
+    (for ({j := 0} {j < p} {j := j + 1})
+      {M[i j] := a * M[i j]})))
 
 ;; code generated by the annotation parser and the square brackets macros:
 (define (ftrace M)
   (fl+ (fmat-ref M 0 0) (fmat-ref M 1 1)))
 
-(define (fscale! M a)
-  (fmat-set! M 0 1 (fl* a (fmat-ref M 0 1))))
+;; in fscale! , M[0] is (fmat-line-ref M 0) and the assignment in the loops is
+(fmat-set! M i j (fl* a (fmat-ref M i j)))
 }|
 
-Without the return predicate, the type of the elements can be given object by object, with @racket[(type flonum? {M[]})] (a declaration has priority over the return predicate). An overload is known only after it in the file; in a module that imports the object, restate it with @racket[require-overload-square-brackets].
+Without the return predicate, the type of the elements can be given object by object, with @litchar{(type flonum? {M[]})} (a declaration has priority over the return predicate). An overload is known only after it in the file; in a module that imports the object, restate it with @racket[require-overload-square-brackets].
 
 The deep learning program @tt{examples/racket/exo_retropropagationNhidden_layers_matrix_v3_by_vectors+.rkt} uses the matrices of @tt{examples/racket/matrix-by-vectors+.rkt}, a general library with overloaded square brackets and without return predicates. The program restates the overloads with the return types of its own matrices of flonums, and declares the type of the elements of its vector of matrices @racket[M] and of the parameter @racket[M_i_o]:
 
