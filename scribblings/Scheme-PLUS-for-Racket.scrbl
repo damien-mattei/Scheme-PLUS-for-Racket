@@ -9,13 +9,18 @@
                           (list (racketresultblock0 result))))))
 @(require scriblib/footnote)
 @(require racket/runtime-path)
+@(require scribble/html-properties racket/file)
+
+@; the superscripts and subscripts of the code in one font (Fira-Mono has no subscript letters : Bₖ₋₁) , the CSS is
+@; included in the page
+@(define-runtime-path scripts-font-css "scripts-font.css")
 
 @(define-runtime-path Scheme+ "Scheme+.png")
 @centerline{@image[#:scale 1.0 Scheme+]}
 
 
 	   
-@title[#:style '(toc)]{Scheme+ for Racket}
+@title[#:style (make-style #f (list 'toc (css-addition (file->bytes scripts-font-css))))]{Scheme+ for Racket}
 
 @author[(author+email "Damien MATTEI" "Damien.MATTEI@univ-cotedazur.fr")]
 
