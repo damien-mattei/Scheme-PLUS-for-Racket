@@ -686,6 +686,42 @@
   (define (p23-star x) (type flonum? x) {1.0 + x ** 2})
   (check-equal? (p23-star 3.0) 10.0)
 
+  ;; ================================================================
+  ;; 24. The types char? and void? : a literal character #\a is a
+  ;;     char? , an element {s[i]} of a string s a char? , a slice
+  ;;     {s[i : j]} a string? , (void) a void? ; the overloads are
+  ;;     then resolved at read time :
+  ;;     (p24-show c) --> (p24-char c) , (p24-show-void u) --> (p24-void u)
+  ;; ================================================================
+  (define (p24-char c) (char->integer c))
+  (define (p24-string s) (string-length s))
+  (overload-procedure p24-show p24-char (char?))
+  (overload-procedure p24-show p24-string (string?))
+  (define (p24-void u) 'void)
+  (overload-procedure p24-show-void p24-void (void?))
+
+  (define (p24-literal)
+    {c := #\a}
+    (p24-show c))                                ; (p24-char c)
+  (check-equal? (p24-literal) 97)
+
+  (define (p24-element s)
+    (type string? s)
+    {e := s[0]}
+    (p24-show e))                                ; (p24-char e)
+  (check-equal? (p24-element "hello") 104)
+
+  (define (p24-slice s)
+    (type string? s)
+    {t := s[1 : 3]}
+    (list t (p24-show t)))                       ; (p24-string t)
+  (check-equal? (p24-slice "hello") '("el" 2))
+
+  (define (p24-unit)
+    {u := (void)}
+    (p24-show-void u))                           ; (p24-void u)
+  (check-equal? (p24-unit) 'void)
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 
