@@ -109,4 +109,16 @@
   
   (let ((tmp (gensym)))
     ``(lambda (,tmp ,,tmp ,',tmp) ()))
+
+  (define-syntax +=
+    (syntax-rules ()
+      ({var1 _ var2} {var1 := var1 + var2})))
+
+  (define-syntax plus
+    (syntax-rules ()
+      ({var1 _ ...} {var1 + ...})))
+
+   {str2 := (string-append "azertyuiop")} ; TODO : should be type inference too
+  {str := "hello"} ; type inference !
+  {str[3 :]}
   )

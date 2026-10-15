@@ -331,6 +331,13 @@
     ;;(display "!*prec-generic-infix-parser returning early") (newline)
     (return terms))
 
+  ; not as a prefix unary operator : (a and not b) --> (a and (not b)) , (not a and b) --> ((not a) and b) (see group-prefix-not
+  ; in infix-prefix-postfix.rkt)
+  (when (prefix-not-in-infix? terms)
+    (set! terms (group-prefix-not terms))
+    (when (null? (cdr terms)) ; (not x < y) --> ((not (x < y)))
+      (return (!*prec-generic-infix-parser-rec-prepare (car terms) creator))))
+
  
   ;; parse superscript number **  and successive operands *  and after for + - (precedence rule for exponentiation versus signs)
   (define parsed-superscript (superscript-operator-loop terms))
@@ -730,6 +737,14 @@
   (when (atom? terms)
     ;;(display "!*prec-generic-infix-parser-prepare-runtime returning early") (newline)
     (return terms))
+
+  ; not as a prefix unary operator : {a and not b} --> (and a (not b)) , {not x < y} --> (not (< x y)) (see group-prefix-not
+  ; in infix-prefix-postfix.rkt) , before the if of Python : {a if not b else c}
+  (when (and (list? terms)
+             (ormap NOT-op? terms))
+    (set! terms (group-prefix-not terms))
+    (when (null? (cdr terms)) ; {not x < y} --> ((not (x < y)))
+      (return (!*prec-generic-infix-parser-rec-prepare (car terms) creator))))
 
   
   ;; Python stylish , (statement if test else statement2) also called "ternary operator"
@@ -1163,6 +1178,13 @@
                            end-clause)
                        (map (lambda (x) (!*prec-generic-infix-parser-rec-prepare x creator))
                             (cdddr terms)))))))
+
+  ; not as a prefix unary operator : (a and not b) --> (a and (not b)) , (not a and b) --> ((not a) and b) (see group-prefix-not
+  ; in infix-prefix-postfix.rkt)
+  (when (prefix-not-in-infix? terms)
+    (set! terms (group-prefix-not terms))
+    (when (null? (cdr terms)) ; (not x < y) --> ((not (x < y)))
+      (return (!*prec-generic-infix-parser-rec-prepare (car terms) creator))))
 
   ;; Python stylish , (statement if test else statement2)
   ;; at this point we have at least a list

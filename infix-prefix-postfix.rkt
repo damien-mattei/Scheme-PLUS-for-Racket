@@ -103,6 +103,8 @@
 		 simple-infix-list-syntax?
 		 infix-canonical?
 		 two-symbols-or-list-following?
+		 group-prefix-not
+		 prefix-not-in-infix?
                  not-infix-and-known-procedure-at-end-then-postfix?
                  surely-data?)
 
@@ -404,6 +406,58 @@
   ;; check if there is at least one operator in 2 following tokens
   ;; if not then the infix expression will require evaluation before
   ;; operator precedence application
+  ;; not as a prefix unary operator in an infix expression , with the precedence of Python : below the comparisons and
+  ;; the arithmetic , above and / or. A not in the position of an operand (at the beginning or after an operator) takes
+  ;; the following terms until the first operator binding as weakly as and (and , or , the assignments and definitions ,
+  ;; ~> , the if and else of Python) , they are grouped in (not X) : the expression is then canonical infix for the two
+  ;; precedence engines (Pratt and the old one) , as for the unary minus grouped before them by begin-operators+- .
+  ;; (a and not b) --> (a and (not b)) , (not x < y and z) --> ((not (x < y)) and z) , (not not a) --> ((not (not a)))
+  ;; a not in the position of an operator , or followed by nothing , is a value : (f := not) is unchanged.
+  (define (not-boundary? x)
+    (or (datum=? x 'and) ; not AND-op? : · is also a multiplication
+	(OR-op? x)
+	(ASSIGNMENT-op? x)
+	(DEFINE-op? x)
+	(FLOW-op? x)
+	(datum=? x 'if)
+	(datum=? x 'else)))
+
+  (define (group-prefix-not terms)
+    (let loop ((L terms)
+	       (operand? #t) ; the next term is in the position of an operand
+	       (acc '()))
+      (cond ((null? L) (reverse acc))
+	    ((and operand?
+		  (NOT-op? (car L))
+		  (pair? (cdr L))
+		  (not (not-boundary? (cadr L))))
+	     (let split ((R (cdr L))
+			 (span '()))
+	       (if (or (null? R)
+		       (not-boundary? (car R)))
+		   (let* ((grouped (group-prefix-not (reverse span))) ; not not a
+			  (arg (if (null? (cdr grouped))
+				   (car grouped)
+				   grouped))) ; several terms : an infix sub-expression , parsed later
+		     (loop R #f (cons (list (car L) arg) acc)))
+		   (split (cdr R) (cons (car R) span)))))
+	    (else
+	     (loop (cdr L)
+		   (or (operator-symbol-or-syntax? (car L))
+		       (datum=? (car L) 'if)
+		       (datum=? (car L) 'else))
+		   (cons (car L) acc))))))
+
+  ;; the terms of a list to parse contain a prefix not to group : the list is infix , or begins with not and contains an
+  ;; operator ((not a and b) , that infix-prefix-postfix-test? classifies as a call) ; not (or not x) , a call of or ,
+  ;; nor (not a b)
+  (define (prefix-not-in-infix? terms)
+    (and (pair? terms)
+	 (ormap NOT-op? terms)
+	 (or (and (NOT-op? (car terms))
+		  (ormap operator-symbol-or-syntax? (cdr terms)))
+	     (infix? terms))))
+
   (define (two-symbols-or-list-following? L)
     
     (define (rec-2? L p) ; p : previous find of not a known operator

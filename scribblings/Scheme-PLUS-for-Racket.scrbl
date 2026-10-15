@@ -1299,6 +1299,19 @@ Note: exponentiation can also be written with superscript numbers and expression
 
 @defform[#:id ∣∣ {expr1 ∣∣ expr2}]{This is a procedural @racket[or].See explanations above.See also note about vertical line reserved in Racket above.}
 
+In an infix expression @racket[not] is a prefix unary operator, with the precedence of Python: it binds less tightly than the comparisons and the arithmetic operators, and more tightly than @racket[and] and @racket[or]. A @racket[not] in the position of an operand (at the beginning, or after an operator) applies to the terms that follow it, until the next @racket[and], @racket[or], assignment or definition. It works with the two precedence engines of Scheme+.
+
+@codeblock|{
+{a and not b}           ; (and a (not b))
+{not a and b}           ; (and (not a) b)
+{not x < y}             ; (not (< x y))
+{a or not b and c}      ; (or a (and (not b) c))
+{not not a}             ; (not (not a))
+{x := not a and b}      ; (:= x (and (not a) b))
+}|
+
+Elsewhere @racket[not] is the usual procedure: @litchar{{f := not}} and @litchar{(map not l)} are unchanged.
+
 As being procedurals @racket[&&] and @racket[∣∣] are not short-circuited.
 
 @defform[#:id ≤ {n ≤ m}]{

@@ -722,6 +722,57 @@
     (p24-show-void u))                           ; (p24-void u)
   (check-equal? (p24-unit) 'void)
 
+  ;; ================================================================
+  ;; 25. not as a prefix unary operator in infix , with the precedence
+  ;;     of Python : below the comparisons and the arithmetic , above
+  ;;     and / or. A not in the position of an operand (at the
+  ;;     beginning or after an operator) takes the terms until the
+  ;;     next and , or , assignment , definition , if , else :
+  ;;     {a and not b} --> (and a (not b)) , {not x < y} --> (not (< x y))
+  ;;     A not in the position of a value is unchanged : {f := not}
+  ;; ================================================================
+  (define (p25-and-not a b) {a and not b})          ; (and a (not b))
+  (check-equal? (p25-and-not #t #f) #t)
+  (check-equal? (p25-and-not #t #t) #f)
+  (define (p25-not-and a b) {not a and b})          ; (and (not a) b)
+  (check-equal? (p25-not-and #f #t) #t)
+  (check-equal? (p25-not-and #t #t) #f)
+  (define (p25-not-less x y) {not x < y})           ; (not (< x y))
+  (check-equal? (p25-not-less 1 2) #f)
+  (check-equal? (p25-not-less 3 2) #t)
+  (define (p25-or-not a b c) {a or not b and c})    ; (or a (and (not b) c))
+  (check-equal? (p25-or-not #f #f #t) #t)
+  (check-equal? (p25-or-not #f #t #t) #f)
+  (define (p25-not-not a) {not not a})              ; (not (not a))
+  (check-equal? (p25-not-not 5) #t)
+  (define (p25-not a) {not a})                      ; (not a)
+  (check-equal? (p25-not #f) #t)
+  (define (p25-sum a b c) {not a + b < c})          ; (not (< (+ a b) c))
+  (check-equal? (p25-sum 1 2 4) #f)
+  (define (p25-assign a b)
+    {x := not a and b}                              ; (:= x (and (not a) b))
+    {y := (not a or b)}                             ; in a sub-expression : (:= y (or (not a) b))
+    (list x y))
+  (check-equal? (p25-assign #f #t) '(#t #t))
+  (check-equal? (p25-assign #t #f) '(#f #f))
+  (define (p25-if a b c) {a if not b else c})       ; (if (not b) a c)
+  (check-equal? (p25-if 1 #f 2) 1)
+  (check-equal? (p25-if 1 #t 2) 2)
+  (define (p25-typed x y)
+    (type flonum? x y)
+    {not x < y})                                    ; (not (fl< x y))
+  (check-equal? (p25-typed 1.0 2.0) #f)
+  ;; not as a value : unchanged
+  {p25-f := not}
+  (check-equal? (p25-f #f) #t)
+  (check-equal? {(map not '(#t #f))} '(#f #t))
+  (check-equal? {(not #f) and #t} #t)
+  ;; in a strict SRFI 105 region , {a and not b} is ($nfx$ a and not b) , parsed by the macro $nfx$
+  BEGIN-STRICT-SRFI-105-REGION
+  (define (p25-strict a b x y) (list {a and not b} {not x < y}))
+  END-STRICT-SRFI-105-REGION
+  (check-equal? (p25-strict #t #f 3 2) '(#t #t))
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 
