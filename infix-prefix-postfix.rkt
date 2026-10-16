@@ -486,12 +486,43 @@
 			     (car grouped)
 			     grouped)) ; several terms : an infix sub-expression , parsed later
 	     (loop R #f (cons (list (car L) arg) acc)))
+	    ;; a not in the position of an operator , followed by X and a term : L not X R --> (not (X L R)) , the negation of
+	    ;; the comparison X , as not in of Python but for any procedure or operator : {5 not member l} --> (not (member 5 l)) ;
+	    ;; L and R go until the boundaries of not (and , or , the assignments ...) , as the operands of a comparison
+	    ((and (not operand?)
+		  (NOT-op? (car L))
+		  (pair? (cdr L))
+		  (pair? (cddr L))
+		  (not (not-boundary? (cadr L)))
+		  (not (prefix-operator? (cadr L)))
+		  (not (not-boundary? (caddr L))))
+	     (define-values (left acc-rest) (split-left-of-not acc))
+	     (define-values (span R) (split-not-operand (cddr L)))
+	     (define right (group-prefix-operators span))
+	     (loop R #f (cons (list (car L) (list (cadr L) (one-or-list left) (one-or-list right)))
+			      acc-rest)))
 	    (else
 	     (loop (cdr L)
 		   (or (operator-symbol-or-syntax? (car L))
 		       (datum=? (car L) 'if)
 		       (datum=? (car L) 'else))
 		   (cons (car L) acc))))))
+
+;; the terms before a not in the position of an operator , until a boundary : acc is the reversed list of the terms already
+  ;; read , (values left-terms rest-of-acc)
+  (define (split-left-of-not acc)
+    (let pop ((a acc)
+	      (left '()))
+      (if (or (null? a)
+	      (not-boundary? (car a)))
+	  (values left a)
+	  (pop (cdr a) (cons (car a) left)))))
+
+  ;; a single term , or several terms : an infix sub-expression , parsed later
+  (define (one-or-list terms)
+    (if (null? (cdr terms))
+	(car terms)
+	terms))
 
   ;; the terms of a list to parse contain a prefix operator to group : the list is infix , or begins with not or ~ and
   ;; contains an operator ((not a and b) , that infix-prefix-postfix-test? classifies as a call) ; not (or not x) , a
@@ -501,6 +532,11 @@
 	 (ormap prefix-operator? terms)
 	 (or (and (prefix-operator? (car terms))
 		  (ormap operator-symbol-or-syntax? (cdr terms)))
+	     (and (pair? (cdr terms)) ; (5 not member l) : a negated comparison , if 5 is not a procedure (not (list not a b))
+		  (NOT-op? (cadr terms))
+		  (not (let ((f (car terms))) ; generic-known-program? is a macro : called on a variable , and only for a name
+			 (and (symbol? (secure-syntax->datum f))
+			      (generic-known-program? f)))))
 	     (infix? terms))))
 
   (define (two-symbols-or-list-following? L)

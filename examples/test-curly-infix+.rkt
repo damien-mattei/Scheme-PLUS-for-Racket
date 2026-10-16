@@ -338,7 +338,8 @@
     (* a 2.0))                                 ; stays * : accepts an exact integer
   (check-equal? (twice-off 2) 4.0)
 
-  (define (twice-on a)                         ; ON again after the body of twice-off
+  (define (twice-on a)                         ; ON in the body of twice-on : annotated whatever the state of the module
+    ANNOTATION-ON
     (type flonum? a)
     (* a 2.0))                                 ; annotated : fl* , only for flonums
   (check-equal? (twice-on 2.5) 5.0)
@@ -455,7 +456,7 @@
   (check-true (ineq-1 0.5 1 1 5 3 0 #t))                                      ; section 12 : was (fx+ x 2)
 
   ;; still optimized : a type written in the body of the procedure
-  (define (p12-f1 p12-x) (type flonum? p12-x) (* p12-x 2.0))                  ; fl*
+  (define (p12-f1 p12-x) ANNOTATION-ON (type flonum? p12-x) (* p12-x 2.0))    ; fl* , annotated whatever the state of the module
   (check-equal? (p12-f1 1.5) 3.0)
   (check-exn exn:fail:contract? (lambda () (p12-f1 2)))                       ; fl* refuses an exact integer
 
@@ -866,6 +867,81 @@
   (p27-check '(2 ** ~ a ** 3) '(** 2 (~ (** a 3))))
   (p27-check '(~ a ²) '(~ (** a 2)))
   (p27-check '(not ~ a = 0) '(not (= (~ a) 0)))
+
+  ;; ================================================================
+  ;; 28. The numeric procedures typed by the type of their arguments :
+  ;;     with (type flonum? x) , (sin x) is (flsin x) of type flonum? ,
+  ;;     so {(sin x) * 2.0} is (fl* (flsin x) 2.0) ; with fixnums
+  ;;     (quotient k 2) is (fxquotient k 2) ... Without such an entry
+  ;;     the call stays generic : (sin 0) is the exact 0 , (sqrt x) of a
+  ;;     negative float is a complex number , (exp 0) is the exact 1.
+  ;; ================================================================
+  (define (p28-float x)
+    (type flonum? x)
+    (list {(sin x) * 2.0} {(cos x) + (tan x)} {(atan x) - 1.0} {(exp x) * x}
+          {(abs x) + 1.0} {(min x 1.0) + (max x 1.0)}))
+  (check-equal? (p28-float 0.5) (list (* (sin 0.5) 2.0) (+ (cos 0.5) (tan 0.5)) (- (atan 0.5) 1.0) (* (exp 0.5) 0.5)
+                                      1.5 1.5))
+  (check-equal? (p28-float -2.0) (list (* (sin -2.0) 2.0) (+ (cos -2.0) (tan -2.0)) (- (atan -2.0) 1.0) (* (exp -2.0) -2.0)
+                                       3.0 -1.0))
+  (define (p28-fixnum k n)
+    (type fixnum? k n)
+    (list {(quotient k 2) + 1} {(remainder k 2) * 3} {(modulo k 3) + 1} {(abs k) + (max k n) + (min k n)}
+          {(exact->inexact k) * 2.0} {(exact->inexact n) / 2.0})) ; not inexact (R7RS) : unbound in Racket without annotation
+  (check-equal? (p28-fixnum 7 -3) '(4 3 2 11 14.0 -1.5))
+  (check-equal? (p28-fixnum -7 2) '(-2 -3 3 2 -14.0 1.0))
+  (define (p28-generic x n)
+    (type flonum? x)
+    (type fixnum? n)
+    (list (sin 0) (sqrt x) {(exp n) + 1})) ; no entry : the calls stay generic
+  (check-equal? (p28-generic -4.0 0) (list 0 (sqrt -4.0) 2)) ; (sqrt -4.0) is a complex number , (exp 0) the exact 1
+  ;; the lengths and the codes of the characters are fixnums (scheme-types.rkt) : the operations around them are fx
+  (define (p28-lengths l s v)
+    (type list? l)
+    (type string? s)
+    (type vector? v)
+    (list {(length l) * 2} {(string-length s) + 1} {(vector-length v) - 1} {(char->integer (string-ref s 0)) - 65}))
+  (check-equal? (p28-lengths '(1 2 3) "ABC" #(1 2)) '(6 4 1 0))
+  ;; rounding and square : of a float a float (flfloor ...) , of a fixnum a fixnum
+  (define (p28-rounding x k)
+    (type flonum? x)
+    (type fixnum? k)
+    (list {(floor x) + 1.0} {(ceiling x) * 2.0} {(round x) - 0.5} {(truncate x) / 2.0}
+          {(floor k) + 1} {(round k) * 2} {(sqr x) + 1.0} {(sqr k) + 1}))
+  (check-equal? (p28-rounding -2.5 7) '(-2.0 -4.0 -2.5 -1.0 8 14 7.25 50)) ; (round -2.5) is -2.0 : to even
+  (check-equal? (p28-rounding 2.5 -3) '(3.0 6.0 1.5 1.0 -2 -6 7.25 10))
+
+  ;; ================================================================
+  ;; 29. not in the position of an operator : the negation of a
+  ;;     comparison , as not in of Python , for any procedure or
+  ;;     operator : {5 not member l} --> (not (member 5 l)) ; the
+  ;;     operands go until and , or , an assignment ...
+  ;; ================================================================
+  (define p29-l '(1 2 3))
+  (check-equal? {5 member p29-l} #f)                      ; (member 5 p29-l)
+  (check-equal? {5 not member p29-l} #t)                  ; (not (member 5 p29-l))
+  (check-equal? {2 not member p29-l} #f)
+  (define (p29-and x) {x not member p29-l and x > 0})     ; (and (not (member x p29-l)) (> x 0))
+  (check-equal? (p29-and 5) #t)
+  (check-equal? (p29-and 2) #f)
+  (define (p29-sum x) {x + 1 not member p29-l})           ; (not (member (+ x 1) p29-l))
+  (check-equal? (p29-sum 4) #t)
+  (check-equal? (p29-sum 1) #f)
+  (define (p29-assign x)
+    {y := x not member p29-l}                             ; (:= y (not (member x p29-l)))
+    y)
+  (check-equal? (p29-assign 7) #t)
+  (check-equal? {3 not < 2} #t)                           ; (not (< 3 2))
+  (define (in x l) (and (member x l) #t))                 ; an in of Python , defined by the user
+  (check-equal? {5 not in p29-l} #t)                      ; (not (in 5 p29-l))
+  ;; unchanged : a not that is a value , a call with not as argument
+  {p29-f := not}
+  (check-equal? (p29-f #f) #t)
+  (check-equal? {(list 1 not 2 3)} (list 1 not 2 3))
+  ;; the two precedence engines
+  (p27-check '(5 not member l and x) '(and (not (member 5 l)) x))
+  (p27-check '(x + 1 not member l) '(not (member (+ x 1) l)))
+  (p27-check '(a and b not member l or c) '(or (and a (not (member b l))) c))
 
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")

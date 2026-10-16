@@ -1309,7 +1309,7 @@ In an infix expression @racket[~] is a prefix unary operator, with the precedenc
 {2 ** ~ a}              ; (** 2 (~ a))
 }|
 
-Elsewhere @racket[~] is the usual procedure: @litchar{{f := ~}} and @litchar{(map ~ l)} are unchanged. The prefix unary operators of Scheme+ are those of Python: @racket[-], @racket[+], @racket[~] and @racket[not].}
+In a call written in prefix, or when nothing follows it, @racket[~] is simply the procedure @racket[~], used as a value: @litchar{{f := ~}} assigns it to @racket[f], and in @litchar{(map ~ l)} it is passed as an argument to @racket[map]. The prefix unary operators of Scheme+ are those of Python: @racket[-], @racket[+], @racket[~] and @racket[not].}
 
 @defform[#:id && {expr1 && expr2}]{This is a procedural @racket[and] intended to be used both internally,inside Scheme+ source code,and externally in a Scheme+ program when parsing is required at runtime where we can not use the macro @racket[and] and thus we will use the @racket[&&] procedure.Unless your expression will be parsed at runtime do not use it and prefer it @racket[and].}
 
@@ -1332,7 +1332,16 @@ In an infix expression @racket[not] is a prefix unary operator, with the precede
 {x := not a and b}      ; (:= x (and (not a) b))
 }|
 
-Elsewhere @racket[not] is the usual procedure: @litchar{{f := not}} and @litchar{(map not l)} are unchanged.}
+A @racket[not] in the position of an operator, between two operands, negates the comparison that follows it, as @litchar{not in} in Python but for any procedure or operator: @racket[L not X R] is @racket[(not (X L R))], the operands going until the next @racket[and], @racket[or], assignment or definition. This is the negated relation of the mathematics (@litchar{∉}, @litchar{≮}), and of @litchar{NOT IN} or @litchar{NOT LIKE} in SQL and @litchar{!in} in Kotlin; Python has only @litchar{not in}.
+
+@codeblock|{
+{5 member '(1 2 3)}         ; (member 5 '(1 2 3))
+{5 not member '(1 2 3)}     ; (not (member 5 '(1 2 3)))
+{x + 1 not member l and y}  ; (and (not (member (+ x 1) l)) y)
+{a not < b}                 ; (not (< a b))
+}|
+
+In a call written in prefix, or when nothing follows it, @racket[not] is simply the procedure @racket[not], used as a value, and the reading does not transform it: @litchar{{f := not}} assigns the procedure @racket[not] to @racket[f], and in @litchar{(map not l)} it is passed as an argument to @racket[map].}
 
 @defform[#:id ≤ {n ≤ m}]{
 @codeblock|{
@@ -1843,18 +1852,19 @@ Scheme+ has an @bold{optional} type annotation and inference pass. It runs @ital
 
 Its purpose is speed. @bold{On the neural network of the complete example (@secref["annotation-example"]), a retropropagation with matrices of floats, 1000 iterations of the learning take 14 s without the pass and 4.7 s with @racket[ANNOTATION-ON] and the type annotations of the program: about 3 times faster.} The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged.
 
-The gain does not come only from Scheme+: on small programs written in plain Scheme (prefix, without @litchar{{ }}, overloads nor square brackets), the same source runs from 1.7 to 7 times faster with the type annotations than with the generic operators, and Scheme+ without annotation costs only 0.5 % to 4 % more than Scheme. With @racket[fl+], @racket[fl*] ... the compiler of Racket CS keeps the floats unboxed in the loops instead of allocating each result, with @racket[fx+], @racket[fx<] ... it skips the test of the type and the overflow to the big integers. These are tight loops, the best case: in a whole program, with calls and allocations, the gain is smaller (3 times for the retropropagation above).
+The gain does not come only from Scheme+: on small programs written in plain Scheme (prefix, without @litchar{{ }}, overloads nor square brackets), the same source runs from 1.7 to 5 times faster with the type annotations than with the generic operators, and Scheme+ without annotation runs at the speed of Scheme (the differences, of a few percent, are within the precision of the measures). With @racket[fl+], @racket[fl*], @racket[flexp] ... the compiler of Racket CS keeps the floats unboxed in the loops instead of allocating each result, with @racket[fx+], @racket[fx<], @racket[fxquotient] ... it skips the test of the type and the overflow to the big integers. These are tight loops, the best case: in a whole program, with calls and allocations, the gain is smaller (3 times for the retropropagation above).
 
 @tabular[#:style 'boxed
+         #:sep @hspace[3]
          #:column-properties '(left right right right right)
          #:row-properties '(bottom-border ())
          (list (list @bold{program (same source)} @bold{Scheme} @bold{Scheme+} @bold{Scheme+ annotated} @bold{gain over Scheme})
-               (list "floats: Horner and sigmoid, 2·10⁷ points" "712 ms" "729 ms" "289 ms" "2.5 ×")
-               (list "product of matrices 200×200, 20 times" "984 ms" "989 ms" "571 ms" "1.7 ×")
-               (list "integers: flights of Syracuse up to 10⁶" "897 ms" "936 ms" "359 ms" "2.5 ×")
-               (list "integration by the trapezoids, 2·10⁷ steps" "316 ms" "328 ms" "44 ms" "7.2 ×"))]
+               (list "floats: Horner and sigmoid (exp), 2·10⁷ points" "762 ms" "785 ms" "220 ms" "3.5 ×")
+               (list "product of matrices 200×200, 20 times" "1043 ms" "1046 ms" "600 ms" "1.7 ×")
+               (list "integers: flights of Syracuse up to 10⁶" "990 ms" "986 ms" "378 ms" "2.6 ×")
+               (list "integration by the trapezoids, 2·10⁷ steps" "339 ms" "335 ms" "68 ms" "5.0 ×"))]
 
-CPU times, median of 7 runs, Racket 9.2 CS. Scheme is a @racket[racket/base] module; Scheme+ is the same source in a Scheme+ module; Scheme+ annotated adds @racket[ANNOTATION-ON] and a few @racket[type] lines (the parameters, the result of a call to a procedure of the program, with a @racket[let] or with its signature such as @racket[(type ((flonum?) procedure? (flonum?)) f)]).
+CPU times, mean of two series each giving the median of 7 runs, Racket 9.2 CS. Scheme is a @racket[racket/base] module; Scheme+ is the same source in a Scheme+ module; Scheme+ annotated adds @racket[ANNOTATION-ON] and a few @racket[type] lines (the parameters, the result of a call to a procedure of the program, with a @racket[let] or with its signature such as @racket[(type ((flonum?) procedure? (flonum?)) f)]).
 
 When the pass knows the type of the operands it can:
 @itemlist[

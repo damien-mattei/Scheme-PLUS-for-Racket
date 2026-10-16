@@ -187,6 +187,18 @@
    orig-<>
 
    ; flonum operators
+   flabs ; the numeric procedures specialized by the type annotation
+   flmin
+   flmax
+   flsin
+   flcos
+   fltan
+   flatan
+   flexp
+   flfloor
+   flceiling
+   flround
+   fltruncate
    fl+
    fl-
    fl*
@@ -204,6 +216,11 @@
    fxquotient
    fxmodulo
    fxnot ; ~ of a fixnum (type annotation)
+   fxremainder ; the numeric procedures specialized by the type annotation
+   fxabs
+   fxmin
+   fxmax
+   fx->fl
    fx<
    fx>
    fx<=
