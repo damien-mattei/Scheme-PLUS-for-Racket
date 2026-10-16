@@ -670,33 +670,7 @@ There is some alias of @racket[:=] :
 {z ← 1.13+1.765i}
 }|
 
-@defform[#:id :=> {name :=> value}]{
-The walrus operator: assign to the variable @racket[name] the value @racket[value] and return this value, as the assignment expression @tt{:=} of Python (@tt{if (n := len(a)) > 10:}). The assignment @racket[:=] returns nothing (@tt{#<void>}), @racket[:=>] returns the value assigned, so it can be used inside an expression. The value is computed only once.
-}
-
-@codeblock|{
-(declare x y)
-{y := {x :=> 5} + 1}
-(list x y)
-'(5 6)
-
-(define (long-list? l)
-  (declare n)
-  (if {(n :=> (length l)) > 10}
-      n
-      #f))
-}|
-
-The variable must exist before: defined, declared with @racket[declare], or a parameter of the procedure. A new name is refused at expansion time (@tt{:=>: the variable must be declared before}): @racket[:=] would define it, but inside the expression the definition would be local and lost, whereas Python creates the variable in the enclosing scope. As @racket[:=], @racket[:=>] accepts the square brackets and the chained assignments:
-
-@codeblock|{
-{T[i] :=> 7}
-7
-{a :=> b :=> 3}
-3
-}|
-
-With the type annotation, @tt{{name :=> value}} has the type of @racket[value]: @tt{{y := {x :=> a * 2.0} * 3.0}} with a flonum @racket[a] is read as @racket[(:= y (fl* (:=> x (fl* a 2.0)) 3.0))].
+To assign a variable and return the value inside an expression, as the @tt{:=} of Python, see @secref["walrus"].
 
 @defform[#:id << {(name1 name2 ...) := values}]{
 You can also use the assignment or definition operators for creating tuples (like in Python) of values.
@@ -803,6 +777,38 @@ v
 v
 '#(1 2 3 -3 5 -2 7 -1 9)
 }|
+
+
+
+@subsection[#:tag "walrus"]{The walrus operator}
+
+@defform[#:id :=> {name :=> value}]{
+The walrus operator: assign to the variable @racket[name] the value @racket[value] and return this value, as the assignment expression @tt{:=} of Python (@tt{if (n := len(a)) > 10:}). The assignment @racket[:=] returns nothing (@tt{#<void>}), @racket[:=>] returns the value assigned, so it can be used inside an expression. The value is computed only once.
+}
+
+@codeblock|{
+(declare x y)
+{y := {x :=> 5} + 1}
+(list x y)
+'(5 6)
+
+(define (long-list? l)
+  (declare n)
+  (if {(n :=> (length l)) > 10}
+      n
+      #f))
+}|
+
+The variable must exist before: defined, declared with @racket[declare], or a parameter of the procedure. A new name is refused at expansion time (@tt{:=>: the variable must be declared before}): @racket[:=] would define it, but inside the expression the definition would be local and lost, whereas Python creates the variable in the enclosing scope. As @racket[:=], @racket[:=>] accepts the square brackets and the chained assignments:
+
+@codeblock|{
+{T[i] :=> 7}
+7
+{a :=> b :=> 3}
+3
+}|
+
+With the type annotation, @tt{{name :=> value}} has the type of @racket[value]: @tt{{y := {x :=> a * 2.0} * 3.0}} with a flonum @racket[a] is read as @racket[(:= y (fl* (:=> x (fl* a 2.0)) 3.0))].
 
 
 
