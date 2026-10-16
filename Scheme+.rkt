@@ -64,6 +64,7 @@
    <-string-string*
    ← →
    :=  =:
+   :=> ; the walrus operator : assigns and returns the value
    ;; multiple values assignment
    <v v>
    ⇜ ⇝

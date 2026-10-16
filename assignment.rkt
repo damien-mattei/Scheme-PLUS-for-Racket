@@ -27,6 +27,7 @@
            <-string-string*
 	   ← →
 	   :=  =:
+	   :=>
 	   <v v>
 	   ⇜ ⇝)
 
@@ -1114,9 +1115,38 @@
 
 (define-syntax =:
 
-  (syntax-rules () 
+  (syntax-rules ()
 
     ((_ expr ...) (-> expr ...))))
+
+
+
+;; the walrus operator of Python : assigns and returns the value
+;; > (declare x y)
+;; > {y := {x :=> 5} + 1}
+;; > (list x y)
+;; '(5 6)
+;; the variables must exist before : := defines a new name , but here it would be defined in the let and lost
+;; (Python creates the variable in the enclosing scope , a definition can not be in an expression in Scheme)
+(define-syntax :=>
+
+  (lambda (stx)
+
+    (syntax-case stx ()
+
+      ((_ place ... expr)
+       (begin
+	 (for-each (lambda (p)
+		     (when (and (identifier? p)
+				(not (identifier-binding p (syntax-local-phase-level) #t))) ; the test of if-defined
+		       (raise-syntax-error ':=>
+					   "the variable must be declared before , example: (declare x)"
+					   stx
+					   p)))
+		   (syntax->list #'(place ...)))
+	 #'(let ((v expr)) ; expr computed once
+	     (:= place ... v) ; any place of := : a variable , T[i] , a chain {a :=> b :=> 3}
+	     v))))))
 
 
 

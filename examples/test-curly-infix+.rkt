@@ -17,7 +17,8 @@
 
   (require Scheme+)
   ANNOTATION-ON
-  (require rackunit)
+  (require rackunit
+           (only-in syntax/macro-testing convert-compile-time-error)) ; section 30
   
   ;; ================================================================
   ;; 1. Plain infix : operator precedence and associativity
@@ -942,6 +943,50 @@
   (p27-check '(5 not member l and x) '(and (not (member 5 l)) x))
   (p27-check '(x + 1 not member l) '(not (member (+ x 1) l)))
   (p27-check '(a and b not member l or c) '(or (and a (not (member b l))) c))
+
+  ;; ================================================================
+  ;; 30. The walrus operator :=> of Python (:= in Python) : assigns
+  ;;     and returns the value , {y := {x :=> 5} + 1} ; the variable
+  ;;     must exist before (a new name is refused at expansion time).
+  ;; ================================================================
+  (declare p30-x p30-y p30-n p30-a p30-b)
+  {p30-y := {p30-x :=> 5} + 1}
+  (check-equal? (list p30-x p30-y) '(5 6))
+  (define (p30-length l)
+    (if {(p30-n :=> (length l)) > 2} p30-n 0))
+  (check-equal? (p30-length '(1 2 3 4)) 4)
+  (check-equal? (p30-length '(1)) 0)
+  (check-equal? {p30-a :=> p30-b :=> 3} 3)                 ; chained : (:=> p30-a p30-b 3)
+  (check-equal? (list p30-a p30-b) '(3 3))
+  (define p30-v (vector 0 0 0))
+  (define p30-count 0)
+  (define (p30-next) {p30-count := p30-count + 1} p30-count)
+  (check-equal? {p30-v[(p30-next)] :=> 7} 7)              ; the index is computed once
+  (check-equal? (list p30-v p30-count) '(#(0 7 0) 1))
+  (define (p30-local x)
+    {x :=> x * 2})                                          ; a parameter exists
+  (check-equal? (p30-local 4) 8)
+  ;; a new name is refused : it would be defined in the let of :=> and lost
+  (check-exn exn:fail:syntax?
+             (lambda () (convert-compile-time-error (let () (:=> p30-new 1) p30-new))))
+  ;; annotated : (:=> x expr) has the type of expr
+  (define (p30-float a)
+    ANNOTATION-ON
+    (type flonum? a)
+    (declare x)
+    {y := {x :=> a * 2.0} * 3.0}                            ; (:= y (fl* (:=> x (fl* a 2.0)) 3.0))
+    (list x y))
+  (check-equal? (p30-float 1.5) '(3.0 9.0))
+  (define (p30-vector v)
+    ANNOTATION-ON
+    (type vector? v)
+    (declare w)
+    (eq? {w :=> v} v))                                       ; the value is returned , not a copy
+  (check-true (p30-vector (vector 1 2)))
+  ;; the two precedence engines
+  (p27-check '(y := (x :=> 5) + 1) '(:= y (+ (:=> x 5) 1)))
+  (p27-check '(n :=> a + b * c) '(:=> n (+ a (* b c))))
+  (p27-check '(a :=> not b and c) '(:=> a (and (not b) c)))
 
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
