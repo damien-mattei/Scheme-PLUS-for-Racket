@@ -47,6 +47,10 @@
 		 member-in-postfix-lst
 		 get-postfix-lst
 		 reset-postfix-lst!
+		 insert-in-prefix-unary-lst
+		 member-in-prefix-unary-lst
+		 get-prefix-unary-lst
+		 reset-prefix-unary-lst!
 		 insert-in-executables-lst
 		 member-in-executables-lst
 		 get-executables-lst
@@ -226,6 +230,27 @@
 (define (reset-postfix-lst!) ; each file read starts with only the factorial as postfix operator
   (set! postfix-lst '(!)))
 
+
+;; the prefix unary operators binding as the unary minus : ~ , and those declared in the file with overload-unary-operator ,
+;; require-overload-unary-operator or declare-prefix-operator (see parser-declarations.rkt) ; {a and ¬ b} is (and a (¬ b))
+;; (see group-prefix-operators in infix-prefix-postfix.rkt , not has its own rule , the signs - + theirs)
+(define prefix-unary-lst '(~))
+
+(define (insert-in-prefix-unary-lst elem) ; insert it only if not already inside
+  (when (not (member elem prefix-unary-lst))
+    (set! prefix-unary-lst (cons elem prefix-unary-lst))))
+
+(define (member-in-prefix-unary-lst elem) ; elem : a symbol or a syntax object
+  (define d (if (syntax? elem) (syntax->datum elem) elem))
+  (and (symbol? d)
+       (member d prefix-unary-lst)
+       #t))
+
+(define (get-prefix-unary-lst)
+  prefix-unary-lst)
+
+(define (reset-prefix-unary-lst!) ; each file read starts with only ~
+  (set! prefix-unary-lst '(~)))
 
 ;; the procedures and macros known by the infix parser, in addition to those of Racket (see known-program? in program-type.rkt) :
 ;; defined in the file, typed with a type of procedure, overloaded (see parser-declarations.rkt)

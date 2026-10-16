@@ -56,6 +56,9 @@
 
 	 require-overload-operator ; official one
 
+	 overload-unary-operator ; official one : an overload with exactly one argument , (- M) for a matrix
+	 require-overload-unary-operator ; official one
+
 	 define-overload-n-ary-associative-operator
 	 ;define-overload-n-ary-associative-operator-annot
 	 overload-n-ary-operator
@@ -128,6 +131,9 @@
     ((procedure) (if (hash-table-exists? $ovrld-ht-proc$ qorig-funct)
 		     $ovrld-ht-proc$
 		     (not-overloadable)))
+    ((unary) (if in-binary? ; the table of the overloads with an exact number of arguments , as the binary ones
+		 $ovrld-ht$
+		 (not-overloadable)))
     ((binary) (cond (in-binary? $ovrld-ht$)
 		    (in-n-ary? $ovrld-ht-n-ary$) ; operator defined only as n-ary : its dispatcher also handles exact entries
 		    (else (not-overloadable))))
@@ -578,8 +584,9 @@
 
           (define nb-args (length args-lst))
 
-          (when (and (= nb-args 2)
-                     binary-op) ; binary operator: we will check the arguments match exactly the types
+          ; the overloads with an exact number of arguments , binary (2) and unary (1) , are checked first , for any number of
+          ; arguments : check-arguments compares the number of predicates with the number of arguments
+          (when binary-op ; we will check the arguments match exactly the types , old version : (and (= nb-args 2) binary-op)
 
             (define whole-proc-pred-lst (hash-table-ref $ovrld-ht$ qproc))
 
@@ -708,16 +715,20 @@
 	   (not (or name base)))))) ; #f #f : the module itself
 
 ;; expansion of overload-operator : (begin <definition of the overloaded operator, if needed> <added overload>)
-(define-for-syntax (overload-operator-expansion stx proc-stx module-name-stx funct-stx preds-stx)
+(define-for-syntax (overload-operator-expansion stx proc-stx module-name-stx funct-stx preds-stx (unary? #f))
 
-  ;; the number of predicates chooses the kind of overload
+  ;; the number of predicates chooses the kind of overload , except for overload-unary-operator
   (define kind
+    (if unary?
+	(syntax-case preds-stx () ; exactly one argument
+	  ((pred) #'unary)
+	  (_ (raise-syntax-error 'overload-unary-operator "expected 1 predicate (the type of the single argument)" stx preds-stx)))
     (syntax-case preds-stx ()
       ((pred) #'n-ary) ; one predicate : all the arguments must have this type, whatever their number
       ((pred1 pred2) #'binary)
       (_ (raise-syntax-error 'overload-operator
 			     "expected 1 predicate (n-ary overload : all arguments of that type) or 2 predicates (binary overload)"
-			     stx preds-stx))))
+			     stx preds-stx)))))
 
   (define definition
     (cond ((defined-in-this-module? proc-stx) #'(void)) ; already overloaded in this module : only add the overload
@@ -798,6 +809,30 @@
 ;; no call/cc). orig-proc-stx is the identifier bound to the original procedure by the
 ;; caller's require, or #f for a brand new procedure (then error if no overload matches).
 ;; Built in one with-syntax so that qproc/args-lst are the same identifiers everywhere.
+;; (overload-unary-operator proc [module-name] [(ret-val ...)] funct (pred)) : an overload of proc with exactly one argument ,
+;; (overload-unary-operator - (matrix?) negate-matrix (matrix?)) : (- M) is (negate-matrix M) , but not (- M1 M2) ;
+;; with (overload-operator - (matrix?) negate-matrix (matrix?)) , n-ary , negate-matrix would be called with any number of matrices
+(define-syntax overload-unary-operator
+  (lambda (stx)
+    (syntax-case stx ()
+      ((_ proc funct preds)
+       (overload-operator-expansion stx #'proc #f #'funct #'preds #t))
+      ((_ proc x funct preds) ; x is a module name or the list of return values
+       (cond ((module-name? #'x)
+	      (overload-operator-expansion stx #'proc #'x #'funct #'preds #t))
+	     ((syntax->list #'x) ; list of return values : ignored here
+	      (overload-operator-expansion stx #'proc #f #'funct #'preds #t))
+	     (else (raise-syntax-error 'overload-unary-operator
+				       "expected a module name or a list of return values"
+				       stx #'x))))
+      ((_ proc module-name (ret-val ...) funct preds) ; list of return values ignored here
+       (overload-operator-expansion stx #'proc #'module-name #'funct #'preds #t)))))
+
+;; for the type annotation pass in a module that imports the overload (see require-overload-operator)
+(define-syntax require-overload-unary-operator
+  (syntax-rules ()
+    ((_ . args) (void))))
+
 (define-for-syntax (overloaded-procedure-body proc-stx orig-proc-stx)
   (with-syntax
       ([proc proc-stx]

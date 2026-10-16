@@ -32,6 +32,7 @@
 (module parser-declarations racket/base
 
   (provide declare-postfix-operator ; for the user
+	   declare-prefix-operator ; for the user
 	   verify-if-declaration-for-parser-then-store-it
 	   reset-declarations-for-parser!)
 
@@ -49,8 +50,18 @@
        (begin (insert-in-postfix-lst (quote op)) ... (void)))))
 
 
-  ;; each file read starts with empty declarations (only the factorial ! as postfix operator)
+  ;; (declare-prefix-operator op ...) : then {a and op b} is (and a (op b)) , op binding as the unary minus (as ~)
+  ;; the reader stores the operators while reading (see verify-if-declaration-for-parser-then-store-it), the macro at the
+  ;; execution for the parser of the runtime
+  (define-syntax declare-prefix-operator
+    (syntax-rules ()
+      ((_ op ...)
+       (begin (insert-in-prefix-unary-lst (quote op)) ... (void)))))
+
+
+  ;; each file read starts with empty declarations (only the factorial ! as postfix operator , only ~ as prefix unary operator)
   (define (reset-declarations-for-parser!)
+    (reset-prefix-unary-lst!)
     (reset-postfix-lst!)
     (reset-executables-lst!)
     (reset-data-lst!))
@@ -66,6 +77,15 @@
 	  ((eq? (car datum) 'declare-postfix-operator) ; (declare-postfix-operator op ...)
 	   (for-each insert-in-postfix-lst (filter symbol? (cdr datum)))
 	   #t)
+	  ((eq? (car datum) 'declare-prefix-operator) ; (declare-prefix-operator op ...)
+	   (for-each insert-in-prefix-unary-lst (filter symbol? (cdr datum)))
+	   #f)
+	  ((and (memq (car datum) '(overload-unary-operator require-overload-unary-operator)) ; a prefix unary operator
+		(pair? (cdr datum))
+		(symbol? (cadr datum)))
+	   (insert-in-prefix-unary-lst (cadr datum))
+	   (for-each insert-executable (filter symbol? (overloaded-names datum)))
+	   #f)
 	  ((eq? (car datum) 'type) ; (type T name ...)
 	   (when (and (pair? (cdr datum))
 		      (type-form? (cadr datum))) ; not an other form like (type {z[]} vector?)

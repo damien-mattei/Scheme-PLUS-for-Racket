@@ -819,6 +819,54 @@
   END-STRICT-SRFI-105-REGION
   (check-equal? (p26-strict 7 2) 5)
 
+  ;; ================================================================
+  ;; 27. The two precedence engines : the Pratt parser (by default) and
+  ;;     the original engine of Scheme+ (use-pratt-parser? set to #f)
+  ;;     must give the same result. The reader uses only the default
+  ;;     engine : here the parser is called directly with each engine on
+  ;;     the same terms (quoted : data , not converted by the reader).
+  ;; ================================================================
+  (require (only-in Scheme+/infix-with-precedence-to-prefix
+                    !*prec-generic-infix-parser-prepare-runtime
+                    use-pratt-parser?))
+
+  (define (p27-parse terms pratt?)
+    (parameterize ((use-pratt-parser? pratt?))
+      (!*prec-generic-infix-parser-prepare-runtime terms (lambda (op a b) (list op a b)))))
+
+  (define (p27-check terms expected) ; the same expected result with the two engines
+    (check-equal? (p27-parse terms #t) expected)
+    (check-equal? (p27-parse terms #f) expected))
+
+  ;; arithmetic , comparisons , logic , assignment
+  (p27-check '(3 * 4 + 2) '(+ (* 3 4) 2))
+  (p27-check '(a < b <= c) '(and (< a b) (<= b c)))
+  (p27-check '(a and b or c) '(or (and a b) c))
+  (p27-check '(a and b and c or d) '(or (and a b c) d)) ; the chains of and / or are n-ary
+  (p27-check '(a or b or c and d) '(or a b (and c d)))
+  (p27-check '(x := y + 1) '(:= x (+ y 1)))
+  ;; exponentiation , signs , superscripts
+  (p27-check '(2 expt 3 expt 2) '(expt 2 (expt 3 2)))
+  (p27-check '(- 2 ** 4) '(- (** 2 4)))
+  (p27-check '(3 * - 2 ** 4 + 1) '(+ (* 3 (- (** 2 4))) 1))
+  (p27-check '(a * - b) '(* a (- b)))
+  (p27-check '(x ²·³⁻⁴) '(** x (- (· 2 3) 4)))
+  ;; not (section 25)
+  (p27-check '(a and not b) '(and a (not b)))
+  (p27-check '(not x < y) '(not (< x y)))
+  (p27-check '(a or not b and c) '(or a (and (not b) c)))
+  (p27-check '(not a and not b and not c or c and not d) '(or (and (not a) (not b) (not c)) (and c (not d))))
+  (p27-check '(not not a) '(not (not a)))
+  (p27-check '(x := (not a and b)) '(:= x (and (not a) b)))
+  (p27-check '(a if not b else c) '(if (not b) a c))
+  ;; ~ (section 26)
+  (p27-check '(a & ~ b) '(& a (~ b)))
+  (p27-check '(~ a + 1) '(+ (~ a) 1))
+  (p27-check '(~ a ** 2 ** 3) '(~ (** a (** 2 3))))
+  (p27-check '(2 ** ~ a ** 3) '(** 2 (~ (** a 3))))
+  (p27-check '(~ a ²) '(~ (** a 2)))
+  (p27-check '(not ~ a = 0) '(not (= (~ a) 0)))
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 

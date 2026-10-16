@@ -137,6 +137,8 @@
    define-overload-existing-operator
    define-overload-existing-operator-annot
    require-overload-operator
+   overload-unary-operator
+   require-overload-unary-operator
    define-overloaded-operator
    overload-existing-operator
    
@@ -161,6 +163,7 @@
 
    ;; annotation
    declare-postfix-operator
+   declare-prefix-operator
 
    ;; type annotation
    type ; this is in fact a dummy macro in case some type annotation has been forgotten by the type annotation parser, so that the code can still be compiled and run, but with a warning message
@@ -200,6 +203,7 @@
    fx*
    fxquotient
    fxmodulo
+   fxnot ; ~ of a fixnum (type annotation)
    fx<
    fx>
    fx<=
@@ -275,7 +279,7 @@
 
    ;; postfix operators
    Scheme+/factorial
-   (only-in Scheme+/parser-declarations declare-postfix-operator) ; declare-executable and declare-data are internal (written by the reader)
+   (only-in Scheme+/parser-declarations declare-postfix-operator declare-prefix-operator) ; declare-executable and declare-data are internal (written by the reader)
 
    ;; type annotation
    Scheme+/type

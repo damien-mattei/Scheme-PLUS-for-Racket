@@ -104,6 +104,7 @@
 		 infix-canonical?
 		 two-symbols-or-list-following?
 		 group-prefix-operators
+		 prefix-operator?
 		 prefix-operator-in-infix?
                  not-infix-and-known-procedure-at-end-then-postfix?
                  surely-data?)
@@ -416,8 +417,9 @@
   ;; operator binding as weakly as and (and , or , the assignments and definitions , ~> , the if and else of Python).
   ;; (a and not b) --> (a and (not b)) , (not x < y and z) --> ((not (x < y)) and z) , (not not a) --> ((not (not a)))
   ;;
-  ;; ~ binds as the unary minus : above * + & << and the comparisons , below the exponentiation. It takes the following
-  ;; term and the chain of exponentiation after it (** or expt with their operand , superscripts).
+  ;; ~ , and the prefix unary operators declared in the file (overload-unary-operator , declare-prefix-operator) , bind as the
+  ;; unary minus : above * + & << and the comparisons , below the exponentiation. Such an operator takes the following term
+  ;; and the chain of exponentiation after it (** or expt with their operand , superscripts).
   ;; (a & ~ b) --> (a & (~ b)) , (~ a ** 2) --> ((~ (a ** 2))) , (2 ** ~ a) --> (2 ** (~ a)) , (~ a ²) --> ((~ (a ²)))
   (define (not-boundary? x)
     (or (datum=? x 'and) ; not AND-op? : · is also a multiplication
@@ -428,9 +430,9 @@
 	(datum=? x 'if)
 	(datum=? x 'else)))
 
-  (define (prefix-operator? x)
+  (define (prefix-operator? x) ; not , ~ and the declared prefix unary operators
     (or (NOT-op? x)
-	(BITWISE-NOT-op? x)))
+	(member-in-prefix-unary-lst x)))
 
   ;; the operand of a prefix operator : (values operand-terms rest)
   (define (split-not-operand R) ; until the first not-boundary?

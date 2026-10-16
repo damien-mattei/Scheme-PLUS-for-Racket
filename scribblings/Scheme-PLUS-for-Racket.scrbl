@@ -1579,6 +1579,18 @@ Another example using floating point matrix and computing the transpose of the m
 }
 
 
+@defform[(declare-prefix-operator op ...)]{Define prefix unary operators named @racket[op ...]. In an infix expression such an operator binds as the unary minus and as @racket[~]: more tightly than @racket[*], @racket[+] and the comparisons, less tightly than the exponentiation; it applies to the term that follows it. As for the postfix operators, the declaration acts only on the file where it is written, before the use of the operator. An operator overloaded with @racket[overload-unary-operator] is declared automatically.
+
+@codeblock|{
+(define (inv x) (/ 1 x))
+(declare-prefix-operator inv)
+{2 * inv 4}      ; (* 2 (inv 4))
+1/2
+{inv 2 ** 2}     ; (inv (** 2 2))
+1/4
+}|
+}
+
 There exist also some predefined postfix operators such as factorial @racket[!] , example of use:
 
 @codeblock|{
@@ -1725,6 +1737,35 @@ An operator that does not come from @racket[racket/base], such as @racket[·] wh
 @codeblock|{
 (overload-operator · (only-in Scheme+/multiply ·) multiply-flomat-vector (flomat? vector?))
 }|
+
+@defform*[((overload-unary-operator name special (predicate))
+           (overload-unary-operator name module-name special (predicate))
+           (overload-unary-operator name (return-predicate ...) special (predicate))
+           (overload-unary-operator name module-name (return-predicate ...) special (predicate)))]{Overload an operator named @racket[name] with a specialized procedure @racket[special] of exactly one argument. With @racket[overload-operator] a single predicate means an n-ary overload, for any number of arguments of that type: a procedure of one argument must be given with @racket[overload-unary-operator], then it is used only for a call with one argument. The binary overloads and the unary ones are tried first, the n-ary ones after, at run time as in the type annotation.
+
+The negation and the subtraction of matrices:
+
+@codeblock|{
+(struct mat (v))
+(define (mat-neg M) (mat (vector-map - (mat-v M))))
+(define (mat-sub A B) (mat (vector-map - (mat-v A) (mat-v B))))
+
+(overload-operator - (mat?) mat-sub (mat? mat?))   ; binary : A - B
+(overload-unary-operator - (mat?) mat-neg (mat?))  ; unary : - M
+
+(define (f A B)
+  (type mat? A B)
+  {P := - A}   ; (:= P (mat-neg A)) , P is a mat?
+  {P - B})     ; (mat-sub P B)
+}|
+
+The operator can be a new one. A new symbol overloaded with @racket[overload-unary-operator] is also a prefix unary operator in infix (as @racket[~], see @racket[declare-prefix-operator]):
+
+@codeblock|{
+(overload-unary-operator ¬ (boolean?) not (boolean?))
+{a and ¬ b}   ; (and a (¬ b)) , with (type boolean? b) : (and a (not b))
+}|
+}
 
 @defform*[((overload-square-brackets getter setter! (pred-obj pred-coord ...))
            (overload-square-brackets (return-predicate) getter setter! (pred-obj pred-coord ...)))]{Overload square bracket [ ] for @racket[object] that return true with predicate @racket[pred-obj] with @racket[getter] for read and @racket[setter!] for write at coordinates of type validated by predicates @racket[pred-coord ...].
@@ -2027,6 +2068,9 @@ ANNOTATION-ON
 ;; tell the inference of THIS module what matrix+.rkt did to  ·
 (require-overload-operator · multiply-flomat-vector (flomat? vector?))
 }|
+
+@defform*[((require-overload-unary-operator name special (predicate))
+           (require-overload-unary-operator name (return-predicate ...) special (predicate)))]{The same for an operator overloaded with @racket[overload-unary-operator] in another module.}
 
 @subsubsection[#:tag "procedures-annotation"]{Procedures}
 

@@ -280,14 +280,26 @@
   ;;17
 
   
+  ;; the chains of and / or are n-ary , for the two precedence engines (both build the tree with the creator) :
+  ;; (a and b and c or d) --> (or (and a b c) d) instead of (or (and (and a b) c) d) , as (a and b and c) --> (and a b c) ;
+  ;; and / or are variadic macros , the flattening of a left chain keeps the order of evaluation and the short-circuit
+  ;; (for the creator of the runtime , (lambda (op a b) (op a b)) , and / or never come : they are macros)
+  (define (n-ary-and-or-creator op a b)
+    (if (and (or (datum=? op 'and) ; not AND-op? : · is also a multiplication
+		 (OR-op? op))
+	     (pair? a)
+	     (datum=? (car a) op))
+	(append a (list b)) ; (op a1 ... an) b --> (op a1 ... an b)
+	(creator op a b)))
+
   (if (null? terms) ;; never for infix as there is e1 op1 e2 op2 e3 at least
 	terms
 	(if (use-pratt-parser?)
-	    (pratt-infix-parser terms creator)
+	    (pratt-infix-parser terms n-ary-and-or-creator)
 	    (!*-generic-infix-parser terms ; (reverse terms) ; will now reverse only later when expo
 				     ;; as we are in REPL/parsing generating source code we can use symbols for parsing
 				     infix-operators-lst-for-parser;-syntax
-				     creator))))
+				     n-ary-and-or-creator))))
 
 
 
@@ -741,7 +753,7 @@
   ; the prefix unary operators not and ~ : {a and not b} --> (and a (not b)) , {not x < y} --> (not (< x y)) , {a & ~ b} -->
   ; (& a (~ b)) (see group-prefix-operators in infix-prefix-postfix.rkt) , before the if of Python : {a if not b else c}
   (when (and (list? terms)
-             (ormap (lambda (x) (or (NOT-op? x) (BITWISE-NOT-op? x))) terms))
+             (ormap prefix-operator? terms))
     (set! terms (group-prefix-operators terms))
     (when (null? (cdr terms)) ; {not x < y} --> ((not (x < y)))
       (return (!*prec-generic-infix-parser-rec-prepare (car terms) creator))))

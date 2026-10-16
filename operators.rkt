@@ -136,6 +136,8 @@
 	   is-require-overload-procedure?
 
 	   is-overload-square-brackets?
+	   is-overload-unary-operator?
+	   is-require-overload-unary-operator?
 	   is-require-overload-square-brackets?
 	   
 	   ;is-overload-existing-procedure? ; replaced by overload-procedure
@@ -713,6 +715,14 @@
 
 (define (is-require-overload-procedure? s)
   (eq? s 'require-overload-procedure))
+
+;; (overload-unary-operator op [module-name] [(ret-pred ...)] funct (pred)) : an overload with exactly one argument , and its
+;; require form , for the type annotation pass
+(define (is-overload-unary-operator? s)
+  (eq? s 'overload-unary-operator))
+
+(define (is-require-overload-unary-operator? s)
+  (eq? s 'require-overload-unary-operator))
 
 ;; (overload-square-brackets getter setter! (pred-obj pred-index ...)) : for the type annotation pass
 (define (is-overload-square-brackets? s)
