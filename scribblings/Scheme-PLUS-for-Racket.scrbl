@@ -82,7 +82,7 @@ Package: @url["https://pkgs.racket-lang.org/package/Scheme-PLUS-for-Racket"]
 }
 
 
-@defmodule[SRFI-105 #:reader]{
+@defmodule[SRFI-105 #:reader #:no-declare #:link-target? #f]{
 This reader package provides the SRFI-105 Curly Infix reader/parser used with Scheme+.
 
 Source code: @url["https://github.com/damien-mattei/SRFI-105-for-Racket"]
@@ -95,7 +95,7 @@ Package: @url["https://pkgs.racket-lang.org/package/SRFI-105-for-Racket"]
 
 Optional but recommended:
 
-@defmodule[curly-infix #:reader]{
+@defmodule[curly-infix #:reader #:no-declare #:link-target? #f]{
 curly-infix is an alias more friendly to read an say than the enigmatic "SRFI-105" (that sounds like R2-D2).
 
 Source code: @url["https://github.com/damien-mattei/curly-infix"]
@@ -106,7 +106,7 @@ Package: @url["https://pkgs.racket-lang.org/package/curly-infix"]
 
 Not required:
 
-@defmodule[SRFI-110 #:reader]{
+@defmodule[SRFI-110 #:reader #:no-declare #:link-target? #f]{
 This other reader package provides also the Curly Infix reader/parser as it is also part of SRFI-110 specifications and implementation.
 
 Source code: @url["https://github.com/damien-mattei/SRFI-110-for-Racket"]
@@ -1293,15 +1293,37 @@ Note: exponentiation can also be written with superscript numbers and expression
 
 @defform[#:id ^ {n ^ m}]{Bitwise Exclusive Or}
 
-@defform[(~ n)]{Bitwise Not}
+@defform[#:id ~ {~ n}]{Bitwise Not.Same as @racket[(bitwise-not n)].
+
+@curly-example[{~ 5} -6]
+
+In an infix expression @racket[~] is a prefix unary operator, with the precedence of Python, as the unary minus: it binds more tightly than @racket[*], @racket[+], @racket[&], the shifts and the comparisons, and less tightly than the exponentiation. A @racket[~] in the position of an operand (at the beginning, or after an operator) applies to the term that follows it, with the chain of exponentiation after this term.
+
+@codeblock|{
+{a & ~ b}               ; (& a (~ b))
+{~ a & b}               ; (& (~ a) b)
+{2 * ~ a}               ; (* 2 (~ a))
+{~ ~ a}                 ; (~ (~ a))
+{~ a ** 2}              ; (~ (** a 2))
+{~ a ²}                 ; (~ (** a 2))
+{2 ** ~ a}              ; (** 2 (~ a))
+}|
+
+Elsewhere @racket[~] is the usual procedure: @litchar{{f := ~}} and @litchar{(map ~ l)} are unchanged. The prefix unary operators of Scheme+ are those of Python: @racket[-], @racket[+], @racket[~] and @racket[not].}
 
 @defform[#:id && {expr1 && expr2}]{This is a procedural @racket[and] intended to be used both internally,inside Scheme+ source code,and externally in a Scheme+ program when parsing is required at runtime where we can not use the macro @racket[and] and thus we will use the @racket[&&] procedure.Unless your expression will be parsed at runtime do not use it and prefer it @racket[and].}
 
 @defform[#:id ∣∣ {expr1 ∣∣ expr2}]{This is a procedural @racket[or].See explanations above.See also note about vertical line reserved in Racket above.}
 
-In an infix expression @racket[not] is a prefix unary operator, with the precedence of Python: it binds less tightly than the comparisons and the arithmetic operators, and more tightly than @racket[and] and @racket[or]. A @racket[not] in the position of an operand (at the beginning, or after an operator) applies to the terms that follow it, until the next @racket[and], @racket[or], assignment or definition. It works with the two precedence engines of Scheme+.
+As being procedurals @racket[&&] and @racket[∣∣] are not short-circuited. The @racket[and] and @racket[or] of Scheme remain usable as usual, in prefix and in infix (@litchar{{a and b}} is @racket[(and a b)]), and they are short-circuited.
+
+@defform[#:id not {not expr}]{
+@curly-example[{not #f} #t]
+
+In an infix expression @racket[not] is a prefix unary operator, with the precedence of Python: it binds less tightly than the comparisons and the arithmetic operators, and more tightly than @racket[and] and @racket[or]. A @racket[not] in the position of an operand (at the beginning, or after an operator) applies to the terms that follow it, until the next @racket[and], @racket[or], assignment or definition. It works with the two precedence engines of Scheme+: a Pratt parser (top down operator precedence), used by default, and the original engine of Scheme+, which reduces the expression in successive passes, one for each group of operators of the same precedence, from the highest precedence to the lowest.
 
 @codeblock|{
+{not a}                 ; (not a)
 {a and not b}           ; (and a (not b))
 {not a and b}           ; (and (not a) b)
 {not x < y}             ; (not (< x y))
@@ -1310,9 +1332,7 @@ In an infix expression @racket[not] is a prefix unary operator, with the precede
 {x := not a and b}      ; (:= x (and (not a) b))
 }|
 
-Elsewhere @racket[not] is the usual procedure: @litchar{{f := not}} and @litchar{(map not l)} are unchanged.
-
-As being procedurals @racket[&&] and @racket[∣∣] are not short-circuited.
+Elsewhere @racket[not] is the usual procedure: @litchar{{f := not}} and @litchar{(map not l)} are unchanged.}
 
 @defform[#:id ≤ {n ≤ m}]{
 @codeblock|{

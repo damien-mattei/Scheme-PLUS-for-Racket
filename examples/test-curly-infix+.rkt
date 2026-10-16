@@ -773,6 +773,52 @@
   END-STRICT-SRFI-105-REGION
   (check-equal? (p25-strict #t #f 3 2) '(#t #t))
 
+  ;; ================================================================
+  ;; 26. ~ (bitwise not) as a prefix unary operator in infix , with the
+  ;;     precedence of Python , as the unary minus : above * + & and the
+  ;;     comparisons , below the exponentiation (~ takes the following
+  ;;     term and its chain of exponentiation).
+  ;;     {a & ~ b} --> (& a (~ b)) , {~ a ** 2} --> (~ (** a 2))
+  ;;     A ~ in the position of a value is unchanged : {f := ~}
+  ;; ================================================================
+  (check-equal? (~ 5) -6)
+  (define (p26-not a) {~ a})                        ; (~ a)
+  (check-equal? (p26-not 5) -6)
+  (define (p26-and-not a b) {a & ~ b})              ; (& a (~ b))
+  (check-equal? (p26-and-not 7 2) 5)
+  (define (p26-not-and a b) {~ a & b})              ; (& (~ a) b)
+  (check-equal? (p26-not-and 2 7) 5)
+  (define (p26-plus a) {~ a + 1})                   ; (+ (~ a) 1) : - a
+  (check-equal? (p26-plus 5) -5)
+  (define (p26-times a) {2 * ~ a})                  ; (* 2 (~ a))
+  (check-equal? (p26-times 5) -12)
+  (define (p26-not-not a) {~ ~ a})                  ; (~ (~ a))
+  (check-equal? (p26-not-not 5) 5)
+  (define (p26-power a) {~ a ** 2})                 ; (~ (** a 2))
+  (check-equal? (p26-power 3) -10)
+  (define (p26-superscript a) {~ a ²})              ; (~ (** a 2))
+  (check-equal? (p26-superscript 3) -10)
+  (define (p26-exponent a) {2 ** ~ a})              ; (** 2 (~ a))
+  (check-equal? (p26-exponent -3) 4)
+  (define (p26-chain a) {~ a ** 2 ** 3})            ; (~ (** a (** 2 3)))
+  (check-equal? (p26-chain 2) -257)
+  (define (p26-minus a) {- ~ a})                    ; (- (~ a))
+  (check-equal? (p26-minus 5) 6)
+  (define (p26-with-not a) {not ~ a = 0})           ; (not (= (~ a) 0))
+  (check-equal? (p26-with-not -1) #f)
+  (define (p26-assign a)
+    {x := ~ a}                                      ; (:= x (~ a))
+    x)
+  (check-equal? (p26-assign 0) -1)
+  ;; ~ as a value : unchanged
+  {p26-f := ~}
+  (check-equal? (p26-f 0) -1)
+  (check-equal? {(map ~ '(0 1))} '(-1 -2))
+  BEGIN-STRICT-SRFI-105-REGION
+  (define (p26-strict a b) {a & ~ b})
+  END-STRICT-SRFI-105-REGION
+  (check-equal? (p26-strict 7 2) 5)
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 

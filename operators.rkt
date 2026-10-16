@@ -51,6 +51,7 @@
 	   AND-op?
 	   OR-op?
 	   NOT-op?
+	   BITWISE-NOT-op?
 	   LOGIC-N-ARY-op?
 	   
 	   XOR-op? ; Warning: Bitwise operator
@@ -295,6 +296,10 @@
 ;; test if an operator is NOT
 (define (NOT-op? oper)
   (datum=? oper 'not))
+
+;; test if an operator is the bitwise not ~ (a prefix unary operator in infix , see group-prefix-operators in infix-prefix-postfix.rkt)
+(define (BITWISE-NOT-op? oper)
+  (datum=? oper '~))
   ;;(or (eq? oper 'not) (check-syntax=? oper #'not))) ; not sure it is usefull in syntax 
   ;;(or (eq? oper 'not) (eq? oper 'NOT)))
 
