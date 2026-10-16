@@ -1841,7 +1841,22 @@ See the full example at @url["https://github.com/damien-mattei/Scheme-PLUS-for-R
 
 Scheme+ has an @bold{optional} type annotation and inference pass. It runs @italic{inside} the SRFI-105 Curly Infix reader, after the curly-infix and square-bracket parsing and @italic{before} the Racket compiler sees the code, so it is a read/compile time mechanism, not a run time one.
 
-Its purpose is speed. When the pass knows the type of the operands it can:
+Its purpose is speed. @bold{On the neural network of the complete example (@secref["annotation-example"]), a retropropagation with matrices of floats, 1000 iterations of the learning take 14 s without the pass and 4.7 s with @racket[ANNOTATION-ON] and the type annotations of the program: about 3 times faster.} The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged.
+
+The gain does not come only from Scheme+: on small programs written in plain Scheme (prefix, without @litchar{{ }}, overloads nor square brackets), the same source runs from 1.7 to 7 times faster with the type annotations than with the generic operators, and Scheme+ without annotation costs only 0.5 % to 4 % more than Scheme. With @racket[fl+], @racket[fl*] ... the compiler of Racket CS keeps the floats unboxed in the loops instead of allocating each result, with @racket[fx+], @racket[fx<] ... it skips the test of the type and the overflow to the big integers. These are tight loops, the best case: in a whole program, with calls and allocations, the gain is smaller (3 times for the retropropagation above).
+
+@tabular[#:style 'boxed
+         #:column-properties '(left right right right right)
+         #:row-properties '(bottom-border ())
+         (list (list @bold{program (same source)} @bold{Scheme} @bold{Scheme+} @bold{Scheme+ annotated} @bold{gain over Scheme})
+               (list "floats: Horner and sigmoid, 2·10⁷ points" "712 ms" "729 ms" "289 ms" "2.5 ×")
+               (list "product of matrices 200×200, 20 times" "984 ms" "989 ms" "571 ms" "1.7 ×")
+               (list "integers: flights of Syracuse up to 10⁶" "897 ms" "936 ms" "359 ms" "2.5 ×")
+               (list "integration by the trapezoids, 2·10⁷ steps" "316 ms" "328 ms" "44 ms" "7.2 ×"))]
+
+CPU times, median of 7 runs, Racket 9.2 CS. Scheme is a @racket[racket/base] module; Scheme+ is the same source in a Scheme+ module; Scheme+ annotated adds @racket[ANNOTATION-ON] and a few @racket[type] lines (the parameters, the result of a call to a procedure of the program, with a @racket[let] or with its signature such as @racket[(type ((flonum?) procedure? (flonum?)) f)]).
+
+When the pass knows the type of the operands it can:
 @itemlist[
   @item{replace a generic, overloaded, dynamically dispatched operator such as @racket[+], @racket[-], @racket[*], @racket[/], @racket[·] or @racket[**] by a monomorphic primitive such as @racket[fl+] or @racket[fx*] (or by the backup operator @racket[orig-+] when the arguments are just plain numbers);}
   @item{likewise replace a comparison @racket[<], @racket[>], @racket[<=], @racket[>=], @racket[=], @racket[≤], @racket[≥], @racket[≠] or @racket[<>] by @racket[fx<], @racket[fl<=], @racket[fx≠], @racket[fl≠], ... (@racket[fx≠] and @racket[fl≠], the versions of @racket[≠] for fixnums and flonums, are provided by Scheme+); the type of the result of a comparison is @racket[boolean?];}
