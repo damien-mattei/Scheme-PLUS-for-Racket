@@ -1916,9 +1916,9 @@ See the full example at @url["https://github.com/damien-mattei/Scheme-PLUS-for-R
 
 Scheme+ has an @bold{optional} type annotation and inference pass. It runs @italic{inside} the SRFI-105 Curly Infix reader, after the curly-infix and square-bracket parsing and @italic{before} the Racket compiler sees the code, so it is a read/compile time mechanism, not a run time one.
 
-Its purpose is speed. @bold{On the neural network of the complete example (@secref["annotation-example"]), a retropropagation with matrices of floats, 1000 iterations of the learning take 14 s without the pass and 4.7 s with @racket[ANNOTATION-ON] and the type annotations of the program: about 3 times faster.} The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged.
+Its purpose is speed. @bold{On the neural network of the complete example (@secref["annotation-example"]), a retropropagation with matrices of floats, 1000 iterations of the learning take 11.5 s without the pass and 4.3 s with @racket[ANNOTATION-ON] and the type annotations of the program (in power-saving mode): about 2.7 times faster.} The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged.
 
-The gain does not come only from Scheme+: on small programs written in plain Scheme (prefix, without @litchar{{ }}, overloads nor square brackets), the same source runs from 1.7 to 5 times faster with the type annotations than with the generic operators, and Scheme+ without annotation runs at the speed of Scheme (the differences, of a few percent, are within the precision of the measures). With @racket[fl+], @racket[fl*], @racket[flexp] ... the compiler of Racket CS keeps the floats unboxed in the loops instead of allocating each result, with @racket[fx+], @racket[fx<], @racket[fxquotient] ... it skips the test of the type and the overflow to the big integers. These are tight loops, the best case: in a whole program, with calls and allocations, the gain is smaller (3 times for the retropropagation above).
+The gain does not come only from Scheme+: on small programs written in plain Scheme (prefix, without @litchar{{ }}, overloads nor square brackets), the same source runs from 1.7 to 5 times faster with the type annotations than with the generic operators, and Scheme+ without annotation runs at the speed of Scheme (the differences, of a few percent, are within the precision of the measures). With @racket[fl+], @racket[fl*], @racket[flexp] ... the compiler of Racket CS keeps the floats unboxed in the loops instead of allocating each result, with @racket[fx+], @racket[fx<], @racket[fxquotient] ... it skips the test of the type and the overflow to the big integers. These are tight loops, the best case: in a whole program, with calls and allocations, the gain is smaller (2.7 times for the retropropagation above).
 
 @tabular[#:style 'boxed
          #:sep @hspace[3]
@@ -1931,6 +1931,8 @@ The gain does not come only from Scheme+: on small programs written in plain Sch
                (list "integration by the trapezoids, 2·10⁷ steps" "339 ms" "335 ms" "68 ms" "5.0 ×"))]
 
 CPU times, mean of two series each giving the median of 7 runs, Racket 9.2 CS. Scheme is a @racket[racket/base] module; Scheme+ is the same source in a Scheme+ module; Scheme+ annotated adds @racket[ANNOTATION-ON] and a few @racket[type] lines (the parameters, the result of a call to a procedure of the program, with a @racket[let] or with its signature such as @racket[(type ((flonum?) procedure? (flonum?)) f)]).
+
+The sources of these benchmarks are in the sub-directory @bold{examples/benchmarks/} of Scheme+, so that everyone can check them: @bold{bench-scheme.rkt} (Scheme), @bold{bench-scheme+.rkt} (Scheme+), @bold{bench-annotated+.rkt} (Scheme+ annotated) and @bold{run-benchmarks.rkt}, which runs the three versions, displays the times and checks that they give the same results: @tt{raco make run-benchmarks.rkt} then @tt{racket run-benchmarks.rkt}, on a machine at rest (the times vary with the other programs running).
 
 When the pass knows the type of the operands it can:
 @itemlist[
