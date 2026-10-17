@@ -187,16 +187,34 @@
 	   
 	   ;; 1 argument in [ ]
 	   ;; T[index]
-	   ((1) #'(apply-square-brackets-argument-1 container
-						    (first parsed-args)))
+	   ;; the access to a vector by an index (not a slice) is written inline : an appel of procedure (in another module ,
+	   ;; never inlined) cost 45 % in a product of matrices , the test of the sign of the index only a few %
+	   ((1) #;#'(apply-square-brackets-argument-1 container
+						      (first parsed-args))
+		(with-syntax ((index (cadr (syntax->list #'parsed-args))))
+		  #'(let ((c container) (i index))
+		      (cond ((and (vector? c) (fixnum? i)) ; a vector and an index , not a slice
+			     (vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i))) ; a negative index counts from the end as in Python
+			    ((and (string? c) (fixnum? i)) ; a string and an index
+			     (string-ref c (if (fx< i 0) (fx+ (string-length c) i) i)))
+			    (else (apply-square-brackets-argument-1 c i))))))
 	   ;; 2 arguments in [ ]
 	   ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
 	   
 	   ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
 	   ;; '#(3 4 5)
-	   ((2) #'(apply-square-brackets-argument-2 container
-						    (first parsed-args)
-						    (second parsed-args)))
+	   ;; M[i j] of a vector of vectors written inline , each negative index counts from the end of its own vector
+	   ((2) #;#'(apply-square-brackets-argument-2 container
+						      (first parsed-args)
+						      (second parsed-args))
+		(with-syntax (((index1 index2) (cdr (syntax->list #'parsed-args))))
+		  #'(let ((c container) (i index1) (j index2))
+		      (cond ((and (vector? c) (fixnum? i) (fixnum? j)) ; a vector of vectors and two indexes , not slices
+			     (let ((row (vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i))))
+			       (vector-ref row (if (fx< j 0) (fx+ (vector-length row) j) j))))
+			    ((and (flomat? c) (fixnum? i) (fixnum? j)) ; flomat : Racket only
+			     (ref c i j))
+			    (else (apply-square-brackets-argument-2 c i j))))))
 
 	   ;; 3 arguments in [ ]
 	   ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
@@ -1067,16 +1085,33 @@
 	   
 	   ;; 1 argument in [ ]
 	   ;; T[index]
-	   ((1) #'(apply-square-brackets-argument-1-vector container
-                                                           (first parsed-args)))
+	   ;; written inline (an appel of procedure cost 45 % in a product of matrices) : a literal index >= 0 is a plain
+	   ;; vector-ref , else the test of the sign of the index (negative : from the end as in Python)
+	   ((1) #;#'(apply-square-brackets-argument-1-vector container
+                                                             (first parsed-args))
+		(with-syntax ((index (cadr (syntax->list #'parsed-args))))
+		  (let ((d (syntax->datum #'index)))
+		    (if (and (fixnum? d) (>= d 0))
+			#'(vector-ref container index)
+			#'(let ((c container) (i index))
+			    (if (fixnum? i) ; an index , not a slice
+				(vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i))
+				(apply-square-brackets-argument-1-vector c i)))))))
 	   ;; 2 arguments in [ ]
 	   ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
 	   
 	   ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
 	   ;; '#(3 4 5)
-	   ((2) #'(apply-square-brackets-argument-2-vector container
-                                                           (first parsed-args)
-                                                           (second parsed-args)))
+	   ;; M[i j] of a vector of vectors written inline , each negative index counts from the end of its own vector
+	   ((2) #;#'(apply-square-brackets-argument-2-vector container
+                                                             (first parsed-args)
+                                                             (second parsed-args))
+		(with-syntax (((index1 index2) (cdr (syntax->list #'parsed-args))))
+		  #'(let ((c container) (i index1) (j index2))
+		      (if (and (fixnum? i) (fixnum? j)) ; two indexes , not slices
+			  (let ((row (vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i))))
+			    (vector-ref row (if (fx< j 0) (fx+ (vector-length row) j) j)))
+			  (apply-square-brackets-argument-2-vector c i j)))))
 
 	   ;; 3 arguments in [ ]
 	   ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
@@ -1491,8 +1526,14 @@
 
 	   ;; 1 argument in [ ]
 	   ;; T[index]
-	   ((1) #'(apply-square-brackets-argument-1-string container
-                                                           (first parsed-args)))
+	   ;; written inline as for the vectors : an index (not a slice) , negative from the end as in Python
+	   ((1) #;#'(apply-square-brackets-argument-1-string container
+                                                             (first parsed-args))
+		(with-syntax ((index (cadr (syntax->list #'parsed-args))))
+		  #'(let ((c container) (i index))
+		      (if (fixnum? i)
+			  (string-ref c (if (fx< i 0) (fx+ (string-length c) i) i))
+			  (apply-square-brackets-argument-1-string c i)))))
 	   ;; 2 arguments in [ ]
 	   ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
 
@@ -1951,6 +1992,8 @@
                                                                                  (cons '/ #'fxquotient))))))
 
 	 ;; when trying to put this 'case in a subroutine Racket complains of #'parsed-args being outside templates.
+	 ;; not written inline as the vectors : array-ref of SRFI 25 written directly gave no measurable gain , the cost is
+	 ;; in array-ref itself
 	 (case (length
 		(cdr
 		 (syntax->datum #'parsed-args))) ; we remove 'list from the length of syntax list (list arg1 arg2 ...) to get (arg1 arg2 ...)
@@ -2116,9 +2159,15 @@
 	   
 	   ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
 	   ;; '#(3 4 5)
-	   ((2) #'(apply-square-brackets-argument-2-flomat container
-                                                           (first parsed-args)
-                                                           (second parsed-args)))
+	   ;; the element F[i j] written inline (flomat : Racket only) : no slice , no negative index , as before
+	   ((2) #;#'(apply-square-brackets-argument-2-flomat container
+                                                             (first parsed-args)
+                                                             (second parsed-args))
+		(with-syntax (((index1 index2) (cdr (syntax->list #'parsed-args))))
+		  #'(let ((c container) (i index1) (j index2))
+		      (if (and (fixnum? i) (fixnum? j))
+			  (ref c i j)
+			  (apply-square-brackets-argument-2-flomat c i j)))))
 
 	   ;; 3 arguments in [ ]
 	   ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]

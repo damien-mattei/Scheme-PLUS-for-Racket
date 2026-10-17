@@ -988,6 +988,133 @@
   (p27-check '(n :=> a + b * c) '(:=> n (+ a (* b c))))
   (p27-check '(a :=> not b and c) '(:=> a (and (not b) c)))
 
+  ;; ================================================================
+  ;; 31. The access by one index written inline (faster) : a vector
+  ;;     and an index (not a slice) , a negative index counts from
+  ;;     the end as in Python ; the other cases (slices , strings ,
+  ;;     a slice in a variable) go through the general procedures.
+  ;; ================================================================
+  (define p31-v (vector 10 20 30 40))
+  (check-equal? {p31-v[0]} 10)
+  (check-equal? {p31-v[-1]} 40)
+  (define (p31-get v i) {v[i]})
+  (check-equal? (p31-get p31-v 1) 20)
+  (check-equal? (p31-get p31-v -2) 30)                    ; a negative index in a variable
+  (check-equal? {p31-v[:]} #(10 20 30 40))                ; a copy
+  (check-false (eq? {p31-v[:]} p31-v))
+  (check-equal? {p31-v[1 :]} #(20 30 40))
+  (define p31-colon :)
+  (check-equal? (p31-get p31-v p31-colon) #(10 20 30 40)) ; a slice in a variable
+  (check-equal? {"toto"[-1]} #\o)                         ; a string : the general procedure
+  (define p31-M (vector (vector 1 2 3) (vector 4 5 6)))
+  (check-equal? {p31-M[1][-1]} 6)
+  (define p31-w (vector 1 2 3 4))
+  {p31-w[-1] := 7}
+  (define (p31-set! v i x) {v[i] := x})
+  (p31-set! p31-w -2 5)
+  (p31-set! p31-w 0 9)
+  (check-equal? p31-w #(9 2 5 7))
+  {p31-w[:] := #(0 0 0 0)}                                ; a slice : the general procedure
+  (check-equal? p31-w #(0 0 0 0))
+  ;; annotated : $bracket-apply-vector$ , a literal index >= 0 is a plain vector-ref
+  (define (p31-typed v i)
+    ANNOTATION-ON
+    (type #(fixnum?) v)
+    (type fixnum? i)
+    {v[i] + v[-1] + v[0]})
+  (check-equal? (p31-typed (vector 1 2 3 4) -2) 8)        ; 3 + 4 + 1
+  (define (p31-typed-set! v i)
+    ANNOTATION-ON
+    (type #(fixnum?) v)
+    (type fixnum? i)
+    {v[i] := 99}
+    {v[0] := v[-1]}
+    v)
+  (check-equal? (p31-typed-set! (vector 1 2 3) -2) #(3 99 3))
+
+  ;; ================================================================
+  ;; 32. Written inline too : the strings (one index) , the vectors of
+  ;;     vectors with two indexes M[i j] , the arrays of SRFI 25 , and
+  ;;     their assignments. A negative index counts from the end of
+  ;;     the vector where it applies (a row of a rectangular matrix).
+  ;; ================================================================
+  (define p32-s (string-copy "hello"))
+  (check-equal? {p32-s[-1]} #\o)
+  (define (p32-char s i) {s[i]})
+  (check-equal? (p32-char p32-s -2) #\l)
+  (check-equal? {p32-s[1 :]} "ello")                       ; a slice : the general procedure
+  {p32-s[-1] := #\O}
+  (define (p32-set-char! s i c) {s[i] := c})
+  (p32-set-char! p32-s 0 #\H)
+  (check-equal? p32-s "HellO")
+  ;; a rectangular matrix : 2 rows of 3 , and 3 rows of 2
+  (define p32-M (vector (vector 1 2 3) (vector 4 5 6)))
+  (define p32-N (vector (vector 1 2) (vector 3 4) (vector 5 6)))
+  (check-equal? {p32-M[0 2]} 3)
+  (check-equal? {p32-M[1 0]} 4)
+  (check-equal? {p32-M[0 -1]} 3)                           ; was 2 : -1 counted from the end of the vector of rows
+  (check-equal? {p32-M[-1 -1]} 6)
+  (check-equal? {p32-N[0 -1]} 2)                           ; was an error : index 2 in a row of 2
+  (define (p32-ref M i j) {M[i j]})
+  (check-equal? (p32-ref p32-N -1 -2) 5)
+  (check-equal? {p32-M[1 :]} (vector (vector 4 5 6)))       ; a slice of the vector of rows
+  {p32-M[0 -1] := 30}
+  (define (p32-set! M i j x) {M[i j] := x})
+  (p32-set! p32-N 0 -1 20)
+  (p32-set! p32-N -1 0 50)
+  (check-equal? p32-M (vector (vector 1 2 30) (vector 4 5 6)))
+  (check-equal? p32-N (vector (vector 1 20) (vector 3 4) (vector 50 6)))
+  ;; three dimensions : the general procedures (function-array-n-dim-ref / -set! of array.rkt)
+  (define p32-V (vector (vector (vector 1 2 3) (vector 4 5 6))))
+  (check-equal? {p32-V[0 1 -1]} 6)
+  {p32-V[0 -1 -1] := 70}
+  (check-equal? p32-V (vector (vector (vector 1 2 3) (vector 4 5 70))))
+  ;; annotated
+  (define (p32-typed M i j)
+    ANNOTATION-ON
+    (type #(#(fixnum?)) M)
+    (type fixnum? i j)
+    {M[i j] := M[i j] + 100}
+    {M[i j] + M[0 0]})
+  (check-equal? (p32-typed (vector (vector 1 2 3) (vector 4 5 6)) 0 -1) 104)   ; (3 + 100) + 1
+  (define (p32-typed-string s)
+    ANNOTATION-ON
+    (type string? s)
+    {s[-1] := s[0]}
+    s)
+  (check-equal? (p32-typed-string (string-copy "abc")) "aba")
+  ;; the arrays of SRFI 25 : array-ref and array-set! directly
+  (require (only-in srfi/25 make-array shape array-ref))
+  (define p32-A (make-array (shape 0 2 0 3) 0))
+  {p32-A[1 2] := 7}
+  (check-equal? {p32-A[1 2]} 7)
+  (check-equal? (array-ref p32-A 1 2) 7)
+  (define (p32-typed-array A)
+    ANNOTATION-ON
+    (type array? A)
+    {A[0 1] := A[1 2] + 1}
+    {A[0 1]})
+  (check-equal? (p32-typed-array p32-A) 8)
+
+  ;; ================================================================
+  ;; 33. The element F[i j] of a flomat (Racket only) written inline ,
+  ;;     in reading and in assignment , with and without annotation.
+  ;; ================================================================
+  (require (only-in flomat make-flomat))
+  (define p33-F (make-flomat 2 3 0.0))
+  {p33-F[1 2] := 7.0}
+  (check-equal? {p33-F[1 2]} 7.0)
+  (define (p33-set! F i j x) {F[i j] := x})
+  (p33-set! p33-F 0 1 2.5)
+  (define (p33-get F i j) {F[i j]})
+  (check-equal? (p33-get p33-F 0 1) 2.5)
+  (define (p33-typed F)
+    ANNOTATION-ON
+    (type flomat? F)
+    {F[0 0] := F[1 2] + 1.0}
+    {F[0 0]})
+  (check-equal? (p33-typed p33-F) 8.0)
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 

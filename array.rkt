@@ -159,9 +159,14 @@
 					 array))
 
       ;; vector of vectors
-      (vector-ref (function-array-n-dim-ref array (cdr L-reversed-indexes)) ; the sub-array
+      ;; a negative index counts from the end of the sub-array where it applies , not of the whole array (wrong when
+      ;; the rows have not the length of the vector of rows , M = #(#(1 2 3) #(4 5 6)) : M[0 -1] gave 2)
+      #;(vector-ref (function-array-n-dim-ref array (cdr L-reversed-indexes)) ; the sub-array
 		  (negative-vector-index (car L-reversed-indexes)
-					 array))))
+					 array))
+      (let ((sub-array (function-array-n-dim-ref array (cdr L-reversed-indexes))))
+	(vector-ref sub-array
+		    (negative-vector-index (car L-reversed-indexes) sub-array)))))
 
   
 ;; (define-syntax array-n-dim-set!
@@ -183,10 +188,15 @@
 		   (negative-vector-index (car L-reversed-indexes)
 					  array)
 		   val)
-      (vector-set! (function-array-n-dim-ref array (cdr L-reversed-indexes))
+      ;; a negative index counts from the end of the sub-array where it applies (as in function-array-n-dim-ref)
+      #;(vector-set! (function-array-n-dim-ref array (cdr L-reversed-indexes))
 		   (negative-vector-index (car L-reversed-indexes)
 					  array)
-		   val)))
+		   val)
+      (let ((sub-array (function-array-n-dim-ref array (cdr L-reversed-indexes))))
+	(vector-set! sub-array
+		     (negative-vector-index (car L-reversed-indexes) sub-array)
+		     val))))
 
 
 (define-syntax display-array-2d

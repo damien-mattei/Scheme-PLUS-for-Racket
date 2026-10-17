@@ -252,9 +252,15 @@
 	     ((1)
 	      ;;(begin
 	      ;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
-	      #'(assignment-argument-1-vector container
-                                              (first parsed-args)
-                                              expr));)
+	      ;; written inline for an index (not a slice) , as the access in bracket-apply.rkt
+	      #;#'(assignment-argument-1-vector container
+                                                (first parsed-args)
+                                                expr)
+	      (with-syntax ((index (cadr (syntax->list #'parsed-args))))
+		#'(let ((c container) (i index) (e expr))
+		    (if (fixnum? i)
+			(vector-set! c (if (fx< i 0) (fx+ (vector-length c) i) i) e) ; a negative index counts from the end as in Python
+			(assignment-argument-1-vector c i e)))));)
 
 	     ;; 2 arguments in [ ]
 	     ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
@@ -263,11 +269,18 @@
 	     ((2)
 	      ;; #'(begin
 	      ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
-	      #'(assignment-argument-2-vector container
-                                              (first parsed-args)
-                                              (second parsed-args)
-                                              expr
-                                              is-vec));)
+	      ;; M[i j] of a vector of vectors written inline , each negative index counts from the end of its own vector
+	      #;#'(assignment-argument-2-vector container
+                                                (first parsed-args)
+                                                (second parsed-args)
+                                                expr
+                                                is-vec)
+	      (with-syntax (((index1 index2) (cdr (syntax->list #'parsed-args))))
+		#'(let ((c container) (i index1) (j index2) (e expr))
+		    (if (and (fixnum? i) (fixnum? j)) ; two indexes , not slices
+			(let ((row (vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i))))
+			  (vector-set! row (if (fx< j 0) (fx+ (vector-length row) j) j) e))
+			(assignment-argument-2-vector c i j e is-vec)))));)
 
 	     ;; 3 arguments in [ ]
 	     ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
@@ -351,9 +364,15 @@
 	     ;; 1 argument in [ ]
 	     ;; T[index]
 	     ((1)
-	      #'(assignment-argument-1-string container
-                                              (first parsed-args)
-                                              expr))
+	      ;; written inline as for the vectors : an index (not a slice) , negative from the end as in Python
+	      #;#'(assignment-argument-1-string container
+                                                (first parsed-args)
+                                                expr)
+	      (with-syntax ((index (cadr (syntax->list #'parsed-args))))
+		#'(let ((c container) (i index) (e expr))
+		    (if (fixnum? i)
+			(string-set! c (if (fx< i 0) (fx+ (string-length c) i) i) e)
+			(assignment-argument-1-string c i e)))))
 
 	     ;; 2 arguments in [ ]
 	     ;; ex: T[i1 :] , T[: i2] , T[: :]
@@ -598,9 +617,17 @@
               ((1)
                ;;(begin
                ;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
-               #'(assignment-argument-1 container
-                                        (first parsed-args)
-                                        expr));)
+               ;; written inline for a vector and an index (not a slice) , as the access in bracket-apply.rkt
+               #;#'(assignment-argument-1 container
+                                          (first parsed-args)
+                                          expr)
+               (with-syntax ((index (cadr (syntax->list #'parsed-args))))
+                 #'(let ((c container) (i index) (e expr))
+                     (cond ((and (vector? c) (fixnum? i))
+                            (vector-set! c (if (fx< i 0) (fx+ (vector-length c) i) i) e)) ; a negative index counts from the end as in Python
+                           ((and (string? c) (fixnum? i))
+                            (string-set! c (if (fx< i 0) (fx+ (string-length c) i) i) e))
+                           (else (assignment-argument-1 c i e))))));)
 
               ;; 2 arguments in [ ]
               ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]   
@@ -609,10 +636,19 @@
               ((2)
                ;; #'(begin
                ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
-               #'(assignment-argument-2 container
-                                        (first parsed-args)
-                                        (second parsed-args)
-                                        expr));)
+               ;; M[i j] of a vector of vectors written inline , as the access in bracket-apply.rkt
+               #;#'(assignment-argument-2 container
+                                          (first parsed-args)
+                                          (second parsed-args)
+                                          expr)
+               (with-syntax (((index1 index2) (cdr (syntax->list #'parsed-args))))
+                 #'(let ((c container) (i index1) (j index2) (e expr))
+                     (cond ((and (vector? c) (fixnum? i) (fixnum? j))
+                            (let ((row (vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i))))
+                              (vector-set! row (if (fx< j 0) (fx+ (vector-length row) j) j) e)))
+                           ((and (flomat? c) (fixnum? i) (fixnum? j)) ; flomat : Racket only
+                            (mset! c i j e))
+                           (else (assignment-argument-2 c i j e))))));)
 
               ;; 3 arguments in [ ]
               ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
@@ -709,10 +745,16 @@
 	     ((2)
 	      ;; #'(begin
 	      ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
-	      #'(assignment-argument-2-flomat container
-                                              (first parsed-args)
-                                              (second parsed-args)
-                                              expr));)
+	      ;; the element F[i j] written inline (flomat : Racket only) : no slice , no negative index , as before
+	      #;#'(assignment-argument-2-flomat container
+                                                (first parsed-args)
+                                                (second parsed-args)
+                                                expr)
+	      (with-syntax (((index1 index2) (cdr (syntax->list #'parsed-args))))
+		#'(let ((c container) (i index1) (j index2) (e expr))
+		    (if (and (fixnum? i) (fixnum? j))
+			(mset! c i j e)
+			(assignment-argument-2-flomat c i j e)))));)
 
 	     ;; 3 arguments in [ ] : not allowed with flomat
 	     ((3)
@@ -903,9 +945,15 @@
 	     ((1)
 	      ;;(begin
 	      ;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
-	      #'(assignment-argument-1-vector container
-                                              (first parsed-args)
-                                              expr));)
+	      ;; written inline for an index (not a slice) , as the access in bracket-apply.rkt
+	      #;#'(assignment-argument-1-vector container
+                                                (first parsed-args)
+                                                expr)
+	      (with-syntax ((index (cadr (syntax->list #'parsed-args))))
+		#'(let ((c container) (i index) (e expr))
+		    (if (fixnum? i)
+			(vector-set! c (if (fx< i 0) (fx+ (vector-length c) i) i) e) ; a negative index counts from the end as in Python
+			(assignment-argument-1-vector c i e)))));)
 
 	     ;; 2 arguments in [ ]
 	     ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
@@ -914,11 +962,18 @@
 	     ((2)
 	      ;; #'(begin
 	      ;; 	  (display "<- case 2 : parsed-args=") (display parsed-args) (newline)
-	      #'(assignment-argument-2-vector container
-                                              (first parsed-args)
-                                              (second parsed-args)
-                                              expr
-                                              #t));)
+	      ;; M[i j] of a vector of vectors written inline , each negative index counts from the end of its own vector
+	      #;#'(assignment-argument-2-vector container
+                                                (first parsed-args)
+                                                (second parsed-args)
+                                                expr
+                                                #t)
+	      (with-syntax (((index1 index2) (cdr (syntax->list #'parsed-args))))
+		#'(let ((c container) (i index1) (j index2) (e expr))
+		    (if (and (fixnum? i) (fixnum? j)) ; two indexes , not slices
+			(let ((row (vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i))))
+			  (vector-set! row (if (fx< j 0) (fx+ (vector-length row) j) j) e))
+			(assignment-argument-2-vector c i j e #t)))));)
 
 	     ;; 3 arguments in [ ]
 	     ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
@@ -1582,7 +1637,10 @@
 
 	 ;; {a[1 2] <- 7}
 	 ((list i1 i2)
-          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2))))
+          ;; i2 is an index of the row M[i1] : its negative value counts from the end of the row (done by
+          ;; function-array-n-dim-set!) , not of the vector of rows (i2 was made positive with the length of container-eval)
+          #;(function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2)))
+          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 index2-or-keyword-eval))))
 	
 	 ) ;; end match
 
@@ -1733,7 +1791,10 @@
 	 ((list i1 i2 i3) 
 	  
 	  ;; normal case
-          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3)))) ;;(array-n-dim-set! array value i1 i2)
+          ;; the indexes after the first one are indexes of the sub-vectors : their negative values count from the end
+          ;; of the sub-vector (done by function-array-n-dim-set!) , not of container-eval
+          #;(function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3)))
+          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 index2-or-keyword-eval index3-or-keyword-or-step-eval)))) ;;(array-n-dim-set! array value i1 i2)
 	  	 
 	 ) ;; end match
 
@@ -1847,7 +1908,10 @@
 	 ((list i1 i2 i3 i4) 
 	  
 	  ;; normal case
-          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4)))) ;;(array-n-dim-set! array value i1 i2)
+          ;; the indexes after the first one are indexes of the sub-vectors : their negative values count from the end
+          ;; of the sub-vector (done by function-array-n-dim-set!) , not of container-eval
+          #;(function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4)))
+          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval)))) ;;(array-n-dim-set! array value i1 i2)
 	 
 	 ) ;; end match
   
@@ -1932,7 +1996,10 @@
 	 ((list i1 i2 i3 i4 i5) 
 	  
 	  ;; normal case
-          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4 i5)))) ;;(array-n-dim-set! array expr-eval i1 i2)
+          ;; the indexes after the first one are indexes of the sub-vectors : their negative values count from the end
+          ;; of the sub-vector (done by function-array-n-dim-set!) , not of container-eval
+          #;(function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4 i5)))
+          (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval)))) ;;(array-n-dim-set! array expr-eval i1 i2)
 	  
 	 ) ;; end match
   
@@ -2593,7 +2660,10 @@
 	 ;; {a[1 2] <- 7}
 	 ((list i1 i2)
 	  (cond ((vector? container-eval)  ;; normal case
-		 (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2))))
+		 ;; the indexes after the first one are indexes of the sub-vectors : their negative values count from the end
+		 ;; of the sub-vector (done by function-array-n-dim-set!) , not of container-eval
+		 #;(function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2)))
+		 (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 index2-or-keyword-eval))))
 		((array? container-eval)
 		 ;;(display "assignment.* : 2 args ,array case : container-eval = ") (display container-eval) (newline)
 		 (array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
@@ -2849,7 +2919,10 @@
 	  
 	  ;; normal case
 	  (if (vector? container-eval)
-	      (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3))) ;;(array-n-dim-set! array value i1 i2)
+	      ;; the indexes after the first one are indexes of the sub-vectors : their negative values count from the end
+	      ;; of the sub-vector (done by function-array-n-dim-set!) , not of container-eval
+	      #;(function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3)))
+	      (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 index2-or-keyword-eval index3-or-keyword-or-step-eval))) ;;(array-n-dim-set! array value i1 i2)
 	      (array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval expr-eval)))  
 	 
 	 ) ;; end match
@@ -2986,7 +3059,10 @@
 	  
 	  ;; normal case
 	  (if (vector? container-eval)
-	      (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4))) ;;(array-n-dim-set! array value i1 i2)
+	      ;; the indexes after the first one are indexes of the sub-vectors : their negative values count from the end
+	      ;; of the sub-vector (done by function-array-n-dim-set!) , not of container-eval
+	      #;(function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4)))
+	      (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval))) ;;(array-n-dim-set! array value i1 i2)
 	      (array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval expr-eval)))  
 	 
 	 ) ;; end match
@@ -3081,7 +3157,10 @@
 	  
 	  ;; normal case
 	  (if (vector? container-eval)
-	      (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4 i5))) ;;(array-n-dim-set! array expr-eval i1 i2)
+	      ;; the indexes after the first one are indexes of the sub-vectors : their negative values count from the end
+	      ;; of the sub-vector (done by function-array-n-dim-set!) , not of container-eval
+	      #;(function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4 i5)))
+	      (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval))) ;;(array-n-dim-set! array expr-eval i1 i2)
 	      (array-set! container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval expr-eval)))  
 
 	 ) ;; end match
@@ -3323,9 +3402,15 @@
 	   ((1)
 	    ;;(begin
 	    ;;  (display "<- case 1 : parsed-args=") (display parsed-args) (newline)
-	    #'(assignment-argument-1-string container
-                                            (first parsed-args)
-                                            expr));)
+	    ;; written inline as for the vectors : an index (not a slice) , negative from the end as in Python
+	    #;#'(assignment-argument-1-string container
+                                              (first parsed-args)
+                                              expr)
+	    (with-syntax ((index (cadr (syntax->list #'parsed-args))))
+	      #'(let ((c container) (i index) (e expr))
+		  (if (fixnum? i)
+		      (string-set! c (if (fx< i 0) (fx+ (string-length c) i) i) e)
+		      (assignment-argument-1-string c i e)))));)
 
 	   ;; 2 arguments in [ ]
 	   ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
