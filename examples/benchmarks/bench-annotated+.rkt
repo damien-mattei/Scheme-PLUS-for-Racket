@@ -23,7 +23,7 @@
      (if (< i n)
          (let ((p (+ 1.0 (* x (+ 2.0 (* x (+ 3.0 (* x 4.0))))))))
            (type flonum? p)
-           (let ((s (/ 1.0 (+ 1.0 (exp (- 0.0 p))))))
+           (let ((s (/ 1.0 (+ 1.0 (exp (- p))))))
              (type flonum? s)
              (loop (+ i 1) (+ x 0.000001) (+ acc (* s (- 1.0 s))))))
          acc)))

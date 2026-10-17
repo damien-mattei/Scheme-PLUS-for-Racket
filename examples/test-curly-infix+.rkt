@@ -1115,6 +1115,31 @@
     {F[0 0]})
   (check-equal? (p33-typed p33-F) 8.0)
 
+  ;; ================================================================
+  ;; 34. The square : the exact integer exponent 2 is a multiplication
+  ;;     (faster than expt , and more precise : the exact square
+  ;;     rounded once) ; the other exponents and 2.0 keep expt (by
+  ;;     multiplications x ³ would be wrong by one ulp for 26 % of the
+  ;;     floats). With the annotation {x ²} of a float is (fl* x x).
+  ;; ================================================================
+  (check-equal? {1.1 ²} (* 1.1 1.1))
+  (check-equal? {7 ²} 49)
+  (check-equal? {1/3 ²} 1/9)
+  (check-equal? {1.1 ** 2.0} (expt 1.1 2.0))               ; 2.0 : expt
+  (check-equal? {1.1 ³} (expt 1.1 3))                      ; 3 : expt , not 1.1 * (1.1 * 1.1)
+  (check-equal? {1.1 ⁴} (expt 1.1 4))
+  (check-equal? {2 ** 3 ** 2} 512)                         ; the chains : unchanged
+  (check-equal? (** 2 3 2 1) 512)
+  (define (p34-square x) {x ²})
+  (check-equal? (p34-square -3.331703861009889e-8) 1.1100250617468202e-15) ; the exact square (expt gives ...04e-15)
+  (define (p34-typed x n)
+    ANNOTATION-ON
+    (type flonum? x)
+    (type fixnum? n)
+    (list {x ²} {x ** 2} {(x + 1.0) ²} {x ³} {x ** n} {x ² + 1.0}))
+  (check-equal? (p34-typed 1.5 4) (list 2.25 2.25 6.25 (expt 1.5 3) (expt 1.5 4) 3.25))
+  (check-equal? (car (p34-typed -3.331703861009889e-8 2)) 1.1100250617468202e-15)
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 
