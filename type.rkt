@@ -12,9 +12,16 @@
 		 litteral-list?
 		 all-numbers?
 		 ANNOTATION-ON
-		 ANNOTATION-OFF)
+		 ANNOTATION-OFF
+		 :print-type)
 
-	(require Scheme+/operators)
+	(require Scheme+/operators
+		 (for-syntax racket/base))
+
+	;; (:print-type expr) is a command of the REPL , done by the reader (SRFI-105 or SRFI-110) with the tables of the type
+	;; annotation , as :print-type of Typed Racket ; elsewhere (in a module) it is an error
+	(define-syntax (:print-type stx)
+	  (raise-syntax-error ':print-type "works only at the REPL (with ANNOTATION-ON)" stx))
 	
 	(define-syntax type
 	  

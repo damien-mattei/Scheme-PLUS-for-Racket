@@ -233,7 +233,8 @@
    $ovrld-ht-proc$ ; for debug only
 
    ANNOTATION-ON
-	 ANNOTATION-OFF)
+	 ANNOTATION-OFF
+   :print-type) ; the type known by the annotation , at the REPL only
 
 
   

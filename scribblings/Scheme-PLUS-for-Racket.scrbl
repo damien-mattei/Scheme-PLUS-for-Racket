@@ -262,6 +262,38 @@ Example under Linux with a user (mattei) installation of @bold{Scheme+} and the 
 
 You could simply open the above file in @bold{DrRacket} to work with @bold{Scheme+}.
 
+@defform[#:id :print-type (:print-type expr)]{
+At the REPL only, display the type that the type annotation (see @secref["annotation"]) knows for @racket[expr], without evaluating it, as @tt{:print-type} of Typed Racket (the REPL of PLAI also displays the types, only at the REPL). The REPL must have been started from a file with @racket[ANNOTATION-ON], as @bold{REPL-Scheme-PLUS.rkt}: the types of the names exported by the module of this file (@racket[provide], @racket[(all-defined-out)]) are known at the REPL, as the types of what is typed at the REPL. For a procedure annotated with a signature, @racket[:print-type] displays this signature; for a procedure given to an overload (@racket[overload-operator], @racket[overload-procedure]), its signature in the overload (@tt{...} : any number of arguments of this type, @tt{?} : no return type given); for an overloaded operator, all its overloads, one per line.
+}
+
+@codeblock|{
+> {x := 2.0}
+> (:print-type x)
+flonum?
+> (:print-type {x * 3.0})
+flonum?
+> (define (g a) {a * 2.0})
+> (type [(flonum?) procedure? (flonum?)] g)
+> (:print-type g)
+(flonum? -> flonum?)
+> (:print-type (g 1.5))
+flonum?
+> (:print-type (list 1 2))
+(fixnum?)
+> (define (add-n-lists . vn-lst) (apply map + vn-lst))
+> (overload-operator + (list?) add-n-lists (list?))
+> (:print-type add-n-lists)
+(list? ... -> list?)
+> (:print-type +)
+(fixnum? fixnum? -> fixnum?)
+(exact-integer? fixnum? -> exact-integer?)
+...
+(list? ... -> list?)
+...
+}|
+
+The type displayed is what the annotation inferred, the type it uses to specialize the operators, not a check: the annotation trusts the declarations. When the annotation does not know the type, @racket[:print-type] displays @tt{unknown type (the annotation does not know it)}; without @racket[ANNOTATION-ON], it displays that the annotation is not active. In a module, @racket[:print-type] is a syntax error.
+
 @section[#:tag "hello"]{A simple Hello World application in Scheme+ and Curly Infix}
 
 @codeblock|{
