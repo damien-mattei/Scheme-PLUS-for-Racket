@@ -101,9 +101,10 @@ ANNOTATION-ON
 
 ; some derivatives
 (define (der_tanh z z̃)
-  ;{1 - z ²}
+  (type flonum? z)
+  {1.0 - z ²}
   ;{1 - (sqr z)}
-  {1.0 - (carre z)})	
+  #;{1.0 - (carre z)})	
 
 (define (der_σ z z̃)
   (type flonum? z)
