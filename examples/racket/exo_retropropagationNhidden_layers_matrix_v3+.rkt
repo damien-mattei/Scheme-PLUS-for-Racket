@@ -54,11 +54,11 @@ ANNOTATION-ON
 ; overloading of + (defined as an overloaded operator the first time) : binary, 2 predicates, returns a vector
 (overload-operator + (vector?) vector-append (vector? vector?))
 
-(type flonum? pi)
+(type ℝ pi)
 
 (random-seed 1027)
 
-(type [(flonum?) procedure? ()] random) ; was defined in annot+.rkt
+(type [(ℝ) procedure? ()] random) ; was defined in annot+.rkt
 
 ;; return a number in ]-1,1[
 ;; the dummy parameter is needed by a flomat procedure
@@ -71,7 +71,7 @@ ANNOTATION-ON
 ; return a random number between [inf, sup]
 (define (uniform-interval inf sup)
   
-  (type flonum? inf sup)
+  (type ℝ inf sup)
   
   {gap ← sup - inf}
   {inf + gap * (random)})
@@ -80,38 +80,38 @@ ANNOTATION-ON
 
 (overload-procedure uniform uniform-dummy (number?)) ; TODO? useless ?
 
-(overload-procedure uniform uniform-interval (real? real?)) ; overloading it with flonum? too after
-(overload-procedure uniform uniform-interval (flonum? flonum?))
+(overload-procedure uniform uniform-interval (real? real?)) ; overloading it with ℝ too after
+(overload-procedure uniform uniform-interval (ℝ ℝ))
 
 
-(type [(flonum?) procedure? (flonum?)] sqr) ; sqr is a Racket procedure, i declare arbitrary flonum? precision
+(type [(ℝ) procedure? (ℝ)] sqr) ; sqr is a Racket procedure, i declare arbitrary ℝ precision
 
 ; for speed tests
 (define (carre x)
-  (type flonum? x)
+  (type ℝ x)
   {x · x})
 
-(type [(flonum?) procedure? (flonum?)] carre)
+(type [(ℝ) procedure? (ℝ)] carre)
 
 
 ; sigmoïde
 (define (σ z̃)
-  (type flonum? z̃)
+  (type ℝ z̃)
   {1.0 / (1.0 + (exp (- z̃)))} )
 
 ; some derivatives
 (define (der_tanh z z̃)
-  (type flonum? z)
+  (type ℝ z)
   {1.0 - z ²}
   ;{1 - (sqr z)}
   #;{1.0 - (carre z)})	
 
 (define (der_σ z z̃)
-  (type flonum? z)
+  (type ℝ z)
   {z · (1.0 - z)})
 
 (define (der_atan z z̃)
-  (type flonum? z̃)
+  (type ℝ z̃)
   ;{1 / (1.0 + z̃ ²)}
   {1.0 / (1.0 + (sqr z̃))}
   #;{1 / (1.0 + (carre z̃))})
@@ -134,9 +134,9 @@ ANNOTATION-ON
     (super-new)
 
     (type vector? nc)
-    (type fixnum? {nc[]})
+    (type ℕ {nc[]})
 
-    (type ((flonum?) procedure? (flonum? flonum?)) მzⳆმz̃) ; this could also be just procedure? but here we need domain of procedure
+    (type ((ℝ) procedure? (ℝ ℝ)) მzⳆმz̃) ; this could also be just procedure? but here we need domain of procedure
     
     ; this is the initialisation parameters
     (init-field (nc #(2 3 1)) ;; on crée le tableau des couches du réseau
@@ -148,12 +148,12 @@ ANNOTATION-ON
                 (activation_function_output_layer_derivative der_tanh)
                 (mesure-temps #f)) ;; active la mesure du temps écoulé toutes les 1000 itérations dans apprentissage
 
-    (type fixnum? nbiter)
+    (type ℕ nbiter)
     {lnc ← (vector-length nc)}
 
     (type vector? z {z[]}) ; type annotation for z and for any elements z[i] of z at index i 
 
-    (type flonum? {z[][]})
+    (type ℝ {z[][]})
     
 
     ; les entrées concrètes seront fournies avec la méthode accepte
@@ -166,7 +166,7 @@ ANNOTATION-ON
     (display "z=") (display z) (newline)
 
     (type vector? z̃ {z̃[]})
-    (type flonum? {z̃[][]})
+    (type ℝ {z̃[][]})
   
     ; z̃[0] is not used as z[0] is x, the initial data
     (field (z̃ (vector-ec (:vector lg nc)
@@ -179,7 +179,7 @@ ANNOTATION-ON
 
     (type vector? M) ; M is a vector
     (type flomat? {M[]}) ; elements of M are floating point matrix
-    (type flonum? {M[][]}) ; elements of the floating point matrix are inexact scheme numbers: floats
+    (type ℝ {M[][]}) ; elements of the floating point matrix are inexact scheme numbers: floats
 
     (field (M (vector-ec (s42: n {lnc - 1}) ; vectors by eager comprehension (SRFI 42)
                          (type exact-integer? n)
@@ -189,7 +189,7 @@ ANNOTATION-ON
     (display "M=") (display M) (newline)
 
     (type vector? ᐁ {ᐁ[]}) ; a vector of vectors
-    (type flonum? {ᐁ[][]}) ; a vector of vectors of numbers
+    (type ℝ {ᐁ[][]}) ; a vector of vectors of numbers
     
     ;(field (ᐁ (for/vector ([lg nc])
     ;		       (make-vector lg 0))))
@@ -204,7 +204,7 @@ ANNOTATION-ON
 
     (field (eror 0.0))
 
-    (type flonum? eror)
+    (type ℝ eror)
 
     ; forward propagation
 
@@ -231,6 +231,7 @@ ANNOTATION-ON
       (declare z_1)
 
       (declare i) ; because the variable will be used outside the 'for' loop too
+      (type ℕ i)
       
       ;(for-racket ([i (range {n - 2})]) ; warning : in Racket the variable 'i' 
       ; is only seen inside the 'for-racket' but i need it ouside too
@@ -292,13 +293,13 @@ ANNOTATION-ON
       (type vector? y)
 
       (declare temps-debut temps-fin) ; pour la mesure du temps écoulé toutes les 1000 itérations
-      (type flonum? temps-debut temps-fin)
+      (type ℝ temps-debut temps-fin)
       (when mesure-temps
         {temps-debut ← (current-inexact-milliseconds)})
 
       (for-racket ([it (range nbiter)]) ; le nombre d'itérations est fixé !
 
-                  (type fixnum? it)
+                  (type ℕ it)
                   
                   (when {it % 1000 = 0}
                     (display it)(newline)
@@ -325,7 +326,7 @@ ANNOTATION-ON
 
                   {ns ← vector-length(z[i])}
                   
-
+		  (type ℕ i k)
                   ;; TEMPS 1. calcul des gradients locaux sur la couche k de sortie (les erreurs commises)
                   (for-racket ([k (range ns)])
                               {ᐁ[i][k] ← y[k] - z[i][k]}     ; gradient sur un neurone de sortie (erreur locale)
@@ -353,7 +354,7 @@ ANNOTATION-ON
                   (for-racket ([i (reverse (range 1 i_output_layer))])
                               {nc1 ← vector-length(z[i])}
                               {ns1 ← vector-length(z[i + 1])}
-			      (type fixnum? #;exact-integer? j) ; should be integer of course
+			      (type ℕ j) ; should be integer of course
                               (for-racket ([j (range nc1)])
                                           {ᐁ[i][j] ← (for/sum ([k (range ns1)])
                                                         {მzⳆმz̃(z[i + 1][k] z̃[i + 1][k]) · M[i][k (j + 1)] · ᐁ[i + 1][k]})})
@@ -376,19 +377,20 @@ ANNOTATION-ON
 
       (type vector? z_input z_output z̃_output ᐁ_i_o)
       (type flomat? M_i_o) ; flomat matrix
-      (type flonum? η {ᐁ_i_o[]} {z_input[]} {z_output[]} {z̃_output[]} {M_i_o[]})
-      (type ((flonum?) procedure? (flonum? flonum?)) მzⳆმz̃) ; the parameter მzⳆმz̃ hides the one of the class : its type is written here
+      (type ℝ η {ᐁ_i_o[]} {z_input[]} {z_output[]} {z̃_output[]} {M_i_o[]})
+      (type ((ℝ) procedure? (ℝ ℝ)) მzⳆმz̃) ; the parameter მzⳆმz̃ hides the one of the class : its type is written here
             
       ; the length of output and input layer with coeff. used for bias update
       {(len_layer_output len_layer_input_plus1forBias) ← (dim M_i_o)} ; use values and define-values to create bindings
       
       {len_layer_input ← len_layer_input_plus1forBias - 1}
 
+      (type ℕ j)
       (for-racket ([j (range len_layer_output)]) ; line
 
                   ;(newline)
                   ;(display "modification_des_poids : j = ") (display j) (newline)
-                  (type fixnum? i)
+                  (type ℕ i)
                   (for-racket ([i (range len_layer_input)]) ; column , parcours les colonnes de la ligne sauf le bias
 
                               ;;(display "modification_des_poids : i = ") (display i) (newline)
@@ -406,7 +408,7 @@ ANNOTATION-ON
       {err ← 0.0}
 
       (declare entree sortie_attendue ᐁ)
-      (type flonum? ᐁ)
+      (type ℝ ᐁ)
       (type vector? sortie_attendue)
       (for-racket ([entree-sortie_attendue Lexemples])
                   {entree ← (car entree-sortie_attendue)} 

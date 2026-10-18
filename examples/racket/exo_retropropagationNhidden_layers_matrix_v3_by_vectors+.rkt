@@ -55,11 +55,11 @@
 
 ANNOTATION-ON
 
-(type flonum? pi)
+(type ℝ pi)
   
 (random-seed 7)
 
-(type [(flonum?) procedure? ()] random)
+(type [(ℝ) procedure? ()] random)
 
 ;; return a number in ]-1,1[
 ;;(define (uniform-dummy dummy1 dummy2) {(random) * (if {(random 2) = 0} 1 -1)})  ; we randomly choose the sign of the random number
@@ -69,7 +69,7 @@ ANNOTATION-ON
 
 ; return a random number between [inf, sup]
 (define (uniform-interval inf sup)
-  (type flonum? inf sup)
+  (type ℝ inf sup)
   ;;{gap <- sup - inf}
   (def gap  sup - inf)
   {inf + gap · (random)})
@@ -77,24 +77,24 @@ ANNOTATION-ON
 
 ; sigmoïde
 (define (σ z̃) 
-  (type flonum? z̃)
+  (type ℝ z̃)
   ;(display "σ : z̃ =") (display z̃) (newline)
   #;{1 / (1 + (exp (- z̃)))}
   {1.0 / (1.0 + (exp (- z̃)))})
 
 ; some derivatives
 (define (der_tanh z z̃)
-  (type flonum? z)
+  (type ℝ z)
   #;{1 - z ²}
   {1.0 - z ²})	
 
 (define (der_σ z z̃)
-    (type flonum? z)
+    (type ℝ z)
     #;{z · {1 - z}}
     {z · {1.0 - z}})
 
 (define (der_atan z z̃)
-  (type flonum? z̃)
+  (type ℝ z̃)
   #;{1 / (1 + z̃ ²)}
   {1.0 / (1.0 + z̃ ²)})
 
@@ -109,7 +109,7 @@ ANNOTATION-ON
 ; with the return type of the getters : the matrices of this program are matrices of flonums
 #;(require-overload-square-brackets matrix-vect-ref matrix-vect-set! (matrix-vect? number? number?))
 #;(require-overload-square-brackets matrix-vect-line-ref matrix-vect-line-set! (matrix-vect? number?))
-(require-overload-square-brackets (flonum?) matrix-vect-ref matrix-vect-set! (matrix-vect? number? number?)) ; M[i j] is a flonum
+(require-overload-square-brackets (ℝ) matrix-vect-ref matrix-vect-set! (matrix-vect? number? number?)) ; M[i j] is a flonum
 (require-overload-square-brackets (vector?) matrix-vect-line-ref matrix-vect-line-set! (matrix-vect? number?)) ; M[i] is a vector
 
 (require-overload-operator · multiply-matrix-vector (matrix-vect? vector?)) ; this recreate overload info of the required file matrix-by-vectors+.rkt for operator ·
@@ -137,9 +137,9 @@ ANNOTATION-ON
 	 (super-new)
 
 	 (type vector? nc)
-	 (type fixnum? {nc[]})
+	 (type ℕ {nc[]})
 
-	 (type ((flonum?) procedure? (flonum? flonum?)) მzⳆმz̃) ; this could also be just procedure? but here we need domain of procedure
+	 (type ((ℝ) procedure? (ℝ ℝ)) მzⳆმz̃) ; this could also be just procedure? but here we need domain of procedure
 	 
 	 ; this is the initialisation parameters
 	 (init-field (nc #(2 3 1)) ;; on crée le tableau des couches du réseau
@@ -151,12 +151,12 @@ ANNOTATION-ON
 		     (activation_function_output_layer_derivative der_tanh)
 		     (mesure-temps #f)) ;; active la mesure du temps écoulé toutes les 1000 itérations dans apprentissage
 
-	 (type fixnum? nbiter)
+	 (type ℕ nbiter)
 	 {lnc <- (vector-length nc)}
 
 	 #;(type {z[]} vector?) ; '{z[]} = '($bracket-apply$ z)
 	 (type vector? z {z[]}) ; type annotation for z and for any elements z[i] of z at index i
-	 (type flonum? {z[][]})
+	 (type ℝ {z[][]})
 	 
 	 ; les entrées concrètes seront fournies avec la méthode accepte
 	 ;; (field (z (vector-ec (s42: i (vector-length nc)) (make-vector {nc[i]} 0))))
@@ -172,7 +172,7 @@ ANNOTATION-ON
 
 
 	 (type vector? z̃ {z̃[]})
-	 (type flonum? {z̃[][]})
+	 (type ℝ {z̃[][]})
 
 	 ; z̃[0] is not used as z[0] is x, the initial data
 	 ;;(field (z̃ (vector-ec (s42:vector lg nc)
@@ -186,7 +186,7 @@ ANNOTATION-ON
 	 ; a definition in class seems like a field
 	 (type vector? M) ; M is a vector
 	 (type matrix-vect? {M[]}) ; elements of M are matrix-vect : M[i][k j] calls matrix-vect-ref directly
-	 #;(type flonum? {M[][]}) ; elements of the matrices are floats : now given by the return type in require-overload-square-brackets
+	 #;(type ℝ {M[][]}) ; elements of the matrices are floats : now given by the return type in require-overload-square-brackets
 	 {M <- (vector-ec (s42: n {lnc - 1}) ; vectors by eager comprehension (SRFI 42)
 			  create-matrix-vect-by-function(uniform-dummy nc[n + 1] {nc[n] + 1}))} ;; Matrix-vect
 
@@ -199,7 +199,7 @@ ANNOTATION-ON
 	 (newline)
 
 	 (type vector? ᐁ {ᐁ[]}) ; a vector of vectors
-	 (type flonum? {ᐁ[][]}) ; a vector of vectors of numbers
+	 (type ℝ {ᐁ[][]}) ; a vector of vectors of numbers
 
 	 (field (ᐁ (for/vector ([lg nc])
 			       (make-vector lg 0.0))))
@@ -211,7 +211,7 @@ ANNOTATION-ON
 
 	 (field (eror 0.0))
 
-	 (type flonum? eror)
+	 (type ℝ eror)
 
 
 	 ; forward propagation
@@ -239,8 +239,7 @@ ANNOTATION-ON
 		(declare z_1)
 
 		(declare i) ; because the variable will be used outside the 'for' loop too
-		;(define i 0)
-		;(declare i-body-function)
+		(type ℕ i)
 
 		;; warning if declaring i '() it cause a problem in for-racket, i being not a real
 		;(for-racket ([i (range {n - 2})]) ; warning : in Racket the variable 'i' 
@@ -312,13 +311,13 @@ ANNOTATION-ON
 	  (type vector? y)
 
 	  (declare temps-debut temps-fin) ; pour la mesure du temps écoulé toutes les 1000 itérations
-	  (type flonum? temps-debut temps-fin)
+	  (type ℝ temps-debut temps-fin)
 	  (when mesure-temps
 	    {temps-debut <- (current-inexact-milliseconds)})
 
 	  (for-racket ([it (range nbiter)]) ; le nombre d'itérations est fixé !
 
-		      (type fixnum? it)
+		      (type ℕ it)
 
 		      (when {it % 1000 = 0}
 			(display "it=") (display it)(newline) ; )( is not allowed in SRFI 110 because it looks like f(x) or (f)(x)
@@ -346,7 +345,7 @@ ANNOTATION-ON
 
 		      {ns <- vector-length(z[i])}
 		     
-
+		      (type ℕ i k)
 		      ;; TEMPS 1. calcul des gradients locaux sur la couche k de sortie (les erreurs commises)
 		      (for-racket ([k (range ns)])
 				  {ᐁ[i][k] <- y[k] - z[i][k]})
@@ -374,7 +373,7 @@ ANNOTATION-ON
 				#;{ns <- vector-length(z[i + 1])}
 				{nc1 <- vector-length(z[i])}
 				{ns1 <- vector-length(z[i + 1])}
-				(type fixnum? j)
+				(type ℕ j)
 				(for-racket ([j (range nc1)])
 					{ᐁ[i][j] <- (for/sum ([k (range ns1)])
 							     (მzⳆმz̃(z[i + 1][k] z̃[i + 1][k]) · M[i][k (j + 1)] · ᐁ[i + 1][k]))})
@@ -396,9 +395,9 @@ ANNOTATION-ON
 
 	  (type matrix-vect? M_i_o) ; M_i_o[j (i + 1)] calls matrix-vect-ref / matrix-vect-set! directly
 	  (type vector? z_input z_output z̃_output ᐁ_i_o)
-	  #;(type flonum? η {ᐁ_i_o[]} {z_input[]} {z_output[]} {z̃_output[]} {M_i_o[]})
-	  (type flonum? η {ᐁ_i_o[]} {z_input[]} {z_output[]} {z̃_output[]}) ; M_i_o[j k] is a flonum by the return type in require-overload-square-brackets
-	  (type ((flonum?) procedure? (flonum? flonum?)) მzⳆმz̃) ; the parameter მzⳆმz̃ hides the one of the class : its type is written here
+	  #;(type ℝ η {ᐁ_i_o[]} {z_input[]} {z_output[]} {z̃_output[]} {M_i_o[]})
+	  (type ℝ η {ᐁ_i_o[]} {z_input[]} {z_output[]} {z̃_output[]}) ; M_i_o[j k] is a flonum by the return type in require-overload-square-brackets
+	  (type ((ℝ) procedure? (ℝ ℝ)) მzⳆმz̃) ; the parameter მzⳆმz̃ hides the one of the class : its type is written here
 	 
 	  ; the length of output and input layer with coeff. used for bias update
 	  {(len_layer_output len_layer_input_plus1forBias) <+ (dim-matrix-vect M_i_o)} ; use values and define-values to create bindings
@@ -408,12 +407,13 @@ ANNOTATION-ON
 	  ;(display "modification_des_poids : len_layer_input = ") (display len_layer_input) (newline)
 	  ;(display "modification_des_poids : len_layer_output = ") (display len_layer_output) (newline)
 
+	  (type ℕ j)
 	  (for-racket ([j (range len_layer_output)]) ; line
 
 		;(newline)
 		;(display "modification_des_poids : j = ") (display j) (newline)
 
-		(type fixnum? i)
+		(type ℕ i)
 		(for-racket ([i (range len_layer_input)]) ; column , parcours les colonnes de la ligne sauf le bias
 		    
 		    ;(display "modification_des_poids : i = ") (display i) (newline)
@@ -434,7 +434,7 @@ ANNOTATION-ON
           {err <- 0.0}
 
 	  (declare entree sortie_attendue ᐁ)
-	  (type flonum? ᐁ err)
+	  (type ℝ ᐁ err)
 	  (type vector? sortie_attendue)
 	  (for-racket ([entree-sortie_attendue Lexemples])
 		{entree <- (car entree-sortie_attendue)} 

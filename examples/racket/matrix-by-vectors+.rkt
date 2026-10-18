@@ -68,7 +68,6 @@ ANNOTATION-ON
   (type vector? v {v[]}) ; a vector of vectors : v[lin][col] is specialized for vectors
   {v <- (matrix-vect-v M)}
   {lin <- (vector-length v)}
-  ;;{col <- (vector-length {v[0]})}
   {col <- (vector-length v[0])}
   (values lin col))
 
@@ -90,6 +89,7 @@ ANNOTATION-ON
   
   (define (res i j)
     {sum <- 0}
+    (type ℕ i j k)
     (for ({k <- 0} {k < p1} {k <- k + 1})
     	 {sum <- sum + v1[i][k] * v2[k][j]}) ; here the * should not be yet overloaded (so fast, but to be checked?)
     sum)
@@ -138,11 +138,13 @@ ANNOTATION-ON
 ;; define getter,setter
 (define (matrix-vect-ref M lin col)
   (type vector? v {v[]}) ; a vector of vectors : v[lin][col] is specialized for vectors
+  (type ℕ lin col)
   {v <- (matrix-vect-v M)}
   {v[lin][col]})
 
 (define (matrix-vect-set! M lin col x)
   (type vector? v {v[]}) ; a vector of vectors : v[lin][col] is specialized for vectors
+  (type ℕ lin col)
   {v <- (matrix-vect-v M)}
   {v[lin][col] <- x})
 
@@ -168,12 +170,14 @@ ANNOTATION-ON
 ;; > 
 (define (matrix-vect-line-ref M lin)
   (type vector? v {v[]}) ; a vector of vectors : v[lin][col] is specialized for vectors
+  (type ℕ lin)
   {v <- (matrix-vect-v M)}
   {v[lin]})
 
 
 (define (matrix-vect-line-set! M lin vect-line)
   (type vector? v {v[]}) ; a vector of vectors : v[lin][col] is specialized for vectors
+  (type ℕ lin)
   {v <- (matrix-vect-v M)}
   {v[lin] <- vect-line})
 
