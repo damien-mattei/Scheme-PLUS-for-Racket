@@ -5,9 +5,10 @@
 ;; racket <path of SRFI-105>/src/curly-infix2prefix4racket.rkt bench-annotated+.rkt
 ;;
 ;; The benchmarks of the manual of Scheme+ (section "Type annotation and inference") : the same four programs written
-;; five times : in Scheme (bench-scheme.rkt) ; in Scheme+ with the same prefix source , without and with the type
+;; six times : in Scheme (bench-scheme.rkt) ; in Scheme+ with the same prefix source , without and with the type
 ;; annotation (bench-scheme+.rkt , bench-annotated+.rkt) ; in Scheme+ as it is usually written , infix , := instead of
-;; let , square brackets , without and with the type annotation (bench-infix+.rkt , bench-infix-annotated+.rkt).
+;; let , square brackets , without and with the type annotation (bench-infix+.rkt , bench-infix-annotated+.rkt) ; in
+;; Typed Racket (bench-typed-racket.rkt).
 ;; To run them : racket run-benchmarks.rkt (compile first with raco make run-benchmarks.rkt , on a machine at rest).
 ;;
 ;; Author: Damien Mattei
