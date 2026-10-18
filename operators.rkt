@@ -69,6 +69,7 @@
 	   FLOW-op?
 	   COMPOSITION-op?
 	   EXPONENTIATION-op?
+	   WALRUS-op?
 	   MULTIPLY-op?
 	   BRACKET-APPLY-op?
 	   BRACKET-APPLY-VECTOR-op?
@@ -76,6 +77,11 @@
 	   BRACKET-APPLY-HASH-TABLE-op?
 	   BRACKET-APPLY-ARRAY-op?
 	   BRACKET-APPLY-FLOMAT-op?
+	   BRACKET-APPLY-TYPED-INDEX-op?
+	   BRACKET-APPLY-VECTOR-NATURAL-op?
+	   BRACKET-APPLY-VECTOR-INTEGER-op?
+	   BRACKET-APPLY-STRING-NATURAL-op?
+	   BRACKET-APPLY-STRING-INTEGER-op?
 	   VALUES-op?
 	   QUOTE-op?
 	   QUASIQUOTE-op?
@@ -284,7 +290,7 @@
   (or (AND-op? oper)
       (OR-op? oper)))
 
-;; Warning : no difference here between 'logic' and 'bitwise' operators
+;; Warning : no difference here between 'logic' and 'nbitwise' operators
 (define (XOR-op? oper) ;; note: logxor in Guile, xor in Racket
   (or (datum=? oper 'logxor)
       (datum=? oper 'xor)
@@ -390,6 +396,25 @@
   (or (eq? oper '$bracket-apply-array$)
       (datum=? oper '$bracket-apply-array$)))
 
+;; the accesses written by the type annotation pass for indexes typed ℕ (natural) or ℤ (integer) , vectors and strings
+(define (BRACKET-APPLY-VECTOR-NATURAL-op? oper)
+  (datum=? oper '$bracket-apply-vector-natural$))
+
+(define (BRACKET-APPLY-VECTOR-INTEGER-op? oper)
+  (datum=? oper '$bracket-apply-vector-integer$))
+
+(define (BRACKET-APPLY-STRING-NATURAL-op? oper)
+  (datum=? oper '$bracket-apply-string-natural$))
+
+(define (BRACKET-APPLY-STRING-INTEGER-op? oper)
+  (datum=? oper '$bracket-apply-string-integer$))
+
+(define (BRACKET-APPLY-TYPED-INDEX-op? oper) ; one of the four above
+  (or (BRACKET-APPLY-VECTOR-NATURAL-op? oper)
+      (BRACKET-APPLY-VECTOR-INTEGER-op? oper)
+      (BRACKET-APPLY-STRING-NATURAL-op? oper)
+      (BRACKET-APPLY-STRING-INTEGER-op? oper)))
+
 (define (BRACKET-APPLY-FLOMAT-op? oper)
   (or (eq? oper '$bracket-apply-flomat$)
       (datum=? oper '$bracket-apply-flomat$)))
@@ -471,6 +496,9 @@
 (define (FLOW-op? oper)
   (datum=? oper '~>))
 
+(define (WALRUS-op? oper) ; the walrus operator : assigns and returns the value
+  (datum=? oper ':=>))
+
 (define (COMPOSITION-op? oper)
   (datum=? oper '∘))
 
@@ -545,7 +573,8 @@
       (isBRACKET-APPLY-STRING? expr)
       (isBRACKET-APPLY-HASH-TABLE? expr)
       (isBRACKET-APPLY-ARRAY? expr)
-      (isBRACKET-APPLY-FLOMAT? expr)))
+      (isBRACKET-APPLY-FLOMAT? expr)
+      (and (pair? expr) (BRACKET-APPLY-TYPED-INDEX-op? (car expr)))))
 
 
 (define (isVALUES? expr)

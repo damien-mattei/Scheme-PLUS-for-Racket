@@ -32,7 +32,12 @@
 	   ⇜ ⇝)
 
 
-  (require (for-syntax Scheme+/parse-square-brackets
+  (require (for-syntax (only-in Scheme+/operators ; the heads written by the type annotation for the indexes typed ℕ or ℤ
+                                BRACKET-APPLY-TYPED-INDEX-op?
+                                BRACKET-APPLY-VECTOR-NATURAL-op?
+                                BRACKET-APPLY-VECTOR-INTEGER-op?
+                                BRACKET-APPLY-STRING-NATURAL-op?))
+	   (for-syntax Scheme+/parse-square-brackets
 		       ;Scheme+/operators-list
 		       ) ; import at expand phase (not run phase)
 
@@ -162,6 +167,39 @@
        #| We will let the second $bracket-apply$ be executed and use the return value
           but do not execute the first $bracket-apply$ as we needs to interpret the syntax and deal with their arguments. |#
        (cond	      
+
+	 ; indexes typed ℕ (natural) or ℤ (integer) by the type annotation pass , vectors and strings (no slice) :
+	 ; {v[i] := x} --> (vector-set! v i x) for ℕ , with the test of the sign for ℤ (a negative index counts from the
+	 ; end as in Python) ; {M[i j] := x} : the same on the row M[i] ; see the accesses in bracket-apply.rkt
+	 ((BRACKET-APPLY-TYPED-INDEX-op? (syntax->datum #'brket-aply))
+	  (let* ((oper (syntax->datum #'brket-aply))
+		 (natural-head? (or (BRACKET-APPLY-VECTOR-NATURAL-op? oper) (BRACKET-APPLY-STRING-NATURAL-op? oper)))
+		 (vector-head? (or (BRACKET-APPLY-VECTOR-NATURAL-op? oper) (BRACKET-APPLY-VECTOR-INTEGER-op? oper)))
+		 (indexes (parse-square-brackets-arguments-lister-syntax (syntax->list #'(index ...))
+									  (list (cons '* #'fx*)
+										(cons '- #'fx-)
+										(cons '+ #'fx+)
+										(cons '/ #'fxquotient)))))
+	    (with-syntax ((setter (if vector-head? #'vector-set! #'string-set!))
+			  (getter (if vector-head? #'vector-ref #'string-ref))
+			  (len (if vector-head? #'vector-length #'string-length)))
+	      (cond ((and natural-head? (= (length indexes) 1))
+		     (with-syntax ((i (car indexes)))
+		       #'(setter container i expr)))
+		    ((and natural-head? vector-head? (= (length indexes) 2))
+		     (with-syntax ((i (car indexes)) (j (cadr indexes)))
+		       #'(vector-set! (vector-ref container i) j expr)))
+		    ((= (length indexes) 1)
+		     (with-syntax ((index (car indexes)))
+		       #'(let ((c container) (i index) (e expr))
+			   (setter c (if (fx< i 0) (fx+ (len c) i) i) e))))
+		    ((and vector-head? (= (length indexes) 2))
+		     (with-syntax ((index1 (car indexes)) (index2 (cadr indexes)))
+		       #'(let ((c container) (i index1) (j index2) (e expr))
+			   (let ((row (vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i))))
+			     (vector-set! row (if (fx< j 0) (fx+ (vector-length row) j) j) e)))))
+		    (vector-head? #'(<- ($bracket-apply-vector$ container index ...) expr))
+		    (else #'(<- ($bracket-apply-string$ container index ...) expr))))))
 
 	 ; square brackets overloaded by overload-square-brackets , for an object of known type (written by the type
 	 ; annotation pass) : ($bracket-apply-overloaded$ ((getter setter nb-indexes) ...) object arg-bracket ...)

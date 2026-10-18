@@ -1140,6 +1140,121 @@
   (check-equal? (p34-typed 1.5 4) (list 2.25 2.25 6.25 (expt 1.5 3) (expt 1.5 4) 3.25))
   (check-equal? (car (p34-typed -3.331703861009889e-8 2)) 1.1100250617468202e-15)
 
+  ;; ================================================================
+  ;; 35. The reserved names of the types : ℕ and ℤ are fixnum? , ℝ is
+  ;;     flonum? , in the forms type , the signatures , the composite
+  ;;     types and the overloads (chosen at read time and at run time).
+  ;; ================================================================
+  (check-true (ℝ 2.0))
+  (check-false (ℝ 2))
+  #;(check-true (ℕ -3))
+  (check-false (ℕ -3))                                     ; ℕ : a fixnum >= 0
+  (check-true (ℕ 3))
+  (check-true (ℤ -3))                                      ; ℤ : fixnum? , the negative ones too
+  (check-true (ℤ 5))
+  (check-true (ℚ 1/2))                                     ; ℚ : rational? , ℂ : complex? (only defined)
+  (check-true (ℂ 1+2i))
+  (define (p35-f x i k)
+    ANNOTATION-ON
+    (type ℝ x)
+    (type ℕ i)
+    (type ℤ k)
+    (list {x * 2.0} {i + 1} {k - 1}))                       ; (fl* x 2.0) (fx+ i 1) (fx- k 1)
+  (check-equal? (p35-f 1.5 3 -4) '(3.0 4 -5))
+  (check-exn exn:fail:contract? (lambda () (p35-f 1 3 -4)))  ; fl* : the annotation has typed x as a flonum
+  (define (p35-g x) {x * x + 1.0})
+  (define (p35-h y)
+    ANNOTATION-ON
+    (type [(ℝ) procedure? (ℝ)] p35-g)
+    {(p35-g y) * 3.0})                                      ; the signature : (fl* (p35-g y) 3.0)
+  (check-equal? (p35-h 2.0) 15.0)
+  (define (p35-v v i)
+    ANNOTATION-ON
+    (type #(ℝ) v)
+    (type ℕ i)
+    {v[i] * 2.0})                                           ; a vector of flonums : (fl* ($bracket-apply-vector$ v i) 2.0)
+  (check-equal? (p35-v (vector 1.0 2.0) 1) 4.0)
+  (struct p35-vec (x) #:transparent)
+  (define (p35-add v r) (p35-vec (+ (p35-vec-x v) r)))
+  (overload-procedure p35-plus (p35-vec?) p35-add (p35-vec? ℝ)) ; ℝ : a predicate at run time
+  (check-equal? (p35-plus (p35-vec 1.0) 2.5) (p35-vec 3.5))
+  (define (p35-use v r)
+    ANNOTATION-ON
+    (type p35-vec? v)
+    (type ℝ r)
+    (p35-plus v r))                                         ; chosen at read time : (p35-add v r)
+  (check-equal? (p35-use (p35-vec 1.0) 2.5) (p35-vec 3.5))
+
+  ;; ================================================================
+  ;; 36. The indexes typed ℕ or ℤ : accesses and assignments
+  ;;     specialized for the vectors and the strings , ℕ : vector-ref
+  ;;     directly , ℤ : only the test of the sign (a negative index
+  ;;     counts from the end) , no type : the general access.
+  ;; ================================================================
+  (define (p36-f v s M i k n)
+    ANNOTATION-ON
+    (type vector? v M)
+    (type string? s)
+    (type ℕ i)
+    (type ℤ k)
+    {v[i] := v[k] + 1}                                      ; ($bracket-apply-vector-natural$ v i) , (… -integer$ v k)
+    {s[i] := s[k]}
+    {M[i k] := M[i i]}                                      ; M[0][-1] := M[0][0]
+    (list {v[i]} {v[k]} {v[i + 1]} {v[n]} {v[2]} {s[i]} {s[k]} {M[i k]} {M[i i]} {i + 1} {v[1 :]} {M[i][k]} v s M))
+  (check-equal? (p36-f (vector 1 2 3) (string-copy "abc") (vector (vector 1 2) (vector 3 4)) 0 -1 1)
+                (list 4 3 2 2 3 #\c #\c 1 1 1 #(2 3) 1 #(4 2 3) "cbc" #(#(1 1) #(3 4))))
+  (define (p36-walrus v i)
+    ANNOTATION-ON
+    (type vector? v)
+    (type ℕ i)
+    (declare x)
+    {x := {v[i] :=> 7} + 1}
+    (list x v))
+  (check-equal? (p36-walrus (vector 0 0) 1) (list 8 #(0 7)))
+  (define (p36-bad v i)                                     ; ℕ is not checked : a negative index is an error of bounds
+    ANNOTATION-ON
+    (type vector? v)
+    (type ℕ i)
+    {v[i]})
+  (check-exn exn:fail:contract? (lambda () (p36-bad (vector 1 2) -1)))
+  ;; the sum and the product of naturals are naturals for the indexes : {v[2 * (i + 2) + 1]} is a vector-ref directly
+  (define (p36-sum v M i j k)
+    ANNOTATION-ON
+    (type vector? v M)
+    (type ℕ i j)
+    (type ℤ k)
+    (list {v[i + 1]} {v[2 * i + 1]} {v[2 * (i + 2) + 1]} {M[i][j + 1]} {M[i (j + 1)]}  ; natural
+          {v[2 * (i - 2) + 1]} {v[i - 1]} {v[k + 1]}))                                 ; integer : the test of the sign
+  (check-equal? (p36-sum (vector 0 1 2 3 4 5 6 7 8) (vector (vector 1 2 3) (vector 4 5 6)) 1 0 -3)
+                (list 2 3 7 5 5 8 0 7))                                              ; v[-1] = 8 , v[-2] = 7
+  (define (p36-loop v n)                                    ; (type ℕ k) in the body of a loop
+    ANNOTATION-ON
+    (type vector? v)
+    (let loop ((k 0) (sum 0))
+      (type ℕ k)
+      (if {k < n}
+          (loop {k + 1} {sum + v[k]})
+          sum)))
+  (check-equal? (p36-loop (vector 1 2 3 4) 4) 10)
+  ;; limit cases : an index whose type can not be inferred keeps the general access , nothing breaks
+  (define (p36-foo x) (+ x 1))                              ; no type
+  (define (p36-g x) 2)
+  (type ((natural-fixnum?) procedure? (natural-fixnum?)) p36-g) ; returns a ℕ
+  (define (p36-limits v i k b s)
+    ANNOTATION-ON
+    (type vector? v)
+    (type string? s)
+    (type ℕ i)
+    (list {v[i * (p36-foo k) + 1]}                          ; general (p36-foo has no type)
+          {v[(p36-foo k)]}                                  ; general
+          {v[i * p36-foo(k) + 1]}                           ; general , neoteric call
+          {v[(vector-length v) - 1]}                        ; integer
+          {v[i + (if b 1 2)]}                               ; general (the type of an if is not inferred)
+          {v[i * (p36-g k) + 1]}                            ; natural (p36-g returns a ℕ)
+          {s[i * (p36-foo k)]}                              ; general
+          {v[(i + 1)]}))                                    ; natural
+  (check-equal? (p36-limits (vector 0 1 2 3 4 5 6 7 8 9) 1 2 #t "abcdefg") (list 4 3 4 9 2 3 #\d 2))
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 

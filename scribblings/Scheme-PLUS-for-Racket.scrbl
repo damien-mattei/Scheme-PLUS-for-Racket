@@ -45,7 +45,7 @@ v
 120
 
 (define (σ z̃)                     ; the sigmoid of a neural network
-  (type flonum? z̃)                ; type annotation (in a region ANNOTATION-ON)
+  (type ℝ z̃)                ; type annotation (in a region ANNOTATION-ON)
   {1.0 / (1.0 + (exp (- z̃)))})    ; rewritten as (fl/ 1.0 (fl+ 1.0 (exp (fl- z̃)))) : the operators of the floats
 (σ 2.0)
 0.8807970779778823
@@ -1916,23 +1916,7 @@ See the full example at @url["https://github.com/damien-mattei/Scheme-PLUS-for-R
 
 Scheme+ has an @bold{optional} type annotation and inference pass. It runs @italic{inside} the SRFI-105 Curly Infix reader, after the curly-infix and square-bracket parsing and @italic{before} the Racket compiler sees the code, so it is a read/compile time mechanism, not a run time one.
 
-Its purpose is speed. @bold{On the neural network of the complete example (@secref["annotation-example"]), a retropropagation with matrices of floats, 1000 iterations of the learning take 11.5 s without the pass and 4.3 s with @racket[ANNOTATION-ON] and the type annotations of the program (in power-saving mode): about 2.7 times faster.} The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged.
-
-The gain does not come only from Scheme+: on small programs written in plain Scheme (prefix, without @litchar{{ }}, overloads nor square brackets), the same source runs from 1.7 to 5 times faster with the type annotations than with the generic operators, and Scheme+ without annotation runs at the speed of Scheme (the differences, of a few percent, are within the precision of the measures). With @racket[fl+], @racket[fl*], @racket[flexp] ... the compiler of Racket CS keeps the floats unboxed in the loops instead of allocating each result, with @racket[fx+], @racket[fx<], @racket[fxquotient] ... it skips the test of the type and the overflow to the big integers. These are tight loops, the best case: in a whole program, with calls and allocations, the gain is smaller (2.7 times for the retropropagation above).
-
-@tabular[#:style 'boxed
-         #:sep @hspace[3]
-         #:column-properties '(left right right right right)
-         #:row-properties '(bottom-border ())
-         (list (list @bold{program (same source)} @bold{Scheme} @bold{Scheme+} @bold{Scheme+ annotated} @bold{gain over Scheme})
-               (list "floats: Horner and sigmoid (exp), 2·10⁷ points" "762 ms" "785 ms" "220 ms" "3.5 ×")
-               (list "product of matrices 200×200, 20 times" "1043 ms" "1046 ms" "600 ms" "1.7 ×")
-               (list "integers: flights of Syracuse up to 10⁶" "990 ms" "986 ms" "378 ms" "2.6 ×")
-               (list "integration by the trapezoids, 2·10⁷ steps" "339 ms" "335 ms" "68 ms" "5.0 ×"))]
-
-CPU times, mean of two series each giving the median of 7 runs, Racket 9.2 CS. Scheme is a @racket[racket/base] module; Scheme+ is the same source in a Scheme+ module; Scheme+ annotated adds @racket[ANNOTATION-ON] and a few @racket[type] lines (the parameters, the result of a call to a procedure of the program, with a @racket[let] or with its signature such as @racket[(type ((flonum?) procedure? (flonum?)) f)]).
-
-The sources of these benchmarks are in the sub-directory @bold{examples/benchmarks/} of Scheme+, so that everyone can check them: @bold{bench-scheme.rkt} (Scheme), @bold{bench-scheme+.rkt} (Scheme+), @bold{bench-annotated+.rkt} (Scheme+ annotated) and @bold{run-benchmarks.rkt}, which runs the three versions, displays the times and checks that they give the same results: @tt{raco make run-benchmarks.rkt} then @tt{racket run-benchmarks.rkt}, on a machine at rest (the times vary with the other programs running).
+Its purpose is speed. @bold{On the neural network of the complete example (@secref["annotation-example"]), a retropropagation with matrices of floats, 1000 iterations of the learning take 11.5 s without the pass and 4.3 s with @racket[ANNOTATION-ON] and the type annotations of the program (in power-saving mode): about 2.7 times faster.} The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged. The benchmarks are in @secref["benchmarks"].
 
 When the pass knows the type of the operands it can:
 @itemlist[
@@ -1947,6 +1931,21 @@ The inference already knows the type of the literals and of the R7RS and Scheme+
 When the pass is @bold{off} (this is the default) every @racket[type] form is simply removed from the program, so annotated code stays valid unannotated Scheme+.
 
 A local variable hides the type of an outer variable of the same name: the type of a parameter is written in the body of the procedure, @racket[(define (f x) (type flonum? x) ...)]. How the forms of Scheme are treated by the pass (macro definitions, local variables) is described in @secref["scheme-forms"].
+
+@subsection[#:tag "benchmarks"]{Benchmarks}
+
+@; the table of the benchmarks carries an HTML anchor for a link : Scheme-PLUS-for-Racket.html#benchmarks
+@tabular[#:style (make-style 'boxed (list (attributes '((id . "benchmarks")))))
+         #:sep @hspace[3]
+         #:column-properties '(left right right right right right)
+         #:row-properties '(bottom-border ())
+         (list (list @bold{program (same source)} @bold{Scheme} @bold{Scheme+} @bold{Scheme+ annotated} @bold{Typed Racket} @bold{gain})
+               (list "floats: Horner, sigmoid, 2·10⁷" "845 ms" "822 ms" "221 ms" "220 ms" "3.8 ×")
+               (list "matrices 200×200, 20 products" "1218 ms" "1210 ms" "706 ms" "684 ms" "1.7 ×")
+               (list "integers: Syracuse up to 10⁶" "1056 ms" "1030 ms" "400 ms" "384 / 1149 ms" "2.6 ×")
+               (list "trapezoids, 2·10⁷ steps" "382 ms" "372 ms" "81 ms" "77 ms" "4.7 ×"))]
+
+CPU times, median of 7 runs; the gain is the one of Scheme+ annotated over Scheme (Typed Racket on the integers: @racket[Fixnum] / @racket[Integer]). The sources of these benchmarks are in the sub-directory @bold{examples/benchmarks/} of Scheme+: @tt{racket run-benchmarks.rkt} runs all the versions.
 
 @subsection[#:tag "annotation-on"]{Activating the pass}
 
@@ -2054,6 +2053,20 @@ Domain and codomain of a procedure whose body is not annotated (a Racket or libr
 (type [(flonum?) procedure? (flonum?)] sqr)             ; sqr : flonum? -> flonum?
 (type [(flonum?) procedure? ()] random)                 ; here random is used with no argument
 (type ((flonum?) procedure? (flonum? flonum?)) der_σ)   ; parentheses also accepted
+}|
+
+The types of the numbers that make the pass write @racket[fx+] or @racket[fl*] can also be written @bold{ℤ} for @racket[fixnum?], @bold{ℕ} for a fixnum greater than or equal to 0 (@racket[natural-fixnum?]) and @bold{ℝ} for @racket[flonum?], everywhere a type is written: in @racket[type], in the signatures, in the composite types and in the predicates of the overloads. They are reserved names of Scheme+, defined as these predicates (so @racket[(ℝ 2.0)] is @racket[#t] and @racket[(ℕ -3)] is @racket[#f]). They are not exactly the sets of mathematics: a fixnum is bounded, and ℝ is the floats. @bold{ℚ} (@racket[rational?]) and @bold{ℂ} (@racket[complex?]) are also defined, not used by the annotation for now.
+
+For the arithmetic, ℕ is a fixnum (@racket[{i + 1}] is @racket[(fx+ i 1)]). For an index between square brackets of a vector or a string, the type of the index gives a faster access: with an index of type ℕ, @litchar{{v[i]}} is @racket[(vector-ref v i)] (@racket[string-ref] for a string) with no test at all; with ℤ, only the test of the sign remains (a negative index counts from the end); the same for @litchar{{M[i j]}} of a vector of vectors and for the assignments @litchar{{v[i] := x}}. As the annotation is not checked, a negative index declared ℕ is an error of bounds of @racket[vector-ref].
+
+@codeblock|{
+(define (f x i)
+  (type ℝ x)                          ; flonum?
+  (type ℕ i)                          ; a fixnum >= 0
+  {x * i ²})
+(type [(ℝ) procedure? (ℝ ℕ)] f)
+(type #(ℝ) v)                         ; a vector of flonums
+(overload-procedure plus (vec?) add-vec (vec? ℝ))
 }|
 
 Composite types are equivalent to the bracket notation, both can be used: @racket[(type #(#(flonum?)) z)] is the same as @litchar{(type vector? z {z[]})} with @litchar{(type flonum? {z[][]})}. A composite type still matches a procedure or an overload expecting the simple container predicate (@racket[vector?], @racket[list?]).

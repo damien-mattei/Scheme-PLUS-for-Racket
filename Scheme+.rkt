@@ -55,6 +55,10 @@
    $bracket-apply$ ; [ ]
    $bracket-apply-vector$
    $bracket-apply-string$
+   $bracket-apply-vector-natural$ ; written by the type annotation pass for the indexes typed ℕ or ℤ
+   $bracket-apply-vector-integer$
+   $bracket-apply-string-natural$
+   $bracket-apply-string-integer$
    $bracket-apply-hash-table$
    $bracket-apply-array$
    $bracket-apply-flomat$
@@ -234,7 +238,8 @@
 
    ANNOTATION-ON
 	 ANNOTATION-OFF
-   :print-type) ; the type known by the annotation , at the REPL only
+   :print-type ; the type known by the annotation , at the REPL only
+   ℕ ℤ ℝ ℚ ℂ) ; the types fixnum? fixnum? flonum? rational? complex? , reserved names
 
 
   

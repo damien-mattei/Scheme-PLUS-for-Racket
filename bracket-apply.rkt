@@ -31,6 +31,10 @@
 	   $bracket-apply-array$
 	   $bracket-apply-flomat$
 	   $bracket-apply-overloaded$
+	   $bracket-apply-vector-natural$
+	   $bracket-apply-vector-integer$
+	   $bracket-apply-string-natural$
+	   $bracket-apply-string-integer$
 	   )
 
   (require
@@ -1141,6 +1145,70 @@
 	   (else #'(apply-square-brackets-argument-6-and-more-vector container parsed-args))))))))
 
 
+
+
+;; The accesses written by the type annotation pass when the type of the indexes is known (no slice) : ℕ (natural) or ℤ
+;; (integer). With ℕ there is no negative index : vector-ref / string-ref directly , no test at all ; with ℤ only the test
+;; of the sign (a negative index counts from the end as in Python). Vectors : one index v[i] or two indexes M[i j] (a
+;; vector of vectors , each negative index counts from the end of its own vector) ; strings : one index s[i].
+;; Any other form goes to $bracket-apply-vector$ / $bracket-apply-string$.
+
+(begin-for-syntax
+  ;; the indexes between [ ] , parsed as by $bracket-apply-vector$ (an infix expression in [ ] : {v[i + 1]})
+  (define (typed-indexes arg-brackets)
+    (parse-square-brackets-arguments-lister-syntax arg-brackets
+                                                   (list (cons '* #'fx*)
+                                                         (cons '- #'fx-)
+                                                         (cons '+ #'fx+)
+                                                         (cons '/ #'fxquotient)))))
+
+(define-syntax $bracket-apply-vector-natural$
+  (lambda (stx)
+    (syntax-case stx ()
+      ((_ container arg-bracket ...)
+       (let ((indexes (typed-indexes (syntax->list #'(arg-bracket ...)))))
+         (case (length indexes)
+           ((1) (with-syntax ((i (car indexes)))
+                  #'(vector-ref container i)))
+           ((2) (with-syntax ((i (car indexes)) (j (cadr indexes)))
+                  #'(vector-ref (vector-ref container i) j)))
+           (else #'($bracket-apply-vector$ container arg-bracket ...))))))))
+
+(define-syntax $bracket-apply-vector-integer$
+  (lambda (stx)
+    (syntax-case stx ()
+      ((_ container arg-bracket ...)
+       (let ((indexes (typed-indexes (syntax->list #'(arg-bracket ...)))))
+         (case (length indexes)
+           ((1) (with-syntax ((index (car indexes)))
+                  #'(let ((c container) (i index))
+                      (vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i)))))
+           ((2) (with-syntax ((index1 (car indexes)) (index2 (cadr indexes)))
+                  #'(let ((c container) (i index1) (j index2))
+                      (let ((row (vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i))))
+                        (vector-ref row (if (fx< j 0) (fx+ (vector-length row) j) j))))))
+           (else #'($bracket-apply-vector$ container arg-bracket ...))))))))
+
+(define-syntax $bracket-apply-string-natural$
+  (lambda (stx)
+    (syntax-case stx ()
+      ((_ container arg-bracket ...)
+       (let ((indexes (typed-indexes (syntax->list #'(arg-bracket ...)))))
+         (if (= (length indexes) 1)
+             (with-syntax ((i (car indexes)))
+               #'(string-ref container i))
+             #'($bracket-apply-string$ container arg-bracket ...)))))))
+
+(define-syntax $bracket-apply-string-integer$
+  (lambda (stx)
+    (syntax-case stx ()
+      ((_ container arg-bracket ...)
+       (let ((indexes (typed-indexes (syntax->list #'(arg-bracket ...)))))
+         (if (= (length indexes) 1)
+             (with-syntax ((index (car indexes)))
+               #'(let ((c container) (i index))
+                   (string-ref c (if (fx< i 0) (fx+ (string-length c) i) i))))
+             #'($bracket-apply-string$ container arg-bracket ...)))))))
 
 
 (define (apply-square-brackets-argument-0-vector container-eval)
