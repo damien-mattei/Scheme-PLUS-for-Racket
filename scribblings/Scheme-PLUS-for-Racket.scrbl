@@ -2055,7 +2055,17 @@ Domain and codomain of a procedure whose body is not annotated (a Racket or libr
 (type ((flonum?) procedure? (flonum? flonum?)) der_σ)   ; parentheses also accepted
 }|
 
-The types of the numbers that make the pass write @racket[fx+] or @racket[fl*] can also be written @bold{ℤ} for @racket[fixnum?], @bold{ℕ} for a fixnum greater than or equal to 0 (@racket[natural-fixnum?]) and @bold{ℝ} for @racket[flonum?], everywhere a type is written: in @racket[type], in the signatures, in the composite types and in the predicates of the overloads. They are reserved names of Scheme+, defined as these predicates (so @racket[(ℝ 2.0)] is @racket[#t] and @racket[(ℕ -3)] is @racket[#f]). They are not exactly the sets of mathematics: a fixnum is bounded, and ℝ is the floats. @bold{ℚ} (@racket[rational?]) and @bold{ℂ} (@racket[complex?]) are also defined, not used by the annotation for now.
+The types of the numbers that make the pass write @racket[fx+] or @racket[fl*] can also be written ℕ, ℤ and ℝ, everywhere a type is written: in @racket[type], in the signatures, in the composite types and in the predicates of the overloads. They are reserved names of Scheme+, defined as predicates (so @racket[(ℝ 2.0)] is @racket[#t] and @racket[(ℕ -3)] is @racket[#f]). They are not exactly the sets of mathematics: a fixnum is bounded, and ℝ is the floats.
+
+@defproc[(ℕ [v any/c]) boolean?]{@racket[natural-fixnum?] : a fixnum greater than or equal to 0, read by the annotation as a fixnum (and as an index without negative values between square brackets).}
+
+@defproc[(ℤ [v any/c]) boolean?]{@racket[fixnum?], the negative ones too.}
+
+@defproc[(ℚ [v any/c]) boolean?]{@racket[rational?], only defined, not used by the annotation for now.}
+
+@defproc[(ℝ [v any/c]) boolean?]{@racket[flonum?].}
+
+@defproc[(ℂ [v any/c]) boolean?]{@racket[complex?], only defined, not used by the annotation for now.}
 
 For the arithmetic, ℕ is a fixnum (@racket[{i + 1}] is @racket[(fx+ i 1)]). For an index between square brackets of a vector or a string, the type of the index gives a faster access: with an index of type ℕ, @litchar{{v[i]}} is @racket[(vector-ref v i)] (@racket[string-ref] for a string) with no test at all; with ℤ, only the test of the sign remains (a negative index counts from the end); the same for @litchar{{M[i j]}} of a vector of vectors and for the assignments @litchar{{v[i] := x}}. As the annotation is not checked, a negative index declared ℕ is an error of bounds of @racket[vector-ref].
 
@@ -2392,6 +2402,7 @@ define (fib n)
 @codeblock|{
 ; ------------------------------------------------------------------ the prime numbers : sieve of Eratosthenes
 define (primes-below n)
+  type ℕ n i j              ; the indexes : vector-ref with no test
   {sieve := (make-vector n #t)}
   {primes := '()}
   for ({i := 2} {i < n} {i := i + 1})
@@ -2407,19 +2418,21 @@ define (primes-below n)
 @codeblock|{
 ; ------------------------------------------------------------------ product of two matrices (vectors of lines)
 define (matrix-product A B)
+  type #(#(ℝ)) A B C        ; vectors of vectors of flonums
+  type ℕ n m p i j k        ; the indexes : vector-ref with no test
   {n := (vector-length A)}
   {m := (vector-length B)}
   {p := (vector-length B[0])}
   {C := (make-vector n)}
   for ({i := 0} {i < n} {i := i + 1})
-    {C[i] := (make-vector p 0)}
+    {C[i] := (make-vector p 0.0)}
     for ({j := 0} {j < p} {j := j + 1})
       for ({k := 0} {k < m} {k := k + 1})
         {C[i][j] := C[i][j] + A[i][k] * B[k][j]}
   C
 }|
 
-with @racket[{M := #(#(1 2) #(3 4))}], @litchar{matrix-product(M M)} gives @racket[#(#(7 10) #(15 22))].
+with @racket[{M := #(#(1.0 2.0) #(3.0 4.0))}], @litchar{matrix-product(M M)} gives @racket[#(#(7.0 10.0) #(15.0 22.0))]. With the types (@secref["type-form"]), the pass writes the operators of the flonums and of the fixnums, and the accesses with no test: @litchar{C[i][j] + A[i][k] * B[k][j]} is @racket[(fl+ (vector-ref (vector-ref C i) j) (fl* (vector-ref (vector-ref A i) k) (vector-ref (vector-ref B k) j)))], and @litchar{{i < n}} is @racket[(fx< i n)].
 
 @codeblock|{
 ; ------------------------------------------------------------------ Fibonacci : def allows return
