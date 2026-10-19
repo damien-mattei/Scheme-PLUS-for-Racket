@@ -30,7 +30,7 @@
  ;; 2. product of matrices : vectors of vectors of floats
  (define (make-matrix n v)
    (build-vector n (lambda (i) (build-vector n (lambda (j) {v * (1.0 + (exact->inexact (modulo {i + j} 7)))})))))
- (define (matrix-product A B n)
+ #;(define (matrix-product A B n)
    {C := (build-vector n (lambda (i) (make-vector n 0.0)))}
    (let loop-i ((i 0))
      (when {i < n}
@@ -44,6 +44,17 @@
                  {Ci[j] := sum}))
            (loop-j {j + 1})))
        (loop-i {i + 1})))
+   C)
+ ;; the loops are do of Scheme , $+> allows the definitions := in the body of a do
+ (define (matrix-product A B n)
+   {C := (build-vector n (lambda (i) (make-vector n 0.0)))}
+   (do ((i 0 {i + 1})) ({i = n})
+     ($+> {Ai := A[i]}
+          {Ci := C[i]}
+          (do ((j 0 {j + 1})) ({j = n})
+            (do ((k 0 {k + 1})
+                 (sum 0.0 {sum + Ai[k] * B[k][j]})) ; the sum is a variable of the loop
+                ({k = n} {Ci[j] := sum})))))
    C)
  (define (bench-matrix n times)
    {A := (make-matrix n 0.5)}

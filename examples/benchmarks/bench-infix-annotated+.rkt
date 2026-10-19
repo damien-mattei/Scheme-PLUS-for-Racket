@@ -18,6 +18,7 @@
  (require Scheme+)
  (provide bench-float bench-matrix bench-integer bench-trapezoid)
  ANNOTATION-ON
+ 
  ;; 1. floats : polynomial by Horner , sigmoid and its derivative , on n points
  (define (bench-float n)
    (type fixnum? n)
@@ -33,7 +34,8 @@
  ;; 2. product of matrices : vectors of vectors of floats
  (define (make-matrix n v)
    (build-vector n (lambda (i) (build-vector n (lambda (j) {v * (1.0 + (exact->inexact (modulo {i + j} 7)))})))))
- (define (matrix-product A B n)
+ 
+ #;(define (matrix-product A B n)
    (type #(#(flonum?)) A B) ; vectors of vectors of floats
    (type ℕ n i j k)
    {C := (build-vector n (lambda (i) (make-vector n 0.0)))}
@@ -51,7 +53,28 @@
            (loop-j {j + 1})))
        (loop-i {i + 1})))
    C)
+ ;; the loops are do of Scheme , $+> allows the definitions := in the body of a do ; the types of the variables of
+ ;; a do are written in its body , they are known by its steps and its test too
+ (define (matrix-product A B n)
+   (type #(#(flonum?)) A B) ; vectors of vectors of floats
+   (type ℕ n)
+   {C := (build-vector n (lambda (i) (make-vector n 0.0)))}
+   (type #(#(flonum?)) C)
+   (do ((i 0 {i + 1})) ({i = n})
+     (type ℕ i)
+     ($+> {Ai := A[i]}
+          {Ci := C[i]}
+          (do ((j 0 {j + 1})) ({j = n})
+            (type ℕ j)
+            (do ((k 0 {k + 1})
+                 (sum 0.0 {sum + Ai[k] * B[k][j]})) ; the sum is a variable of the loop
+                ({k = n} {Ci[j] := sum})
+              (type ℕ k)
+              (type flonum? sum)))))
+   C)
+ 
  (type ((#(#(flonum?))) procedure? (#(#(flonum?)) #(#(flonum?)) fixnum?)) matrix-product)
+ 
  (define (bench-matrix n times)
    (type fixnum? n times)
    {A := (make-matrix n 0.5)}
@@ -72,7 +95,9 @@
      (if {k = 1}
          len
          (loop (if {(remainder k 2) = 0} (quotient k 2) {3 * k + 1}) {len + 1}))))
+ 
  (type ((fixnum?) procedure? (fixnum?)) flight) ; the signature of flight : (flight k) is a fixnum
+ 
  (define (bench-integer n)
    (type fixnum? n)
    (let loop ((k 1) (total 0))
@@ -83,11 +108,14 @@
          else
            total)))
 
+ 
  ;; 4. mixed : integration by the method of the trapezoids of x^3 - 2x + 1 on [0,10]
  (define (f x)
    (type flonum? x)
    {x * (x * x) - 2.0 * x + 1.0})
+ 
  (type ((flonum?) procedure? (flonum?)) f) ; the signature of f : (f x) is a flonum
+ 
  (define (bench-trapezoid n)
    (type fixnum? n)
    {h := 10.0 / (exact->inexact n)}

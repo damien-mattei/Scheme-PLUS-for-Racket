@@ -1255,6 +1255,63 @@
           {v[(i + 1)]}))                                    ; natural
   (check-equal? (p36-limits (vector 0 1 2 3 4 5 6 7 8 9) 1 2 #t "abcdefg") (list 4 3 4 9 2 3 #\d 2))
 
+
+  ;; ================================================================
+  ;; 37. The do of Scheme : the types of its variables written in its
+  ;;     body are known by its steps and its test too ({k + 1} is
+  ;;     (fx+ k 1) , {sum + v[k]} is (fl+ sum ...)).
+  ;; ================================================================
+  (define (p37-sum v n)
+    (type #(flonum?) v)
+    (type ℕ n)
+    (do ((k 0 {k + 1})
+         (sum 0.0 {sum + v[k]}))
+        ({k = n} sum)
+      (type ℕ k)
+      (type flonum? sum)))
+  (check-equal? (p37-sum (vector 1.0 2.0 3.5) 3) 6.5)
+  (define (p37-product A B n)                               ; the product of matrices of the benchmarks
+    (type #(#(flonum?)) A B)
+    (type ℕ n)
+    {C := (build-vector n (lambda (i) (make-vector n 0.0)))}
+    (type #(#(flonum?)) C)
+    (do ((i 0 {i + 1})) ({i = n})
+      (type ℕ i)
+      ($+> {Ai := A[i]}                                     ; $+> : the definitions in the body of a do
+           {Ci := C[i]}
+           (do ((j 0 {j + 1})) ({j = n})
+             (type ℕ j)
+             (do ((k 0 {k + 1})
+                  (sum 0.0 {sum + Ai[k] * B[k][j]}))
+                 ({k = n} {Ci[j] := sum})
+               (type ℕ k)
+               (type flonum? sum)))))
+    C)
+  (check-equal? (p37-product (vector (vector 1.0 2.0) (vector 3.0 4.0)) (vector (vector 1.0 2.0) (vector 3.0 4.0)) 2)
+                (vector (vector 7.0 10.0) (vector 15.0 22.0)))
+
+
+  ;; ================================================================
+  ;; 38. The type of an if : the type of its branches when it is the
+  ;;     same ; an assignment annotates its right hand side with the
+  ;;     types of before ({k := (if ... (quotient k 2) ...)} : k stays
+  ;;     a fixnum , (remainder k 2) is (fxremainder k 2)).
+  ;; ================================================================
+  (define (p38-flight k)                                    ; the do ... while of Scheme+
+    (type fixnum? k)
+    {len := 0}
+    (unless {k = 1}
+      (do {k := (if {(remainder k 2) = 0} (quotient k 2) {3 * k + 1})}
+          {len := len + 1}
+        while {k <> 1}))
+    len)
+  (check-equal? (map p38-flight '(1 2 3 6 7 27)) '(0 1 7 8 16 111))
+  (define (p38-if x b)                                      ; the if of Scheme+ with then and else
+    (type flonum? x)
+    {y := (if b then (+ 0 0) {x * 2.0} else {x + 1.0})}
+    {y * y})
+  (check-equal? (list (p38-if 3.0 #t) (p38-if 3.0 #f)) '(36.0 16.0))
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 
