@@ -853,7 +853,7 @@ This works the same as in other languages such as C or Python languages.
 }
 
 @defform[(return value ...)]{
-Return immediately from the executing procedure defined with @racket[def] and return the values: @racket[value ...] . 
+Return immediately from the executing procedure defined with @racket[def] or @racket[lambda+] and return the values: @racket[value ...] . 
 As the ellipsis indicate it, you can return multiple values.
 }
 
@@ -875,7 +875,7 @@ Note: @racket[return] can only be used inside specific macros :
 @codeblock|{
 (return 7)
 }|
-@elem[#:style (style #f (list (color-property "red")))]{return: can only be used inside def}
+@elem[#:style (style #f (list (color-property "red")))]{return: can only be used inside def or lambda+}
 
 Another example:
 
@@ -914,6 +914,24 @@ Another example:
 @racket[return-rec] will return from all the previous recursive calls of the executing procedure (if it was a recursive function). It can be used inside @racket[def].
 }
 
+@defform*[((lambda+ (args ...) body ...+)
+           (lambda+ (args ... . L) body ...+)
+           (lambda+ L body ...+))]{
+Like @racket[lambda], but @racket[return] can be used in the @racket[body] (not @racket[return-rec]).
+}
+
+@codeblock|{
+(define first-negative
+  (lambda+ (L)
+    (for-each (λ (x) (when {x < 0} (return x))) L)
+    #f))
+
+(first-negative '(3 -2 5 -7))
+-2
+}|
+
+@racket[def] and @racket[lambda+] take a continuation (@racket[call/cc]) only when @racket[return] or @racket[return-rec] is written in their body: otherwise they are exactly @racket[define] and @racket[lambda], at the same speed. With @racket[return], each call costs about 8 to 17 times the call of a procedure, which matters only for a procedure called very often.
+
 
 @;{ deprecated : (def name args args-optional ...) , infix value converted at the expansion of the macro
 @defform[#:link-target? #f (def name args args-optional ...)]{Define @racket[name] with @racket[(args args-optional ...)] forming an infix expression.}
@@ -931,7 +949,7 @@ z
 
 @defform[#:link-target? #f (def name)]{Like @racket[declare].}
 
-@;{ deprecated : def+ , define+ , the extended define , lambda+ , rec+ : the body (or the value) is converted at the expansion of the macro
+@;{ deprecated : def+ , define+ , the extended define , lambda-x (lambda+ before) , rec+ : the body (or the value) is converted at the expansion of the macro
 @defform[(def+ (name args ...) body ...+)]{Same as @racket[def] but all @racket[body ...] will be parsed as possibly infix,postfix or still prefix.}
 
 Examples:
@@ -1015,13 +1033,13 @@ Examples:
 @racket[define], which has been extended, and @racket[define+] respectively work as @racket[def] and @racket[def+] but without the @racket[return] and @racket[return-rec] features. They could be usefull as their implementation result in faster runtime execution.
 
 
-@defform*[((lambda+ (args ...) body ...+)
-(lambda+ (args . L) body ...+)
-(lambda+ L body ...+))]{Same as @racket[lambda] but all @racket[body ...] will be parsed as possibly infix,postfix or still prefix.Only @racket[return] is allowed in @racket[lambda+].}
+@defform*[((lambda-x (args ...) body ...+)
+(lambda-x (args . L) body ...+)
+(lambda-x L body ...+))]{Same as @racket[lambda] but all @racket[body ...] will be parsed as possibly infix,postfix or still prefix.Only @racket[return] is allowed in @racket[lambda-x].}
 
 @codeblock|{
 (define x 3)
-(define foo (rec bar (lambda+ ()
+(define foo (rec bar (lambda-x ()
                      (when (< x 5)
                        (set! x (+ x 1))
                        (display "super!")(newline)
@@ -1039,7 +1057,7 @@ returning
 17
 }|
 
-@defform[(rec+ name expr)]{@racket[rec] allowing infix,postfix or prefix expressions and using internally @racket[lambda+]}.
+@defform[(rec+ name expr)]{@racket[rec] allowing infix,postfix or prefix expressions and using internally @racket[lambda-x]}.
 @codeblock|{
 (define f (rec+ foo (lambda () (2 + 3))))
 (f)
@@ -1241,6 +1259,46 @@ Note about the example above which mix @racket[condx] and @racket[return] becaus
 Note: above i used @racket[:=] which is exactly the same as @racket[<-] or @racket[←].
 
 @defform[(while test  body ...)]{Initially the syntax should be as @racket[while] ... @racket[do] from Pascal but not possible as @racket[do] already exist in scheme.}
+
+@defform*[#:literals (while)
+          ((do body ... while test)
+           (do ((variable init step ...) ...) (test expr ...) body ...))]{
+The @racket[do] of Scheme+ has two forms.
+
+With @racket[while] at the end, it is the @racket[do] ... @racket[while] of C/C++, Java or Javascript: loop over @racket[body ...] while @racket[test] is true. The @racket[test] is computed after @racket[body ...], so the body is executed at least once (@racket[repeat] ... @racket[until] stops when its test is true). The @racket[body ...] can contain definitions.
+
+@codeblock|{
+{i := 0}
+(do
+    (display i)
+    (newline)
+    {i := i + 1}
+  while {i < 3})
+
+0
+1
+2
+}|
+
+Without @racket[while], it is the @racket[do] of Scheme (R7RS): the variables with their initial values and their steps, the test of the end and the expressions of the result, then the body, which can contain definitions (as the body of a procedure, at no cost). In a region @racket[ANNOTATION-ON], the types of the variables written with @racket[type] in the body are known by the steps and the test too (see @secref["type-form"]):
+
+@codeblock|{
+(define (sum-vector v n)
+  (type #(flonum?) v)
+  (type ℕ n)
+  (do ((k 0 {k + 1})
+       (sum 0.0 {sum + v[k]}))
+      ({k = n} sum)
+    (type ℕ k)
+    (type flonum? sum)))
+
+;; code generated by the annotation parser:
+;; (do ((k 0 (fx+ k 1))
+;;      (sum 0.0 (fl+ sum ($bracket-apply-vector-natural$ v k))))
+;;     ((fx= k n) sum))
+}|
+
+@racket[(sum-vector #(1.0 2.0 3.5) 3)] gives @racket[6.5].}
 
 @defform[(for (initialization condition updation) body ...)]{Syntax of @racket[for] ... as it exists in C/C++,Javascript,Java language.}
 
