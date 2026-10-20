@@ -24,6 +24,11 @@
 
 @author[(author+email "Damien MATTEI" "Damien.MATTEI@univ-cotedazur.fr")]
 
+@; the lisp logo at the right of the two packages
+@(define-runtime-path lisplogo "lisplogo_warning_128.png")
+@; a float that takes no width (margin-right = - its width - margin-left) : it goes into the right margin
+@para[#:style (make-style #f (list (attributes '((style . "float: right; margin: 2px -72px 0 20px;")))))]{@image[#:scale 0.63 lisplogo]}
+
 @; the two essential packages at the top (as most packages are presented) , the complete descriptions are below
 @defmodule[Scheme+ #:no-declare #:link-target? #f]
 @defmodule[SRFI-105 #:reader #:no-declare #:link-target? #f]
@@ -262,37 +267,7 @@ Example under Linux with a user (mattei) installation of @bold{Scheme+} and the 
 
 You could simply open the above file in @bold{DrRacket} to work with @bold{Scheme+}.
 
-@defform[#:id :print-type (:print-type expr)]{
-At the REPL only, display the type that the type annotation (see @secref["annotation"]) knows for @racket[expr], without evaluating it, as @tt{:print-type} of Typed Racket (the REPL of PLAI also displays the types, only at the REPL). The REPL must have been started from a file with @racket[ANNOTATION-ON], as @bold{REPL-Scheme-PLUS.rkt}: the types of the names exported by the module of this file (@racket[provide], @racket[(all-defined-out)]) are known at the REPL, as the types of what is typed at the REPL. For a procedure annotated with a signature, @racket[:print-type] displays this signature; for a procedure given to an overload (@racket[overload-operator], @racket[overload-procedure]), its signature in the overload (@tt{...} : any number of arguments of this type, @tt{?} : no return type given); for an overloaded operator, all its overloads, one per line.
-}
-
-@codeblock|{
-> {x := 2.0}
-> (:print-type x)
-flonum?
-> (:print-type {x * 3.0})
-flonum?
-> (define (g a) {a * 2.0})
-> (type [(flonum?) procedure? (flonum?)] g)
-> (:print-type g)
-(flonum? -> flonum?)
-> (:print-type (g 1.5))
-flonum?
-> (:print-type (list 1 2))
-(fixnum?)
-> (define (add-n-lists . vn-lst) (apply map + vn-lst))
-> (overload-operator + (list?) add-n-lists (list?))
-> (:print-type add-n-lists)
-(list? ... -> list?)
-> (:print-type +)
-(fixnum? fixnum? -> fixnum?)
-(exact-integer? fixnum? -> exact-integer?)
-...
-(list? ... -> list?)
-...
-}|
-
-The type displayed is what the annotation inferred, the type it uses to specialize the operators, not a check: the annotation trusts the declarations. When the annotation does not know the type, @racket[:print-type] displays @tt{unknown type (the annotation does not know it)}; without @racket[ANNOTATION-ON], it displays that the annotation is not active. In a module, @racket[:print-type] is a syntax error.
+At the REPL, @racket[:print-type] displays the type known by the type annotation for an expression (see @secref["type-form"]).
 
 @section[#:tag "hello"]{A simple Hello World application in Scheme+ and Curly Infix}
 
@@ -1974,6 +1949,25 @@ See the full example at @url["https://github.com/damien-mattei/Scheme-PLUS-for-R
 
 Scheme+ has an @bold{optional} type annotation and inference pass. It runs @italic{inside} the SRFI-105 Curly Infix reader, after the curly-infix and square-bracket parsing and @italic{before} the Racket compiler sees the code, so it is a read/compile time mechanism, not a run time one.
 
+@bold{The Scheme syntax unchanged: the types apart from the definitions.} Typed Racket and Bigloo write the types inside the definitions themselves: Typed Racket in the binding forms, @racket[(define (f [x : Flonum]) : Flonum ...)] or @racket[(λ ([x : Flonum]) ...)], in a module written in another language, @racket[typed/racket]; Bigloo in the names, @tt{(define (f::double x::double) ...)}. The code is then no more the code of Scheme. In Scheme+ the definitions are not changed: the types are given apart, by a @racket[type] form written as a declaration in the body, next to the code it types. The code stays the code of Scheme (and of Scheme+), the same with and without the types: removing the @racket[type] lines, or turning the pass off, gives the same program.
+
+@codeblock|{
+;; Scheme+ : the Scheme code, the types apart
+(define (sigmoid z)
+  (type flonum? z)
+  {1.0 / {1.0 + (exp (- z))}})
+
+;; Typed Racket : the types in the definition
+(define (sigmoid [z : Flonum]) : Flonum
+  (/ 1.0 (+ 1.0 (exp (- z)))))
+
+;; Bigloo : the types in the names
+(define (sigmoid::double z::double)
+  (/ 1.0 (+ 1.0 (exp (- z)))))
+}|
+
+@bold{Type only what is worth typing.} A type system as the one of Typed Racket checks all the code of a typed module: all of it must be typed and pass the checker, and the values that cross the frontier with the untyped modules are checked by contracts. With the annotation of Scheme+ nothing has to be typed: the pass types by itself what it can infer (see @secref["inference"]), and the programmer adds a type only where it is judged interesting, for example for speed the parameters of the procedures that compute with floats in a loop; the rest of the program stays untyped Scheme, generic and dispatched at run time as without the pass. The other side is that the declarations are not checked: the pass trusts them, a false declaration gives a wrong specialization.
+
 Its purpose is speed. @bold{On the neural network of the complete example (@secref["annotation-example"]), a retropropagation with matrices of floats, 1000 iterations of the learning take 11.5 s without the pass and 4.3 s with @racket[ANNOTATION-ON] and the type annotations of the program (in power-saving mode): about 2.7 times faster.} The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged. The benchmarks are in @secref["benchmarks"].
 
 When the pass knows the type of the operands it can:
@@ -2161,6 +2155,38 @@ A @racket[lambda] (or @racket[λ]) passed to @racket[vector-map], @racket[map], 
 The types of the parameters stay inside the lambda (lexical scope). Only a lambda with a proper list of parameters, one per sequence, is typed; a lambda with a rest parameter, @racket[(lambda args ...)], or with another number of parameters is left unchanged, and so is a lambda whose parameters have no known type: its operators are dispatched at runtime as before. If the return type cannot be deduced (a call to a procedure without type...), typing that procedure with @racket[type] is enough.
 
 The inference propagates these types through the definition and assignment operators (@racket[:=], @racket[<-], @racket[define], ...): the type of the right hand side is remembered for the names being bound on the left hand side.
+
+@defform[#:id :print-type (:print-type expr)]{
+At the REPL only, display the type that the type annotation (see @secref["annotation"]) knows for @racket[expr], without evaluating it, as @tt{:print-type} of Typed Racket (the REPL of PLAI also displays the types, only at the REPL). The REPL must have been started from a file with @racket[ANNOTATION-ON], as @bold{REPL-Scheme-PLUS.rkt}: the types of the names exported by the module of this file (@racket[provide], @racket[(all-defined-out)]) are known at the REPL, as the types of what is typed at the REPL. For a procedure annotated with a signature, @racket[:print-type] displays this signature; for a procedure given to an overload (@racket[overload-operator], @racket[overload-procedure]), its signature in the overload (@tt{...} : any number of arguments of this type, @tt{?} : no return type given); for an overloaded operator, all its overloads, one per line.
+}
+
+@codeblock|{
+> {x := 2.0}
+> (:print-type x)
+flonum?
+> (:print-type {x * 3.0})
+flonum?
+> (define (g a) {a * 2.0})
+> (type [(flonum?) procedure? (flonum?)] g)
+> (:print-type g)
+(flonum? -> flonum?)
+> (:print-type (g 1.5))
+flonum?
+> (:print-type (list 1 2))
+(fixnum?)
+> (define (add-n-lists . vn-lst) (apply map + vn-lst))
+> (overload-operator + (list?) add-n-lists (list?))
+> (:print-type add-n-lists)
+(list? ... -> list?)
+> (:print-type +)
+(fixnum? fixnum? -> fixnum?)
+(exact-integer? fixnum? -> exact-integer?)
+...
+(list? ... -> list?)
+...
+}|
+
+The type displayed is what the annotation inferred, the type it uses to specialize the operators, not a check: the annotation trusts the declarations. When the annotation does not know the type, @racket[:print-type] displays @tt{unknown type (the annotation does not know it)}; without @racket[ANNOTATION-ON], it displays that the annotation is not active. In a module, @racket[:print-type] is a syntax error.
 
 @subsection[#:tag "overloads-annotation"]{Overloads and type annotation}
 
@@ -2651,7 +2677,10 @@ Not all fonts support superscript characters, Monospace (Bold) with Emacs do it.
 
 @define-footnote[my-note make-my-note]
 
-I hope this documentation is not a write-only@my-note{ « APL is a write-only language. I can write programs in APL, but I can’t read any of them ». Roy Keir } one and will be usefull for any reader.
+@; the other lisp logo at the bottom right of the doc , in the footnote (what follows make-my-note is not rendered)
+@(define-runtime-path lisplogo-alien "lisplogo_128.png")
+
+I hope this documentation is not a write-only@my-note{ « APL is a write-only language. I can write programs in APL, but I can’t read any of them ». Roy Keir @elem[#:style (make-style #f (list (attributes '((style . "display: block; text-align: right; margin-top: 2em;")))))]{@image[#:scale 0.63 lisplogo-alien]}@elem[#:style (make-style #f (list (attributes '((style . "display: block; text-align: right; font-size: 0.5em;")))))]{Public Domain Lisp Logo Set By Conrad Barski, M.D.}} one and will be usefull for any reader.
 
 
 @make-my-note[]
