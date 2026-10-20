@@ -306,7 +306,8 @@ ANNOTATION-ON
 	  (type vector? Lexemples)
 	   
 	  {ip <- 0} ; numéro de l'exemple courant
-
+	  (type ℕ ip)
+	  
 	  (declare x y)
 	  (type vector? y)
 
@@ -342,10 +343,10 @@ ANNOTATION-ON
 		      ; RETRO_PROPAGATION VERS L'ARRIERE, EN DEUX TEMPS
 
 		      {i <- i_output_layer <- vector-length(z) - 1} ; start at index i of the ouput layer
-
+		      
+		      (type ℕ i k)
 		      {ns <- vector-length(z[i])}
 		     
-		      (type ℕ i k)
 		      ;; TEMPS 1. calcul des gradients locaux sur la couche k de sortie (les erreurs commises)
 		      (for-racket ([k (range ns)])
 				  {ᐁ[i][k] <- y[k] - z[i][k]})
