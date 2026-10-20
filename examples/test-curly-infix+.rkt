@@ -1388,6 +1388,24 @@
       (type flonum? k)))
   (check-equal? (p41-do 3) 5.5)
 
+
+  ;; ================================================================
+  ;; 42. M[i j] and M[i][j] are the same access to a vector of vectors :
+  ;;     M[i j] is typed as M[i][j] (before : one level , #(flonum?) ,
+  ;;     and an overload of the vectors was chosen for a float).
+  ;; ================================================================
+  (define (p42-vadd u v) (vector-map + u v))
+  (define (p42-fladd a b) (+ a b))
+  (overload-procedure p42-add (vector?) p42-vadd (vector? vector?))
+  (overload-procedure p42-add (flonum?) p42-fladd (flonum? flonum?))
+  (define (p42-sum M)
+    (type #(#(flonum?)) M)
+    {y := M[0 1]}                                           ; flonum? (was #(flonum?))
+    (list (p42-add y y)
+          (p42-add {(vector (vector -1.0 -3.0) (vector 1.5 -1.0))[1 0]} 1.0) ; a literal container
+          (p42-add {M[1][0]} 1.0)))
+  (check-equal? (p42-sum (vector (vector 1.0 2.0) (vector 3.0 4.0))) '(4.0 2.5 4.0))
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 
