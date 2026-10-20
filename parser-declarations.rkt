@@ -26,7 +26,7 @@
 ;; * the data : the variables typed with a type which is not a procedure (type flonum? x) ; found by the readers
 ;;
 ;; The readers store them while reading, for the infix between { } converted at the reading.
-;; The infix converted at the expansion of the macros (def+ , define+ , lambda+ , rec+ , (def x expr ...) ... which are
+;; The infix converted at the expansion of the macros (def+ , define+ , lambda-x , rec+ , (def x expr ...) ... which are
 ;; deprecated) knows only the procedures of Racket.
 
 (module parser-declarations racket/base
@@ -168,6 +168,7 @@
 
   (define (lambda-form? e)
     (and (pair? e)
-	 (memq (car e) '(lambda λ case-lambda lambda+))))
+	 #;(memq (car e) '(lambda λ case-lambda lambda+))
+	 (memq (car e) '(lambda λ case-lambda lambda+ lambda-x))))
 
   ) ; end module

@@ -34,7 +34,9 @@
    def def+ return return-rec
    define
    define+
-   lambda+
+   #;lambda+
+   lambda-x ; deprecated (lambda+ before)
+   lambda+ ; lambda with return
    defun
    rec+
    
@@ -256,6 +258,8 @@
    Scheme+/declare
    Scheme+/block
    Scheme+/return
+   #;Scheme+/lambda+
+   Scheme+/lambda-x
    Scheme+/lambda+
    Scheme+/defun
    Scheme+/rec+

@@ -1277,7 +1277,7 @@
     (type #(#(flonum?)) C)
     (do ((i 0 {i + 1})) ({i = n})
       (type ℕ i)
-      ($+> {Ai := A[i]}                                     ; $+> : the definitions in the body of a do
+      #;($+> {Ai := A[i]}                                   ; $+> : the definitions in the body of a do
            {Ci := C[i]}
            (do ((j 0 {j + 1})) ({j = n})
              (type ℕ j)
@@ -1285,7 +1285,16 @@
                   (sum 0.0 {sum + Ai[k] * B[k][j]}))
                  ({k = n} {Ci[j] := sum})
                (type ℕ k)
-               (type flonum? sum)))))
+               (type flonum? sum))))
+      {Ai := A[i]}                                          ; the body of a do can contain definitions
+      {Ci := C[i]}
+      (do ((j 0 {j + 1})) ({j = n})
+        (type ℕ j)
+        (do ((k 0 {k + 1})
+             (sum 0.0 {sum + Ai[k] * B[k][j]}))
+            ({k = n} {Ci[j] := sum})
+          (type ℕ k)
+          (type flonum? sum))))
     C)
   (check-equal? (p37-product (vector (vector 1.0 2.0) (vector 3.0 4.0)) (vector (vector 1.0 2.0) (vector 3.0 4.0)) 2)
                 (vector (vector 7.0 10.0) (vector 15.0 22.0)))
@@ -1311,6 +1320,73 @@
     {y := (if b then (+ 0 0) {x * 2.0} else {x + 1.0})}
     {y * y})
   (check-equal? (list (p38-if 3.0 #t) (p38-if 3.0 #f)) '(36.0 16.0))
+  (define (p38-cdr example i)                               ; any? (the return type of cdr in scheme-types.rkt) is unknown :
+    (type ℕ i)                                              ; it does not replace the declared vector? ({y[i]} : vector-ref)
+    (declare y)
+    (type vector? y)
+    {y := (cdr example)}
+    {y[i]})
+  (check-equal? (p38-cdr (cons #(1 2) #(3 4 5)) 2) 5)
+
+
+  ;; ================================================================
+  ;; 39. lambda+ : a lambda with return , the infix between { } as
+  ;;     everywhere (converted at the reading).
+  ;; ================================================================
+  (define p39-foo (lambda+ () (return {3 * 5 + 2}) 'not_good))
+  (check-equal? (p39-foo) 17)
+  (define p39-first-negative                                ; return from a loop
+    (lambda+ (v)
+      (for-each (λ (x) (when {x < 0} (return x))) v)
+      #f))
+  (check-equal? (list (p39-first-negative '(3 -2 5 -7)) (p39-first-negative '(1 2))) '(-2 #f))
+  (check-equal? ((lambda+ (a b . L) {a + b + (length L)}) 1 2 'x 'y) 5) ; the parameters
+  (check-equal? ((lambda+ L (length L)) 'x 'y 'z) 3)
+  (define p39-typed                                         ; typed in its body : (fl+ x 1.0)
+    (lambda+ (x)
+      (type flonum? x)
+      {x + 1.0}))
+  (check-equal? (p39-typed 2.5) 3.5)
+  (check-equal? ((lambda+ (x y) {x * y}) 6 7) 42)                   ; without return : a lambda
+
+
+  ;; ================================================================
+  ;; 40. def : a define when its body uses neither return nor
+  ;;     return-rec , one call/cc by call with return only , the
+  ;;     call/cc of return-rec only when it is used.
+  ;; ================================================================
+  (def (p40-plain x) {x * 2})                               ; a define
+  (def (p40-return x) (when {x < 0} (return 'negative)) {x * 2})
+  (def (p40-first-negative L) (for-each (λ (x) (when {x < 0} (return x))) L) #f)
+  (def (p40-rec-search L)                                   ; return-rec : out of all the recursive calls
+    (cond ((null? L) 'none)
+          ((negative? (car L)) (return-rec (car L)))
+          (else (p40-rec-search (cdr L)))))
+  (def (p40-fact n) (if {n = 0} 1 {n * (p40-fact {n - 1})}))
+  (def (p40-values) (return 1 2 3))
+  (def (p40-rest a . L) (list a L))
+  (check-equal? (list (p40-plain 4) (p40-return -1) (p40-return 3) (p40-first-negative '(1 -5 2))
+                      (p40-rec-search '(3 4 -8 9)) (p40-fact 10) (call-with-values p40-values list) (p40-rest 1 2 3))
+                '(8 negative 6 -5 -8 3628800 (1 2 3) (1 (2 3))))
+
+
+  ;; ================================================================
+  ;; 41. The inits of let* and do are annotated with the types they
+  ;;     see : the bindings before them and the outer levels , not the
+  ;;     variable they define (x outer fixnum : (fx->fl x)).
+  ;; ================================================================
+  (define (p41-let* x)
+    (type fixnum? x)
+    (let* ((x (exact->inexact x))                           ; the outer x : (fx->fl x)
+           (y {x * 2.0}))                                   ; the x of the let* , a flonum : fl*
+      y))
+  (check-equal? (p41-let* 3) 6.0)
+  (define (p41-do k)
+    (type fixnum? k)
+    (do ((k (exact->inexact k) {k + 0.5}))                  ; the init : the outer k (fx->fl k) , the step : fl+
+        ({k > 5.0} k)
+      (type flonum? k)))
+  (check-equal? (p41-do 3) 5.5)
 
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")

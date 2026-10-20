@@ -166,8 +166,17 @@
   (syntax-rules (while)
 
     ;; original do from scheme
-    ((do ((variable init step ...) ...) (test expr ...) body ...)
+    #;((do ((variable init step ...) ...) (test expr ...) body ...)
      (do-scheme ((variable init step ...) ...) (test expr ...) body ...))
+
+    ;; original do from scheme , without body
+    ((do ((variable init step ...) ...) (test expr ...))
+     (do-scheme ((variable init step ...) ...) (test expr ...)))
+
+    ;; original do from scheme , its body can contain definitions as in Scheme+ (let () is free at run time , the
+    ;; (void) allows a body that ends with a definition : the value of the body is not used)
+    ((do ((variable init step ...) ...) (test expr ...) body ...)
+     (do-scheme ((variable init step ...) ...) (test expr ...) (let () body ... (void))))
 
     ;; do from scheme+
     ((do b1 ...

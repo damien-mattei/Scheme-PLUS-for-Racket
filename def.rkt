@@ -76,6 +76,17 @@
     ((_ r) r)))
 
 
+;; the symbol sym is written in the datum d (the body of a def) : the call/cc of return and return-rec are made only
+;; when they are used (a return produced by another macro of the body is not seen)
+(begin-for-syntax
+  (define (uses-symbol? sym d)
+    (cond ((eq? d sym) #t)
+	  ((pair? d) (or (uses-symbol? sym (car d))
+			 (uses-symbol? sym (cdr d))))
+	  ((vector? d) (uses-symbol? sym (vector->list d)))
+	  (else #f))))
+
+
 (define-syntax def
 
   (lambda (stx)
@@ -87,7 +98,28 @@
 	;; TODO: remove? redundant with (declare x y z)
 	((_ (var1 ...)) #'(begin (define var1 '()) ...))
 
-	;; function definition, with fixed, variadic or only rest arguments
+	;; function definition without return nor return-rec in its body : a define , no call/cc (17 times faster for
+	;; a call , and the procedure can be inlined)
+	((_ (<name> . <formals>) <body> <body>* ...)
+	 (let ((body (syntax->datum #'(<body> <body>* ...))))
+	   (not (or (uses-symbol? 'return body)
+		    (uses-symbol? 'return-rec body))))
+	 #'(define (<name> . <formals>)
+	     <body> <body>* ...))
+
+	;; with return but without return-rec : one call/cc by call , as lambda+
+	((_ (<name> . <formals>) <body> <body>* ...)
+	 (not (uses-symbol? 'return-rec (syntax->datum #'(<body> <body>* ...))))
+	 #'(define (<name> . <formals>)
+	     (call/cc
+	      (lambda (ret-id)
+		(syntax-parameterize
+		 ([return (syntax-rules ()
+			    [(return vals (... ...))
+			     (ret-id vals (... ...))])])
+		 <body> <body>* ...)))))
+
+	;; function definition, with fixed, variadic or only rest arguments , with return-rec in its body
 	;; (def (foo a b . L) (when #t (return (list a b L))))
 	;; (foo 1 2 3 4)
 	;; '(1 2 (3 4))

@@ -9,7 +9,8 @@
 	(require racket/stxparam
 		 Scheme+/return
 		 Scheme+/nfx
-		 Scheme+/lambda+)
+		 #;Scheme+/lambda+
+		 Scheme+/lambda-x)
 
 ;; (define f (rec+ foo (lambda () (2 + 3))))
 ;; (f)
@@ -27,7 +28,7 @@
     ((_ (a . rest)) (cons a (formals->list rest)))
     ((_ r) r)))
 
-;; 'return' exits from the current call (see lambda+),
+;; 'return' exits from the current call (see lambda-x),
 ;; 'return-rec' exits from all the recursive calls to the outermost one (see def)
 ;; (define f (rec+ (foo n) (if (n = 0) (return-rec 'end) (foo (n - 1)))))
 ;; (f 5)
@@ -47,7 +48,10 @@
 			  [(return-rec vals (... ...))
 			   (ret-rec-id vals (... ...))])])
 	   ;; the recursive calls do not go through the outer call/cc
-	   (apply (letrec ((name (lambda+ formals body ...)))
+	   #;(apply (letrec ((name (lambda+ formals body ...)))
+		    name)
+		  (formals->list formals))
+	   (apply (letrec ((name (lambda-x formals body ...)))
 		    name)
 		  (formals->list formals)))))))
     ((_ name expr)                                ; arbitrary object

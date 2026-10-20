@@ -1,6 +1,5 @@
-;; DEPRECATED (Scheme+ 18.0) : lambda+ is kept for the compatibility with old programs but it is no more documented
-;; nor improved. Its infix parsing is done at expansion time ($nfx$-rec) and knows only the procedures of Racket ,
-;; not those of the program. Use lambda with the curly brackets { } : (lambda (x) {x * 2 + 1})
+;; lambda+ : a lambda with return. The infix is written as everywhere between { } and converted by the reader at the
+;; reading (lambda-x , the lambda+ of before , converts also its body at the expansion with $nfx$-rec).
 
 (module lambda+ racket/base
 
@@ -8,7 +7,6 @@
 
 	(require Scheme+/return
 		 racket/stxparam
-		 Scheme+/nfx
 		 (for-syntax racket/base))
 
 
@@ -16,24 +14,36 @@
 	;; (foo)
 	;; 7
 
-	;; > (define foo (lambda+ () (return (3 * 5 + 2))
+	;; > (define foo (lambda+ () (return {3 * 5 + 2})
 	;;                        'not_good))
-	;; (define foo (lambda+ () (return (3 * 5 + 2)) 'not_good))
-	;; #<eof>
 	;; > (foo)
-	;; (foo)
 	;; 17
-	;; #<eof>
+
+	;; the symbol sym is written in the datum d (the body of a lambda+) : the call/cc of return is made only when
+	;; return is used (a return produced by another macro of the body is not seen)
+	(begin-for-syntax
+	  (define (uses-symbol? sym d)
+	    (cond ((eq? d sym) #t)
+		  ((pair? d) (or (uses-symbol? sym (car d))
+				 (uses-symbol? sym (cdr d))))
+		  ((vector? d) (uses-symbol? sym (vector->list d)))
+		  (else #f))))
+
 	(define-syntax lambda+
 	  (lambda (stx)
   	    (syntax-case stx ()
+	      ;; without return in its body : a lambda , no call/cc
+	      ((_ <formals> <body> <body>* ...)
+	       (not (uses-symbol? 'return (syntax->datum #'(<body> <body>* ...))))
+	       #'(lambda <formals> <body> <body>* ...))
+
 	      ;; formals can be a list of arguments, a list with a rest argument or only a rest argument
 	      ;; (lambda+ (a b . L) ...)  (lambda+ L ...)  (lambda+ () ...)
 	      ((_ <formals> <body> <body>* ...)
 
 	       #'(lambda <formals>
 		   (call/cc
-		    (lambda (ret-id) ;(#,ret-id)
+		    (lambda (ret-id)
 		      ;; In the body we adjust the 'return' keyword so that calls
 		      ;; to 'return' are replaced with calls to the escape
 		      ;; continuation.
@@ -41,59 +51,8 @@
 		       ([return (syntax-rules ()
 				  [(return vals (... ...))
 				   (ret-id vals (... ...))])])
-		       ($nfx$-rec <body>)
-		       ($nfx$-rec <body>*)
+		       <body>
+		       <body>*
 		       ...))))))))
 
 	) ; end module
-
-
-;; > (define loo (lambda+ ()
-;;                        ((lambda+ () 3))))                
-;; (define loo (lambda+ () ((lambda+ () 3))))
-;; #<eof>
-;; > (loo)
-;; (loo)
-;; 3
-
-;; > (define x 3)
-
-;; (define x 3)
-
-;; #<eof>
-;; > (define foo (rec bar (lambda+ ()
-;;                     (when (< x 5)
-;;                       (set! x (+ x 1))
-;;                       (display "super!")(newline)
-;;                       (bar))
-;;                     (display "returning") (newline)
-;;                     (return 17)
-;;                     'not_good)))
-
-
-;; (define foo
-;;   (rec
-;;    bar
-;;    (lambda+
-;;     ()
-;;     (when (< x 5) (set! x (+ x 1)) (display "super!") (newline) (bar))
-;;     (display "returning")
-;;     (newline)
-;;     (return 17)
-;;     'not_good)))
-
-
-;; #<eof>
-;; > (foo)
-
-
-;; (foo)
-;; super!
-;; super!
-;; returning
-;; returning
-;; returning
-;; 17
-
-;; #<eof>
-;; > 
