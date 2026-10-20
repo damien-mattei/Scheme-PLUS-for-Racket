@@ -1998,10 +1998,10 @@ A local variable hides the type of an outer variable of the same name: the type 
          #:column-properties '(left right right right right right)
          #:row-properties '(bottom-border ())
          (list (list @bold{program (same source)} @bold{Scheme} @bold{Scheme+} @bold{Scheme+ annotated} @bold{Typed Racket} @bold{gain})
-               (list "floats: Horner, sigmoid, 2·10⁷" "845 ms" "822 ms" "221 ms" "220 ms" "3.8 ×")
-               (list "matrices 200×200, 20 products" "1218 ms" "1210 ms" "706 ms" "684 ms" "1.7 ×")
-               (list "integers: Syracuse up to 10⁶" "1056 ms" "1030 ms" "400 ms" "384 / 1149 ms" "2.6 ×")
-               (list "trapezoids, 2·10⁷ steps" "382 ms" "372 ms" "81 ms" "77 ms" "4.7 ×"))]
+               (list "floats: Horner, sigmoid, 2·10⁷" "753 ms" "777 ms" "223 ms" "226 ms" "3.4 ×")
+               (list "matrices 200×200, 20 products" "1065 ms" "1066 ms" "606 ms" "578 ms" "1.8 ×")
+               (list "integers: Syracuse up to 10⁶" "986 ms" "985 ms" "382 ms" "402 / 1099 ms" "2.6 ×")
+               (list "trapezoids, 2·10⁷ steps" "359 ms" "349 ms" "68 ms" "69 ms" "5.3 ×"))]
 
 CPU times, median of 7 runs; the gain is the one of Scheme+ annotated over Scheme (Typed Racket on the integers: @racket[Fixnum] / @racket[Integer]). The sources of these benchmarks are in the sub-directory @bold{examples/benchmarks/} of Scheme+: @tt{racket run-benchmarks.rkt} runs all the versions.
 
