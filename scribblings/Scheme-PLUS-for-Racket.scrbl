@@ -101,7 +101,7 @@ Package: @url["https://pkgs.racket-lang.org/package/SRFI-105-for-Racket"]
 Optional but recommended:
 
 @defmodule[curly-infix #:reader #:no-declare #:link-target? #f]{
-curly-infix is an alias more friendly to read an say than the enigmatic "SRFI-105" (that sounds like R2-D2).
+curly-infix is an alias more friendly to read and say than the enigmatic "SRFI-105" (that sounds like R2-D2).
 
 Source code: @url["https://github.com/damien-mattei/curly-infix"]
 
