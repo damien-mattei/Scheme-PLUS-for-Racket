@@ -122,6 +122,15 @@ Package: @url["https://pkgs.racket-lang.org/package/SRFI-110-for-Racket"]
 
 }
 
+@defmodule[infix-sweet #:reader #:no-declare #:link-target? #f]{
+infix-sweet is an alias of SRFI-110, as curly-infix is an alias of SRFI-105: @litchar{#lang reader infix-sweet} reads the curly infix expressions of SRFI 105 and the neoteric and sweet expressions of SRFI 110 (see @secref["sweet-expressions"]).
+
+Source code: @url["https://github.com/damien-mattei/infix-sweet"]
+
+Package: @url["https://pkgs.racket-lang.org/package/infix-sweet"]
+
+}
+
 
 @; the table of contents is announced by its name , to separate it from the presentation and the packages above
 @larger{@larger{@bold{Table of Contents}}}
