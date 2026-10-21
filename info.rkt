@@ -11,10 +11,11 @@
 	       "SRFI-105-for-Racket"
 	       "try-catch"
 	       "SRFI-110-for-Racket"
-	       "curly-infix"))
+	       "curly-infix"
+	       "infix-sweet"))
 (define pkg-desc "Scheme+ for Racket")
 (define version "18.0")
 (define pkg-authors '(mattei))
 (define scribblings '(("scribblings/Scheme-PLUS-for-Racket.scrbl" () (language))))
-(define build-deps '("scribble-lib" "racket-doc" "scribble-doc"))
+(define build-deps '("scribble-lib" "racket-doc" "scribble-doc" "rackunit-lib"))
 (define license 'LGPL-3.0-or-later)
