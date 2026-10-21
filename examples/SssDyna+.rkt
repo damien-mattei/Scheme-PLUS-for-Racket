@@ -38,6 +38,7 @@
 
 ;;(provide (all-defined-out)) ;; export all bindings
 
+ANNOTATION-ON
 
 (define (one? n)
   (= n 1))
