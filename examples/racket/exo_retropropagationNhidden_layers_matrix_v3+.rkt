@@ -151,11 +151,11 @@ ANNOTATION-ON
     (type ℕ nbiter)
     {lnc ← (vector-length nc)}
 
-    (type vector? z {z[]}) ; type annotation for z and for any elements z[i] of z at index i 
+    ;(type vector? z {z[]}) ; type annotation for z and for any elements z[i] of z at index i 
 
-    (type ℝ {z[][]})
+    ;(type ℝ {z[][]})
+    (type #(#(ℝ)) z)
     
-
     ; les entrées concrètes seront fournies avec la méthode accepte
     ;; (field (z (vector-ec (: i (vector-length nc)) (make-vector {nc[i]} 0))))
     (field (z (vector-ec (:vector lg nc)
