@@ -1313,6 +1313,19 @@ Example from matrix multiplication, compute element i,j of result:
     {sum := sum + M1[i][k] * M2[k][j]})
 }|
 
+As in C, @racket[(break)] leaves the loop and @racket[(continue)] goes to the next turn (the updation then the condition). @racket[(break v)] makes @racket[for] return @racket[v]:
+
+@codeblock|{
+(for ({i := 0} {i < 10} {i := i + 1})
+    (when (odd? i) (continue))
+    (display i)
+    (when {i = 6} (break 'stop)))
+0246
+'stop
+}|
+
+As for @racket[return] in @racket[def], @racket[for] takes a continuation (@racket[call/cc]) only when @racket[break] or @racket[continue] is written in the loop: one for the whole loop with @racket[break], one at each turn with @racket[continue], which makes the loop more than 10 times slower. Without them, @racket[for] is a simple loop, almost as fast as a @racket[do]. A @racket[break] or a @racket[continue] produced by another macro is not seen, and a @racket[break] of an inner @racket[for] gives also a continuation to the outer one.
+
 Note about Scheme+ for Racket: the @racket[for] described above replace the original @racket[for] of Racket, you should back up it as below before using that. Also Scheme+ define @racket[in-range] and @racket[reversed] as in Python language but they already exist in Racket Scheme.
 
 @codeblock|{

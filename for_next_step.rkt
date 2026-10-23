@@ -541,7 +541,8 @@
 ;; > res
 ;; 2
 ;; > 
-(define-syntax for
+;; the call/cc of break and continue in every loop (6,5 times slower than a do) , replaced by the for below
+#;(define-syntax for
   
   (lambda (stx)
     
@@ -567,6 +568,58 @@
            (loop))) ; end let loop
            ))))) ;; close with-syntax
        ))))
+
+
+
+;; the symbol sym is written in the datum d (as in def.rkt) : the call/cc of break and continue are made only when
+;; they are used (a break or a continue produced by another macro of the loop is not seen)
+(begin-for-syntax
+  (define (uses-symbol? sym d)
+    (cond ((eq? d sym) #t)
+	  ((pair? d) (or (uses-symbol? sym (car d))
+			 (uses-symbol? sym (cdr d))))
+	  ((vector? d) (uses-symbol? sym (vector->list d)))
+	  (else #f))))
+
+
+;; break is bound in all the loop (init test incrmt body) , continue only in the body
+(define-syntax for
+  
+  (lambda (stx)
+    
+    (syntax-case stx ()
+      
+      ((_ (init test incrmt) body ...)
+       
+       (with-syntax ((BREAK (datum->syntax stx 'break))
+                     (CONTINUE (datum->syntax stx 'continue)))
+	 
+	 (with-syntax ((BODY (if (uses-symbol? 'continue (syntax->datum #'(body ...)))
+				 #'(call/cc
+				    (lambda (next)
+				      (let ((CONTINUE next))
+					(let () ;; allow definitions
+					  body ...))))
+				 #'(let () ;; allow definitions
+				     body ...))))
+	   
+	   (if (uses-symbol? 'break (syntax->datum #'(init test incrmt body ...)))
+	       #'(call/cc
+		  (lambda (escape)
+		    (let ((BREAK escape))
+		      init
+		      (let loop ()
+			(when test
+			  BODY
+			  incrmt
+			  (loop))))))
+	       #'(let ()
+		   init
+		   (let loop ()
+		     (when test
+		       BODY
+		       incrmt
+		       (loop)))))))))))
 
 
 
