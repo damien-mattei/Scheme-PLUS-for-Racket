@@ -671,6 +671,8 @@ x
 
 If the variable was not existing in the current environment it will be automatically declared,this is a special feature of the Scheme+ version for Racket that can rarely be reproduced in other scheme implementations.
 
+In a body, @racket[{x := …}] becomes a @racket[set!] if @racket[x] is defined later in an enclosing body (Racket binds the definitions of a body in the whole body), and the error is then @tt{x: assignment disallowed; cannot assign before initialization}: put the definitions at the beginning of the body, as R7RS requires.
+
 There is some alias of @racket[:=] :
 
 @defform[#:link-target? #f #:id <- {name <- value}]{}
