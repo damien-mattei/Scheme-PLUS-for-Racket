@@ -1421,7 +1421,7 @@
   (define (p43-generic x y)
     ANNOTATION-OFF
     (list (sqrt x) {(log x) + 1.0} {x ** 0.5} (sqrt (abs y)) (√ (exp y)) (sqrt y)))
-  (check-equal? (p43-pos 4.0 -4.0) (p43-generic 4.0 -4.0)) ; (sqrt -4.0) is the complex +2.0i
+  (check-equal? (p43-pos 4.0 -4.0) (p43-generic 4.0 -4.0)) ; (sqrt -4.0) is the complex 0.0+2.0i
   (check-equal? (p43-pos -0.0 +nan.0) (p43-generic -0.0 +nan.0)) ; -0.0 : (log -0.0) is -inf.0
   (define (p43-last v)
     (type #(flonum?) v)
