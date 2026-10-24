@@ -1406,6 +1406,28 @@
           (p42-add {M[1][0]} 1.0)))
   (check-equal? (p42-sum (vector (vector 1.0 2.0) (vector 3.0 4.0))) '(4.0 2.5 4.0))
 
+  ;; ================================================================
+  ;; 43. ℝ⁺ (nonnegative-flonum?) : a float not negative , -0.0 and
+  ;;     +nan.0 included as in Typed Racket. sqrt , √ , log , expt of a
+  ;;     ℝ⁺ are flsqrt , fllog , flexpt ; abs , exp of a float are ℝ⁺ ;
+  ;;     sqrt of a flonum? stays generic ((sqrt -4.0) is a complex). The
+  ;;     lengths are ℕ. The expected values are computed by the generic
+  ;;     procedures , without the annotation (ANNOTATION-OFF).
+  ;; ================================================================
+  (define (p43-pos x y)
+    (type ℝ⁺ x)
+    (type flonum? y)
+    (list (sqrt x) {(log x) + 1.0} {x ** 0.5} (sqrt (abs y)) (√ (exp y)) (sqrt y)))
+  (define (p43-generic x y)
+    ANNOTATION-OFF
+    (list (sqrt x) {(log x) + 1.0} {x ** 0.5} (sqrt (abs y)) (√ (exp y)) (sqrt y)))
+  (check-equal? (p43-pos 4.0 -4.0) (p43-generic 4.0 -4.0)) ; (sqrt -4.0) is the complex +2.0i
+  (check-equal? (p43-pos -0.0 +nan.0) (p43-generic -0.0 +nan.0)) ; -0.0 : (log -0.0) is -inf.0
+  (define (p43-last v)
+    (type #(flonum?) v)
+    {v[(vector-length v) - 1]})                             ; (vector-length v) is ℕ
+  (check-equal? (p43-last (vector 1.0 2.0 3.0)) 3.0)
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 

@@ -16,10 +16,14 @@
 		 :print-type
 		 is-print-type?
 		 ℕ ℤ ℝ ℚ ℂ
+		 ℝ⁺
 		 natural-fixnum?
+		 nonnegative-flonum?
 		 natural-type-name?
 		 integer-type-name?
-		 real-type-name?)
+		 real-type-name?
+		 nonnegative-real-type-name?
+		 domain-type-base)
 
 	(require Scheme+/operators
 		 (for-syntax racket/base))
@@ -31,10 +35,16 @@
 	(define (natural-fixnum? x)
 	  (and (fixnum? x) (>= x 0)))
 
+	;; a float that is not negative : the type ℝ⁺ , as Nonnegative-Flonum of Typed Racket it contains -0.0 and +nan.0
+	;; ((flsqrt -1.0) is +nan.0) ; sqrt , log , expt of a ℝ⁺ are floats (flsqrt , fllog , flexpt) , not complex numbers
+	(define (nonnegative-flonum? x)
+	  (and (flonum? x) (not (< x 0.0))))
+
 	#;(define ℕ fixnum?)
 	(define ℕ natural-fixnum?)
 	(define ℤ fixnum?)
 	(define ℝ flonum?)
+	(define ℝ⁺ nonnegative-flonum?)
 	;; only defined for now , not used by the annotation
 	(define ℚ rational?)
 	(define ℂ complex?)
@@ -55,6 +65,17 @@
 
 	(define (real-type-name? s) ; today the type flonum?
 	  (eq? s 'ℝ))
+
+	(define (nonnegative-real-type-name? s) ; the type nonnegative-flonum?
+	  (eq? s 'ℝ⁺))
+
+	;; the types of a domain (a part of a type) and their base type , for the overloads : a ℕ is a fixnum for
+	;; {i + 1} --> (fx+ i 1) , a ℝ⁺ a flonum for {x + 1.0} --> (fl+ x 1.0) ; #f for the other types
+	(define (domain-type-base t)
+	  (case t
+	    ((natural-fixnum?) 'fixnum?)
+	    ((nonnegative-flonum?) 'flonum?)
+	    (else #f)))
 
 	;; (:print-type expr) is a command of the REPL , done by the reader (SRFI-105 or SRFI-110) with the tables of the type
 	;; annotation , as :print-type of Typed Racket ; elsewhere (in a module) it is an error
@@ -86,7 +107,7 @@
 	;;(define real inexact?)
 
 	(define numerical-types '(exact-integer? integer? number? flonum? real? rational? complex? inexact? fixnum? exact?
-				  natural-fixnum?))
+				  natural-fixnum? nonnegative-flonum?))
 
 	(define (numerical-type? t)
 	  (memq t numerical-types))
