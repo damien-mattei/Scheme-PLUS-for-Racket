@@ -43,7 +43,7 @@
 
   ;; the tail recursive version with an accumulator , for more than 3 arguments (rare : the parser nests the chains
   ;; {2 ** 3 ** 4} in (** 2 (** 3 4)))
-  (define (**-general b . pQ)
+  #;(define (**-general b . pQ)
     (define (**-tail-rec p Q)
       (if (null? p)
 	  Q ; when finish we return the accumulator
@@ -54,6 +54,17 @@
 	1 ; by convention 2^() = 2⁰ = 1 it is like this in Mathematics
 	(let ((Qp (reverse pQ))) ; because exponentiation is right-associative we will compute from right to left, so we need to reverse the list
 	  (expt b (**-tail-rec (cdr Qp) (car Qp)))))) ; start with Q,a number in the accumulator and p being a list
+
+  ; at least one exponent : (**-general b) is an arity error , as (expt b) and (** b)
+  (define (**-general b e . es)
+    (define (**-tail-rec p Q)
+      (if (null? p)
+	  Q ; when finish we return the accumulator
+	  (**-tail-rec (cdr p)
+		       (expt (car p) Q)))) ; p ^ Q 
+
+    (let ((Qp (reverse (cons e es)))) ; because exponentiation is right-associative we will compute from right to left, so we need to reverse the list
+      (expt b (**-tail-rec (cdr Qp) (car Qp))))) ; start with Q,a number in the accumulator and p being a list
 
   ;; b^e : the exact integer exponent 2 by a multiplication (as gcc does for pow(x,2.0)) , 4 times faster than expt for
   ;; a float and more precise : (* b b) is the exact square rounded once (IEEE 754) , (expt b 2) (the pow of C) was
@@ -67,10 +78,12 @@
 
   (define **
     (case-lambda
-      ((b) 1) ; by convention 2^() = 2⁰ = 1 it is like this in Mathematics
+      ; no clause for one argument : (** b) is an arity error , as (expt b) (it was 1 , by convention 2^() = 2⁰ = 1)
+      #;((b) 1)
       ((b e) (power b e)) ; the usual case : 2³
       ((b e1 e2) (power b (power e1 e2))) ; 2 ³ ⁴ = 2^(3^4) , right-associative
-      ((b . pQ) (apply **-general b pQ))))
+      #;((b . pQ) (apply **-general b pQ))
+      ((b e1 e2 e3 . pQ) (apply **-general b e1 e2 e3 pQ))))
 
 ) ; end library
 
