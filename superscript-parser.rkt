@@ -380,7 +380,12 @@
      ;; return case
      (when (string-null? ss-tok)
        ;;(display "superscript-parser : state-1-symbol : return case") (newline)
-       (return (cons (datum->syntax #'nfx #; #'$nfx$ (string->symbol p-tok)) ; seems we can put anything as lexical context
+       ;; a symbol as in the other cases (followed by an operator) : the syntax object was written #<syntax z> by the
+       ;; converter (not readable) , its type was not found by the annotation , and it does not make the syntax
+       ;; transformers work ({n ᶻ} in a $nfx$ expanded as a macro : z unbound with the syntax or with the symbol)
+       #;(return (cons (datum->syntax #'nfx #; #'$nfx$ (string->symbol p-tok)) ; seems we can put anything as lexical context
+		     '())) ; create the NIL of list expression
+       (return (cons (string->symbol p-tok)
 		     '()))) ; create the NIL of list expression
      
      
