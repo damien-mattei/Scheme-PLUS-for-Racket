@@ -2004,6 +2004,8 @@ When the pass knows the type of the operands it can:
 
 The inference already knows the type of the literals and of the R7RS and Scheme+ primitives (that data comes from @racket[SRFI-105/scheme-types] and from the operator tables of @tt{annot+.rkt} of the SRFI-105 package). So, as soon as the pass is on, types are inferred even without any annotation (see @secref["inference"]); everything else you provide with the @racket[type] form and a couple of directives.
 
+The pass is itself written in Scheme+, by the method of @hyperlink["https://en.wikipedia.org/wiki/Bootstrapping_(compilers)"]{bootstrapping} (as a compiler written in its own language): its source is @tt{bootstrapping/annot+.rkt} of the SRFI-105 package, with the curly-infix notation, the square brackets and all the features of Scheme+. The installed reader converts it to a Racket Scheme module, @tt{annot+.rkt} at the root of the package, which is the pass used by the reader. The reader @tt{main.rkt} is made the same way from @tt{bootstrapping/main+.rkt}. So each new version of the pass is converted by the previous one.
+
 When the pass is @bold{off} (this is the default) every @racket[type] form is simply removed from the program, so annotated code stays valid unannotated Scheme+.
 
 A local variable hides the type of an outer variable of the same name: the type of a parameter is written in the body of the procedure, @racket[(define (f x) (type flonum? x) ...)]. How the forms of Scheme are treated by the pass (macro definitions, local variables) is described in @secref["scheme-forms"].
