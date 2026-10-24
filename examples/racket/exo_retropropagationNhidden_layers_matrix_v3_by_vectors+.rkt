@@ -136,7 +136,7 @@ ANNOTATION-ON
 
 	 (super-new)
 
-	 (type vector? nc)
+	 (type #() nc)
 	 (type ℕ {nc[]})
 
 	 (type ((ℝ) procedure? (ℝ ℝ)) მzⳆმz̃) ; this could also be just procedure? but here we need domain of procedure
