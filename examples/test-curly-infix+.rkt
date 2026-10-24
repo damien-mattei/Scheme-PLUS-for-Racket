@@ -1428,6 +1428,21 @@
     {v[(vector-length v) - 1]})                             ; (vector-length v) is ℕ
   (check-equal? (p43-last (vector 1.0 2.0 3.0)) 3.0)
 
+  ;; ================================================================
+  ;; 44. The sum and the product of ℝ⁺ are ℝ⁺ , the square of a float
+  ;;     too ({x ²} , {x ** 2} , {x * x}) : sqrt of a sum of squares is
+  ;;     flsqrt. Compared to the generic procedures (ANNOTATION-OFF).
+  ;; ================================================================
+  (define (p44-pos x y z a b)
+    (type ℝ x y z)
+    (type ℝ⁺ a b)
+    (list (sqrt {x ² + y ²}) (sqrt {x * x + y * y + z ** 2}) (sqrt {a * b}) (log {a + b}) (sqrt {(x - y) ²})))
+  (define (p44-generic x y z a b)
+    ANNOTATION-OFF
+    (list (sqrt {x ² + y ²}) (sqrt {x * x + y * y + z ** 2}) (sqrt {a * b}) (log {a + b}) (sqrt {(x - y) ²})))
+  (check-equal? (p44-pos 3.0 4.0 -12.0 2.0 8.0) (p44-generic 3.0 4.0 -12.0 2.0 8.0))
+  (check-equal? (p44-pos -0.0 +nan.0 +inf.0 -0.0 +inf.0) (p44-generic -0.0 +nan.0 +inf.0 -0.0 +inf.0))
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 
