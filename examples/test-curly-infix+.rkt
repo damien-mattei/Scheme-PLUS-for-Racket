@@ -1443,6 +1443,24 @@
   (check-equal? (p44-pos 3.0 4.0 -12.0 2.0 8.0) (p44-generic 3.0 4.0 -12.0 2.0 8.0))
   (check-equal? (p44-pos -0.0 +nan.0 +inf.0 -0.0 +inf.0) (p44-generic -0.0 +nan.0 +inf.0 -0.0 +inf.0))
 
+  ;; ================================================================
+  ;; 45. An integer literal with a float is written as a float at the
+  ;;     reading : {x * 2} is (fl* x 2.0) , {1 - x} (fl- 1.0 x) ,
+  ;;     {x < 1} (fl< x 1.0) , {3 * x * 2} from the left. Not 0 (the
+  ;;     exact 0 of (* 0 x)) , nor beyond 2^53. Compared to the generic
+  ;;     procedures (ANNOTATION-OFF) on -0.0 , +nan.0 , +inf.0 too.
+  ;; ================================================================
+  (define (p45-on x)
+    (type ℝ x)
+    (list {x * 2} {(x * 2) + 1.0} {1 - x} {2 / x} {x < 1} {x = 3} (max x 3) {3 * x * 2}
+          {x * 0} {x + 0} {x * 9007199254740993} {x + 9007199254740992}))
+  (define (p45-off x)
+    ANNOTATION-OFF
+    (list {x * 2} {(x * 2) + 1.0} {1 - x} {2 / x} {x < 1} {x = 3} (max x 3) {3 * x * 2}
+          {x * 0} {x + 0} {x * 9007199254740993} {x + 9007199254740992}))
+  (for-each (λ (x) (check-equal? (p45-on x) (p45-off x)))
+            (list -1.5 3.0 -0.0 +nan.0 +inf.0 1e300))
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 

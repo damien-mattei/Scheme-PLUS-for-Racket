@@ -2065,9 +2065,10 @@ With @racket[ANNOTATION-ON], the pass infers types by itself, even in a program 
   @item{the type of the result of an arithmetic operator whose arguments have known types: the operator is then specialized (@racket[fl*], @racket[fx+], ...) and its result type is known in turn, so a whole expression is typed;}
   @item{the return type of the R7RS and Scheme+ primitives: @racket[(vector-length v)] is a fixnum;}
   @item{the propagation of these types through the definitions and assignments (@racket[:=], @racket[<-], @racket[define], ...): a variable gets the type of the value it receives;}
+  @item{an integer literal with a float is written as a float: @litchar{{x * 2}} is @racket[(fl* x 2.0)], @litchar{{1 - x}} is @racket[(fl- 1.0 x)], @litchar{{x < 1}} is @racket[(fl< x 1.0)], as the generic operator would convert it at run time (not the literal @racket[0]: @racket[(* 0 2.0)] is the exact @racket[0] in Racket, nor an integer beyond 2⁵³, which is not exactly a float);}
   @item{the constant folding of a sub-expression whose arguments are all literal numbers.}]
 
-When the types of the arguments are unknown, or when no specialized operator fits them (for example a flonum times a fixnum), the generic operator is kept and dispatches at run time, as without the pass.
+When the types of the arguments are unknown, or when no specialized operator fits them (for example a flonum times a fixnum variable), the generic operator is kept and dispatches at run time, as without the pass.
 
 @codeblock|{
 ANNOTATION-ON
@@ -2087,10 +2088,10 @@ ANNOTATION-ON
   (:= n (vector-length v))
   (for ((:= i 0) (fx< i n) (:= i (fx+ i 1)))
     (display ($bracket-apply$ v i)))
-  (list 10 (fx- n 1) (fl/ y x) (* 2.5 4)))
+  (list 10 (fx- n 1) (fl/ y x) 10.0))
 }|
 
-Here @racket[x] and @racket[y] are flonums (from the literals and the specialized operators), @racket[n] and @racket[i] are fixnums (from @racket[vector-length] and from the literal @racket[0]), @racket[{2 * 3 + 4}] is folded to @racket[10], while @litchar{{v[i]}} stays a generic access (the type of @racket[v] is unknown) and @racket[{2.5 * 4}] a generic product (a flonum times a fixnum). The @racket[type] form described below gives the types that cannot be inferred, for example those of the parameters of a procedure or of the elements of a vector.
+Here @racket[x] and @racket[y] are flonums (from the literals and the specialized operators), @racket[n] and @racket[i] are fixnums (from @racket[vector-length] and from the literal @racket[0]), @racket[{2 * 3 + 4}] is folded to @racket[10], @racket[{2.5 * 4}] is folded to @racket[10.0] (with a float, the literal @racket[4] is written @racket[4.0]), while @litchar{{v[i]}} stays a generic access (the type of @racket[v] is unknown). The @racket[type] form described below gives the types that cannot be inferred, for example those of the parameters of a procedure or of the elements of a vector.
 
 @subsection[#:tag "type-form"]{Annotating variables, elements and procedures : the @racket[type] form}
 
