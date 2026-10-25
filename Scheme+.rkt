@@ -236,6 +236,20 @@
    fx<=
    fx>=
    fx=
+
+   ; a flonum and a fixnum : written by the type annotation ({x + i} --> (fl+/fx x i) , {i + x} --> (fx/fl+ i x)) ,
+   ; reserved names
+   fl+/fx fx/fl+
+   fl-/fx fx/fl-
+   fl*/fx fx/fl*
+   fl//fx fx/fl/
+   flmin/fx fx/flmin
+   fl</fx fx/fl<
+   fl>/fx fx/fl>
+   fl<=/fx fx/fl<=
+   fl>=/fx fx/fl>=
+   fl=/fx fx/fl=
+   fl≠/fx fx/fl≠
    
    $ovrld-ht$ ; for debug only
    $ovrld-ht-n-ary$ ; for debug only
@@ -315,6 +329,7 @@
 
    ;; type annotation
    Scheme+/type
+   Scheme+/flonum-fixnum ; the operations of a flonum and a fixnum written by the type annotation
 
    setup/getinfo ; for parsing info.rkt
 

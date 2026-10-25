@@ -1461,6 +1461,39 @@
   (for-each (λ (x) (check-equal? (p45-on x) (p45-off x)))
             (list -1.5 3.0 -0.0 +nan.0 +inf.0 1e300))
 
+  ;; ================================================================
+  ;; 46. A float and a fixnum : {x + i} is (fl+/fx x i) , {i + x}
+  ;;     (fx/fl+ i x) ... of Scheme+/flonum-fixnum : the fixnum
+  ;;     converted by fx->fl , with a guard at run time , the generic
+  ;;     procedure for the exact 0 ((+ -0.0 0) is -0.0 , (* x 0) is 0 ,
+  ;;     (/ x 0) an error) and for a comparison beyond 2^53. Compared to
+  ;;     the generic procedures (ANNOTATION-OFF).
+  ;; ================================================================
+  (define (p46-on x i)
+    (type ℝ x)
+    (type ℤ i)
+    (list {x + i} {i + x} {x - i} {i - x} {x * i} {i * x} {i / x} (min x i) (min i x)
+          {x < i} {i <= x} {x = i} {x ≠ i} {i >= x} {x + i + 1.0} {(x * i) + 1.0}))
+  (define (p46-off x i)
+    ANNOTATION-OFF
+    (list {x + i} {i + x} {x - i} {i - x} {x * i} {i * x} {i / x} (min x i) (min i x)
+          {x < i} {i <= x} {x = i} {x ≠ i} {i >= x} {x + i + 1.0} {(x * i) + 1.0}))
+  (define (p46-divide-on x i)
+    (type ℝ x)
+    (type ℤ i)
+    {x / i})
+  (define (p46-divide-off x i)
+    ANNOTATION-OFF
+    {x / i})
+  (for-each (λ (x)
+              (for-each (λ (i)
+                          (check-equal? (p46-on x i) (p46-off x i))
+                          (if (zero? i)
+                              (check-exn exn:fail:contract:divide-by-zero? (λ () (p46-divide-on x i)))
+                              (check-equal? (p46-divide-on x i) (p46-divide-off x i))))
+                        (list 0 1 -3 9007199254740993 -9007199254740993)))
+            (list -1.5 3.0 0.0 -0.0 +nan.0 +inf.0 9007199254740992.0))
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 

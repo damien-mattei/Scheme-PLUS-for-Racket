@@ -2066,9 +2066,10 @@ With @racket[ANNOTATION-ON], the pass infers types by itself, even in a program 
   @item{the return type of the R7RS and Scheme+ primitives: @racket[(vector-length v)] is a fixnum;}
   @item{the propagation of these types through the definitions and assignments (@racket[:=], @racket[<-], @racket[define], ...): a variable gets the type of the value it receives;}
   @item{an integer literal with a float is written as a float: @litchar{{x * 2}} is @racket[(fl* x 2.0)], @litchar{{1 - x}} is @racket[(fl- 1.0 x)], @litchar{{x < 1}} is @racket[(fl< x 1.0)], as the generic operator would convert it at run time (not the literal @racket[0]: @racket[(* 0 2.0)] is the exact @racket[0] in Racket, nor an integer beyond 2⁵³, which is not exactly a float);}
+  @item{a float and a fixnum variable: @litchar{{x + i}} is @litchar{(fl+/fx x i)}, @litchar{{i * x}} is @litchar{(fx/fl* i x)}, @litchar{{x < i}} is @litchar{(fl</fx x i)}, and so on for @racket[+], @racket[-], @racket[*], @racket[/], @racket[min] and the comparisons. These macros of Scheme+ convert the fixnum with @racket[fx->fl] and use the flonum operator, about twice as fast as the generic operator. A guard tested at run time keeps the result of the generic operator: the generic operator is called when the conversion would change the result, that is for the fixnum @racket[0] with @racket[+], @racket[-], @racket[*] and @racket[/] (@racket[(+ -0.0 0)] is @racket[-0.0], @racket[(* x 0)] is the exact @racket[0], @racket[(/ x 0)] raises an error), and for a comparison with a fixnum beyond 2⁵³. Because of the exact @racket[0], @litchar{{x * i}} is a real, not a flonum. The names @litchar{fl+/fx}, @litchar{fx/fl+}, ... are reserved;}
   @item{the constant folding of a sub-expression whose arguments are all literal numbers.}]
 
-When the types of the arguments are unknown, or when no specialized operator fits them (for example a flonum times a fixnum variable), the generic operator is kept and dispatches at run time, as without the pass.
+When the types of the arguments are unknown, or when no specialized operator fits them (for example a flonum and an exact integer that can be a bignum), the generic operator is kept and dispatches at run time, as without the pass.
 
 @codeblock|{
 ANNOTATION-ON
