@@ -36,9 +36,9 @@
 Scheme+ is Scheme with, in addition, infix expressions (with the precedence of the operators), postfix expressions, the square brackets @litchar{[ ]} of the other languages to access arrays, strings and hash tables, operators of assignment and definition, and an optional type annotation with type inference, which specializes the operators at read time. They can be mixed with the usual Scheme syntax:
 
 @codeblock|{
-(define (distance x0 y0 x1 y1)
+(define (norm x0 y0 x1 y1)
   (√ {(x1 - x0) ² + (y1 - y0) ²}))  ; prefix and infix mixed , superscript exponents
-(distance 1 2 4 6)
+(norm 1 2 4 6)
 5
 
 {v := (make-vector 3 0)}
@@ -228,8 +228,11 @@ Here the parsing process is activated by the encountering of curly parenthesis {
 
 {(ksy / (√ 2)) * (- x + y)}
 
-(define (norm x y)
-  {x ² + y ²})
+(define c 299792458) ; the speed of light in m/s
+
+; special relativity : a duration Δt of a clock moving at the speed v lasts longer for an observer at rest
+(define (dilated-time Δt v)
+  {Δt / (√ (1 - v ² / c ²))})
 }|
 
 @section[#:tag "installation"]{Scheme+ Installation and Dependencies}
