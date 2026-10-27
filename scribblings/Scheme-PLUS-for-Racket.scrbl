@@ -22,7 +22,7 @@
 	   
 @title[#:style (make-style #f (list 'toc (css-addition (file->bytes scripts-font-css))))]{Scheme+ for Racket}
 
-@author[(author+email "Damien MATTEI" "Damien.MATTEI@univ-cotedazur.fr")]
+@author[(author+email "Damien MATTEI" "Damien. MATTEI@univ-cotedazur.fr")]
 
 @; the lisp logo at the right of the two packages
 @(define-runtime-path lisplogo "lisplogo_warning_128.png")
@@ -62,16 +62,16 @@ Scheme+ is an extension of the syntax of the Scheme language.
 
 Scheme+ adds to Scheme a way to use also infix and even postfix notation with a compatibility near 100% and not as a sub-system of Lisp syntax as it is often done but with a complete integration in the Scheme reader/parser system and also for Racket at REPL (Read Eval Print Loop).
 
-Scheme+ is to Scheme what a concept-car is to automobile.Scheme+ is a concept-language.It is ideally what should be a modern Scheme.
+Scheme+ is to Scheme what a concept-car is to automobile. Scheme+ is a concept-language. It is ideally what should be a modern Scheme.
 As Scheme+ syntax is compatible with Scheme syntax you can mix the two syntaxes in the same program. 
 
-Scheme+ makes it easy the assignment of Scheme objects in infix (works also in prefix) notation with a few new operators := (or: <- , ←),⥆ (or <+ , :+) for definitions.
+Scheme+ makes the assignment of Scheme objects easy in infix (also in prefix) notation with a few new operators := (or: <- , ←), ⥆ (or <+ , :+) for definitions.
 
-Scheme+ makes it easy the access and assignment for arrays,strings,hash tables,etc by allowing the classic square brackets [ ] of other languages.
+Scheme+ makes the access and the assignment easy for arrays, strings, hash tables, etc by allowing the classic square brackets [ ] of other languages.
 
 What Scheme+ is not: Scheme+ is not a DSL (Domain Specific Language) a contrario Scheme+ tends to be the more universal possible and to be applied in a lot of domains.
 
-Scheme+ is available for different Scheme implementation: DrRacket,Guile,Kawa... the Racket implementation is for now (2025) the most advanced.
+Scheme+ is available for different Scheme implementations: Racket, Guile, Kawa... the Racket implementation is for now (2026) the most advanced.
 
 Scheme+ is used with a Curly Infix reader, provided by the following packages:
 
@@ -139,14 +139,14 @@ Package: @url["https://pkgs.racket-lang.org/package/infix-sweet"]
 
 @section[#:tag "both"]{Prefix, infix and postfix expressions in the same world}
 
-You can mix infix,prefix and postfix sub-expressions in the same expression:
+You can mix infix, prefix and postfix sub-expressions in the same expression:
 
 
 @curly-example[{3 * (- 9 4) + 2} 17]
 
 
 
-In Scheme+, in an expression surrounded by @racket[{ }] curly brackets,the sub-expressions using @racket[( )] round brackets can contains prefix,infix or postfix expressions.The parser will automatically detect the infix,prefix or postfix and parse it accordingly.
+In Scheme+, in an expression surrounded by @racket[{ }] curly brackets, the sub-expressions using @racket[( )] round brackets can contain prefix, infix or postfix expressions. The parser will automatically detect the infix, prefix or postfix and parse it accordingly.
 
 @curly-example[{(3 + 1) * (2 * (+ 2 1) - (sin 0.3)) + ((* 2 5) - 5)} 27.817919173354642]
 
@@ -218,7 +218,7 @@ The parsing is the result of sometimes up to 3 stages of parsing:
 @itemlist[#:style'ordered
           @item{The modified SRFI 105 Curly Infix reader is an external parser necessary for the curly brackets { } syntax which is not in the base of scheme language and for the indexing [ ] square brackets.}
           @item{Syntax transformers are sometimes used at a "compile" stage before the code run.}
-	  @item{Parsing at runtime is rarely done but can be necessary when the parsed expression or some of her subexpressions remain ambiguous at prior parsing stages about being infix or prefix expressions (for performance and optimisation and because of their rarity postfix expression are never parsed at runtime).}]
+	  @item{Parsing at runtime is rarely done but can be necessary when the parsed expression or some of its subexpressions remain ambiguous at prior parsing stages about being infix or prefix expressions (for performance and optimisation and because of their rarity postfix expressions are never parsed at runtime).}]
 
 Here the parsing process is activated by the encountering of curly parenthesis { } in the expressions (there exist also other ways to force the parsing):
 
@@ -237,7 +237,7 @@ Here the parsing process is activated by the encountering of curly parenthesis {
 
 @section[#:tag "installation"]{Scheme+ Installation and Dependencies}
 
-Scheme+ can be installed via the Racket Package system or downloaded from Github.See the links at the top of this page.
+Scheme+ can be installed via the Racket Package system or downloaded from Github. See the links at the top of this page.
 Scheme+ is designed to be used with the package curly-infix or with SRFI-105 for Racket which is a curly infix reader also available in the same way described above.
 As an alternative to SRFI 105 you can also use SRFI 110, which reads also the sweet-expressions: Scheme+ can then be written with indentation instead of parenthesis, see the documentation of SRFI 110.
 
@@ -248,7 +248,7 @@ As an alternative to SRFI 105 you can also use SRFI 110, which reads also the sw
 
 As Scheme+ is designed to be used with the Curly infix syntax of SRFI-105 or SRFI-110, the latter one requires an external reader/parser and a specific REPL (Read Eval Print Loop).
 The REPL must be loaded in Racket GUI or invoked in the shell if you work in command line mode.
-The REPL file can be found in the source code of Scheme+ or SRFI-105 in the @bold{src/} sub-directory, his name is @bold{REPL-Scheme-PLUS.rkt}.
+The REPL file can be found in the source code of Scheme+ or SRFI-105 in the @bold{src/} sub-directory, its name is @bold{REPL-Scheme-PLUS.rkt}.
 
 Here is the source code of @bold{REPL-Scheme-PLUS.rkt} which is also a typical example of how to write a simple Scheme+ module or program:
 @codeblock|{
@@ -270,12 +270,12 @@ Here is the source code of @bold{REPL-Scheme-PLUS.rkt} which is also a typical e
   )
 }|
 
-If you installed Scheme+ with the Package Manager of the DrRacket the place of the above file @bold{REPL-Scheme-PLUS.rkt} depends of your system and scope of installation of @bold{Scheme+}.
+If you installed Scheme+ with the Package Manager of the DrRacket the place of the above file @bold{REPL-Scheme-PLUS.rkt} depends on your system and scope of installation of @bold{Scheme+}.
 
-For example under Linux and for a user installation of @bold{Scheme+}, @bold{REPL-Scheme-PLUS.rkt} should be relative to your home directory in the @bold{.racket} subdirectory followed by path depending of the version of Racket and finally in @bold{pkgs/Scheme-PLUS-for-Racket/src}.
+For example under Linux and for a user installation of @bold{Scheme+}, @bold{REPL-Scheme-PLUS.rkt} should be relative to your home directory in the @bold{.local/share/racket} subdirectory (@bold{.racket} with the older versions of Racket) followed by a path depending on the version of Racket and finally in @bold{pkgs/Scheme-PLUS-for-Racket/src}.
 
-Example under Linux with a user (mattei) installation of @bold{Scheme+} and the 8.17 version of Racket:
-@bold{/home/mattei/.racket/8.17/pkgs/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt}
+Example under Linux with a user (mattei) installation of @bold{Scheme+} and the 9.3 version of Racket:
+@bold{/home/mattei/.local/share/racket/9.3/pkgs/Scheme-PLUS-for-Racket/src/REPL-Scheme-PLUS.rkt}
 
 You could simply open the above file in @bold{DrRacket} to work with @bold{Scheme+}.
 
@@ -289,7 +289,7 @@ At the REPL, @racket[:print-type] displays the type known by the type annotation
 (display "Hello world") (newline)
 }|
 
-Another example that really use Curly infix syntax with Scheme+ :
+Another example that really uses Curly infix syntax with Scheme+ :
 
 @codeblock|{
 #reader curly-infix ; alias of SRFI-105
@@ -303,11 +303,12 @@ Result:
 "Hello world !"
 }|
 
-You can also use SRFI-110 which implements too the curly infix parser:
+You can also use SRFI-110, which also implements the curly infix parser (in sweet-expressions, write one expression per line):
 
 @codeblock|{
-#reader SRFI-110 ; implements too the curly infix parser
-(display "Hello world") (newline)
+#reader SRFI-110 ; also implements the curly infix parser
+(display "Hello world")
+(newline)
 }|
 
 
@@ -338,8 +339,8 @@ note it seems in the latest version of Racket we can replace the first line simp
 
 @subsection[#:tag "curly"]{Curly Infix notation with { }}
 
-In general Scheme+ use the same convention for infix expression than SRFI-105 Curly Infix that is an infix expression is between curly parenthesis { }.
-But infix or postfix sub-expressions are allowed to be between normal parenthesis ( ) like it is in mathematic notation. Infix, postfix or prefix is then autodetected.In case of ambiguities { } force infix mode and possibly postfix mode,while ( ) remains prefix mode. Inside curly infix expression surrounded by { } parenthesis associativity and operator precedence are applied.
+In general Scheme+ uses the same convention for infix expressions as SRFI-105 Curly Infix, that is an infix expression is between curly brackets { }.
+But infix or postfix sub-expressions are allowed to be between normal parenthesis ( ) as in the mathematical notation. Infix, postfix or prefix is then autodetected. In case of ambiguity { } force infix mode and possibly postfix mode, while ( ) remain prefix mode. Inside curly infix expression surrounded by { } parenthesis associativity and operator precedence are applied.
 
 @codeblock|{
 #lang reader SRFI-105
@@ -352,7 +353,7 @@ But infix or postfix sub-expressions are allowed to be between normal parenthesi
 
 @curly-example[{3 * 7 + 2 - 12 / 3 + -2} 17]
 
-In the examples the display of the REPL/parser in prefix will generally be removed from examples for clarity, also the prompt > and the displayed #<eof> (end of file), if any,printed by some ancient versions of the SRFI-105 parser.
+In the examples the display of the REPL/parser in prefix will generally be removed from examples for clarity, also the prompt > and the displayed #<eof> (end of file), if any, printed by some ancient versions of the SRFI-105 parser.
 
 
 
@@ -364,7 +365,7 @@ In the examples the display of the REPL/parser in prefix will generally be remov
 }|
 
 
-Note that in the above example and in Scheme+ the operator @racket[·] is @racket[*], also note that superscript chars are exposants.
+Note that in the above example and in Scheme+ the operator @racket[·] is @racket[*], also note that superscript characters are exponents.
 
 In the following sections i will omit to rewrite the directives about @racket[lang] or @racket[reader] and the requirement in each example to keep the code and the web page compact.
 
@@ -379,18 +380,6 @@ An example of inner round brackets inside curly brackets in a full infix express
 Example of a mixed infix and prefix expression autodetected:
 
 @curly-example[{3 * (+ 2 4) - 1} 17]
-
-Other examples:
-
-@codeblock|{
-(define (fib n)
-  (if {n < 2}
-      n
-      {(fib (n - 1)) + (fib (n - 2))} ))
-
-(fib 7)
-13
-}|
 
 Curly infix can also be used in some macro definitions:
 
@@ -434,7 +423,7 @@ x
 
 @subsection[#:tag "square"]{Square Bracket notation with [ ]}
 
-The square bracket notation can be used with any object that can be indexed or retrieved by a key: it works with vectors,strings of characters, arrays, hash tables,etc.
+The square bracket notation can be used with any object that can be indexed or retrieved by a key: it works with vectors, strings of characters, arrays, hash tables, etc.
 
 
 @defform[#:id \[\] {T[k]}]{
@@ -467,14 +456,14 @@ I will not always display generated code by parser and end of file symbol as onl
 }|
 
 
-Negative index, that start from the end of object, can be used as in the Python language:
+Negative index, that starts from the end of object, can be used as in the Python language:
 @codeblock|{
 {"hello"[-4]}
 #\e
 }|
 
 
-A slice notation with @bold{:} is available.It allows the same features as the slicing of Python language and sometimes more.
+A slice notation with @bold{:} is available. It allows the same features as the slicing of Python language and sometimes more.
 
 
 @defform[#:id \: {T[begin : end]}]{
@@ -505,7 +494,7 @@ Slicing of vectors or strings.
 
 
 @defform[#:link-target? #f  #:id \: {T[begin : end : step]}]{
-@racket[begin], @racket[end], @racket[step]  are optional, see the Python language documentation for informations and use.
+@racket[begin], @racket[end], @racket[step]  are optional, see the Python language documentation for information and use.
 }
 
 @codeblock|{
@@ -542,7 +531,7 @@ The square bracket notation [ ] works also with multiple dimensions vectors:
 6
 }|
 
-You can use also this [ ] notation variant, like matrix notation, and compatible with arrays in case of you use them:
+You can use also this [ ] notation variant, like matrix notation, and compatible with arrays in case you use them:
 
 @codeblock|{
 {M := #(#(1 2 3)
@@ -558,18 +547,18 @@ Examples:
 }|
 
 @subsection[#:tag "file_naming"]{File naming conventions}
-Generally a Scheme+ program file is named with a + symbol before the normal scheme extension, examples: SssDyna+.scm or SssDyna+.rkt.The Makefile (see section more below) i provide will automatically parse files named with this convention.
+Generally a Scheme+ program file is named with a + symbol before the normal scheme extension, examples: SssDyna+.scm or SssDyna+.rkt. The Makefile (see section more below) i provide will automatically parse files named with this convention.
 
 @section[#:tag "reference"]{Scheme+ Reference}
 
-This sections describe the macros,operators and procedures that are the core of Scheme+.
+This section describes the macros, operators and procedures that are the core of Scheme+.
 
-From subsections 1 to 6 what are described are almost every time macros.
+What is described in the subsections 1 to 7 is almost always macros.
 
 @subsection[#:tag "declarations"]{Declarations}
 
 @defform[(declare name1 name2 ...)]{
-Declare new variables named @racket[name1],@racket[name2],....
+Declare new variables named @racket[name1], @racket[name2],....
 }
 
 @codeblock|{
@@ -591,7 +580,7 @@ You can not both declare and define a variable in a program (module):
 
 @elem[#:style (style #f (list (color-property "red")))]{module: identifier already defined in: x}
 
-Note that @racket[declare] is rarely used,instead assignment macros like @racket[:=] are used, but it could be usefull in case a variable used in a block must be used outside the scope of the block too like in this example:
+Note that @racket[declare] is rarely used, instead assignment macros like @racket[:=] are used, but it could be useful in case a variable used in a block must be used outside the scope of the block too like in this example:
 
 @codeblock|{
 (declare x)
@@ -628,9 +617,9 @@ x
 7
 }|
 
-Note: this is almost never used in Racket,because Scheme+ for Racket has a special feature of @bold{autodetecting} if a variable needs to be defined before assignment and in this case it will @racket[define] it for the programmer in the current block.
+Note: this is almost never used in Racket, because Scheme+ for Racket has a special feature of @bold{autodetecting} if a variable needs to be defined before assignment and in this case it will @racket[define] it for the programmer in the current block.
 
-There is some alias of @racket[<+] :
+There are some aliases of @racket[<+] :
 
 @defform[#:id ⥆ {name ⥆ value}]{}
 
@@ -645,13 +634,13 @@ y
 4
 }|
 
-Note: a lot of operators of Scheme+ that works left to right exist in the opposite sense, i will not document them as it is obvious,example:
+Note: a lot of operators of Scheme+ that work left to right exist in the opposite sense, i will not document them as it is obvious, example:
 
 @defform[#:link-target? #f #:id ⥅ {value ⥅ name}]{}
 
 (or @racket[+>] , @racket[+:])
 
-Also a lot of Scheme+ operator have infix n-arity capability , i will not completely document them at the beginning of this document but in other parts later.
+Also a lot of Scheme+ operators have infix n-arity capability , i will not completely document them at the beginning of this document but in other parts later.
 
 @codeblock|{
 {name ⥆ name2 ⥆ 7}
@@ -672,11 +661,11 @@ x
 7
 }|
 
-If the variable was not existing in the current environment it will be automatically declared,this is a special feature of the Scheme+ version for Racket that can rarely be reproduced in other scheme implementations.
+If the variable did not exist in the current environment it will be automatically declared, this is a special feature of the Scheme+ version for Racket that can rarely be reproduced in other scheme implementations.
 
 In a body, @racket[{x := …}] becomes a @racket[set!] if @racket[x] is defined later in an enclosing body (Racket binds the definitions of a body in the whole body), and the error is then @tt{x: assignment disallowed; cannot assign before initialization}: put the definitions at the beginning of the body, as R7RS requires.
 
-There is some alias of @racket[:=] :
+There are some aliases of @racket[:=] :
 
 @defform[#:link-target? #f #:id <- {name <- value}]{}
 
@@ -714,7 +703,7 @@ The values of the right hand side are computed before the assignment, so they ca
 
 
 
-The assignment operator is a macro that works in taking in account the square bracket [ ] notation in the RHS (right hand side) of any expression:
+The assignment operator is a macro that takes into account the square bracket [ ] notation in the LHS (left hand side) of the assignment:
 
 @codeblock|{
 (define T (make-vector 5))
@@ -723,7 +712,7 @@ The assignment operator is a macro that works in taking in account the square br
 7
 }|
 
-Remember @racket[:=],for Pascal language fans, is exactly the same as @racket[<-].
+Remember @racket[:=], for Pascal language fans, is exactly the same as @racket[<-].
 
 @codeblock|{
 (require srfi/25)
@@ -741,7 +730,7 @@ Other example:
 
 Note in the example above the special neoteric expression available by SRFI-105 Curly Infix:@codeblock|{მzⳆმz̃(z_output[j] z̃_output[j])}| which is automatically parsed and transformed in the prefix expression : @codeblock|{(მzⳆმz̃ z_output[j] z̃_output[j])}|, note also that @racket[მzⳆმz̃] is only a symbol.
 
-Assignment and slicing works as in Python language or even better,allowing more possibilities.
+Assignment and slicing work as in the Python language or even better, allowing more possibilities.
 
 Examples:
 
@@ -753,7 +742,7 @@ v
 '#(-1 2 -2 4 -3 6 -4 8 -5)
 }|
 
-Note: remember @racket[⥆] (or @racket[<+] , @racket[:+]) is for new definitions but in Racket i could have directly use @racket[:=].
+Note: remember @racket[⥆] (or @racket[<+] , @racket[:+]) is for new definitions but in Racket i could have directly used @racket[:=].
 
 @codeblock|{
 {v ⥆ (vector 1 2 3 4 5 6 7 8 9)}
@@ -761,8 +750,6 @@ Note: remember @racket[⥆] (or @racket[<+] , @racket[:+]) is for new definition
 v
 '#(-9 2 -7 4 -5 6 -3 8 -1)
 }|
-
-Remember @racket[:=] is exactly the same as @racket[<-].
 
 @codeblock|{
 {v ⥆ (vector 1 2 3 4 5 6 7 8 9)}
@@ -843,7 +830,7 @@ This works the same as in other languages such as C or Python languages.
 
 @defform[(return value ...)]{
 Return immediately from the executing procedure defined with @racket[def] or @racket[lambda+] and return the values: @racket[value ...] . 
-As the ellipsis indicate it, you can return multiple values.
+As the ellipsis indicates, you can return multiple values.
 }
 
 Example:
@@ -939,7 +926,7 @@ z
 @defform[#:link-target? #f (def name)]{Like @racket[declare].}
 
 @;{ deprecated : def+ , define+ , the extended define , lambda-x (lambda+ before) , rec+ : the body (or the value) is converted at the expansion of the macro
-@defform[(def+ (name args ...) body ...+)]{Same as @racket[def] but all @racket[body ...] will be parsed as possibly infix,postfix or still prefix.}
+@defform[(def+ (name args ...) body ...+)]{Same as @racket[def] but all @racket[body ...] will be parsed as possibly infix, postfix or still prefix.}
 
 Examples:
 
@@ -1019,12 +1006,12 @@ Examples:
 				  (vector x0 y0))))
 }|
 
-@racket[define], which has been extended, and @racket[define+] respectively work as @racket[def] and @racket[def+] but without the @racket[return] and @racket[return-rec] features. They could be usefull as their implementation result in faster runtime execution.
+@racket[define], which has been extended, and @racket[define+] respectively work as @racket[def] and @racket[def+] but without the @racket[return] and @racket[return-rec] features. They could be useful as their implementation result in faster runtime execution.
 
 
 @defform*[((lambda-x (args ...) body ...+)
 (lambda-x (args . L) body ...+)
-(lambda-x L body ...+))]{Same as @racket[lambda] but all @racket[body ...] will be parsed as possibly infix,postfix or still prefix.Only @racket[return] is allowed in @racket[lambda-x].}
+(lambda-x L body ...+))]{Same as @racket[lambda] but all @racket[body ...] will be parsed as possibly infix, postfix or still prefix. Only @racket[return] is allowed in @racket[lambda-x].}
 
 @codeblock|{
 (define x 3)
@@ -1046,7 +1033,7 @@ returning
 17
 }|
 
-@defform[(rec+ name expr)]{@racket[rec] allowing infix,postfix or prefix expressions and using internally @racket[lambda-x]}.
+@defform[(rec+ name expr)]{@racket[rec] allowing infix, postfix or prefix expressions and using internally @racket[lambda-x]}.
 @codeblock|{
 (define f (rec+ foo (lambda () (2 + 3))))
 (f)
@@ -1058,9 +1045,9 @@ returning
 
 @defform[#:literals (then else)
          (if test [then] then-body ... [else] else-body ...)]{
-Evalutes @racket[test] and, if @racket[test] is @racket[True], evaluates
+Evaluates @racket[test] and, if @racket[test] is true (not @racket[#f]), evaluates
 @racket[then-body ...], otherwise it evaluates @racket[else-body ...]. Note that multiple
-expressions can be placed in each block in the syntax; you can remove the @racket[then] or/and @racket[else] block delimiters as long as there is no ambiguities with the syntax you expressed,so you can fall back to the classic scheme @racket[if] form and it is backward compatible with the classic scheme syntax.
+expressions can be placed in each block in the syntax; you can remove the @racket[then] or/and @racket[else] block delimiters as long as there is no ambiguity with the syntax you expressed, so you can fall back to the classic scheme @racket[if] form and it is backward compatible with the classic scheme syntax.
 }
 
 @codeblock|{
@@ -1137,7 +1124,7 @@ Example from real code:
 ({statement if test [else statement2]}
  (statement if test [else statement2]))]{
 
-An infix @racket[if] inspired from Python language,also called ternary operator (or conditional operator).}
+An infix @racket[if] inspired from Python language, also called ternary operator (or conditional operator).}
 
 Examples:
 
@@ -1180,7 +1167,7 @@ Scheme+ implementation provides both @racket[when] and @racket[unless] forms tha
 		    	   	  (exec body ...)
 			   	  ...
 				  (else body ...))]{
-A @racket[cond] that allow execution of code or even definitions between the test clauses.
+A @racket[cond] that allows the execution of code or even definitions between the test clauses.
 }
 
 @codeblock|{
@@ -1209,7 +1196,7 @@ Example from real code of the subset sum problem from the file SssRec+.rkt in ex
 (condx [ {c = t} (return #t
 	       		 (cons c s)) ] ;; c is the solution
 	      
-       [ {c > t} (ssigma-solution-exact R t s) ] ;; c is to big to be a solution
+       [ {c > t} (ssigma-solution-exact R t s) ] ;; c is too big to be a solution
 	      
        ;; c < t at this point
        ;; c is part of the solution	 
@@ -1220,12 +1207,12 @@ Example from real code of the subset sum problem from the file SssRec+.rkt in ex
 			       sol)) ] ; we append with sol to get also the solutions of t - c,resulting in solutions of c + (t - c) = t
 
        ;; or c is not part of solution
-       ;; or the two ! perheaps there exists 2 solutions using or not using c ! (in this case we got only the first found!)
+       ;; or the two ! perhaps there exists 2 solutions using or not using c ! (in this case we got only the first found!)
        [ else
 	  (ssigma-solution-exact R t s) ] )
 }|
 
-Note about the example above which mix @racket[condx] and @racket[return] because it is part of a procedure not displayed here, i encourage the reader to see the full source code SssRec+.rkt to understand it better.
+Note about the example above which mixes @racket[condx] and @racket[return] because it is part of a procedure not displayed here, i encourage the reader to see the full source code SssRec+.rkt to understand it better.
 
 @defform[#:literals (until) (repeat body ... until test)]{Like in Pascal or Lua: loop over @racket[body ...] until @racket[test] is true.}
 
@@ -1247,7 +1234,7 @@ Note about the example above which mix @racket[condx] and @racket[return] becaus
 
 Note: above i used @racket[:=] which is exactly the same as @racket[<-] or @racket[←].
 
-@defform[(while test  body ...)]{Initially the syntax should be as @racket[while] ... @racket[do] from Pascal but not possible as @racket[do] already exist in scheme.}
+@defform[(while test  body ...)]{Initially the syntax should be as @racket[while] ... @racket[do] from Pascal but not possible as @racket[do] already exists in Scheme.}
 
 @defform*[#:literals (while)
           ((do body ... while test)
@@ -1289,7 +1276,7 @@ Without @racket[while], it is the @racket[do] of Scheme (R7RS): the variables wi
 
 @racket[(sum-vector #(1.0 2.0 3.5) 3)] gives @racket[6.5].}
 
-@defform[(for (initialization condition updation) body ...)]{Syntax of @racket[for] ... as it exists in C/C++,Javascript,Java language.}
+@defform[(for (initialization condition update) body ...)]{Syntax of @racket[for] ... as it exists in C/C++, Javascript, Java language.}
 
 @codeblock|{
 (for ({i := 0} {i < 3} {i := i + 1})
@@ -1309,14 +1296,14 @@ Other examples:
     {z[i + 1] := vector-map(activation_function_hidden_layer z̃[i + 1])})
 }|
 
-Example from matrix multiplication, compute element i,j of result:
+Example from matrix multiplication, compute element i, j of result:
 
 @codeblock|{
 (for ({k := 0} {k < p1} {k := k + 1})
     {sum := sum + M1[i][k] * M2[k][j]})
 }|
 
-As in C, @racket[(break)] leaves the loop and @racket[(continue)] goes to the next turn (the updation then the condition). @racket[(break v)] makes @racket[for] return @racket[v]:
+As in C, @racket[(break)] leaves the loop and @racket[(continue)] goes to the next turn (the update then the condition). @racket[(break v)] makes @racket[for] return @racket[v]:
 
 @codeblock|{
 (for ({i := 0} {i < 10} {i := i + 1})
@@ -1329,7 +1316,7 @@ As in C, @racket[(break)] leaves the loop and @racket[(continue)] goes to the ne
 
 As for @racket[return] in @racket[def], @racket[for] takes a continuation (@racket[call/cc]) only when @racket[break] or @racket[continue] is written in the loop: one for the whole loop with @racket[break], one at each turn with @racket[continue], which makes the loop more than 10 times slower. Without them, @racket[for] is a simple loop, almost as fast as a @racket[do]. A @racket[break] or a @racket[continue] produced by another macro is not seen, and a @racket[break] of an inner @racket[for] gives also a continuation to the outer one.
 
-Note about Scheme+ for Racket: the @racket[for] described above replace the original @racket[for] of Racket, you should back up it as below before using that. Also Scheme+ define @racket[in-range] and @racket[reversed] as in Python language but they already exist in Racket Scheme.
+Note about Scheme+ for Racket: the @racket[for] described above replaces the original @racket[for] of Racket: rename the original as below to use it. Scheme+ also defines @racket[in-range] and @racket[reversed] as in the Python language (@racket[in-range] already exists in Racket).
 
 @codeblock|{
 (require (only-in racket/base [for for-racket])) ;; backup original Racket 'for'
@@ -1364,7 +1351,7 @@ Note about Scheme+ for Racket: the @racket[for] described above replace the orig
 }|
 }
 
-@defform[($+> body ...)]{@racket[$+>] will allow also definitions in the @racket[body], the @racket[+] means you can add definitions in the environment.It is defined this way:
+@defform[($+> body ...)]{@racket[$+>] will allow also definitions in the @racket[body], the @racket[+] means you can add definitions in the environment. It is defined this way:
 @codeblock|{
 (define-syntax $+>
   (syntax-rules ()
@@ -1394,13 +1381,13 @@ Example:
 
 @subsection[#:tag "procedures"]{Operators and Procedures}
 
-@defform[#:id \@ {n \@ m}]{Modulo.Same as @racket[(modulo n m)].}
+@defform[#:id \@ {n \@ m}]{Modulo. Same as @racket[(modulo n m)].}
 
-@defform[#:id ** {n ** m}]{Exponentiation.Same as @racket[expt].}
+@defform[#:id ** {n ** m}]{Exponentiation. Same as @racket[expt].}
 
-Note: exponentiation can also be written with superscript numbers and expressions,see after in this document.
+Note: exponentiation can also be written with superscript numbers and expressions, see after in this document.
 
-@defform[(√ n)]{Square root.Same as @racket[sqrt].}
+@defform[(√ n)]{Square root. Same as @racket[sqrt].}
 
 @codeblock|{
 (√ 2)
@@ -1409,17 +1396,17 @@ Note: exponentiation can also be written with superscript numbers and expression
 
 @defform[(∛ n)]{Cubic root.}
 
-@defform[#:id << {n << m}]{Left shift.Same as @racket[(arithmetic-shift n m)].}
+@defform[#:id << {n << m}]{Left shift. Same as @racket[(arithmetic-shift n m)].}
 
-@defform[#:id >> {n >> m}]{Right shift.Same as @racket[(arithmetic-shift n (- m))].}
+@defform[#:id >> {n >> m}]{Right shift. Same as @racket[(arithmetic-shift n (- m))].}
 
 @defform[#:id & {n & m}]{Bitwise And}
 
-@defform[#:id ∣ {n ∣ m}]{Bitwise Or.Note: this is U+2223  because vertical line is reserved in Racket.}
+@defform[#:id ∣ {n ∣ m}]{Bitwise Or. Note: this is U+2223  because vertical line is reserved in Racket.}
 
 @defform[#:id ^ {n ^ m}]{Bitwise Exclusive Or}
 
-@defform[#:id ~ {~ n}]{Bitwise Not.Same as @racket[(bitwise-not n)].
+@defform[#:id ~ {~ n}]{Bitwise Not. Same as @racket[(bitwise-not n)].
 
 @curly-example[{~ 5} -6]
 
@@ -1437,11 +1424,11 @@ In an infix expression @racket[~] is a prefix unary operator, with the precedenc
 
 In a call written in prefix, or when nothing follows it, @racket[~] is simply the procedure @racket[~], used as a value: @litchar{{f := ~}} assigns it to @racket[f], and in @litchar{(map ~ l)} it is passed as an argument to @racket[map]. The prefix unary operators of Scheme+ are those of Python: @racket[-], @racket[+], @racket[~] and @racket[not].}
 
-@defform[#:id && {expr1 && expr2}]{This is a procedural @racket[and] intended to be used both internally,inside Scheme+ source code,and externally in a Scheme+ program when parsing is required at runtime where we can not use the macro @racket[and] and thus we will use the @racket[&&] procedure.Unless your expression will be parsed at runtime do not use it and prefer it @racket[and].}
+@defform[#:id && {expr1 && expr2}]{This is a procedural @racket[and] intended to be used both internally, inside Scheme+ source code, and externally in a Scheme+ program when parsing is required at runtime where we can not use the macro @racket[and] and thus we will use the @racket[&&] procedure. Unless your expression will be parsed at runtime do not use it and prefer @racket[and].}
 
-@defform[#:id ∣∣ {expr1 ∣∣ expr2}]{This is a procedural @racket[or].See explanations above.See also note about vertical line reserved in Racket above.}
+@defform[#:id ∣∣ {expr1 ∣∣ expr2}]{This is a procedural @racket[or]. See explanations above. See also note about vertical line reserved in Racket above.}
 
-As being procedurals @racket[&&] and @racket[∣∣] are not short-circuited. The @racket[and] and @racket[or] of Scheme remain usable as usual, in prefix and in infix (@litchar{{a and b}} is @racket[(and a b)]), and they are short-circuited.
+Being procedures, @racket[&&] and @racket[∣∣] are not short-circuited. The @racket[and] and @racket[or] of Scheme remain usable as usual, in prefix and in infix (@litchar{{a and b}} is @racket[(and a b)]), and they are short-circuited.
 
 @defform[#:id not {not expr}]{
 @curly-example[{not #f} #t]
@@ -1589,7 +1576,7 @@ Note: some Qi operators not documented here (see @hyperlink["https://docs.racket
 
 @defform[#:id ! {n !}]{Factorial.
 
-Could be used by convention as postfix operator,as in mathematics:
+Could be used by convention as postfix operator, as in mathematics:
 @codeblock|{
 {12 !}
 479001600
@@ -1605,7 +1592,7 @@ Or in a classic scheme expression:
 
 
 @subsection[#:tag "superscript"]{Superscript}
-Superscript characters can be used to form numbers, variable or expressions forming an exponent,thus defining an exponentiation without the need of @racket[**] operator:
+Superscript characters can be used to form numbers, variable or expressions forming an exponent, thus defining an exponentiation without the need of @racket[**] operator:
 @codeblock|{
 {2 ³}
 (** 2 3) ; parsed expression displayed
@@ -1619,7 +1606,7 @@ Superscript characters can be used to form numbers, variable or expressions form
 }|
 
 Note that alphabetic superscript characters and numeric superscript characters can display at different level of altitude in the browser font system, this is not the case in Emacs editor.
-Note also that not all alphabetic characters currently exists in superscript, here is the source code definitions:
+Note also that not all alphabetic characters currently exist in superscript, here is the source code definitions:
 
 @codeblock|{
 (define superscript-string "⁻⁺⁰¹²³⁴⁵⁶⁷⁸⁹") ; super script numbers and signs
@@ -1633,7 +1620,7 @@ Note also that not all alphabetic characters currently exists in superscript, he
 					  ))
 }|
 
-Note under Linux and on a PC (french) keyboard superscript characters can be generated with the keystroke sequence: ^ n where n is  a number or sign.(but this not works for alpha char as it only put some accent on the alpha char)
+Note under Linux and on a PC (french) keyboard superscript characters can be generated with the keystroke sequence: ^ n where n is  a number or sign (but this does not work for the alphabetic characters, as it only puts an accent on them).
 
 Superscript also works to write complex numbers exponents:
 
@@ -1661,8 +1648,8 @@ A last example:
 Not all fonts support superscript characters, i use Monospace Bold with Emacs.
 
 @subsection[#:tag "postfix"]{Postfix operators}
-The { } parenthesis accept also postfix notation.
-By default all existing procedure can be used postfixed in { }.
+The { } curly brackets also accept the postfix notation.
+By default all existing procedures can be used postfixed in { }.
 
 In a ( ) sub-expression, an expression whose last element is a procedure is postfix when its first element can not be a procedure: a number, a string, a character, a boolean, a quoted data, or a variable declared with a type which is not a procedure, for example @racket[(type flonum? x)]. A variable without type could contain a procedure: @racket[(x 3 +)] stays then a call of @racket[x], while @racket[(3 x +)] is @racket[(+ 3 x)]; with @racket[(type flonum? x)], @racket[(x 3 +)] is @racket[(+ x 3)] and @racket[(x sqrt)] is @racket[(sqrt x)], @racket[(#t not)] is @racket[(not #t)].
 
@@ -1680,13 +1667,13 @@ How the forms of Scheme written inside @racket[{ }] (@racket[cond], @racket[lamb
 }|
 
 Also in sub expressions in ( ) parenthesis this could be used.
-As there is no special parenthesis to delimitate postfix expressions this could be ambiguous.
+As there is no special parenthesis to delimit postfix expressions this could be ambiguous.
 For this reason when the priority must be given to postfix the operator must be defined as also postfix by this syntax:
 
 @defform[(declare-postfix-operator op ...)]{Define postfix operators named @racket[op ...].
 
 Then if there are two variables that could be some procedures in a parenthesis expression: one at beginning (prefix like) and one at the end (postfix like)
-the procedure taken in account will be the postfix procedure at the end if defined postfix,and the procedure at beginning if it's one will be considered as an argument of the postfix one.Otherwise prefix normal execution would have remain.
+the procedure taken in account will be the postfix procedure at the end if defined postfix, and the procedure at the beginning, if it is one, will be considered as an argument of the postfix one. Otherwise the normal prefix execution would have remained.
 But when the parser knows that the variable at beginning is a procedure (a procedure of Racket or of your program, see @secref["both"]) the expression is a prefix call: @racket[(f 3 !)] is a call of @racket[f].
 
 The declaration acts only on the file where it is written, and it must be written before the use of the operator.
@@ -1737,18 +1724,18 @@ There exist also some predefined postfix operators such as factorial @racket[!] 
 
 @subsection[#:tag "overload"]{Overloading procedures and operators}
 
-Overloading must be set at a module toplevel, it will not works in a procedure,and there is no need of that.
+Overloading must be set at a module toplevel, it will not work in a procedure, and there is no need of that.
 You can @racket[provide] an overloaded procedure or operator from the module where it is defined and overloaded to other modules.
 
 Two macros are provided: @racket[overload-procedure] for the procedures and @racket[overload-operator] for the operators, because an operator can be binary or n-ary and has an associativity property that a procedure does not have.
 
 Overloading is made in a single step: we give a specialized procedure and the predicates that will be used to test the arguments at runtime. The first time a procedure or operator is overloaded in a module, the overloaded procedure or operator is defined, the next times only the new specialization is added. The procedure or operator can already exist in Scheme (as @racket[+] or @racket[length]), then its original definition is used when no specialization matches the arguments, or it can be a new one.
 
-With this schema we can have a same function (procedure or operator) that will works on different arguments.
+With this schema we can have a same function (procedure or operator) that will work on different arguments.
 
 Overloading an existing procedure or operator defines a new one with the same name for the whole module: in this module it must not be called before the overloading form has been evaluated, so put the overloadings at the beginning of the module.
 
-Note that we can also extend square bracket [ ] to use different type of object, the same way it is done in the Python language for the angle bracket.This is done by overloading the underlaying procedure that do the bracket apply and the assignment macros,we will see that at the end of this section.
+Note that we can also extend the square brackets [ ] to other types of objects, the same way it is done in the Python language for the square brackets. This is done by overloading the underlying procedure that does the bracket apply and the assignment macros, we will see that at the end of this section.
 
 @defform*[((overload-procedure name special (predicate ...))
            (overload-procedure name (return-predicate ...) special (predicate ...))
@@ -1801,7 +1788,7 @@ An already existing procedure, here @racket[length], can be overloaded to be use
 5
 }|
 
-Note that when no defined predicates matches the arguments, in the above example nor @racket[vector?] nor @racket[string?] will return true for a @racket[list] then the overloading schema fall back to the original procedure definition that is here @racket[length] that works with @racket[list].
+Note that when no defined predicate matches the arguments (in the above example neither @racket[vector?] nor @racket[string?] returns true for a @racket[list]) the overloading schema falls back to the original procedure definition that is here @racket[length] that works with @racket[list].
 
 
 
@@ -1833,7 +1820,7 @@ A binary overload, the @racket[(vector?)] list is optional, it tells the type an
 (overload-operator + (vector?) vector-append (vector? vector?))
 }|
 
-Now the @racket[+] append vectors like in Python language:
+Now the @racket[+] appends vectors as in the Python language:
 
 @codeblock|{
 {#(1 2 3) + #(4 5 6 7)}
@@ -1903,7 +1890,7 @@ The operator can be a new one. A new symbol overloaded with @racket[overload-una
 }
 
 @defform*[((overload-square-brackets getter setter! (pred-obj pred-coord ...))
-           (overload-square-brackets (return-predicate) getter setter! (pred-obj pred-coord ...)))]{Overload square bracket [ ] for @racket[object] that return true with predicate @racket[pred-obj] with @racket[getter] for read and @racket[setter!] for write at coordinates of type validated by predicates @racket[pred-coord ...].
+           (overload-square-brackets (return-predicate) getter setter! (pred-obj pred-coord ...)))]{Overload square bracket [ ] for the objects that return true with the predicate @racket[pred-obj] with @racket[getter] for read and @racket[setter!] for write at coordinates of type validated by predicates @racket[pred-coord ...].
 The second form gives also the type of the value returned by @racket[getter], for example @racket[(flonum?)]: it is used only by the type annotation pass (see @secref["square-brackets-annotation"]) and ignored at run time.}
 
 Example for accessing and modifying a line of a matrix:
@@ -2140,7 +2127,6 @@ Domain and codomain of a procedure whose body is not annotated (a Racket or libr
 
 @codeblock|{
 (type [(flonum?) procedure? (flonum?)] sqr)             ; sqr : flonum? -> flonum?
-(type [(flonum?) procedure? ()] random)                 ; here random is used with no argument
 (type ((flonum?) procedure? (flonum? flonum?)) der_σ)   ; parentheses also accepted
 }|
 
@@ -2321,7 +2307,7 @@ The procedure passed to an accumulation is called on the elements and the accumu
 ;; (define (squares n) (build-vector n (λ (i) (fx* i i))))
 }|
 
-A @racket[lambda] (or @racket[λ]) passed to @racket[vector-map], @racket[map], @racket[vector-for-each] or @racket[for-each] needs no special syntax: its parameters get the types of the elements of the sequences (the context), or the types given by a @racket[type] annotation written in its body, which wins over the context; its body is then specialized, and its return type is deduced from the last expression of the body, so the result of @racket[vector-map] or @racket[map] is still a composite type. For example the dot product above, written with a lambda (here with vectors of floats):
+A @racket[lambda] (or @racket[λ]) passed to @racket[vector-map], @racket[map], @racket[vector-for-each] or @racket[for-each] needs no special syntax: its parameters get the types of the elements of the sequences (the context), or the types given by a @racket[type] annotation written in its body, which wins over the context; its body is then specialized, and its return type is deduced from the last expression of the body, so the result of @racket[vector-map] or @racket[map] is still a composite type. For example the dot product of @secref["operators-annotation"], written here with a lambda and with vectors of floats:
 
 @codeblock|{
 (define (dot-product v1 v2)
@@ -2541,7 +2527,7 @@ ANNOTATION-ON
 ; overloading of +, binary ( (vector?) is the return type, for the inference )
 (overload-operator + (vector?) vector-append (vector? vector?))
 
-(type [(flonum?) procedure? ()] random)       ; was defined in annot+.rkt
+(type [(flonum?) procedure? ()] random)       ; random with no argument returns a float
 
 (define (carre x)
   (type flonum? x)
@@ -2773,8 +2759,8 @@ The other pragmas are the few ones of the SRFI 105 Curly infix reader described 
 
 @section[#:tag "makefile"]{Using Makefile and debugging Scheme+ program}
 
-The Curly Infix (SRFI 105) reader parser can now display the line, column, and character offset in the source file if a parsing error arise at this stage.
-The Racket GUI can not display the line of error in a Scheme+ program.The reason is because the Scheme+ program is pre-parsed by the SRFI 105 reader and the Racket compiler has not access to the original lines of code and even do not display the error line relative to the resulting parsed line of code.
+The Curly Infix (SRFI 105) reader parser can now display the line, column, and character offset in the source file if a parsing error arises at this stage.
+The Racket GUI can not display the line of error in a Scheme+ program. The reason is that the Scheme+ program is pre-parsed by the SRFI 105 reader and the Racket compiler has no access to the original lines of code and does not even display the error line relative to the resulting parsed line of code.
 
 If you have to debug your source code you must generate a Scheme file
 from your Scheme+ file with @bold{curly-infix2prefix4racket} in SRFI 105 package and load the
@@ -2789,8 +2775,8 @@ Another method is to use the Makefile provided:
 
 @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/Makefile"]
 
-Put the Makefile in the same place of your Scheme+ program and type in the terminal @bold{make}.
-The Makefile will parse all Scheme+ program in the same directory and generate the scheme version in @bold{MODULE_DIRECTORY=parsed_files_directory}.You can then just load and run the parsed files in Racket GUI to use all the Racket features and tools (macro stepper,etc) for debugging.
+Put the Makefile in the same directory as your Scheme+ program and type in the terminal @bold{make}.
+The Makefile will parse all the Scheme+ programs in the same directory and generate the scheme version in @bold{MODULE_DIRECTORY=parsed_files_directory}. You can then just load and run the parsed files in Racket GUI to use all the Racket features and tools (macro stepper, etc) for debugging.
 
 A generated file is the code that the reader gives to the Racket compiler: when the Scheme+ file has the pragma @racket[ANNOTATION-ON] it contains the annotated code (see @secref["annotation"]), and it never contains the @racket[type] forms nor the pragmas.
 
@@ -2817,7 +2803,7 @@ drwxrwxr-x 3 mattei mattei 4096 sept. 21 17:42 ..
 
 @section[#:tag "example"]{Place to find Scheme+ programs and examples}
 
-More examples can be find in this directory and subdirectories:
+More examples can be found in this directory and subdirectories:
 
 @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/"]
 
@@ -2850,7 +2836,7 @@ Scheme code written without @racket[{ }] and outside a region @racket[ANNOTATION
 The type annotation and inference pass is itself written in Scheme+, by the method of @hyperlink["https://en.wikipedia.org/wiki/Bootstrapping_(compilers)"]{bootstrapping} (as a compiler written in its own language): its source is @tt{bootstrapping/annot+.rkt} of the SRFI-105 package, with the curly-infix notation, the square brackets and all the features of Scheme+. The installed reader converts it to a Racket Scheme module, @tt{annot+.rkt} at the root of the package, which is the pass used by the reader. The reader @tt{main.rkt} is made the same way from @tt{bootstrapping/main+.rkt}. So each new version of the pass is converted by the previous one.
 
 
-@section[#:tag "emacs"]{Emacs configuration for syntax highligting of Scheme+}
+@section[#:tag "emacs"]{Emacs configuration for syntax highlighting of Scheme+}
 
 Add the line below in your .emacs configuration file:
 
@@ -2861,7 +2847,7 @@ Add the line below in your .emacs configuration file:
 
 If you use @hyperlink["https://www.racket-mode.com/"]{Emacs Racket mode} you can add the same as above too in your .emacs file but then replace 'scheme-mode with 'racket-mode.@hyperlink["https://www.racket-mode.com/"]{Emacs Racket mode} is great for closing the corresponding curly parenthesis.
 
-Not all fonts support superscript characters, Monospace (Bold) with Emacs do it.
+Not all fonts support superscript characters, Monospace (Bold) with Emacs does.
 
 @section[#:tag "thoughts"]{Thoughts}
 
@@ -2870,7 +2856,7 @@ Not all fonts support superscript characters, Monospace (Bold) with Emacs do it.
 @; the other lisp logo at the bottom right of the doc , in the footnote (what follows make-my-note is not rendered)
 @(define-runtime-path lisplogo-alien "lisplogo_128.png")
 
-I hope this documentation is not a write-only@my-note{ « APL is a write-only language. I can write programs in APL, but I can’t read any of them ». Roy Keir @elem[#:style (make-style #f (list (attributes '((style . "display: block; text-align: right; margin-top: 2em;")))))]{@image[#:scale 0.63 lisplogo-alien]}@elem[#:style (make-style #f (list (attributes '((style . "display: block; text-align: right; font-size: 0.5em;")))))]{Public Domain Lisp Logo Set By Conrad Barski, M.D.}} one and will be usefull for any reader.
+I hope this documentation is not a write-only@my-note{ « APL is a write-only language. I can write programs in APL, but I can’t read any of them ». Roy Keir @elem[#:style (make-style #f (list (attributes '((style . "display: block; text-align: right; margin-top: 2em;")))))]{@image[#:scale 0.63 lisplogo-alien]}@elem[#:style (make-style #f (list (attributes '((style . "display: block; text-align: right; font-size: 0.5em;")))))]{Public Domain Lisp Logo Set By Conrad Barski, M.D.}} one and will be useful for any reader.
 
 
 @make-my-note[]
