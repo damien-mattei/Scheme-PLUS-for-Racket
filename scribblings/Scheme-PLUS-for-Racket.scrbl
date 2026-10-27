@@ -1978,7 +1978,7 @@ The purpose of the type annotation and inference pass of Scheme+ is @bold{perfor
   @item{@bold{the square brackets}: an access @litchar{{v[i]}} or an assignment @litchar{{v[i] := x}} goes directly to the accessor of the vector, of the string, of the matrix (@racket[$bracket-apply-vector$], @racket[$bracket-apply-flomat$], @racket[$bracket-apply-string$], ...) or of the square brackets overloaded with @racket[overload-square-brackets], without a test of the type at run time (see @secref["square-brackets-annotation"]); an assignment of vectors to vectors or of strings to strings is specialized too (@racket[<-vector-vector*], @racket[<-string-string*]);}
   @item{@bold{the computation}: an arithmetic operator (@racket[+], @racket[-], @racket[*], @racket[/], @racket[·], @racket[**]) or a comparison (@racket[<], @racket[≤], @racket[≠], ...) on floats or on fixnums becomes the primitive of the floats or of the fixnums (@racket[fl+], @racket[fx*], @racket[fl<=], @racket[fx≠], ...; Scheme+ provides @racket[fx≠] and @racket[fl≠], and the result of a comparison is a @racket[boolean?]); on the other numbers the generic operator of Racket is called without the dispatch of the overloads (@racket[orig-+]); the constant expressions are computed at read time (see @secref["inference"]).}]
 
-@bold{On the neural network of the complete example (@secref["annotation-example"]), a retropropagation with matrices of floats, 1000 iterations of the learning take 11.5 s without the pass and 4.3 s with @racket[ANNOTATION-ON] and the type annotations of the program (in power-saving mode): about 2.7 times faster.} The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged. The benchmarks are in @secref["benchmarks"].
+@bold{On the neural network of the deep learning example, a retropropagation (@secref["annotation-example"]), 1000 iterations of the learning take 8.34 s without the pass and 1.15 s with @racket[ANNOTATION-ON] and the type annotations of the program, in the version with vectors of vectors of floats (@tt{examples/racket/exo_retropropagationNhidden_layers_matrix_v3_by_vectors+.rkt}), in the performance power mode: about 7 times faster.} The version with the matrices of floats of flomat (the complete example) takes 2.0 s with the annotations. The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged. The benchmarks are in @secref["benchmarks"].
 
 The pass is @bold{optional}. It runs @italic{inside} the SRFI-105 Curly Infix reader, after the curly-infix and square-bracket parsing and @italic{before} the Racket compiler sees the code, so it is a read/compile time mechanism, not a run time one.
 
@@ -2015,12 +2015,12 @@ A local variable hides the type of an outer variable of the same name: the type 
          #:column-properties '(left right right right right right)
          #:row-properties '(bottom-border ())
          (list (list @bold{program (same source)} @bold{Scheme} @bold{Scheme+} @bold{Scheme+ annotated} @bold{Typed Racket} @bold{gain})
-               (list "floats: Horner, sigmoid, 2·10⁷" "753 ms" "777 ms" "223 ms" "226 ms" "3.4 ×")
-               (list "matrices 200×200, 20 products" "1065 ms" "1066 ms" "606 ms" "578 ms" "1.8 ×")
-               (list "integers: Syracuse up to 10⁶" "986 ms" "985 ms" "382 ms" "402 / 1099 ms" "2.6 ×")
-               (list "trapezoids, 2·10⁷ steps" "359 ms" "349 ms" "68 ms" "69 ms" "5.3 ×"))]
+               (list "floats: Horner, sigmoid, 2·10⁷" "882 ms" "860 ms" "241 ms" "239 ms" "3.7 ×")
+               (list "matrices 200×200, 20 products" "1206 ms" "1206 ms" "691 ms" "654 ms" "1.7 ×")
+               (list "integers: Syracuse up to 10⁶" "1053 ms" "1060 ms" "407 ms" "415 / 1168 ms" "2.6 ×")
+               (list "trapezoids, 2·10⁷ steps" "378 ms" "377 ms" "72 ms" "72 ms" "5.3 ×"))]
 
-CPU times, median of 7 runs; the gain is the one of Scheme+ annotated over Scheme (Typed Racket on the integers: @racket[Fixnum] / @racket[Integer]). The sources of these benchmarks are in the sub-directory @bold{examples/benchmarks/} of Scheme+: @tt{racket run-benchmarks.rkt} runs all the versions.
+CPU times with Racket 9.3 in the performance power mode, the median of 3 series of 7 runs; the gain is the one of Scheme+ annotated over Scheme (Typed Racket on the integers: @racket[Fixnum] / @racket[Integer]). The sources of these benchmarks are in the sub-directory @bold{examples/benchmarks/} of Scheme+: @tt{racket run-benchmarks.rkt} runs all the versions.
 
 @subsection[#:tag "annotation-on"]{Activating the pass}
 
