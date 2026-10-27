@@ -44,7 +44,8 @@
 
 
 
-(require (rename-in srfi/42
+(require plot
+	 (rename-in srfi/42
 		    (: s42:))) ; Eager Comprehensions
 
 
@@ -73,6 +74,8 @@ ANNOTATION-ON
   ;;{gap <- sup - inf}
   (def gap  sup - inf)
   {inf + gap · (random)})
+
+(overload-procedure uniform uniform-interval (ℝ ℝ))
 
 
 ; sigmoïde
@@ -450,7 +453,63 @@ ANNOTATION-ON
 	  {err <- err * 0.5}
 	  (display "Error on examples=") (display err) (newline))
 
+	
+    ; compute the points for plotting
+    (define/public (DL-data-2D)
 
+      (list-ec (s42: n 100.0)
+               ($+>
+                {xp ← (- pi) / 2.0 + pi · n / 100.0}
+                (accepte_et_propage (vector xp))
+                {xp-DL ← z[vector-length(z) - 1][0]}
+                (vector xp xp-DL))))
+
+    (define/public (DL-data-2D-GI) ; -pi/2 -> 3pi/2
+
+      (list-ec (s42: n 100.0)
+               ($+>
+                {xp ← - pi / 2.0 +  3.0 · pi / 2.0  ·  n / 100.0}
+                (accepte_et_propage (vector xp))
+                {xp-DL ← z[vector-length(z) - 1][0]}
+                (vector xp xp-DL))))
+    
+
+    (define/public (DL-data-2D-HO) ; iinf -> isup
+
+      (list-ec (s42: n 100.0)
+               ($+>
+                {iinfp ← iinf + 1.0}
+                {isupp ← isup - 1.5}
+                {interv ← isupp - iinfp}
+                {xp ← iinfp + interv · n / 100.0}
+                (accepte_et_propage (vector xp))
+                {xp-DL ← z[vector-length(z) - 1][0]}
+                (vector xp xp-DL))))
+
+    
+    ; plot in 2D the points of the input/output layers
+    (define/public (DL-plot)
+      
+      {Lplot-DL ← (DL-data-2D)}
+
+      (plot (points Lplot-DL  #:sym 'fullcircle1
+                    #:color "red")))
+
+    (define/public (DL-plot-GI)
+      
+      {Lplot-DL ← (DL-data-2D-GI)}
+
+      (plot (points Lplot-DL  #:sym 'fullcircle1
+                    #:color "red")))
+
+
+    (define/public (DL-plot-HO)
+      
+      {Lplot-DL ← (DL-data-2D-HO)}
+
+      (plot (points Lplot-DL  #:sym 'fullcircle1
+                    #:color "red")))
+    
 
    ) ; end class
 
@@ -505,6 +564,70 @@ ANNOTATION-ON
 
 
 
+(printf "################## Harmonic Oscillator ##################")
+(newline)
+
+(define (ho x)
+  {(sin x) · (exp (- x / 10.0)) / 1.7})
+
+{r5 ← (new ReseauRetroPropagation (nc #(1 200   40 40   1))
+            (nbiter 70000)
+            (ηₛ 0.01)
+            (activation_function_hidden_layer atan)
+            (activation_function_output_layer tanh)
+            (activation_function_hidden_layer_derivative der_atan)
+            (activation_function_output_layer_derivative der_tanh)
+            (mesure-temps #t))}
+
+(display "r5 : after ReseauRetroPropagation") (newline)
+
+{iinf ← -7.0}
+{isup ← 11.0}
+
+
+{Llearning-HO ← (vector-ec (:list x (list-ec (s42: n 30000)
+                                              (uniform iinf isup)))
+                            (cons (vector x) (vector (ho x))))   ; vectors by eager comprehension (SRFI 42)
+              }  ; use pairs in Scheme instead of vectors in Python
+
+
+
+{Ltest-HO ← (vector-ec (:list x (list-ec (s42: n 10)
+                                          (uniform iinf isup)))
+                        (cons (vector x) (vector (ho x))))   ; vectors by eager comprehension (SRFI 42)
+          }  ; use pairs in Scheme instead of vectors in Python
+
+
+(display "r5 : before Lplot-HO") (newline)
+
+; plot for equation computed Harmonic Oscillator
+{Lplot-HO ← (list-ec (s42: n 100.0)
+                      ($+> ; begin-def
+                       {iinfp ← iinf + 1.0}
+                       {isupp ← isup - 2.5}
+                       {interv ← isupp - iinfp}
+                       {xp ← iinfp + interv · n / 100.0}
+                       (vector xp (ho xp))))}
+
+(display "r5 : before apprentissage") (newline)
+
+(send r5 apprentissage Llearning-HO)
+
+(send r5 test Ltest-HO)
+
+(send r5 DL-plot-HO)
+
+{Lplot-DL-main-HO ← (send r5 DL-data-2D-HO)} ; compute the plot for neural data
+
+(plot (list (points Lplot-HO  #:sym 'fullcircle1
+                    #:color "blue"
+                    #:label "y = sin(x)·e^(-x/10)/1.7")
+	    (points Lplot-DL-main-HO   #:sym 'circle1
+                    #:color "red"
+                    #:label "Neural Harmonic Oscillator")))
+
+
+
 
 
 (printf "################## SINUS - SINE ##################")
@@ -521,11 +644,11 @@ ANNOTATION-ON
 
 
 {Llearning <- (vector-ec (:list x (list-ec (s42: n 10000)    ; vectors,lists by eager comprehension (SRFI 42)
-				      (uniform-interval (- pi) pi)))
+				      (uniform (- pi) pi)))
 			 (cons (vector x) (vector (sin x))))}  ; use pairs in Scheme instead of vectors in Python
 
 {Ltest <- (vector-ec (:list x (list-ec (s42: n 10) ; vectors,lists by eager comprehension (SRFI 42)
-				       (uniform-interval {(- pi) / 2} {pi / 2})))
+				       (uniform {(- pi) / 2} {pi / 2})))
 		     (cons (vector x) (vector (sin x))))}  ; use pairs in Scheme instead of vectors in Python
 
 

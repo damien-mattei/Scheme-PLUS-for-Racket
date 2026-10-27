@@ -575,12 +575,6 @@ ANNOTATION-ON
 (newline)
 
 
-{Lplot-sin ← (list-ec (s42: n 100)
-                       ($+> ; begin-def
-			{xp ← (- pi) / 2.0 + pi · n / 100.0}
-			(vector xp (sin xp))))}
-
-
 
 
 (printf "################## Harmonic Oscillator ##################")
@@ -679,6 +673,11 @@ ANNOTATION-ON
 ;(newline)
 
 
+
+{Lplot-sin ← (list-ec (s42: n 100)
+                       ($+> ; begin-def
+			{xp ← (- pi) / 2.0 + pi · n / 100.0}
+			(vector xp (sin xp))))}
 
 
 (display "Lplot-sin =") (newline)
