@@ -1674,6 +1674,16 @@ How the forms of Scheme written inside @racket[{ }] (@racket[cond], @racket[lamb
 19
 }|
 
+There are also some predefined postfix operators such as the factorial @racket[!], an example of use:
+
+@codeblock|{
+(define (C n k)
+    {(n !) / ((k !) · ((n - k)!))})
+
+(C 10 3)
+120
+}|
+
 Also in sub expressions in ( ) parenthesis this could be used.
 As there is no special parenthesis to delimit postfix expressions this could be ambiguous.
 For this reason when the priority must be given to postfix the operator must be defined as also postfix by this syntax:
@@ -1720,13 +1730,6 @@ Another example using floating point matrix and computing the transpose of the m
 1/4
 }|
 }
-
-There exist also some predefined postfix operators such as factorial @racket[!] , example of use:
-
-@codeblock|{
-(define (C n k)
-    {(n !) / ((k !) · ((n - k)!))})
-}|
 
 
 
