@@ -311,6 +311,14 @@ You can also use SRFI-110, which also implements the curly infix parser (in swee
 (newline)
 }|
 
+or, with the directive @litchar{#!curly-infix} of SRFI 110, the rest of the file is read as with SRFI 105 (curly infix), and two forms can be written on the same line:
+
+@codeblock|{
+#reader SRFI-110 ; also implements the curly infix parser
+#!curly-infix
+(display "Hello world") (newline)
+}|
+
 
 A module example:
 
