@@ -2109,10 +2109,20 @@ Give the type @racket[type-spec] to each @racket[target]. At run time @racket[ty
 One predicate, one or several identifiers:
 
 @codeblock|{
+(type [(flonum?) procedure? ()] random) ; random with no argument returns a float
+
 (define (uniform-interval inf sup)
   (type flonum? inf sup)
   {gap ← sup - inf}
   {inf + gap * (random)})
+}|
+
+is parsed into:
+
+@codeblock|{
+(define (uniform-interval inf sup)
+  (← gap (fl- sup inf))
+  (fl+ inf (fl* gap (random))))
 }|
 
 Type of a variable @italic{and} of its elements:
