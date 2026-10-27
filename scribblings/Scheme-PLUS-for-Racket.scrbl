@@ -1974,7 +1974,15 @@ See the full example at @url["https://github.com/damien-mattei/Scheme-PLUS-for-R
 
 @section[#:tag "annotation"]{Type annotation and inference}
 
-Scheme+ has an @bold{optional} type annotation and inference pass. It runs @italic{inside} the SRFI-105 Curly Infix reader, after the curly-infix and square-bracket parsing and @italic{before} the Racket compiler sees the code, so it is a read/compile time mechanism, not a run time one.
+The purpose of the type annotation and inference pass of Scheme+ is @bold{performance}. The features of Scheme+ are generic: an overloaded operator or procedure, the square brackets @litchar{[ ]} and the arithmetic accept any type of argument, and the code to run is chosen at run time, at each call. When the types are known, the pass makes this choice once, at read time, on three things:
+@itemlist[
+  @item{@bold{the overloads of procedures and operators} (@racket[overload-operator], @racket[overload-procedure]): the procedure of the overload that matches the types of the arguments is called directly (see @secref["overloads-annotation"]);}
+  @item{@bold{the square brackets}: an access @litchar{{v[i]}} or an assignment @litchar{{v[i] := x}} goes directly to the accessor of the vector, of the string, of the matrix (@racket[$bracket-apply-vector$], @racket[$bracket-apply-flomat$], @racket[$bracket-apply-string$], ...) or of the square brackets overloaded with @racket[overload-square-brackets], without a test of the type at run time (see @secref["square-brackets-annotation"]); an assignment of vectors to vectors or of strings to strings is specialized too (@racket[<-vector-vector*], @racket[<-string-string*]);}
+  @item{@bold{the computation}: an arithmetic operator (@racket[+], @racket[-], @racket[*], @racket[/], @racket[·], @racket[**]) or a comparison (@racket[<], @racket[≤], @racket[≠], ...) on floats or on fixnums becomes the primitive of the floats or of the fixnums (@racket[fl+], @racket[fx*], @racket[fl<=], @racket[fx≠], ...; Scheme+ provides @racket[fx≠] and @racket[fl≠], and the result of a comparison is a @racket[boolean?]); on the other numbers the generic operator of Racket is called without the dispatch of the overloads (@racket[orig-+]); the constant expressions are computed at read time (see @secref["inference"]).}]
+
+@bold{On the neural network of the complete example (@secref["annotation-example"]), a retropropagation with matrices of floats, 1000 iterations of the learning take 11.5 s without the pass and 4.3 s with @racket[ANNOTATION-ON] and the type annotations of the program (in power-saving mode): about 2.7 times faster.} The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged. The benchmarks are in @secref["benchmarks"].
+
+The pass is @bold{optional}. It runs @italic{inside} the SRFI-105 Curly Infix reader, after the curly-infix and square-bracket parsing and @italic{before} the Racket compiler sees the code, so it is a read/compile time mechanism, not a run time one.
 
 @bold{The Scheme syntax unchanged: the types apart from the definitions.} Typed Racket and Bigloo write the types inside the definitions themselves: Typed Racket in the binding forms, @racket[(define (f [x : Flonum]) : Flonum ...)] or @racket[(λ ([x : Flonum]) ...)], in a module written in another language, @racket[typed/racket]; Bigloo in the names, @tt{(define (f::double x::double) ...)}. The code is then no more the code of Scheme. In Scheme+ the definitions are not changed: the types are given apart, by a @racket[type] form written as a declaration in the body, next to the code it types. The code stays the code of Scheme (and of Scheme+), the same with and without the types: removing the @racket[type] lines, or turning the pass off, gives the same program.
 
@@ -1995,19 +2003,7 @@ Scheme+ has an @bold{optional} type annotation and inference pass. It runs @ital
 
 @bold{Type only what is worth typing.} A type system as the one of Typed Racket checks all the code of a typed module: all of it must be typed and pass the checker, and the values that cross the frontier with the untyped modules are checked by contracts. With the annotation of Scheme+ nothing has to be typed: the pass types by itself what it can infer (see @secref["inference"]), and the programmer adds a type only where it is judged interesting, for example for speed the parameters of the procedures that compute with floats in a loop; the rest of the program stays untyped Scheme, generic and dispatched at run time as without the pass. The other side is that the declarations are not checked: the pass trusts them, a false declaration gives a wrong specialization.
 
-Its purpose is speed. @bold{On the neural network of the complete example (@secref["annotation-example"]), a retropropagation with matrices of floats, 1000 iterations of the learning take 11.5 s without the pass and 4.3 s with @racket[ANNOTATION-ON] and the type annotations of the program (in power-saving mode): about 2.7 times faster.} The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged. The benchmarks are in @secref["benchmarks"].
-
-When the pass knows the type of the operands it can:
-@itemlist[
-  @item{replace a generic, overloaded, dynamically dispatched operator such as @racket[+], @racket[-], @racket[*], @racket[/], @racket[·] or @racket[**] by a monomorphic primitive such as @racket[fl+] or @racket[fx*] (or by the backup operator @racket[orig-+] when the arguments are just plain numbers);}
-  @item{likewise replace a comparison @racket[<], @racket[>], @racket[<=], @racket[>=], @racket[=], @racket[≤], @racket[≥], @racket[≠] or @racket[<>] by @racket[fx<], @racket[fl<=], @racket[fx≠], @racket[fl≠], ... (@racket[fx≠] and @racket[fl≠], the versions of @racket[≠] for fixnums and flonums, are provided by Scheme+); the type of the result of a comparison is @racket[boolean?];}
-  @item{resolve a square bracket access @litchar{{v[i]}} to the exact accessor (@racket[$bracket-apply-vector$], @racket[$bracket-apply-flomat$], @racket[$bracket-apply-string$], ...) instead of emitting a run time type test;}
-  @item{specialize an assignment of vectors to vectors (@racket[<-vector-vector*]) or strings to strings (@racket[<-string-string*]);}
-  @item{constant fold a sub-expression whose arguments are all literal numbers.}]
-
 The inference already knows the type of the literals and of the R7RS and Scheme+ primitives (that data comes from @racket[SRFI-105/scheme-types] and from the operator tables of @tt{annot+.rkt} of the SRFI-105 package). So, as soon as the pass is on, types are inferred even without any annotation (see @secref["inference"]); everything else you provide with the @racket[type] form and a couple of directives.
-
-The pass is itself written in Scheme+, by the method of @hyperlink["https://en.wikipedia.org/wiki/Bootstrapping_(compilers)"]{bootstrapping} (as a compiler written in its own language): its source is @tt{bootstrapping/annot+.rkt} of the SRFI-105 package, with the curly-infix notation, the square brackets and all the features of Scheme+. The installed reader converts it to a Racket Scheme module, @tt{annot+.rkt} at the root of the package, which is the pass used by the reader. The reader @tt{main.rkt} is made the same way from @tt{bootstrapping/main+.rkt}. So each new version of the pass is converted by the previous one.
 
 When the pass is @bold{off} (this is the default) every @racket[type] form is simply removed from the program, so annotated code stays valid unannotated Scheme+.
 
@@ -2821,7 +2817,7 @@ More examples can be find in this directory and subdirectories:
 
 @section[#:tag "scheme-forms"]{Scheme forms : technical notes}
 
-Scheme code written without @racket[{ }] and outside a region @racket[ANNOTATION-ON] is never modified. This section gathers how the Curly Infix reader (inside @racket[{ }]) and the type annotation pass (in a region @racket[ANNOTATION-ON]) treat the forms of Scheme they meet.
+Scheme code written without @racket[{ }] and outside a region @racket[ANNOTATION-ON] is never modified. This section gathers how the Curly Infix reader (inside @racket[{ }]) and the type annotation pass (in a region @racket[ANNOTATION-ON]) treat the forms of Scheme they meet, and how the type annotation and inference pass itself is made.
 
 @subsection[#:tag "scheme-forms-curly"]{Inside the curly brackets @racket[{ }]}
 
@@ -2838,6 +2834,10 @@ Scheme code written without @racket[{ }] and outside a region @racket[ANNOTATION
   @item{The pass does not enter the macro definitions (@racket[define-syntax], @racket[define-syntax-rule], @racket[define-for-syntax], @racket[begin-for-syntax], and the macros defined by @racket[let-syntax] and @racket[letrec-syntax], whose body is annotated): their patterns and templates are not code of the current scope, so the types known there do not apply to them. Only their @racket[type] forms are removed.}
   @item{A parameter of a procedure or of a @racket[lambda], a variable of a @racket[do] loop, of @racket[receive], of @racket[let], @racket[let*], @racket[letrec], @racket[letrec*], of a named @racket[let], of @racket[let-values] or @racket[let*-values], and a variable defined or declared without a known type hide the type of an outer variable of the same name. So Scheme code keeps its meaning: @racket[(let ((a 1.5) (b 2.5)) (+ a b))] stays a generic @racket[+] even if @racket[a] and @racket[b] are fixnums outside.}
   @item{The lists of datums of a @racket[case] are data: in @racket[(case op ((+) 'add) ((*) 'mul) ...)] the lists @racket[(+)] and @racket[(*)] are not folded, only the key and the expressions of the clauses are annotated.}]
+
+@subsection[#:tag "bootstrapping"]{The type annotation and inference pass written in Scheme+ : bootstrapping}
+
+The type annotation and inference pass is itself written in Scheme+, by the method of @hyperlink["https://en.wikipedia.org/wiki/Bootstrapping_(compilers)"]{bootstrapping} (as a compiler written in its own language): its source is @tt{bootstrapping/annot+.rkt} of the SRFI-105 package, with the curly-infix notation, the square brackets and all the features of Scheme+. The installed reader converts it to a Racket Scheme module, @tt{annot+.rkt} at the root of the package, which is the pass used by the reader. The reader @tt{main.rkt} is made the same way from @tt{bootstrapping/main+.rkt}. So each new version of the pass is converted by the previous one.
 
 
 @section[#:tag "emacs"]{Emacs configuration for syntax highligting of Scheme+}
