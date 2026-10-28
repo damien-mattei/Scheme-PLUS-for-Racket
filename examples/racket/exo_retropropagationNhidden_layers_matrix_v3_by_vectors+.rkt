@@ -398,9 +398,12 @@ ANNOTATION-ON
 	(define (modification_des_poids M_i_o η z_input z_output z̃_output ᐁ_i_o მzⳆმz̃) ; derivative of activation function of the layer
 
 	  (type matrix-vect? M_i_o) ; M_i_o[j (i + 1)] calls matrix-vect-ref / matrix-vect-set! directly
-	  ;(type vector? z_input z_output z̃_output ᐁ_i_o)
+
+          ;(type vector? z_input z_output z̃_output ᐁ_i_o)
 	  #;(type ℝ η {ᐁ_i_o[]} {z_input[]} {z_output[]} {z̃_output[]} {M_i_o[]})
-					;(type ℝ η {ᐁ_i_o[]} {z_input[]} {z_output[]} {z̃_output[]}) ; M_i_o[j k] is a flonum by the return type in require-overload-square-brackets
+          ;(type ℝ η {ᐁ_i_o[]} {z_input[]} {z_output[]} {z̃_output[]})
+
+          ; M_i_o[j k] is a flonum by the return type in require-overload-square-brackets
 	  (type ℝ η)
 	  (type #(ℝ) ᐁ_i_o z_input z_output z̃_output)
 	  (type ((ℝ) procedure? (ℝ ℝ)) მzⳆმz̃) ; the parameter მzⳆმz̃ hides the one of the class : its type is written here
