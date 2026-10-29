@@ -144,52 +144,16 @@ For now the Bootstrapping is only used in SRFI-105 as Scheme+ code do not have c
 
 <br>
 
-flomat (floating point matrix) support is temporary dropped due to report that sci (flomat) is complex to install due to dependances to libgfortran (GNU Fortran libraries). (contact me if this is a problem for you)
+flomat (floating point matrix of the package sci) is no more built in Scheme+ : sci requires libgfortran (GNU Fortran libraries), BLAS and LAPACK, and without them `(require Scheme+)` failed. Scheme+ no more depends on sci.
 
-So i commented code, if someone wants to reactivate support for flomat he sould leave uncommented those lines of code:
-
-in bracket-apply.rkt and assignment.rkt:
+A program that uses flomat requires it (the package sci must be installed) and overloads the square brackets:
 
 ```scheme
-(rename-in flomat
-	      (repeat repeat-flomat)
-	      (shape shape-flomat)
-	      (transpose transpose-flomat))
+(require flomat (except-in Scheme+ ×)) ; × is also provided by flomat
+(overload-square-brackets (flonum?) ref mset! (flomat? number? number?)) ; M[i j]
 ```
 
-in bracket-apply.rkt:
-
-```scheme
-((flomat? container-eval) (if (equal? slice index-eval) ;; T[:] 
-				      (error "apply-square-brackets.* : assignment : slice not allowed with flomat")
-				      (row container-eval index-eval)))
-```
-
-```scheme
-((flomat? container-eval) (if (or (equal? slice index1-or-keyword-eval)
-					  (equal? slice index2-or-keyword-eval))
-				      (error "apply-square-brackets.* : assignment : slice not allowed with flomat")
-				      (ref container-eval index1-or-keyword-eval index2-or-keyword-eval)))
-```
-
-
-in assignment.rkt:
-
-```scheme
-((flomat? container-eval)
-	 (error "row setting not allowed with flomat"))
-```
-
-```scheme
-((flomat? container-eval) ; flomat
-		 (mset! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
-```
-
-and in info.rkt uncomment this if necessary:
-"sci"
-in deps definition.
-
-as a consequence the example exo_retropropagationNhidden_layers_matrix_v3+.rkt no more works but exo_retropropagationNhidden_layers_matrix_v3_by_vectors+.rkt still works.
+The example exo_retropropagationNhidden_layers_matrix_v3+.rkt (with matrix+.rkt) works this way ; exo_retropropagationNhidden_layers_matrix_v3_by_vectors+.rkt needs only Scheme+ and is faster.
 
 Documentation has been updated explaining how to find the Scheme+ REPL on an installation via the DrRacket Package Manager.
 

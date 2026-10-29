@@ -1329,10 +1329,11 @@ Note about Scheme+ for Racket: the @racket[for] described above replaces the ori
 @codeblock|{
 (require (only-in racket/base [for for-racket])) ;; backup original Racket 'for'
 (for-racket ([i (reverse (range 1 i_output_layer))])
-				{nc := vector-length(z[i])}
-				{ns := vector-length(z[i + 1])}
-				(for-racket ([j (range nc)])
-					{ᐁ[i][j] := (for/sum ([k (range ns)])
+				{nc1 <- vector-length(z[i])}
+				{ns1 <- vector-length(z[i + 1])}
+				(type ℕ j)
+				(for-racket ([j (range nc1)])
+					{ᐁ[i][j] <- (for/sum ([k (range ns1)])
 							     (მzⳆმz̃(z[i + 1][k] z̃[i + 1][k]) · M[i][k (j + 1)] · ᐁ[i + 1][k]))})
 				; modification des poids de la matrice de transition de la couche i-1 à i
          			{modification_des_poids(M[i - 1] ηₛ  z[i - 1] z[i] z̃[i] ᐁ[i] მzⳆმz̃)})
@@ -1773,7 +1774,7 @@ Another example:
 
 @codeblock|{
 ;; return a number in ]-1,1[
-;; the dummy parameter is needed by a flomat procedure
+;; the dummy parameter is needed by the procedure that fills a matrix with it
 (define (uniform-dummy dummy) {-1 + (random) * 2})
 ; return a random number between [inf, sup]
 (define (uniform-interval inf sup)
@@ -1868,7 +1869,7 @@ An example of overloading used with the type annotations, the dot product of two
 An operator that does not come from @racket[racket/base], such as @racket[·] which is defined in @racket[Scheme+/multiply], needs the module where its original definition is:
 
 @codeblock|{
-(overload-operator · (only-in Scheme+/multiply ·) multiply-flomat-vector (flomat? vector?))
+(overload-operator · (only-in Scheme+/multiply ·) multiply-matrix-matrix (matrix-vect? matrix-vect?)) ; only the original · is needed from Scheme+/multiply
 }|
 
 @defform*[((overload-unary-operator name special (predicate))
@@ -1969,13 +1970,20 @@ This works also for assignment if your object is mutable:
 
 See the full example at @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/matrix-by-vectors+.rkt"]
 
+The floating point matrices of the package @tt{sci} (@racket[flomat]) are no more built in Scheme+: @tt{sci} requires the libraries libgfortran, BLAS and LAPACK, without them @racket[(require Scheme+)] failed. A program that uses them requires @racket[flomat] and overloads the square brackets:
+
+@codeblock|{
+(require flomat (except-in Scheme+ ×)) ; × is also provided by flomat
+(overload-square-brackets (flonum?) ref mset! (flomat? number? number?)) ; M[i j]
+}|
+
 
 @section[#:tag "annotation"]{Type annotation and inference}
 
 The purpose of the type annotation and inference pass of Scheme+ is @bold{performance}. The features of Scheme+ are generic: an overloaded operator or procedure, the square brackets @litchar{[ ]} and the arithmetic accept any type of argument, and the code to run is chosen at run time, at each call. When the types are known, the pass makes this choice once, at read time, on three things:
 @itemlist[
   @item{@bold{the overloads of procedures and operators} (@racket[overload-operator], @racket[overload-procedure]): the procedure of the overload that matches the types of the arguments is called directly (see @secref["overloads-annotation"]);}
-  @item{@bold{the square brackets}: an access @litchar{{v[i]}} or an assignment @litchar{{v[i] := x}} goes directly to the accessor of the vector, of the string, of the matrix (@racket[$bracket-apply-vector$], @racket[$bracket-apply-flomat$], @racket[$bracket-apply-string$], ...) or of the square brackets overloaded with @racket[overload-square-brackets], without a test of the type at run time (see @secref["square-brackets-annotation"]); an assignment of vectors to vectors or of strings to strings is specialized too (@racket[<-vector-vector*], @racket[<-string-string*]);}
+  @item{@bold{the square brackets}: an access @litchar{{v[i]}} or an assignment @litchar{{v[i] := x}} goes directly to the accessor of the vector, of the string (@racket[$bracket-apply-vector$], @racket[$bracket-apply-string$], ...) or of the square brackets overloaded with @racket[overload-square-brackets] (a matrix for example), without a test of the type at run time (see @secref["square-brackets-annotation"]); an assignment of vectors to vectors or of strings to strings is specialized too (@racket[<-vector-vector*], @racket[<-string-string*]);}
   @item{@bold{the computation}: an arithmetic operator (@racket[+], @racket[-], @racket[*], @racket[/], @racket[·], @racket[**]) or a comparison (@racket[<], @racket[≤], @racket[≠], ...) on floats or on fixnums becomes the primitive of the floats or of the fixnums (@racket[fl+], @racket[fx*], @racket[fl<=], @racket[fx≠], ...; Scheme+ provides @racket[fx≠] and @racket[fl≠], and the result of a comparison is a @racket[boolean?]); on the other numbers the generic operator of Racket is called without the dispatch of the overloads (@racket[orig-+]); the constant expressions are computed at read time (see @secref["inference"]).}]
 
 @bold{On the neural network of the deep learning example, a retropropagation (@secref["annotation-example"]), 1000 iterations of the learning take 8.34 s without the pass and 1.15 s with @racket[ANNOTATION-ON] and the type annotations of the program, in the version with vectors of vectors of floats (@tt{examples/racket/exo_retropropagationNhidden_layers_matrix_v3_by_vectors+.rkt}): about 7 times faster.} The annotations are a few @racket[type] lines at the top of the procedures, the infix code itself is unchanged. The benchmarks are in @secref["benchmarks"].
@@ -2098,7 +2106,7 @@ Give the type @racket[type-spec] to each @racket[target]. At run time @racket[ty
 
 @racket[type-spec] is either:
 @itemlist[
-  @item{a predicate symbol, from the most specific to the most general for numbers : @racket[fixnum?], @racket[exact-integer?], @racket[integer?], @racket[flonum?], @racket[real?], @racket[rational?], @racket[inexact?], @racket[complex?], @racket[number?] ; or a container / other predicate such as @racket[vector?], @racket[flomat?], @racket[string?], @racket[boolean?], @racket[procedure?] ;}
+  @item{a predicate symbol, from the most specific to the most general for numbers : @racket[fixnum?], @racket[exact-integer?], @racket[integer?], @racket[flonum?], @racket[real?], @racket[rational?], @racket[inexact?], @racket[complex?], @racket[number?] ; or a container / other predicate such as @racket[vector?], @racket[string?], @racket[boolean?], @racket[procedure?] ;}
   @item{or a composite type for a homogeneous container: @litchar{#(T)} is a vector whose elements have the type @racket[T], @litchar{(T)} a list whose elements have the type @racket[T]; they compose, @litchar{#(#(flonum?))} is a vector of vectors of floats; @litchar{#()} is a vector whose elements have no given type, the same as @racket[vector?];}
   @item{or a domain / codomain description of a procedure, written @racket[[(codomain-pred ...) procedure? (domain-pred ...)]] (square brackets or parentheses both work). The codomain part is always the list of the returned types (a procedure can return multiple values), so a procedure returning a list of floats is written with @litchar{((flonum?))}.}]
 
@@ -2130,7 +2138,7 @@ Type of a variable @italic{and} of its elements:
 (type flonum? {z[][]})   ; each z[i][j] is a float
 (type fixnum? {nc[]})    ; the elements of nc are fixnums
 (type vector? M)          ; M is a vector ...
-(type flomat? {M[]})      ; ... of floating point matrices ...
+(type matrix-vect? {M[]}) ; ... of matrices (vectors of vectors) ...
 (type flonum? {M[][]})    ; ... whose coefficients are floats
 }|
 
@@ -2384,7 +2392,7 @@ The composite types @litchar{#(T)} (a vector) and @litchar{(T)} (a list) compose
 (type ((ℝ)) LL)             ; list of lists of floats
 (type ((#(ℝ))) LLv)         ; list of lists of vectors of floats
 (type #(#()) V2)            ; vector of vectors with untyped elements
-(type #(flomat?) Ms)        ; vector of flomat matrices
+(type #(matrix-vect?) Ms)   ; vector of matrix-vect matrices
 (type (#(string?)) Ls)      ; list of vectors of strings
 }|
 
@@ -2486,14 +2494,13 @@ For @racket[apply] the number of elements of the list is unknown, so only the n-
 When an already overloaded operator is imported from another module, the annotation pass of the current module has not seen the @racket[overload-operator] forms that were evaluated there, so it cannot specialize the calls that rely on those overloads. Restating them with @racket[require-overload-operator], with the same forms as @racket[overload-operator] (one predicate for an n-ary overload, two for a binary one), feeds that information back to the pass. It is a pure no-op at run time (the real overload tables were already filled by the imported module).}
 
 @codeblock|{
-(require (rename-in flomat (repeat repeat-flomat)))
-(require (rename-in Scheme+ (· ·bak) (× ×bak)))
-(require "matrix+.rkt")   ; provides an already overloaded  ·
+(require (rename-in Scheme+ (· ·bak)))
+(require "matrix-by-vectors+.rkt")   ; provides an already overloaded  ·
 
 ANNOTATION-ON
 
-;; tell the inference of THIS module what matrix+.rkt did to  ·
-(require-overload-operator · multiply-flomat-vector (flomat? vector?))
+;; tell the inference of THIS module what matrix-by-vectors+.rkt did to  ·
+(require-overload-operator · multiply-matrix-vector (matrix-vect? vector?))
 }|
 
 @defform*[((require-overload-unary-operator name special (predicate))
@@ -2572,116 +2579,163 @@ Compared to the search at run time, this divides by about 2 the time of the lear
 
 @subsection[#:tag "annotation-example"]{A complete example}
 
-The deep learning program @tt{examples/racket/exo_retropropagationNhidden_layers_matrix_v3+.rkt} (back propagation in a neural network with N hidden layers) uses every construct above : @racket[ANNOTATION-ON], @racket[require-overload-operator] for the imported @racket[·], overloading of @racket[+] for vectors, and many @racket[type] annotations on the network fields (@racket[z], @racket[z̃], @racket[M], @racket[ᐁ], ...) and on the local variables of the inner loops.
+The deep learning program @tt{examples/racket/exo_retropropagationNhidden_layers_matrix_v3_by_vectors+.rkt} (back propagation in a neural network with N hidden layers, whose matrices are the vectors of vectors of floats of @tt{examples/racket/matrix-by-vectors+.rkt}) uses every construct above : @racket[ANNOTATION-ON], @racket[require-overload-square-brackets] and @racket[require-overload-operator] for the square brackets and the @racket[·] of the matrices of @tt{matrix-by-vectors+.rkt}, overloading of @racket[+] for vectors and of the procedure @racket[uniform], and many @racket[type] annotations on the network fields (@racket[z], @racket[z̃], @racket[M], @racket[ᐁ], ...) and on the local variables of the inner loops. It is the program of the times given at the beginning of this section.
 
 @codeblock|{
 ANNOTATION-ON
 
-(require-overload-operator · multiply-flomat-vector (flomat? vector?))
+(type [(ℝ) procedure? ()] random)
 
-; overloading of +, binary ( (vector?) is the return type, for the inference )
-(overload-operator + (vector?) vector-append (vector? vector?))
+;; return a number in ]-1,1[
+(define (uniform-dummy dummy1 dummy2) {-1.0 + (random) * 2.0}) ; flonums
 
-(type [(flonum?) procedure? ()] random)       ; random with no argument returns a float
+; return a random number between [inf, sup]
+(define (uniform-interval inf sup)
+  (type ℝ inf sup)
+  (def gap  sup - inf)
+  {inf + gap · (random)})
 
-(define (carre x)
-  (type flonum? x)
-  {x · x})
-(type [(flonum?) procedure? (flonum?)] carre)
+(overload-procedure uniform uniform-interval (ℝ ℝ))
 
-(define (σ z̃)
-  (type flonum? z̃)
+; sigmoïde
+(define (σ z̃) 
+  (type ℝ z̃)
   {1.0 / (1.0 + (exp (- z̃)))})
+
+(require "matrix-by-vectors+.rkt")
+
+; recreate the overload info of the square brackets of matrix-by-vectors+.rkt for the type annotation
+; with the return type of the getters : the matrices of this program are matrices of flonums
+(require-overload-square-brackets (ℝ) matrix-vect-ref matrix-vect-set! (matrix-vect? number? number?)) ; M[i j] is a flonum
+(require-overload-square-brackets (vector?) matrix-vect-line-ref matrix-vect-line-set! (matrix-vect? number?)) ; M[i] is a vector
+
+(require-overload-operator · multiply-matrix-vector (matrix-vect? vector?)) ; this recreate overload info of the required file matrix-by-vectors+.rkt for operator ·
+
+; overloading of + (defined as an overloaded operator the first time) : binary, 2 predicates, returns a vector
+(overload-operator + (vector?) vector-append (vector? vector?))
 }|
 
 and, inside the network class :
 
 @codeblock|{
-(type vector? nc)
-(type fixnum? {nc[]})
+(type #() nc)
+(type ℕ {nc[]})
 
-(type vector? z {z[]})   ; z and every z[i]
-(type flonum? {z[][]})   ; every z[i][j]
+(type vector? z {z[]}) ; type annotation for z and for any elements z[i] of z at index i
+(type ℝ {z[][]})
 
-(type vector? M)         ; a vector ...
-(type flomat? {M[]})     ; ... of floating point matrices ...
-(type flonum? {M[][]})   ; ... of floats
+(type vector? z̃ {z̃[]})
+(type ℝ {z̃[][]})
+
+(type vector? M) ; M is a vector
+(type matrix-vect? {M[]}) ; elements of M are matrix-vect : M[i][k j] calls matrix-vect-ref directly
+
+(type vector? ᐁ {ᐁ[]}) ; a vector of vectors
+(type ℝ {ᐁ[][]}) ; a vector of vectors of numbers
 }|
 
 With those annotations the line
 
 @codeblock|{
-{z̃[i + 1] ← M[i] · z_1}
+{z̃[i + 1] <- M[i] · z_1} ; z̃ = matrix * vector , return a vector
 }|
 
-is inferred to be a @racket[flomat?] matrix times a @racket[vector?] : the overloaded @racket[·] is resolved at read time to @racket[multiply-flomat-vector], @litchar{{M[i]}} becomes a direct @racket[$bracket-apply-vector$] access, and the loops of the back propagation compile down to @racket[fl+] / @racket[fl*] and to direct @racket[$bracket-apply-flomat$] accesses instead of overloaded, dynamically dispatched operators.
+is inferred to be a @racket[matrix-vect?] matrix times a @racket[vector?] : the overloaded @racket[·] is resolved at read time to @racket[multiply-matrix-vector], @litchar{{M[i]}} becomes a direct @racket[$bracket-apply-vector-natural$] access (the index @racket[i] is typed @racket[ℕ]), and the loops of the back propagation compile down to @racket[fl+] / @racket[fl*] and to direct calls of the getter and the setter of the matrices instead of overloaded, dynamically dispatched operators.
 
 Nothing changes in the way you write the code : annotating a whole procedure is just a few @racket[type] lines at its top, the body stays exactly the infix Scheme+ you would write without annotation. Here is the complete weight update procedure of that example, annotated :
 
 @codeblock|{
-(define (modification_des_poids M_i_o η z_input z_output z̃_output ᐁ_i_o მzⳆმz̃)
+(define (modification_des_poids M_i_o η z_input z_output z̃_output ᐁ_i_o მzⳆმz̃) ; derivative of activation function of the layer
 
-  (type vector? z_input z_output z̃_output ᐁ_i_o)
-  (type flomat? M_i_o)
-  (type flonum? η {ᐁ_i_o[]} {z_input[]} {z_output[]} {z̃_output[]} {M_i_o[]})
+  (type matrix-vect? M_i_o) ; M_i_o[j (i + 1)] calls matrix-vect-ref / matrix-vect-set! directly
 
-  {(len_layer_output len_layer_input_plus1forBias) ← (dim M_i_o)}
-  {len_layer_input ← len_layer_input_plus1forBias - 1}
+  ; M_i_o[j k] is a flonum by the return type in require-overload-square-brackets
+  (type ℝ η)
+  (type #(ℝ) ᐁ_i_o z_input z_output z̃_output)
+  (type ((ℝ) procedure? (ℝ ℝ)) მzⳆმz̃) ; the parameter მzⳆმz̃ hides the one of the class : its type is written here
 
-  (for-racket ([j (range len_layer_output)])         ; line
+  ; the length of output and input layer with coeff. used for bias update
+  {(len_layer_output len_layer_input_plus1forBias) <+ (dim-matrix-vect M_i_o)} ; use values and define-values to create bindings
 
-              (type fixnum? i)
-              (for-racket ([i (range len_layer_input)])   ; column, bias excluded
-                          {M_i_o[j (i + 1)] ← M_i_o[j (i + 1)]
-                                              + η · z_input[i] · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j]})
+  {len_layer_input <- len_layer_input_plus1forBias - 1}
 
-              ; and update the bias
-              {M_i_o[j 0] ← M_i_o[j 0] - ((- η) · 1.0 · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j])}))
+  (type ℕ j)
+  (for-racket ([j (range len_layer_output)]) ; line
+
+        (type ℕ i)
+        (for-racket ([i (range len_layer_input)]) ; column , parcours les colonnes de la ligne sauf le bias
+
+            {M_i_o[j (i + 1)]  <-  M_i_o[j (i + 1)] + η · z_input[i] · მzⳆმz̃(z_output[j] z̃_output[j]) · ᐁ_i_o[j]})
+
+        ; and update the bias
+        {M_i_o[j 0]  <-  M_i_o[j 0] + η * 1.0 * მzⳆმz̃(z_output[j] z̃_output[j]) * ᐁ_i_o[j]}))
 }|
 
 The annotation and inference pass consumes the @racket[type] forms and rewrites the whole procedure, at read time, to :
 
 @codeblock|{
 (define
-  (modification_des_poids M_i_o η z_input z_output z̃_output ᐁ_i_o მzⳆმz̃)
-  (← (len_layer_output len_layer_input_plus1forBias) (dim M_i_o))
-  (← len_layer_input (- len_layer_input_plus1forBias 1))
+ (modification_des_poids M_i_o η z_input z_output z̃_output ᐁ_i_o მzⳆმz̃)
+ (<+
+  (len_layer_output len_layer_input_plus1forBias)
+  (dim-matrix-vect M_i_o))
+ (<- len_layer_input (- len_layer_input_plus1forBias 1))
+ (for-racket
+  ((j (range len_layer_output)))
   (for-racket
-   ((j (range len_layer_output)))
-   (for-racket
-    ((i (range len_layer_input)))
-    (←
-     ($bracket-apply-flomat$ M_i_o j (fx+ i 1))
-     (fl+
-      ($bracket-apply-flomat$ M_i_o j (fx+ i 1))
-      (fl*
-       η
-       ($bracket-apply-vector$ z_input i)
-       (მzⳆმz̃
-        ($bracket-apply-vector$ z_output j)
-        ($bracket-apply-vector$ z̃_output j))
-       ($bracket-apply-vector$ ᐁ_i_o j)))))
-   (←
-    ($bracket-apply-flomat$ M_i_o j 0)
-    (fl-
-     ($bracket-apply-flomat$ M_i_o j 0)
+   ((i (range len_layer_input)))
+   (<-
+    ($bracket-apply-overloaded$
+     ((matrix-vect-line-ref matrix-vect-line-set! 1)
+      (matrix-vect-ref matrix-vect-set! 2))
+     M_i_o
+     j
+     (fx+ i 1))
+    (fl+
+     ($bracket-apply-overloaded$
+      ((matrix-vect-line-ref matrix-vect-line-set! 1)
+       (matrix-vect-ref matrix-vect-set! 2))
+      M_i_o
+      j
+      (fx+ i 1))
      (fl*
-      (fl- η)
-      1.0
+      η
+      ($bracket-apply-vector-natural$ z_input i)
       (მzⳆმz̃
-       ($bracket-apply-vector$ z_output j)
-       ($bracket-apply-vector$ z̃_output j))
-      ($bracket-apply-vector$ ᐁ_i_o j))))))
+       ($bracket-apply-vector-natural$ z_output j)
+       ($bracket-apply-vector-natural$ z̃_output j))
+      ($bracket-apply-vector-natural$ ᐁ_i_o j)))))
+  (<-
+   ($bracket-apply-overloaded$
+    ((matrix-vect-line-ref matrix-vect-line-set! 1)
+     (matrix-vect-ref matrix-vect-set! 2))
+    M_i_o
+    j
+    0)
+   (fl+
+    ($bracket-apply-overloaded$
+     ((matrix-vect-line-ref matrix-vect-line-set! 1)
+      (matrix-vect-ref matrix-vect-set! 2))
+     M_i_o
+     j
+     0)
+    (fl*
+     η
+     1.0
+     (მzⳆმz̃
+      ($bracket-apply-vector-natural$ z_output j)
+      ($bracket-apply-vector-natural$ z̃_output j))
+     ($bracket-apply-vector-natural$ ᐁ_i_o j))))))
 }|
 
-Every @racket[·] of the two inner loops has become an @racket[fl*], every @litchar{{i + 1}} index a @racket[fx+], every @litchar{{M_i_o[j (i + 1)]}} a direct @racket[$bracket-apply-flomat$] access and every @litchar{{z_input[i]}} a direct @racket[$bracket-apply-vector$] access ; the @racket[type] annotations themselves are gone and the assignment stays a plain in place matrix update. No run time type dispatch is left in the hot loop.
+Every @racket[·] and @racket[*] of the two inner loops has become an @racket[fl*], every @litchar{{i + 1}} index a @racket[fx+], every @litchar{{M_i_o[j (i + 1)]}} a @racket[$bracket-apply-overloaded$] that calls directly @racket[matrix-vect-ref] or @racket[matrix-vect-set!] (the overload with two indexes is chosen at expansion) and every @litchar{{z_input[i]}} a direct @racket[$bracket-apply-vector-natural$] access ; the @racket[type] annotations themselves are gone and the assignment stays a plain in place matrix update. No run time type dispatch is left in the hot loop.
 
 The curve below is computed by a neural network trained by this retropropagation, whose weights are updated by @racket[modification_des_poids] : it learns the damped harmonic oscillator y = sin(x)·e^(-x/10)/1.7.
 
 @(define-runtime-path neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator "neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator.png")
 @centerline{@image[#:scale 1.1 neural-harmonic-oscillator-and-equation-computed-harmonic-oscillator]}
 
-See the full program at @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/exo_retropropagationNhidden_layers_matrix_v3+.rkt"] and the simpler @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/matrix-by-vectors+.rkt"] .
+See the full program at @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/exo_retropropagationNhidden_layers_matrix_v3_by_vectors+.rkt"] and its matrices at @url["https://github.com/damien-mattei/Scheme-PLUS-for-Racket/blob/main/examples/racket/matrix-by-vectors+.rkt"] .
 
 
 @section[#:tag "sweet-expressions"]{Sweet expressions}
