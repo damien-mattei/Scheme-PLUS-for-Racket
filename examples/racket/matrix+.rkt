@@ -28,6 +28,9 @@
 
 ANNOTATION-ON
 
+; the square brackets of a flomat : flomat is no more in Scheme+ (sci requires libgfortran) , M[i j] calls ref and mset!
+(overload-square-brackets (flonum?) ref mset! (flomat? number? number?))
+
 (define (multiply-flomat-vector M v) ;; args: M : flomat, v:vector , return vector
   (flomat->vector #;(times M (matrix v)) {M × (matrix v)})) ; multiply a matrix of floats by a matrix vector column (?) and return a vector column (?)
 

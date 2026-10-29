@@ -1099,21 +1099,23 @@
   ;; ================================================================
   ;; 33. The element F[i j] of a flomat (Racket only) written inline ,
   ;;     in reading and in assignment , with and without annotation.
+  ;;     Removed : flomat is no more in Scheme+ (sci requires libgfortran) ,
+  ;;     a flomat uses overload-square-brackets in the program.
   ;; ================================================================
-  (require (only-in flomat make-flomat))
-  (define p33-F (make-flomat 2 3 0.0))
-  {p33-F[1 2] := 7.0}
-  (check-equal? {p33-F[1 2]} 7.0)
-  (define (p33-set! F i j x) {F[i j] := x})
-  (p33-set! p33-F 0 1 2.5)
-  (define (p33-get F i j) {F[i j]})
-  (check-equal? (p33-get p33-F 0 1) 2.5)
-  (define (p33-typed F)
+  #;(require (only-in flomat make-flomat))
+  #;(define p33-F (make-flomat 2 3 0.0))
+  #;{p33-F[1 2] := 7.0}
+  #;(check-equal? {p33-F[1 2]} 7.0)
+  #;(define (p33-set! F i j x) {F[i j] := x})
+  #;(p33-set! p33-F 0 1 2.5)
+  #;(define (p33-get F i j) {F[i j]})
+  #;(check-equal? (p33-get p33-F 0 1) 2.5)
+  #;(define (p33-typed F)
     ANNOTATION-ON
     (type flomat? F)
     {F[0 0] := F[1 2] + 1.0}
     {F[0 0]})
-  (check-equal? (p33-typed p33-F) 8.0)
+  #;(check-equal? (p33-typed p33-F) 8.0)
 
   ;; ================================================================
   ;; 34. The square : the exact integer exponent 2 is a multiplication

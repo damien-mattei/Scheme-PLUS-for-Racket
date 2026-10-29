@@ -48,6 +48,7 @@
 ANNOTATION-ON
 
 (require-overload-operator · multiply-flomat-vector (flomat? vector?)) ; this recreate overload info of the required file matrix+.rkt for operator ·
+(require-overload-square-brackets (flonum?) ref mset! (flomat? number? number?)) ; the square brackets of a flomat overloaded in matrix+.rkt : M[i j] is a flonum
 
 
 
