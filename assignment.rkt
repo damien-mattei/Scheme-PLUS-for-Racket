@@ -51,8 +51,8 @@
 	   ;;(only (srfi :43) vector-copy vector-copy!)
 	   srfi/69 ; hash table
 
-	   ; could be commented because sci require libgfortran which complex installation for some users
-	   (rename-in flomat
+	   ; flomat removed : sci requires libgfortran (BLAS , LAPACK) , (require Scheme+) failed without it ; use overload-square-brackets
+	   #;(rename-in flomat
 		      (repeat repeat-flomat)
 		      (shape shape-flomat)
 		      (transpose transpose-flomat))
@@ -684,7 +684,7 @@
                      (cond ((and (vector? c) (fixnum? i) (fixnum? j))
                             (let ((row (vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i))))
                               (vector-set! row (if (fx< j 0) (fx+ (vector-length row) j) j) e)))
-                           ((and (flomat? c) (fixnum? i) (fixnum? j)) ; flomat : Racket only
+                           #;((and (flomat? c) (fixnum? i) (fixnum? j)) ; flomat : Racket only
                             (mset! c i j e))
                            (else (assignment-argument-2 c i j e))))));)
 
@@ -725,8 +725,8 @@
                #'(assignment-argument-6-and-more container parsed-args expr)))))
 
 
-	 ;; flomat case
-	 ((eq? (quote $bracket-apply-flomat$) (syntax->datum #'brket-aply)) ;; curly-infix
+	 ;; flomat case (removed : sci requires libgfortran)
+	 #;((eq? (quote $bracket-apply-flomat$) (syntax->datum #'brket-aply)) ;; curly-infix
 
 	  ;;(newline)
 	  ;; display { } as they are.
@@ -1521,7 +1521,7 @@
 	       (<- index-eval (+ (string-length container-eval) index-eval)))
 	 (string-set! container-eval index-eval expr-eval))
 
-	((flomat? container-eval)
+	#;((flomat? container-eval)
 	 (error "row setting not allowed with flomat"))
 	
 	((array? container-eval)
@@ -2706,7 +2706,7 @@
 		 ;;(display "assignment.* : 2 args ,array case : container-eval = ") (display container-eval) (newline)
 		 (array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
 		
-		((flomat? container-eval) ; flomat
+		#;((flomat? container-eval) ; flomat
 		 (mset! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
 
 		(else ;; overloaded
@@ -2721,18 +2721,18 @@
 
 
 
-;; flomat procedures, built on the model of the hash-table/array ones
+;; flomat procedures, built on the model of the hash-table/array ones (removed : sci requires libgfortran)
 ;; note : flomat only supports element (row,col) assignment ; row setting, slicing,
 ;; and more than 2 indices are not supported (matches apply-square-brackets-argument-*-flomat)
 
 ;; {M[i] <- v} : not supported
-(define (assignment-argument-1-flomat container-eval index-eval expr-eval)
+#;(define (assignment-argument-1-flomat container-eval index-eval expr-eval)
 
   (error "assignment-argument-1-flomat : row setting not allowed with flomat"))
 
 
 ;; {M[i j] <- v}
-(define (assignment-argument-2-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval)
+#;(define (assignment-argument-2-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval)
 
   (if (or (eq? slice index1-or-keyword-eval)
 	  (eq? slice index2-or-keyword-eval))
@@ -2741,24 +2741,24 @@
       (mset! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval)))
 
 
-(define (assignment-argument-3-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval expr-eval)
+#;(define (assignment-argument-3-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval expr-eval)
 
   (error "assignment-argument-3-flomat : flomat used with 3 arguments"))
 
 
-(define (assignment-argument-4-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval expr-eval)
+#;(define (assignment-argument-4-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval expr-eval)
 
   (error "assignment-argument-4-flomat : flomat used with 4 arguments"))
 
 
-(define (assignment-argument-5-flomat container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval expr-eval)
+#;(define (assignment-argument-5-flomat container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval expr-eval)
 
   (error "assignment-argument-5-flomat : flomat used with 5 arguments"))
 
 
 ;; note: called as (assignment-argument-6-and-more-flomat container parsed-args expr) from the <- macro,
 ;; so the 2nd parameter is the list of indices and the 3rd is the value to assign.
-(define (assignment-argument-6-and-more-flomat container args expr)
+#;(define (assignment-argument-6-and-more-flomat container args expr)
 
   (error "assignment-argument-6-and-more-flomat : flomat used with more than 5 arguments"))
 

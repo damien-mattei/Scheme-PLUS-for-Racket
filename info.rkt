@@ -5,7 +5,7 @@
 (define test-omit-paths '("deprecated" "library" "examples" "SRFI" "compiled" "src" "bootstrapping"))
 (define deps '("base"
 	       "srfi-lib"
-	       "sci"
+	       #;"sci" ; flomat removed : sci requires libgfortran
 	       "r6rs-lib"
 	       "reprovide-lang-lib"
 	       "SRFI-105-for-Racket"

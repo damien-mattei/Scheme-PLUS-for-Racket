@@ -29,7 +29,7 @@
 	   $bracket-apply-string$
 	   $bracket-apply-hash-table$
 	   $bracket-apply-array$
-	   $bracket-apply-flomat$
+	   #;$bracket-apply-flomat$ ; flomat removed (sci requires libgfortran)
 	   $bracket-apply-overloaded$
 	   $bracket-apply-vector-natural$
 	   $bracket-apply-vector-integer$
@@ -51,8 +51,8 @@
    ;;(only (srfi :43) vector-copy)
    srfi/69 ; hash table
 
-   ; could be commented because sci require libgfortran which complexify installation for some users
-   (rename-in flomat
+   ; flomat removed : sci requires libgfortran (BLAS , LAPACK) , (require Scheme+) failed without it ; use overload-square-brackets
+   #;(rename-in flomat
 	      (repeat repeat-flomat)
 	      (shape shape-flomat)
 	      (transpose transpose-flomat))
@@ -216,7 +216,7 @@
 		      (cond ((and (vector? c) (fixnum? i) (fixnum? j)) ; a vector of vectors and two indexes , not slices
 			     (let ((row (vector-ref c (if (fx< i 0) (fx+ (vector-length c) i) i))))
 			       (vector-ref row (if (fx< j 0) (fx+ (vector-length row) j) j))))
-			    ((and (flomat? c) (fixnum? i) (fixnum? j)) ; flomat : Racket only
+			    #;((and (flomat? c) (fixnum? i) (fixnum? j)) ; flomat : Racket only
 			     (ref c i j))
 			    (else (apply-square-brackets-argument-2 c i j))))))
 
@@ -347,7 +347,7 @@
 					  (string-ref container-eval (+ (string-length container-eval) index-eval)) ;; negative indexing
 					  (string-ref container-eval index-eval)))) ;; return an element of the string
 
-	((flomat? container-eval) (if (eq? slice index-eval) ;; T[:] 
+	#;((flomat? container-eval) (if (eq? slice index-eval) ;; T[:] 
 				      (error "apply-square-brackets.* :  slice not allowed with flomat")
 				      (row container-eval index-eval)))
 
@@ -425,7 +425,7 @@
 					 (error "apply-square-brackets-argument-2 : bad arguments in string case,expecting : i2 or i1 :, provided :"
 						index1-or-keyword-eval index2-or-keyword-eval) )))
 
-	((flomat? container-eval) (if (or (eq? slice index1-or-keyword-eval)
+	#;((flomat? container-eval) (if (or (eq? slice index1-or-keyword-eval)
 					  (eq? slice index2-or-keyword-eval))
 				      (error "apply-square-brackets.* :  slice not allowed with flomat")
 				      (ref container-eval index1-or-keyword-eval index2-or-keyword-eval)))
@@ -617,7 +617,7 @@
 
 	((hash-table? container-eval) (error "hash table used with [ ] and more than 1 argument"))
 
-	((flomat? container-eval) (error "apply-square-brackets.* :  flomat used with 3 arguments"))
+	#;((flomat? container-eval) (error "apply-square-brackets.* :  flomat used with 3 arguments"))
 			
 	
 	(else ;; T[i1 i2 i3] ,  3 dimension array
@@ -864,7 +864,7 @@
 
 	((hash-table? container-eval) (error "hash table used with [ ] and more than 1 argument"))
 
-	((flomat? container-eval) (error "apply-square-brackets.* :  flomat used with 4 arguments"))
+	#;((flomat? container-eval) (error "apply-square-brackets.* :  flomat used with 4 arguments"))
 	
 	(else ;; T[i1 i2 i3 i4] ,  4 dimension array
 	 (array-ref container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval)))) ;; return the element of the array
@@ -1028,7 +1028,7 @@
 
 	((hash-table? container-eval) (error "hash table used with [ ] and more than 1 argument"))
 
-	((flomat? container-eval) (error "apply-square-brackets.* :  flomat used with 5 arguments"))
+	#;((flomat? container-eval) (error "apply-square-brackets.* :  flomat used with 5 arguments"))
 	
 	(else ;; T[i1 i2 i3 i4 i5] ,  5 dimension array
 	 (array-ref container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval)))) ;; return the element of the array
@@ -1042,7 +1042,7 @@
 	((string? container-eval) (error "string used with [ ] and more than 5 arguments"))
 	((vector? container-eval)
 	 (function-array-n-dim-ref container-eval (reverse args)))
-	((flomat? container-eval) (error "apply-square-brackets.* :  flomat used with more than 5 arguments"))
+	#;((flomat? container-eval) (error "apply-square-brackets.* :  flomat used with more than 5 arguments"))
 	(else
 	 (array-ref container-eval (list->vector args)))))   ;; array SRFI 25
 
@@ -2152,21 +2152,21 @@
 
 
 
-; flomat procedures and macros
+; flomat procedures and macros (removed : sci requires libgfortran)
 
-(define (apply-square-brackets-argument-0-flomat container-eval)
+#;(define (apply-square-brackets-argument-0-flomat container-eval)
 
   container-eval)
 
 
-(define (apply-square-brackets-argument-1-flomat container-eval index-eval)
+#;(define (apply-square-brackets-argument-1-flomat container-eval index-eval)
 
   (if (eq? slice index-eval) ;; T[:] 
       (error "apply-square-brackets.* :  slice not allowed with flomat")
       (row container-eval index-eval)))
 
 
-(define (apply-square-brackets-argument-2-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval)
+#;(define (apply-square-brackets-argument-2-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval)
 
   (if (or (eq? slice index1-or-keyword-eval)
 	  (eq? slice index2-or-keyword-eval))
@@ -2174,20 +2174,20 @@
       (ref container-eval index1-or-keyword-eval index2-or-keyword-eval)))
 
 
-(define (apply-square-brackets-argument-3-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval)
+#;(define (apply-square-brackets-argument-3-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval)
   (error "apply-square-brackets.* :  flomat used with 3 arguments"))
 
-(define (apply-square-brackets-argument-4-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval)
+#;(define (apply-square-brackets-argument-4-flomat container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval)
   (error "apply-square-brackets.* :  flomat used with 4 arguments"))
 
-(define (apply-square-brackets-argument-5-flomat container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval)
+#;(define (apply-square-brackets-argument-5-flomat container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval)
   (error "apply-square-brackets.* :  flomat used with 5 arguments"))
 
-(define (apply-square-brackets-argument-6-and-more-flomat container-eval args)
+#;(define (apply-square-brackets-argument-6-and-more-flomat container-eval args)
   (error "apply-square-brackets.* :  flomat used with more than 5 arguments"))
 
 
-(define-syntax $bracket-apply-flomat$  ;;  this implements a specialized bracket-apply for flomats
+#;(define-syntax $bracket-apply-flomat$  ;;  this implements a specialized bracket-apply for flomats
   
   (lambda (stx)
     

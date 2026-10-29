@@ -76,7 +76,7 @@
 	   BRACKET-APPLY-STRING-op?
 	   BRACKET-APPLY-HASH-TABLE-op?
 	   BRACKET-APPLY-ARRAY-op?
-	   BRACKET-APPLY-FLOMAT-op?
+	   #;BRACKET-APPLY-FLOMAT-op? ; flomat removed (sci requires libgfortran)
 	   BRACKET-APPLY-TYPED-INDEX-op?
 	   BRACKET-APPLY-VECTOR-NATURAL-op?
 	   BRACKET-APPLY-VECTOR-INTEGER-op?
@@ -115,7 +115,7 @@
 	   isBRACKET-APPLY-STRING?
 	   isBRACKET-APPLY-HASH-TABLE?
 	   isBRACKET-APPLY-ARRAY?
-	   isBRACKET-APPLY-FLOMAT?
+	   #;isBRACKET-APPLY-FLOMAT?
 	   isBRACKET-APPLY*?
 	   isVALUES?
 
@@ -415,7 +415,8 @@
       (BRACKET-APPLY-STRING-NATURAL-op? oper)
       (BRACKET-APPLY-STRING-INTEGER-op? oper)))
 
-(define (BRACKET-APPLY-FLOMAT-op? oper)
+; flomat removed (sci requires libgfortran)
+#;(define (BRACKET-APPLY-FLOMAT-op? oper)
   (or (eq? oper '$bracket-apply-flomat$)
       (datum=? oper '$bracket-apply-flomat$)))
 
@@ -564,7 +565,7 @@
 (define (isBRACKET-APPLY-ARRAY? expr)
   (and (pair? expr) (BRACKET-APPLY-ARRAY-op? (car expr))))
 
-(define (isBRACKET-APPLY-FLOMAT? expr)
+#;(define (isBRACKET-APPLY-FLOMAT? expr)
   (and (pair? expr) (BRACKET-APPLY-FLOMAT-op? (car expr))))
 
 (define (isBRACKET-APPLY*? expr)
@@ -573,7 +574,7 @@
       (isBRACKET-APPLY-STRING? expr)
       (isBRACKET-APPLY-HASH-TABLE? expr)
       (isBRACKET-APPLY-ARRAY? expr)
-      (isBRACKET-APPLY-FLOMAT? expr)
+      #;(isBRACKET-APPLY-FLOMAT? expr)
       (and (pair? expr) (BRACKET-APPLY-TYPED-INDEX-op? (car expr)))))
 
 

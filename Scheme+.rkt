@@ -63,7 +63,7 @@
    $bracket-apply-string-integer$
    $bracket-apply-hash-table$
    $bracket-apply-array$
-   $bracket-apply-flomat$
+   #;$bracket-apply-flomat$ ; flomat removed (sci requires libgfortran)
    $bracket-apply-overloaded$ ; written by the type annotation pass for square brackets overloaded with overload-square-brackets
    <- ->
    <-vector-vector*
