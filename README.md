@@ -28,6 +28,10 @@ Designed to use with [SRFI 105 Curly Infix reader for Racket](https://github.com
 
 ![Scheme+ schema](https://github.com/damien-mattei/Scheme-PLUS/blob/main/doc/images/schema-scheme%2B.jpg "Scheme+ schema")
 
+![Type annotation and inference pass](https://github.com/damien-mattei/Scheme-PLUS/blob/main/doc/images/annot.jpg "Type annotation and inference pass")
+
+Note: some regions of these diagrams can be out of date or partial.
+
 
 With Racket you do not need to define/declare a variable with the
 Scheme+ operator <+. Because the binding of the variable is autodetect
