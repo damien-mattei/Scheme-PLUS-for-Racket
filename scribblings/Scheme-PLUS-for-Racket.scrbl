@@ -27,7 +27,7 @@
 @; the lisp logo at the right of the two packages
 @(define-runtime-path lisplogo "lisplogo_warning_128.png")
 @; a float that takes no width (margin-right = - its width - margin-left) : it goes into the right margin
-@para[#:style (make-style #f (list (attributes '((style . "float: right; margin: 2px -72px 0 20px;")))))]{@image[#:scale 0.63 lisplogo]}
+@para[#:style (make-style #f (list (attributes '((style . "float: right; margin: 2px -72px 0 20px;")))))]{@hyperlink["https://www.lisperati.com/logo.html"]{@image[#:scale 0.63 lisplogo]}}
 
 @; the two essential packages at the top (as most packages are presented) , the complete descriptions are below
 @defmodule[Scheme+ #:no-declare #:link-target? #f]
@@ -2965,7 +2965,7 @@ Not all fonts support superscript characters, Monospace (Bold) with Emacs does.
 @; the other lisp logo at the bottom right of the doc , in the footnote (what follows make-my-note is not rendered)
 @(define-runtime-path lisplogo-alien "lisplogo_128.png")
 
-I hope this documentation is not a write-only@my-note{ « APL is a write-only language. I can write programs in APL, but I can’t read any of them ». Roy Keir @elem[#:style (make-style #f (list (attributes '((style . "display: block; text-align: right; margin-top: 2em;")))))]{@image[#:scale 0.63 lisplogo-alien]}@elem[#:style (make-style #f (list (attributes '((style . "display: block; text-align: right; font-size: 0.5em;")))))]{Public Domain Lisp Logo Set By Conrad Barski, M.D.}} one and will be useful for any reader.
+I hope this documentation is not a write-only@my-note{ « APL is a write-only language. I can write programs in APL, but I can’t read any of them ». Roy Keir @elem[#:style (make-style #f (list (attributes '((style . "display: block; text-align: right; margin-top: 2em;")))))]{@hyperlink["https://www.lisperati.com/logo.html"]{@image[#:scale 0.63 lisplogo-alien]}}@elem[#:style (make-style #f (list (attributes '((style . "display: block; text-align: right; font-size: 0.5em;")))))]{Public Domain Lisp Logo Set By Conrad Barski, M.D.}} one and will be useful for any reader.
 
 
 @make-my-note[]
