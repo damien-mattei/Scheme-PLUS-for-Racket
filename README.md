@@ -51,6 +51,10 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 The type annotation and inference system to improve speed to top is now available, see version 18.0 below.
 
+**Changes of version 18.1:**
+
+flomat (package sci) is no more built in Scheme+, see the paragraph on flomat below: a program that uses it requires flomat and overloads the square brackets with ```overload-square-brackets```. Scheme+ no more needs libgfortran, BLAS and LAPACK.
+
 **Changes of version 18.0:**
 
 Type annotation and inference, for speed (with SRFI 105 version 15.0 and SRFI 110 version 2.0). Activated by the pragma ```ANNOTATION-ON```, the pass runs in the Curly Infix reader, before compilation: when it knows the types of the operands it replaces the overloaded, dynamically dispatched operators by monomorphic primitives (```fl+```, ```fx*```, ...), resolves the square bracket accesses to the exact accessor, specializes the assignments of vectors or strings and folds the constant expressions. The types are given with the ```type``` form, including composite types: ```#(T)``` is a vector and ```(T)``` a list whose elements have the type ```T```. A ```lambda``` passed to ```vector-map```, ```map```, ```for-each``` or ```vector-for-each``` is typed by the context or by a ```type``` annotation in its body. When the pass is off, the ```type``` forms are simply removed. See the documentation, section Type annotation and inference. Example:
