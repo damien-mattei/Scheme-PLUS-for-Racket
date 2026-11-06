@@ -73,6 +73,10 @@ What Scheme+ is not: Scheme+ is not a DSL (Domain Specific Language) a contrario
 
 Scheme+ is available for different Scheme implementations: Racket, Guile, Kawa... the Racket implementation is for now (2026) the most advanced.
 
+@; the REPL of Scheme+ in a terminal
+@(define-runtime-path scheme-cli "scheme-cli.png")
+@centerline{@image[#:scale 0.7 scheme-cli]}
+
 Scheme+ is used with a Curly Infix reader, provided by the following packages:
 
 
@@ -131,6 +135,10 @@ Package: @url["https://pkgs.racket-lang.org/package/infix-sweet"]
 
 }
 
+
+@; a Scheme+ program in DrRacket
+@(define-runtime-path scheme-gui "scheme-gui.png")
+@centerline{@image[#:scale 0.55 scheme-gui]}
 
 @; the table of contents is announced by its name , to separate it from the presentation and the packages above
 @larger{@larger{@bold{Table of Contents}}}
@@ -2943,6 +2951,19 @@ Scheme code written without @racket[{ }] and outside a region @racket[ANNOTATION
 @subsection[#:tag "bootstrapping"]{The type annotation and inference pass written in Scheme+ : bootstrapping}
 
 The type annotation and inference pass is itself written in Scheme+, by the method of @hyperlink["https://en.wikipedia.org/wiki/Bootstrapping_(compilers)"]{bootstrapping} (as a compiler written in its own language): its source is @tt{bootstrapping/annot+.rkt} of the SRFI-105 package, with the curly-infix notation, the square brackets and all the features of Scheme+. The installed reader converts it to a Racket Scheme module, @tt{annot+.rkt} at the root of the package, which is the pass used by the reader. The reader @tt{main.rkt} is made the same way from @tt{bootstrapping/main+.rkt}. So each new version of the pass is converted by the previous one.
+
+
+@section[#:tag "screenshots"]{Screenshots}
+
+Scheme+ in Emacs, in the REPL of a terminal and in DrRacket (click on the image to see it in full size):
+
+@(define-runtime-path scheme-solar "scheme-solar.png")
+@centerline{@hyperlink["scheme-solar.png"]{@image[#:scale 0.36 scheme-solar]}}
+
+Scheme+ in Visual Studio Code (@tt{annot+.rkt}, the source of the type annotation pass) and in DrRacket:
+
+@(define-runtime-path scheme-code "scheme-code.png")
+@centerline{@hyperlink["scheme-code.png"]{@image[#:scale 0.36 scheme-code]}}
 
 
 @section[#:tag "emacs"]{Emacs configuration for syntax highlighting of Scheme+}
