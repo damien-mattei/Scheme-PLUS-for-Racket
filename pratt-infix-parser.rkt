@@ -40,7 +40,8 @@
 
   (provide pratt-infix-parser)
 
-  (require Scheme+/operators
+  (require (only-in Scheme+/in-equalities chained-comparisons)
+           Scheme+/operators
            Scheme+/operators-list
            Scheme+/syntax)
 
@@ -149,7 +150,7 @@
   ;; builds the (and ...) wrapper as a literal list -- correct for a tree-building creator ; like
   ;; nud-unary-sign, not reachable from the live -runtime evaluating caller today (see file banner).
   ;; -------------------------------------------------------------------
-  (define (led-relational op-tok left toks creator)
+  #;(define (led-relational op-tok left toks creator)
     (let loop ([cmp-left left] [op-tok op-tok] [toks toks] [comparisons '()])
       (define-values (right toks1) (parse-expression toks relational-bp creator))
       (define comparisons1 (cons (creator op-tok cmp-left right) comparisons))
@@ -160,6 +161,17 @@
             (if (null? (cdr cs))
                 (values (car cs) toks1)
                 (values (cons 'and cs) toks1))))))
+
+  ;; the operands and operators of the chain are collected , then chained-comparisons (in-equalities.rkt , as the old
+  ;; engine) builds the comparisons : an operand of two comparisons is evaluated once
+  (define (led-relational op-tok left toks creator)
+    (let loop ([op-tok op-tok] [toks toks] [rest-of-chain '()])
+      (define-values (right toks1) (parse-expression toks relational-bp creator))
+      (define rest-of-chain1 (cons right (cons op-tok rest-of-chain)))
+      (define next-key (and (pair? toks1) (token-key (car toks1))))
+      (if (and next-key (in/equalities-operator? next-key))
+          (loop (car toks1) (cdr toks1) rest-of-chain1)
+          (values (chained-comparisons left (reverse rest-of-chain1) creator) toks1))))
 
   ;; -------------------------------------------------------------------
   ;; build nud/led tables from infix-operators-lst-for-parser (operators-list.rkt, plain-datum groups,

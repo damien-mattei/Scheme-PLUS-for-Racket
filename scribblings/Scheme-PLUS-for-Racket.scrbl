@@ -2877,9 +2877,9 @@ The other pragmas are the few ones of the SRFI 105 Curly infix reader described 
 @section[#:tag "makefile"]{Using Makefile and debugging Scheme+ program}
 
 The Curly Infix (SRFI 105) reader parser can now display the line, column, and character offset in the source file if a parsing error arises at this stage.
-The Racket GUI can not display the line of error in a Scheme+ program. The reason is that the Scheme+ program is pre-parsed by the SRFI 105 reader and the Racket compiler has no access to the original lines of code and does not even display the error line relative to the resulting parsed line of code.
+Each form and each identifier of a Scheme+ program keep the location of their text in the source file, through the infix conversion and the type annotation: the errors of expansion (an unbound identifier for example) show their true line and column, and Check Syntax, the language servers and the debuggers work on the source code. The errors at run time are as precise as in a Racket program: Racket shows the procedure, not always the exact expression, and the message can name the specialized operation that the type annotation generated (@racket[fl*] for @racket[*] for example).
 
-If you have to debug your source code you must generate a Scheme file
+To read the code that is really compiled, you can generate a Scheme file
 from your Scheme+ file with @bold{curly-infix2prefix4racket} in SRFI 105 package and load the
 result file in Racket GUI. Then you will have all the debug
 information of Racket on the scheme file.

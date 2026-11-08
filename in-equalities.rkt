@@ -22,6 +22,7 @@
 		 multiple-in-equalities?
 		 infix->prefix-in-equality
 		 infix->prefix-in-equality-runtime
+		 chained-comparisons
 		 in/equalities-state-1)
 
 	(require Scheme+/alternating-parameters
@@ -71,7 +72,53 @@
   ;; '(and (< x 3) (< 3 y) (<= y z))
   (define (infix->prefix-in-equality x) ; multiple in/equalities in infix expression, ex: (x < 3 < y <= z)
 
-    (cons 'and (get-in-equalities x)))
+    #;(cons 'and (get-in-equalities x))
+    (chained-comparisons (car x) (cdr x) list))
+
+
+  ;; an operand evaluated in two comparisons must be evaluated once , as in Python : a variable or a constant can be
+  ;; written twice , an other expression is put in a variable. The operands are data or syntax objects.
+  (define (simple-operand? e)
+    (let ((d (if (syntax? e) (syntax-e e) e)))
+      (or (symbol? d) (number? d) (string? d) (boolean? d) (char? d))))
+
+  ;; first : the first operand , rest : (op operand op operand ...) , make : (make op left right) builds a comparison
+  ;; (chained-comparisons 'x '(< 3 < y <= z) list) = (and (< x 3) (< 3 y) (<= y z))
+  ;; {0 < f() <= 3} : (let (($chain-operand-1$ (f))) (and (< 0 $chain-operand-1$) (<= $chain-operand-1$ 3)))
+  ;; the operands are evaluated from left to right , and those after a false comparison are not evaluated
+  (define (chained-comparisons first rest make)
+
+    (define (operand-variable n)
+      (string->symbol (string-append "$chain-operand-" (number->string n) "$")))
+
+    (define (conjunction clauses)
+      (if (null? (cdr clauses))
+	  (car clauses)
+	  (cons 'and clauses)))
+
+    ;; the conjuncts of the comparisons of left with rest = (op right ...)
+    (define (clauses left rest n)
+      (let ((op (car rest))
+	    (right (cadr rest))
+	    (more (cddr rest)))
+	(cond ((null? more) ; the last operand is evaluated once
+	       (list (make op left right)))
+	      ((simple-operand? right)
+	       (cons (make op left right)
+		     (clauses right more n)))
+	      (else
+	       (let ((v (operand-variable n)))
+		 (list (list 'let (list (list v right))
+			     (conjunction (cons (make op left v)
+						(clauses v more (+ n 1)))))))))))
+
+    (if (or (simple-operand? first) ; nothing to evaluate before the next operand
+	    (null? (cddr rest))
+	    (simple-operand? (cadr rest)))
+	(conjunction (clauses first rest 1))
+	(let ((v (operand-variable 0))) ; the first operand stays evaluated before the second one
+	  (list 'let (list (list v first))
+		(conjunction (clauses v rest 1))))))
 
   (define (infix->prefix-in-equality-runtime x) ; multiple in/equalities in infix expression, ex: (x < 3 < y <= z)
 

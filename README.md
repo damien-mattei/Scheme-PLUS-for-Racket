@@ -38,8 +38,8 @@ Scheme+ operator <+. Because the binding of the variable is autodetect
 you can simply set the variable with <- (or :=) and Scheme+ will do the job.
 
 
-The Racket GUI can not display the line of error in a Scheme+ program.
-If you have to debug your source code you must generate a Scheme file
+Each form and each identifier of a Scheme+ program keep the location of their text in the source file: the errors of expansion show their true line and column, and Check Syntax, the language servers and the debuggers work on the source code.
+To read the code that is really compiled, you can generate a Scheme file
 from your Scheme+ file with curly-infix2prefix4racket and load the
 result file in Racket GUI. Then you will have all the debug
 information of Racket on the scheme file.Another solution is to simply copy/paste the pure Racket
@@ -50,6 +50,12 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 <br>
 
 The type annotation and inference system to improve speed to top is now available, see version 18.0 below.
+
+**Changes of version 20.0:**
+
+Source locations (with SRFI 105 version 17.0 and SRFI 110 version 3.0): each form and each identifier of a Scheme+ program keep the location of their text in the source file, through the infix conversion and the type annotation. The errors of expansion (an unbound identifier for example) and those of the type annotation pass show their true line and column, and Check Syntax, the language servers and the debuggers work on the source code. The errors at run time are as precise as in a Racket program.
+
+In a chain of different comparisons, an operand between two comparisons is now evaluated once, as in Python: ```{0 < f() <= 3}``` calls ```f``` once (the result is kept in a variable if the operand is not a variable or a constant).
 
 **Changes of version 18.1:**
 

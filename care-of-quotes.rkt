@@ -37,6 +37,7 @@
 	   infix-top-level-only)
 
   (require (only-in Scheme+/infix-with-precedence-to-prefix !*prec-generic-infix-parser-rec-prepare)
+	   (only-in Scheme+/source-locations link-cell!)
 	   (only-in Scheme+/operators QUOTE-op? QUASIQUOTE-op? SYNTAX-QUOTE-op?))
 
 
@@ -79,8 +80,11 @@
 	     (process-list (cdr lst))))
 	  (else
 	   (let ((e (process-element (car lst))))
-	     (cons e
-		   (process-list (cdr lst)))))))
+	     #;(cons e
+		   (process-list (cdr lst)))
+	     (link-cell! (cons e ; the copy keeps the locations of the source
+			       (process-list (cdr lst)))
+			 lst)))))
 
   (define (process-element e)
     (cond ((not (pair? e)) e) ; an atom

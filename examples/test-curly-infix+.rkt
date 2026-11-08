@@ -263,6 +263,20 @@
   (define (ineq-4-prefix x a b c d y f) (or (< 5 6 7) (> y 4) (< 1 2 3)))
   (check-same-values ineq-4 ineq-4-prefix)
 
+  ;; an operand between two different comparisons is evaluated once , from left to right , and not after a false comparison
+  (define chain-calls '())
+  (define (chain-operand name value)
+    (set! chain-calls (cons name chain-calls))
+    value)
+  (check-true {0 < chain-operand('f 2) <= 3})
+  (check-equal? chain-calls '(f))
+  (set! chain-calls '())
+  (check-true {chain-operand('a 1) < chain-operand('b 2) <= chain-operand('c 3)})
+  (check-equal? chain-calls '(c b a))
+  (set! chain-calls '())
+  (check-false {0 < chain-operand('b 5) <= 3 < chain-operand('c 4)})
+  (check-equal? chain-calls '(b))
+
   (define (ineq-5 x a b c d y f) {x + 2 < 3 and a + 1 < 3 * b <= c - 1 < d + 2 or y * 3 > 4 and f and 1 < 2 < 3})
   (define (ineq-5-prefix x a b c d y f)
     (or (ineq-1-prefix x a b c d y f)
