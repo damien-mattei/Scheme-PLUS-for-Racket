@@ -1510,6 +1510,32 @@
                         (list 0 1 -3 9007199254740993 -9007199254740993)))
             (list -1.5 3.0 0.0 -0.0 +nan.0 +inf.0 9007199254740992.0))
 
+  ;; 47. ℤ* and ℕ* : the type of an exponentiation stays true. A float to the power of a ℤ* or of a literal not zero is a
+  ;;     float , a fixnum to the power of a ℕ or of a literal not negative is an integer ; an exponent only fixnum? gives
+  ;;     the generic operations that follow : (expt 2.0 0) is the exact 1 , (expt 2 -1) is 1/2
+  (define (p47-f x n) (type flonum? x) (type fixnum? n) {{x ** n} + 1.0})
+  (define (p47-f-nonzero x n) (type flonum? x) (type ℤ* n) {{x ** n} + 1.0})
+  (define (p47-f-positive x n) (type flonum? x) (type ℕ* n) {{x ** n} + 1.0})
+  (define (p47-f-literal x) (type flonum? x) {{x ** 3} + 1.0})
+  (define (p47-f-zero x) (type flonum? x) {{x ** 0} + 1.0})
+  (define (p47-g a n) (type fixnum? a n) {{a ** n} + 1})
+  (define (p47-g-natural a n) (type fixnum? a) (type ℕ n) {{a ** n} + 1})
+  (define (p47-g-positive a n) (type fixnum? a) (type ℕ* n) {{a ** n} + 1})
+  (define (p47-g-literal a) (type fixnum? a) {{a ** 3} + 1})
+  (check-equal? (p47-f 2.0 3) 9.0)
+  (check-equal? (p47-f 2.0 0) 2.0)
+  (check-equal? (p47-f-nonzero 2.0 3) 9.0)
+  (check-equal? (p47-f-nonzero 2.0 -1) 1.5)
+  (check-equal? (p47-f-positive 2.0 3) 9.0)
+  (check-equal? (p47-f-literal 2.0) 9.0)
+  (check-equal? (p47-f-zero 2.0) 2.0)
+  (check-equal? (p47-g 2 3) 9)
+  (check-equal? (p47-g 2 -1) 3/2)
+  (check-equal? (p47-g-natural -2 3) -7)
+  (check-equal? (p47-g-natural 2 0) 2)
+  (check-equal? (p47-g-positive 2 3) 9)
+  (check-equal? (p47-g-literal 2) 9)
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 

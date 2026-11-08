@@ -17,7 +17,13 @@
 		 is-print-type?
 		 ℕ ℤ ℝ ℚ ℂ
 		 ℝ⁺
+		 ℤ* ℕ*
 		 natural-fixnum?
+		 nonzero-fixnum?
+		 positive-fixnum?
+		 nonzero-integer-type-name?
+		 positive-integer-type-name?
+		 domain-type-parents
 		 nonnegative-flonum?
 		 natural-type-name?
 		 integer-type-name?
@@ -42,6 +48,17 @@
 
 	#;(define ℕ fixnum?)
 	(define ℕ natural-fixnum?)
+
+	;; a fixnum that is not zero : the type ℤ* , a float to the power of a ℤ* is a float ((expt 2.0 0) is the exact 1)
+	(define (nonzero-fixnum? x)
+	  (and (fixnum? x) (not (= x 0))))
+
+	;; a fixnum strictly positive : the type ℕ* , it is a ℕ and a ℤ*
+	(define (positive-fixnum? x)
+	  (and (fixnum? x) (> x 0)))
+
+	(define ℤ* nonzero-fixnum?)
+	(define ℕ* positive-fixnum?)
 	(define ℤ fixnum?)
 	(define ℝ flonum?)
 	(define ℝ⁺ nonnegative-flonum?)
@@ -63,6 +80,12 @@
 	(define (integer-type-name? s) ; today the type fixnum?
 	  (eq? s 'ℤ))
 
+	(define (nonzero-integer-type-name? s) ; the type nonzero-fixnum?
+	  (eq? s 'ℤ*))
+
+	(define (positive-integer-type-name? s) ; the type positive-fixnum?
+	  (eq? s 'ℕ*))
+
 	(define (real-type-name? s) ; today the type flonum?
 	  (eq? s 'ℝ))
 
@@ -73,9 +96,17 @@
 	;; {i + 1} --> (fx+ i 1) , a ℝ⁺ a flonum for {x + 1.0} --> (fl+ x 1.0) ; #f for the other types
 	(define (domain-type-base t)
 	  (case t
-	    ((natural-fixnum?) 'fixnum?)
+	    ((natural-fixnum? nonzero-fixnum? positive-fixnum?) 'fixnum?)
 	    ((nonnegative-flonum?) 'flonum?)
 	    (else #f)))
+
+	;; the types that contain a type of a domain : ℕ* is in ℕ and ℤ* , they are in ℤ (fixnum?)
+	(define (domain-type-parents t)
+	  (case t
+	    ((positive-fixnum?) '(natural-fixnum? nonzero-fixnum? fixnum?))
+	    ((natural-fixnum? nonzero-fixnum?) '(fixnum?))
+	    ((nonnegative-flonum?) '(flonum?))
+	    (else '())))
 
 	;; (:print-type expr) is a command of the REPL , done by the reader (SRFI-105 or SRFI-110) with the tables of the type
 	;; annotation , as :print-type of Typed Racket ; elsewhere (in a module) it is an error
@@ -107,7 +138,7 @@
 	;;(define real inexact?)
 
 	(define numerical-types '(exact-integer? integer? number? flonum? real? rational? complex? inexact? fixnum? exact?
-				  natural-fixnum? nonnegative-flonum?))
+				  natural-fixnum? nonzero-fixnum? positive-fixnum? nonnegative-flonum?))
 
 	(define (numerical-type? t)
 	  (memq t numerical-types))

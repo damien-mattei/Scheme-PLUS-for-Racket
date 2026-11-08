@@ -2157,11 +2157,15 @@ Domain and codomain of a procedure whose body is not annotated (a Racket or libr
 (type ((flonum?) procedure? (flonum? flonum?)) der_σ)   ; parentheses also accepted
 }|
 
-The types of the numbers that make the pass write @racket[fx+] or @racket[fl*] can also be written ℕ, ℤ, ℝ and ℝ⁺, everywhere a type is written: in @racket[type], in the signatures, in the composite types and in the predicates of the overloads. They are reserved names of Scheme+, defined as predicates (so @racket[(ℝ 2.0)] is @racket[#t] and @racket[(ℕ -3)] is @racket[#f]). They are not exactly the sets of mathematics: a fixnum is bounded, and ℝ is the floats.
+The types of the numbers that make the pass write @racket[fx+] or @racket[fl*] can also be written ℕ, ℕ*, ℤ, ℤ*, ℝ and ℝ⁺, everywhere a type is written: in @racket[type], in the signatures, in the composite types and in the predicates of the overloads. They are reserved names of Scheme+, defined as predicates (so @racket[(ℝ 2.0)] is @racket[#t] and @racket[(ℕ -3)] is @racket[#f]). They are not exactly the sets of mathematics: a fixnum is bounded, and ℝ is the floats.
 
 @defproc[(ℕ [v any/c]) boolean?]{@racket[natural-fixnum?] : a fixnum greater than or equal to 0, read by the annotation as a fixnum (and as an index without negative values between square brackets).}
 
+@defproc[(ℕ* [v any/c]) boolean?]{@racket[positive-fixnum?] : a fixnum strictly positive, it is a ℕ and a ℤ*.}
+
 @defproc[(ℤ [v any/c]) boolean?]{@racket[fixnum?], the negative ones too.}
+
+@defproc[(ℤ* [v any/c]) boolean?]{@racket[nonzero-fixnum?] : a fixnum that is not zero, read by the annotation as a fixnum.}
 
 @defproc[(ℚ [v any/c]) boolean?]{@racket[rational?], only defined, not used by the annotation for now.}
 
@@ -2174,6 +2178,20 @@ The types of the numbers that make the pass write @racket[fx+] or @racket[fl*] c
 For the arithmetic, ℕ is a fixnum (@racket[{i + 1}] is @racket[(fx+ i 1)]). For an index between square brackets of a vector or a string, the type of the index gives a faster access: with an index of type ℕ, @litchar{{v[i]}} is @racket[(vector-ref v i)] (@racket[string-ref] for a string) with no test at all; with ℤ, only the test of the sign remains (a negative index counts from the end); the same for @litchar{{M[i j]}} of a vector of vectors and for the assignments @litchar{{v[i] := x}}. As the annotation is not checked, a negative index declared ℕ is an error of bounds of @racket[vector-ref].
 
 The lengths (@racket[length], @racket[vector-length], @racket[string-length], @racket[bytes-length]…) and @racket[char->integer] have the type ℕ.
+
+The type of an exponentiation depends on the sign of the exponent: @racket[(expt 2.0 0)] is the exact @racket[1] and @racket[(expt 2 -1)] is @racket[1/2]. So a float to the power of a ℤ* or of a literal not zero is a float, a fixnum to the power of a ℕ or of a literal not negative is an integer (the overflow of a fixnum stays a risk), and the operations that follow are specialized (@racket[fl+], @racket[fx+]). With an exponent declared only @racket[fixnum?] the type of the result is not known and the operations that follow stay generic: declare the exponent ℤ* or ℕ to specialize them.
+
+@codeblock|{
+(define (f x n)
+  (type flonum? x)
+  (type ℤ* n)
+  {{x ** n} + 1.0}) ; (fl+ (** x n) 1.0)
+
+(define (g a n)
+  (type fixnum? a)
+  (type fixnum? n)
+  {{a ** n} + 1})   ; (+ (** a n) 1) , n can be negative
+}|
 
 For a float, @racket[sqrt], @racket[log] and @racket[expt] stay generic: with a negative float they return a complex number (@racket[(sqrt -4.0)] is @racket[0.0+2.0i]) where @racket[flsqrt] returns @racket[+nan.0]. With an argument of type ℝ⁺ (the base for @racket[expt] and @racket[**]), they become @racket[flsqrt] (also for @racket[√]), @racket[fllog] and @racket[flexpt], which give the same results on the floats that are not negative (@racket[(log -0.0)] is @racket[-inf.0] for both). The pass knows that @racket[abs], @racket[exp], @racket[sqr] and @racket[square] of a float, the square of a float (@litchar{{x ²}}, @litchar{{x ** 2}}, @racket[(expt x 2)], @litchar{{x * x}} of a variable), @racket[flsqrt], and the sum and the product of two ℝ⁺ return a ℝ⁺, so a whole expression can stay in floats:
 

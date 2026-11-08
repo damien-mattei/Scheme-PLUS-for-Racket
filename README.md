@@ -51,6 +51,10 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 The type annotation and inference system to improve speed to top is now available, see version 18.0 below.
 
+**Changes of version 20.1:**
+
+The types ℤ* (a fixnum not zero) and ℕ* (a fixnum strictly positive). The type of an exponentiation is now always true: a float to the power of a ℤ* or of a literal not zero is a float, a fixnum to the power of a ℕ or of a literal not negative is an integer. With an exponent declared only ```fixnum?``` the operations that follow are generic: before, ```{{x ** n} + 1.0}``` raised an error for n = 0.
+
 **Changes of version 20.0:**
 
 Source locations (with SRFI 105 version 17.0 and SRFI 110 version 3.0): each form and each identifier of a Scheme+ program keep the location of their text in the source file, through the infix conversion and the type annotation. The errors of expansion (an unbound identifier for example) and those of the type annotation pass show their true line and column, and Check Syntax, the language servers and the debuggers work on the source code. The errors at run time are as precise as in a Racket program.
