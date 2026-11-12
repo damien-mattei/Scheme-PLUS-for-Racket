@@ -51,6 +51,10 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 The type annotation and inference system to improve speed to top is now available, see version 18.0 below.
 
+**Changes of version 20.2:**
+
+The tests of overloading of `examples/test-overload+.rkt` (operators `+`, `-` and `*` on lists, `length` on vectors and strings, `area` and `volume`) are written with rackunit and check that the numbers keep the original operators. The REPL of Scheme+ (`src/REPL-Scheme-PLUS.rkt`) requires only `Scheme+`.
+
 **Changes of version 20.1:**
 
 The types ℤ* (a fixnum not zero) and ℕ* (a fixnum strictly positive). The type of an exponentiation is now always true: a float to the power of a ℤ* or of a literal not zero is a float, a fixnum to the power of a ℕ or of a literal not negative is an integer. With an exponent declared only ```fixnum?``` the operations that follow are generic: before, ```{{x ** n} + 1.0}``` raised an error for n = 0.

@@ -14,7 +14,7 @@
 	       "curly-infix"
 	       "infix-sweet"))
 (define pkg-desc "Scheme+ for Racket")
-(define version "20.1")
+(define version "20.2")
 (define pkg-authors '(mattei))
 (define scribblings '(("scribblings/Scheme-PLUS-for-Racket.scrbl" () (language))))
 (define build-deps '("scribble-lib" "racket-doc" "scribble-doc" "rackunit-lib"))
