@@ -382,6 +382,6 @@ ANNOTATION-ON
 
 ;;) ; end module main
 	 
-
+(collect-garbage)
 
 ) ; end module chaos

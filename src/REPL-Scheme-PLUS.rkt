@@ -11,9 +11,7 @@
 (module repl racket
 
   (provide (all-defined-out)) 
-  (require Scheme+
-           (only-in racket/base [for for-racket])
-           Scheme+/program-type)
+  (require Scheme+)
   
   ANNOTATION-ON
   
