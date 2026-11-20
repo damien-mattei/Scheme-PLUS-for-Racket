@@ -1536,6 +1536,8 @@
   (check-equal? (p47-g-positive 2 3) 9)
   (check-equal? (p47-g-literal 2) 9)
 
+  #rx"34" ; only for test of regex racket in parser
+
   ;; If rackunit printed no FAILURE / ERROR block above, every check passed.
   (displayln "test-curly-infix+ : done")
 

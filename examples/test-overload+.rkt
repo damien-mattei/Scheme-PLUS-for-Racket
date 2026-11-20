@@ -39,6 +39,10 @@
 	; number? which is too general
 	; (list?) is the return type , for the type annotation
 	(overload-operator * (list?) mult-num-list (integer? list?)) ; binary
+	; the same overloading with number? and without return type (from start-logic-syracuse-racket+.rkt of
+	; library-FunctProg) : a number that is not an integer , {1.5 * '(2 4)}
+	(define (mult-real-list k v) (map (λ (x) (* k x)) v))
+	(overload-operator * mult-real-list (number? list?)) ; binary
 	(overload-procedure length vector-length (vector?))
 	(overload-procedure length string-length (string?))
 
@@ -68,6 +72,13 @@
 	(check-equal? (+ 1 2) 3)
 	(check-equal? {7 - 2 - 1} 4)
 	(check-equal? {3 * 4} 12)
+	;; a number and a list with number? : a number that is not an integer
+	(check-equal? {1.5 * '(2 4)} '(3.0 6.0))
+	;; the numbers keep the original operators , with a variable (from start-logic-syracuse-racket+.rkt)
+	{kappa <- 1}
+	(check-equal? {3 * 5 + kappa} 16)
+	{kappa <- 3 * 5 + kappa}
+	(check-equal? kappa 16)
 
 	;; length on lists , vectors and strings
 	(check-equal? (length '(1 2 3)) 3)
