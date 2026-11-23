@@ -13,6 +13,11 @@
 ;; A silent run (only the parser trace) means every check passed ; any
 ;; failure is printed by rackunit as "FAILURE ...".
 
+;; non-regression test : a datum comment #; at the top level of the file (outside the module form) must drop the
+;; form (since the version 14.1 of SRFI 105 the commented form was kept and executed , fixed in curly-infix-read) ;
+;; if it is not dropped , the file does not even load
+#;(error "test-curly-infix+ : the datum comment #; at the top level of the file did not drop the form")
+
 (module test-curly-infix racket
 
   (require Scheme+)
@@ -1542,3 +1547,6 @@
   (displayln "test-curly-infix+ : done")
 
   ) ; end module
+
+;; non-regression test : a datum comment #; at the top level , the last form of the file (before the end of file)
+#;(error "test-curly-infix+ : the datum comment #; before the end of the file did not drop the form")
