@@ -51,6 +51,10 @@ Another method is to use the [Makefile](https://github.com/damien-mattei/Scheme-
 
 The type annotation and inference system to improve speed to top is now available, see version 18.0 below.
 
+**Changes of version 20.3:**
+
+The module `for_next_step` is renamed `for-next-step` (`Scheme+/for-next-step`), the usual naming of the files. `make-array-2d` and `display-array-2d` (`Scheme+/array`) use the `for` of Racket instead of the deprecated `for-basic`. Tests (`examples/test-curly-infix+.rkt`): the datum comments `#;` at the top level of the file, and `#;#;` that comments two datums (with SRFI 105 version 17.3).
+
 **Changes of version 20.2:**
 
 The tests of overloading of `examples/test-overload+.rkt` (operators `+`, `-` and `*` on lists, `length` on vectors and strings, `area` and `volume`) are written with rackunit and check that the numbers keep the original operators. The REPL of Scheme+ (`src/REPL-Scheme-PLUS.rkt`) requires only `Scheme+`.
