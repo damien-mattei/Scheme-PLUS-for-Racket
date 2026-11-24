@@ -293,7 +293,7 @@
    Scheme+/if-then-else
 
    ;; iteration
-   Scheme+/for_next_step
+   Scheme+/for-next-step
    ;;Scheme+/range
 
    ;; control

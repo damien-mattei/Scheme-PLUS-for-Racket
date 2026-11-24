@@ -48,7 +48,7 @@
 	
 	(require srfi/25
 		 (only-in racket/base [for for-racket]) ;; backup original Racket 'for'
-		 Scheme+/for_next_step) ;; with some scheme (guile) must be before use in array (see guile code for explaination)
+		 Scheme+/for-next-step) ;; with some scheme (guile) must be before use in array (see guile code for explaination)
 
 
 
@@ -56,11 +56,15 @@
 (define-syntax make-array-2d
   (syntax-rules ()
     ((_ lin col) (let* ((array (make-vector lin)))
-		 (for-basic (i 0 (- lin 1))
+		 #;(for-basic (i 0 (- lin 1))
+		      (vector-set! array i (make-vector col)))
+		 (for-racket ([i (in-range lin)]) ;; the for of Racket
 		      (vector-set! array i (make-vector col)))
 		 array))
     ((_ lin col v) (let* ((array (make-vector lin)))
-		   (for-basic (i 0 (- lin 1))
+		   #;(for-basic (i 0 (- lin 1))
+			(vector-set! array i (make-vector col v)))
+		   (for-racket ([i (in-range lin)]) ;; the for of Racket
 			(vector-set! array i (make-vector col v)))
 		   array))
     ;; ((_ array sx sy) (begin
@@ -69,7 +73,9 @@
     ;; 			    (vector-set! (quote array) i (make-vector sx)))))
     ((_ array lin col v) (begin
 			 (set! (quote array) (make-vector lin))
-			 (for-basic (i 0 (- lin 1))
+			 #;(for-basic (i 0 (- lin 1))
+			      (vector-set! (quote array) i (make-vector col v)))
+			 (for-racket ([i (in-range lin)]) ;; the for of Racket
 			      (vector-set! (quote array) i (make-vector col v)))))))
 
 
@@ -202,7 +208,9 @@
 (define-syntax display-array-2d
   (syntax-rules ()
     ((_ array)
-     (for-basic (y 0 (- (vector-length array) 1))
+     #;(for-basic (y 0 (- (vector-length array) 1))
+	  (display (vector-ref array y)) (newline))
+     (for-racket ([y (in-range (vector-length array))]) ;; the for of Racket
 	  (display (vector-ref array y)) (newline)))))
 
 

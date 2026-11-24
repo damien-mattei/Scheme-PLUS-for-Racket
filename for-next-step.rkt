@@ -18,7 +18,7 @@
 
 
 
-(module for_next_step racket/base
+(module for-next-step racket/base
 
   (provide for continue break
 	   for-basic
@@ -480,7 +480,7 @@
 
 ;; Welcome to DrRacket, version 8.14 [cs].
 ;; Language: racket, with debugging; memory limit: 8192 MB.
-;; > (require Scheme+/for_next_step)
+;; > (require Scheme+/for-next-step)
 ;; > (for ((define i 0) (< i 5) (set! i (+ i 1))) (define x 7) (display i) (newline) (break i))
 ;; 0
 ;; > (for ((define i 0) (< i 5) (set! i (+ i 1))) (define x 7) (display i) (newline) (break))
@@ -525,7 +525,7 @@
 
 ;; Welcome to DrRacket, version 8.14 [cs].
 ;; Language: racket, with debugging; memory limit: 8192 MB.
-;; > (require Scheme+/for_next_step)
+;; > (require Scheme+/for-next-step)
 ;; > (define res (for ((define i 0) (< i 5) (set! i (+ i 1))) (define x 7) (display i) (newline) (when (= i 2) (break i))))
 ;; 0
 ;; 1
