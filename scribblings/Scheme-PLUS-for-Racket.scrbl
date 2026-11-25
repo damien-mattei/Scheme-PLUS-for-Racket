@@ -1332,7 +1332,7 @@ As in C, @racket[(break)] leaves the loop and @racket[(continue)] goes to the ne
 
 As for @racket[return] in @racket[def], @racket[for] takes a continuation (@racket[call/cc]) only when @racket[break] or @racket[continue] is written in the loop: one for the whole loop with @racket[break], one at each turn with @racket[continue], which makes the loop more than 10 times slower. Without them, @racket[for] is a simple loop, almost as fast as a @racket[do]. A @racket[break] or a @racket[continue] produced by another macro is not seen, and a @racket[break] of an inner @racket[for] gives also a continuation to the outer one.
 
-Note about Scheme+ for Racket: the @racket[for] described above replaces the original @racket[for] of Racket: rename the original as below to use it. Scheme+ also defines @racket[in-range] and @racket[reversed] as in the Python language (@racket[in-range] already exists in Racket).
+Note about Scheme+ for Racket: the @racket[for] described above replaces the original @racket[for] of Racket: rename the original as below to use it, with the sequences of Racket (@racket[range], @racket[in-range], @racket[reverse]). The @racket[in-range] and @racket[reversed] of Scheme+ described below, written for the other Scheme implementations, are not exported by @racket[Scheme+] for Racket: Racket already has them (its @racket[in-range] gives the numbers one by one, without building a list). They stay in the module @racket[Scheme+/range].
 
 @codeblock|{
 (require (only-in racket/base [for for-racket])) ;; backup original Racket 'for'
@@ -1347,8 +1347,8 @@ Note about Scheme+ for Racket: the @racket[for] described above replaces the ori
          			{modification_des_poids(M[i - 1] ηₛ  z[i - 1] z[i] z̃[i] ᐁ[i] მzⳆმz̃)})
 }|
 
-@defform[(in-range start stop step)]{As @racket[range] in Racket or Python}
-@defform[(reversed in-range-expression)]{As @racket[reverse] in Scheme or @racket[reversed] in Python}
+@defform[(in-range start stop step)]{In the module @racket[Scheme+/range], not exported by @racket[Scheme+] for Racket (see above): the list of the numbers from @racket[start] to @racket[stop] (excluded) with the step @racket[step], as @racket[range] in Racket or Python.}
+@defform[(reversed in-range-expression)]{In the module @racket[Scheme+/range], not exported by @racket[Scheme+] for Racket (see above): as @racket[reverse] in Scheme or @racket[reversed] in Python.}
 
 @subsection[#:tag "blocks"]{Blocks}
 
